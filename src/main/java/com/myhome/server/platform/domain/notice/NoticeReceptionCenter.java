@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NoticeReceptionCenter extends BaseDomain {
+public class NoticeReceptionCenter{
 
     private String location;
 
