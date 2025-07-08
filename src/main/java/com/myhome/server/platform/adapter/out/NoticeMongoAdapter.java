@@ -6,10 +6,11 @@ import com.myhome.server.platform.application.out.notice.NoticePort;
 import com.myhome.server.platform.domain.notice.Notice;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * NoticePort의 구현체입니다.
@@ -24,14 +25,14 @@ public class NoticeMongoAdapter implements NoticePort {
     private final NoticeDocumentRepository repository;
 
     @Override
-    public List<Notice> loadAllNotices() {
+    public Page<Notice> loadNotices(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(NoticeDocument::toDomain);
+    }
 
-        /// DB에서 조회
-        List<NoticeDocument> documents = repository.findAll();
-
-        /// 변환해서 출력
-        return documents.stream()
-                .map(NoticeDocument::toDomain)
-                .toList();
+    @Override
+    public Optional<Notice> loadById(String noticeId) {
+        return repository.findByNoticeId(noticeId)
+                .map(NoticeDocument::toDomain);
     }
 }

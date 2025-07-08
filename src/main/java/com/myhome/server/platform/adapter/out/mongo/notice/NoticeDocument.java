@@ -13,9 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-@Document(collection = "notice")
+@Document(collection = "home")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,82 +29,89 @@ public class NoticeDocument {
     @Field("단지명")
     private String complexName;
 
-    @Field("상태")
+    @Field("상태명")
     private String status;
 
-    @Field("시작일")
+    @Field("모집시작일자")
     private String startDate;
 
-    @Field("유형")
+    @Field("공급유형명")
     private String type;
 
-    @Field("제목")
+    @Field("공고명")
     private String title;
 
-    @Field("조회수")
-    private String views;
+    @Field("공급기관명")
+    private String supplier;
 
-    @Field("종료일")
+    @Field("조회수")
+    private String views; // 원 데이터에는 없음
+
+    @Field("모집종료일자")
     private String endDate;
 
-    @Field("주소")
+    @Field("전체주소")
     private String address;
 
-    @Field("지역")
+    @Field("광역시도명")
     private String region;
 
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Location location;
 
-    @Field("complex")
-    private NoticeComplexDocument complex;
-
-    @Field("supply_info")
+    @Field("공급정보목록")
     private List<NoticeSupplyInfoDocument> supplyInfo;
 
-    @Field("reception_center")
-    private NoticeReceptionCenterDocument receptionCenter;
+    @Field("모집공고URL")
+    private String noticeUrl;
 
-    @Field("notice_schedule")
-    private NoticeScheduleDocument noticeSchedule;
+    @Field("마이홈포털PCURL")
+    private String myHomePcUrl;
 
-    @Field("lease_conditions")
-    private List<Map<String, Object>> leaseConditions;
+    @Field("마이홈포털MobileURL")
+    private String myHomeMobileUrl;
 
-    /// ToDomain
+    @Field("문의처")
+    private String contact;
+
+    @Field("당첨자발표일자")
+    private String winnerAnnouncementDate;
+
+    @Field("난방방식명")
+    private String heatingMethod;
+
+    @Field("총세대수")
+    private String totalHouseholds;
+
     public Notice toDomain() {
-
-        Location location = Location.builder()
-                .type("Point")
-                .coordinates(Arrays.asList(
-                        getLocation().getLongitude(),  // 경도
-                        getLocation().getLatitude())   // 위도
-                )
-                .build();
-
         return Notice.builder()
                 .id(noticeId)
                 .noticeId(noticeId)
                 .complexName(complexName)
                 .status(status)
                 .startDate(startDate)
+                .supplier(supplier)
                 .type(type)
                 .title(title)
                 .views(views)
                 .endDate(endDate)
                 .address(address)
                 .region(region)
-                .location(location)
-                .complex(complex.toDomain())
+                .location(Location.builder()
+                        .type(location.getType())
+                        .coordinates(location.getCoordinates())
+                        .build())
                 .supplyInfo(supplyInfo.stream()
-                                .map(NoticeSupplyInfoDocument::toDomain)
-                        .toList()
-                )
-                .receptionCenter(receptionCenter.toDomain())
-                .noticeSchedule(noticeSchedule.toDomain())
-                .leaseConditions(leaseConditions)
+                        .map(NoticeSupplyInfoDocument::toDomain)
+                        .toList())
+                .noticeUrl(noticeUrl)
+                .myHomePcUrl(myHomePcUrl)
+                .myHomeMobileUrl(myHomeMobileUrl)
+                .contact(contact)
+                .winnerAnnouncementDate(winnerAnnouncementDate)
+                .heatingMethod(heatingMethod)
+                .totalHouseholds(totalHouseholds)
                 .build();
-
     }
 }
 

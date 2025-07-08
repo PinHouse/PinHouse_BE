@@ -1,7 +1,10 @@
 package com.myhome.server.platform.application.out.notice;
 
 import com.myhome.server.platform.domain.notice.Notice;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
 
 /**
  * DB에 넣는 포트를 정의한 인터페이스입니다.
@@ -11,7 +14,9 @@ import java.util.List;
 public interface NoticePort {
 
    /// 가져오기
-   List<Notice> loadAllNotices();
+   Page<Notice> loadNotices(Pageable pageable);
 
+   /// 상세 조회
+   Optional<Notice> loadById(String id);
 
 }
