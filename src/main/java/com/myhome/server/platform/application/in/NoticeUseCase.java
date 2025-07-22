@@ -1,8 +1,8 @@
 package com.myhome.server.platform.application.in;
 
 import com.myhome.server.core.response.response.pageable.PageRequest;
-import com.myhome.server.platform.adapter.in.web.dto.response.NoticeLeaseOptionResponse;
 import com.myhome.server.platform.adapter.in.web.dto.response.NoticeDTO;
+import com.myhome.server.platform.adapter.in.web.dto.response.NoticeSupplyDTO;
 import com.myhome.server.platform.domain.notice.Notice;
 import org.springframework.data.domain.Page;
 
@@ -29,7 +29,7 @@ public interface NoticeUseCase {
     NoticeDTO.NoticeDetailResponse getNoticeById(String noticeId);
 
     /// 시뮬레이터
-    NoticeLeaseOptionResponse getLeaseByPercent(String noticeId, double percentage);
+    NoticeSupplyDTO.NoticeLeaseOptionResponse getLeaseByPercent(String noticeId, String type, double percentage);
 
     /// 비교
     List<Notice> compareNotices(String noticeId1, String noticeId2);
