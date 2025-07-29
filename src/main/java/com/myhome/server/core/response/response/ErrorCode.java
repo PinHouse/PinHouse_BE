@@ -25,16 +25,19 @@ public enum ErrorCode {
     // 0~1000 : 공통 및 보안 에러
     // ========================
 
-    /** 테스트용 에러 */
-    TEST_ERROR(100, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
-
+    // ========================
     // 400 Bad Request
+    // ========================
     BAD_REQUEST(400_000, HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     INVALID_FILE_FORMAT(400_001, HttpStatus.BAD_REQUEST, "업로드된 파일 형식이 올바르지 않습니다."),
     INVALID_INPUT(400_002, HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
     NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
+    TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
 
+
+    // ========================
     // 401 Unauthorized
+    // ========================
     TOKEN_EXPIRED(401_000, HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     TOKEN_INVALID(401_001, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(401_002, HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
@@ -47,34 +50,45 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(401_011, HttpStatus.UNAUTHORIZED, "저장된 리프레시 토큰이 존재하지 않습니다."),
     REFRESH_TOKEN_MISMATCH(401_009, HttpStatus.UNAUTHORIZED, "저장된 리프레시 토큰과 일치하지 않습니다."),
     EXPIRED_REFRESH_TOKEN(401_010, HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
+    TOKEN_NOT_FOUND_COOKIE(401_011, HttpStatus.UNAUTHORIZED, "쿠키에 리프레시 토큰이 존재하지 않습니다."),
     UNSUPPORTED_SOCIAL_LOGIN(401_012, HttpStatus.UNAUTHORIZED, "지원하지 않는 소셜 로그인 방식입니다."),
 
 
+
+
+    // ========================
     // 403 Forbidden
+    // ========================
     FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
     ACCESS_DENY(403_001, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
-    INVALID_ENVIRONMENT(403_002, HttpStatus.FORBIDDEN, "개발 환경에서만 사용할 수 있는 기능입니다."),
+    UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
 
-    /** 엔드포인트 없음  */
-    NOT_FOUND_END_POINT(404, HttpStatus.NOT_FOUND, "요청한 엔드포인트가 존재하지 않습니다."),
-
-    /** 서버 내부 오류  */
-    INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
-    INTERNAL_S3_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 설정이 잘못되었습니다. 속성을 확인하세요."),
-
-    /** 요청 파라미터 오류 */
-    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다."),
 
     // ========================
-    // 1000~1999 : 유저 관련 응답 에러
+    // 404 Not Found
     // ========================
+    NOT_FOUND_END_POINT(404_000, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
+    USER_NOT_FOUND(404_001, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND_IN_COOKIE(404_002, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
+    POST_NOT_FOUND(404_003, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
+    POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
+    NOT_NOTICE(404_007,HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다"),
 
-    /** 유저 없음 */
-    NOT_USER(1000, HttpStatus.NOT_FOUND, "해당하는 유저가 존재하지 않습니다."),
-    NOT_TEMP_USER(1001, HttpStatus.NOT_FOUND, "임시 유저가 존재하지 않습니다."),
+    // ========================
+    // 409 Conflict
+    // ========================
+    DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+    BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
+    BOOKMARK_ALREADY(409_003,HttpStatus.CONFLICT,"이미 해당 상품에 북마크를 등록했습니다"),
 
-    /** 최초 로그인 추가 정보 필요 */
-    FIRST_LOGIN(1200, HttpStatus.NOT_FOUND, "최초 로그인유저이기에 추가정보기입이 필요합니다.");
+
+    // ========================
+    // 500 Internal Server Error
+    // ========================
+    INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
+    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다."),;
 
 
     /** 에러 코드 (고유값) */
