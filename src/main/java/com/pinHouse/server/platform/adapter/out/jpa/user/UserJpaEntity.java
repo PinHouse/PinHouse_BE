@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.adapter.out.jpa.user;
 
 import com.pinHouse.server.platform.adapter.out.jpa.BaseTimeEntity;
+import com.pinHouse.server.platform.domain.user.Gender;
 import com.pinHouse.server.platform.domain.user.Provider;
 import com.pinHouse.server.platform.domain.user.Role;
 import com.pinHouse.server.platform.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +23,7 @@ public class UserJpaEntity extends BaseTimeEntity {
     @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     private Provider provider;
 
     private String socialId;
@@ -37,7 +40,12 @@ public class UserJpaEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     private String profileImage;
+
+    private LocalDate birthday;
 
     @PrePersist
     public void generateUUID() {
@@ -55,7 +63,9 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
+                .gender(user.getGender())
                 .profileImage(user.getProfileImage())
+                .birthday(user.getBirthday())
                 .build();
     }
 
@@ -68,7 +78,9 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .email(email)
                 .phoneNumber(phoneNumber)
                 .role(role)
+                .gender(gender)
                 .profileImage(profileImage)
+                .birthday(birthday)
                 .build();
     }
 

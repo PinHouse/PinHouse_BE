@@ -61,4 +61,19 @@ public class KakaoUserInfo implements OAuth2UserInfo {
                 .map(Object::toString)
                 .orElse("No image provided");
     }
+
+    @Override
+    public String getGender() {
+        return "";
+    }
+
+    @Override
+    public String getBirthday() {
+        return "";
+    }
+
+    @Override
+    public String getBirthYear() {
+        return "";
+    }
 }

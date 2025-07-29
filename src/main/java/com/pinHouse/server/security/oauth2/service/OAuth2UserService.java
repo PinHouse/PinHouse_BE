@@ -1,12 +1,13 @@
 package com.pinHouse.server.security.oauth2.service;
 
 import com.pinHouse.server.platform.application.out.user.UserPort;
+import com.pinHouse.server.platform.domain.user.Gender;
 import com.pinHouse.server.platform.domain.user.Provider;
 import com.pinHouse.server.platform.domain.user.User;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
-import com.pinHouse.server.security.oauth2.domain.google.GoogleUserInfo;
 import com.pinHouse.server.security.oauth2.domain.kakao.KakaoUserInfo;
+import com.pinHouse.server.security.oauth2.domain.naver.NaverUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
+
 @Slf4j
 @Service
 @Transactional
@@ -27,22 +30,27 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserPort userPort;
 
+    /**
+     * 소셜 로그인 유저 가져오기
+     * @param userRequest   정보 요청
+     * @return              유저
+     */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
-        // 유저 정보(attributes) 가져오기
+        /// 유저 정보(attributes) 가져오기
         Map<String, Object> oAuth2UserAttributes = super.loadUser(userRequest).getAttributes();
 
-        // resistrationId 가져오기
+        /// resistrationId 가져오기
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        // userNameAttributeName 가져오기
+        /// userNameAttributeName 가져오기
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
         log.info(registrationId + ": " + userNameAttributeName);
 
-        // OAuth2를 바탕으로 정보 생성
+        /// OAuth2를 바탕으로 정보 생성
         OAuth2UserInfo userInfo = null;
 
         /// Provider 에 따른 유저 생성
@@ -51,7 +59,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         Provider social = Provider.valueOf(userInfo.getProvider());
         Optional<User> existUser = userPort.loadUserBySocialAndSocialId(social, userInfo.getProviderId());
 
-        // 존재한다면 로그인
+        /// 존재한다면 로그인
         if (existUser.isPresent()) {
             ///  이미 존재하는 유저를 반환한다.
 
@@ -63,7 +71,17 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         } else {
             ///  정보를 통해 임시 저장한 뒤, 개인정보 추가하도록 한다.
 
-            User user = User.of(userInfo);
+            User user = User.of(
+                    Provider.valueOf(userInfo.getProvider()),
+                    userInfo.getProviderId(),
+                    userInfo.getUserName(),
+                    userInfo.getEmail(),
+                    userInfo.getImageUrl(),
+                    null,
+                    parseBirthday(userInfo.getBirthYear(), userInfo.getBirthday()),
+                    Gender.getGender(userInfo.getGender())
+            );
+
             User savedNewUser = userPort.saveUser(user);
 
             return PrincipalDetails.of(savedNewUser, oAuth2UserAttributes);
@@ -71,9 +89,11 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     }
 
 
-
-
-
+    /**
+     * 소셜로그인 유저 생성
+     * @param registrationId        소셜로그인 종류
+     * @param oAuth2UserAttributes  소셜로그인 정보
+     */
     private OAuth2UserInfo createOAuth2User(String registrationId, Map<String, Object> oAuth2UserAttributes) {
         OAuth2UserInfo userInfo;
 
@@ -81,8 +101,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             case "KAKAO":
                 userInfo = new KakaoUserInfo(oAuth2UserAttributes);
                 break;
-            case "GOOGLE":
-                userInfo = new GoogleUserInfo(oAuth2UserAttributes);
+            case "NAVER":
+                userInfo = new NaverUserInfo(oAuth2UserAttributes);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown provider: " + registrationId);
