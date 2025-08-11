@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.jwt.filter;
+package com.pinHouse.server.security.config;
 
 import com.pinHouse.server.platform.domain.user.Role;
 import io.micrometer.common.lang.Nullable;
@@ -38,9 +38,9 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),
             new RequestInfo(GET, "/resources/**", null),
+            new RequestInfo(GET, "/style.css", null),
             new RequestInfo(GET, "/index.html", null),
             new RequestInfo(GET, "/error", null),
-            new RequestInfo(GET, "/kikihi.png", null),
 
             // Swagger UI 및 API 문서 관련 요청
             new RequestInfo(GET, "/v3/api-docs/**", null),
@@ -51,10 +51,7 @@ public class RequestMatcherHolder {
 
             // 정적 아이콘 요청
             new RequestInfo(GET, "/favicon.ico", null),
-            new RequestInfo(GET, "/apple-touch-icon.png", null),
-
-            // 검색 (임시로 개방)
-            new RequestInfo(GET, "/api/v1/search", null)
+            new RequestInfo(GET, "/apple-touch-icon.png", null)
 
     );
 
