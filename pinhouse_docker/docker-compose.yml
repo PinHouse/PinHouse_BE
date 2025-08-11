@@ -35,6 +35,37 @@ services:
     networks:
       - backend-bridge
 
+  # Nginx Proxy
+  nginx: # nginx 서비스 정의
+    image: nginx:latest  # 사용할 Docker 이미지
+    container_name: pinhouse-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - spring
+    networks:
+      - backend-bridge
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  certbot:
+    image: certbot/certbot
+    container_name: pinhouse-certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    networks:
+      - backend-bridge
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+
 networks:
   backend-bridge:
     driver: bridge
