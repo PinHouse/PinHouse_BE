@@ -162,15 +162,6 @@ jobs:
           script: |
             # docker-compose 명령어 실행
             cd /home/ubuntu/app/pinhouse_docker/
-            
-            # 사용 중이지 않은 오래된 이미지 삭제
-            docker image prune -af
-
-            # 최신 이미지 받기
             docker compose pull spring
-
-            # 컨테이너 재시작
             docker compose up -d spring
-
-
 
