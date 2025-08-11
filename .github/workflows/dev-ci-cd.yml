@@ -142,7 +142,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: ".env"  # 방금 생성한 .env 파일
-          target: "/home/ubuntu/app/setting/"
+          target: "/home/ubuntu/app/pinhouse_docker/"
 
       - name: 3. docker-compose.yml 전달
         uses: appleboy/scp-action@master
@@ -161,8 +161,15 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             # docker-compose 명령어 실행
-            cd /home/ubuntu/app/setting/
+            cd /home/ubuntu/app/pinhouse_docker/
+            
+            # 사용 중이지 않은 오래된 이미지 삭제
+            docker image prune -af
+
+            # 최신 이미지 받기
             docker compose pull spring
+
+            # 컨테이너 재시작
             docker compose up -d spring
 
 
