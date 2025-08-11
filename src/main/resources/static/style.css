@@ -1,6 +1,11 @@
+/* 전체 배경 스타일 */
 body {
-    background: linear-gradient(130deg, #e6f0ff 0%, #c6e0fa 100%);
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background-color: #a1c4fd; /* 기본 배경색 */
+    background-image:
+            radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 2px, transparent 4px),
+            linear-gradient(135deg, #a1c4fd, #c2e9fb); /* 파스텔 블루-퍼플 그라디언트 */
+    background-size: 40px 40px, 100% 100%;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -9,96 +14,94 @@ body {
     align-items: center;
 }
 
-/* Main container 박스 */
+
+/* 메인 컨테이너 */
 .container {
-    background: #fff;
-    padding: 64px 56px;
-    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 64px 48px;
     border-radius: 34px;
+    text-align: center;
     max-width: 520px;
     width: 88%;
     position: relative;
-    overflow: hidden;
-    /* 깊이감 강조 그림자: 여러 레이어 */
+    backdrop-filter: blur(8px);
     box-shadow:
-            0 14px 40px 0 rgba(28,106,255,0.12),         /* 진한 메인 그림자 */
-            0 6px 24px 0 rgba(28,106,255,0.08),          /* 부드러움 */
-            0 24px 60px 0 rgba(100,180,255,0.17),        /* 뒤로 번지는 듯한 파란광 */
-            0 2px 8px rgba(100, 130, 250, 0.08);         /* 기존 그림자 */
-    border: 1.5px solid #daf0ff;
-    transition: all 0.31s cubic-bezier(.45,.65,.23,1.02);
+            0 14px 40px rgba(28,106,255,0.15),
+            0 6px 24px rgba(28,106,255,0.08),
+            0 24px 60px rgba(100,180,255,0.17),
+            inset 0 0 20px rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(218, 240, 255, 0.8);
+    transition: transform 0.35s cubic-bezier(.45,.65,.23,1.02), box-shadow 0.35s ease;
 }
 
-/* 박스 hover 시 입체감 극대화 */
 .container:hover {
-    transform: translateY(-7px) scale(1.015);
+    transform: translateY(-8px) scale(1.02);
     box-shadow:
-            0 20px 54px 0 rgba(28,106,255,0.16),
-            0 10px 32px 0 rgba(28,106,255,0.10),
-            0 38px 80px 0 rgba(80,150,255,0.21),
-            0 3px 14px rgba(100, 130, 250, 0.09);
+            0 20px 54px rgba(28,106,255,0.18),
+            0 10px 32px rgba(28,106,255,0.10),
+            0 38px 80px rgba(80,150,255,0.22);
 }
 
-/* 뒤쪽 퍼지는 "빛 효과" */
-.container::before {
+/* 반짝이는 빛 효과 */
+.glow {
     content: "";
     position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 180deg at 50% 50%, rgba(35,119,255,0.12), transparent 60%);
+    animation: rotate 8s linear infinite;
+    border-radius: 50%;
     z-index: 0;
-    inset: -12px;
-    border-radius: 42px;
-    pointer-events: none;
-    background: radial-gradient(
-            circle at 70% 15%, rgba(44,130,255,0.12) 0%, transparent 60%
-    );
-    filter: blur(3px);
+    filter: blur(90px);
 }
 
-/* 나머지 스타일은 기존대로 (로고, h1, p, button 등) */
-.logo {
-    width: 72px;
-    margin-bottom: 28px;
-    display: inline-block;
-    z-index: 1;
-    position: relative;
+@keyframes rotate {
+    to {
+        transform: rotate(360deg);
+    }
 }
+
+/* 제목 */
 h1 {
-    font-size: 2.2rem;
-    color: #2377ff; /* 로고와 매칭되는 블루 */
-    margin-bottom: 22px;
+    font-size: 2.1rem;
+    color: #2377ff;
+    margin-bottom: 20px;
     font-weight: 700;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 6px #c8e2ff66;
-    z-index: 1;
+    text-shadow: 0 2px 6px rgba(200, 226, 255, 0.4);
     position: relative;
+    z-index: 1;
 }
 
+/* 설명 문구 */
 p {
-    font-size: 1.13rem;
+    font-size: 1.12rem;
     color: #4a5b76;
     margin-bottom: 36px;
     line-height: 1.75;
-    z-index: 1;
     position: relative;
+    z-index: 1;
 }
 
 /* 버튼 */
-.button {
-    padding: 13px 28px;
-    background: linear-gradient(90deg, #2377ff 60%, #44bcff 100%);
+.swagger-button {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(90deg, #2377ff 0%, #44bcff 100%);
     color: white;
-    border: none;
-    border-radius: 14px;
     font-size: 1.07rem;
     font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(44, 128, 255, 0.16);
-    transition: background 0.25s, transform 0.19s;
-    z-index: 1;
+    border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 3px 12px rgba(44, 128, 255, 0.2);
+    transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
     position: relative;
+    z-index: 1;
 }
 
-.button:hover {
-    background: linear-gradient(90deg, #1763c6 60%, #2377ff 100%);
+.swagger-button:hover {
+    background: linear-gradient(90deg, #1763c6 0%, #2377ff 100%);
     transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 5px 18px rgba(44, 128, 255, 0.25);
 }
-
