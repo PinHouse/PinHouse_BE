@@ -1,0 +1,40 @@
+services:
+
+  spring:
+    image: pinhouse/server:latest
+    container_name: pinhouse-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - backend-bridge
+
+  mysql:
+    image: mysql:8.0
+    container_name: pinhouse-mysql
+    volumes:
+      - ./mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - backend-bridge
+
+  redis:
+    image: redis:7.2.5
+    container_name: pinhouse-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - backend-bridge
+
+networks:
+  backend-bridge:
+    driver: bridge
