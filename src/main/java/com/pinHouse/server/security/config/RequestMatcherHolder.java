@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.jwt.filter;
+package com.pinHouse.server.security.config;
 
 import com.pinHouse.server.platform.domain.user.Role;
 import io.micrometer.common.lang.Nullable;

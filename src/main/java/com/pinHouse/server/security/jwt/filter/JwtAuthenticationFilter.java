@@ -1,6 +1,7 @@
     package com.pinHouse.server.security.jwt.filter;
 
     import com.pinHouse.server.core.response.response.ErrorCode;
+    import com.pinHouse.server.security.config.RequestMatcherHolder;
     import com.pinHouse.server.security.jwt.exception.JwtAuthenticationException;
     import com.pinHouse.server.security.jwt.util.JwtTokenExtractor;
     import jakarta.servlet.FilterChain;
@@ -105,11 +106,6 @@
 
         @Override
         protected boolean shouldNotFilter(HttpServletRequest request) {
-
-            /// 상품 조회는 회원/비회원 구분해야되기에 모두 필터를 타도록 설정
-            if (request.getRequestURI().startsWith("/api/v1/products")) {
-                return false;
-            }
 
             /// null 인 것 해결
             return requestMatcherHolder.getRequestMatchersByMinRole(null)
