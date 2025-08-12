@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.platform.adapter.in.web.dto.FacilityType;
 import com.pinHouse.server.platform.application.in.NoticeInfraUseCase;
 import com.pinHouse.server.platform.application.out.facility.FacilityPort;
 import com.pinHouse.server.platform.application.out.notice.NoticePort;
@@ -78,17 +79,32 @@ public class NoticeInfraService implements NoticeInfraUseCase {
         return NoticeInfra.of(notice, libraries, animals, sports, walkings, parks);
     }
 
-    ///
-    @Override
-    public Notice getNoticeByInfra() {
-        return null;
-    }
-
     // =================
     //  인프라 바탕으로 공고 조회
     // =================
+    @Override
+    public List<Notice> getNoticesByInfraTypesWithAllMinCount(List<FacilityType> facilityTypes) {
+        List<Notice> allNotices = noticePort.loadAllNotices();
 
+        return allNotices.stream()
+                .filter(notice -> {
+                    double lng = notice.getLocation().getLongitude();
+                    double lat = notice.getLocation().getLatitude();
 
+                    // 모든 종류가 2개 이상이어야만 true 반환
+                    return facilityTypes.stream().allMatch(facilityType -> {
+                        List<? extends Facility> facilityList = switch (facilityType) {
+                            case LIBRARY -> facilityPort.loadLibrariesNearBy(lng, lat, radiusInRadians);
+                            case PARK -> facilityPort.loadParksNearBy(lng, lat, radiusInRadians);
+                            case ANIMAL -> facilityPort.loadAnimalsNearBy(lng, lat, radiusInRadians);
+                            case WALKING -> facilityPort.loadWalkingsNearBy(lng, lat, radiusInRadians);
+                            case SPORT -> facilityPort.loadSportsNearBy(lng, lat, radiusInRadians);
+                        };
+                        return facilityList.size() >= 2;
+                    });
+                })
+                .toList();
+    }
 
 
     // =================

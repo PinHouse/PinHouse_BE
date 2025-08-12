@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class Park {
+public class Park implements Facility{
 
     /// 아이디
     private String id;

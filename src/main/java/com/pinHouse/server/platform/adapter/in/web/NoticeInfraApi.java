@@ -1,15 +1,16 @@
 package com.pinHouse.server.platform.adapter.in.web;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.adapter.in.web.dto.FacilityType;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.InfraDTO;
+import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.adapter.in.web.swagger.NoticeInfraApiSpec;
 import com.pinHouse.server.platform.application.in.NoticeInfraUseCase;
+import com.pinHouse.server.platform.domain.notice.Notice;
 import com.pinHouse.server.platform.domain.notice.NoticeInfra;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notices/infra")
@@ -35,6 +36,17 @@ public class NoticeInfraApi implements NoticeInfraApiSpec {
     }
 
     /// 원하는 인프라를 바탕으로 많이 존재하는 지역을 설정
+    @GetMapping("/type")
+    public ApiResponse<List<NoticeDTO.NoticeListResponse>> showNoticeList(
+            @RequestParam List<FacilityType> facilityTypes
+    ) {
+        // 1. 시설 타입별로 지역(행정동 등)별 시설 수 집계
+        List<Notice> notices = service.getNoticesByInfraTypesWithAllMinCount(facilityTypes);
 
+        // 4. 응답 DTO 구성
+        List<NoticeDTO.NoticeListResponse> responses = NoticeDTO.NoticeListResponse.from(notices);
+
+        return ApiResponse.ok(responses);
+    }
 
 }

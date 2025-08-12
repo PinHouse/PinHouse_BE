@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -35,4 +36,12 @@ public class NoticeMongoAdapter implements NoticePort {
         return repository.findByNoticeId(noticeId)
                 .map(NoticeDocument::toDomain);
     }
+
+    @Override
+    public List<Notice> loadAllNotices() {
+        return repository.findAll().stream()
+                .map(NoticeDocument::toDomain)
+                .toList();
+    }
+
 }

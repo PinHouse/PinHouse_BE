@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.adapter.in.web;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeSupplyDTO;
+import com.pinHouse.server.platform.adapter.in.web.swagger.DepositApiSpec;
 import com.pinHouse.server.platform.application.in.NoticeUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/notices/deposit")
 @RequiredArgsConstructor
-public class DepositApi {
+public class DepositApi implements DepositApiSpec {
 
     private final NoticeUseCase noticeService;
 
