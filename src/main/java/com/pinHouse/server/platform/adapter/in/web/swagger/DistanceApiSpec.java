@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.adapter.in.web.swagger;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,9 +16,16 @@ public interface DistanceApiSpec {
             description = "출발 좌표와 도착 좌표를 통해 계산을 진행합니다.")
     @GetMapping()
     String getDistance(
+            @Parameter(example = "37.2479117750768", description = "출발지 공고의 위도")
             @RequestParam double startY,
+
+            @Parameter(example = "126.866087591443", description = "출발지 공고의 경도")
             @RequestParam double startX,
+
+            @Parameter(example = "37.566535", description = "도착지 좌표 위도(예시는 서울시)")
             @RequestParam double endY,
+
+            @Parameter(example = "126.9779692", description = "도착지 좌표 경도(예시는 서울시)")
             @RequestParam double endX
     ) throws UnsupportedEncodingException;
 
