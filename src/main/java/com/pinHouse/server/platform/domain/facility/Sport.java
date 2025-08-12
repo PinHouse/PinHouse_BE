@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.domain.facility;
 
+import com.pinHouse.server.platform.domain.location.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Sport {
 
+    private String id;
+
     /** 시설 명칭 */
-    private String facilityName;
+    private String name;
 
     /** 업종 명칭 */
     private String industryName;
@@ -26,11 +29,8 @@ public class Sport {
     /** 도로명주소-1 */
     private String roadAddress;
 
-    /** 경도 */
-    private Double facilityLongitude;
-
-    /** 위도 */
-    private Double facilityLatitude;
+    /// 좌표
+    private Location location;
 
     /** 시설 운영 형태 값 */
     private String facilityOperStyleValue;

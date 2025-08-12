@@ -1,7 +1,10 @@
 package com.pinHouse.server.platform.adapter.out.mongo.facility;
 
 import com.pinHouse.server.platform.domain.facility.Park;
+import com.pinHouse.server.platform.domain.location.Location;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.AllArgsConstructor;
@@ -44,24 +47,23 @@ public class ParkDocument {
     @Field("RDNMADR_NM")
     private String roadAddressName;
 
-    /** 경도 */
-    @Field("LC_LO")
-    private Double longitude;
 
-    /** 위도 */
-    @Field("LC_LA")
-    private Double latitude;
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+    private Location location;
 
     /// 도메인 변환
     private Park toDomain() {
         return Park.builder()
-                .parkId(this.parkId)
-                .poiName(this.poiName)
-                .categoryName(this.categoryName)
-                .pnu(this.pnu)
-                .roadAddressName(this.roadAddressName)
-                .longitude(this.longitude)
-                .latitude(this.latitude)
+                .id(id)
+                .parkId(parkId)
+                .name(poiName)
+                .category(categoryName)
+                .pnu(pnu)
+                .address(roadAddressName)
+                .location(Location.builder()
+                        .type(location.getType())
+                        .coordinates(location.getCoordinates())
+                        .build())
                 .build();
     }
 

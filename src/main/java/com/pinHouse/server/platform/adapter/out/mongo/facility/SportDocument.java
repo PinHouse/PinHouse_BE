@@ -1,11 +1,14 @@
 package com.pinHouse.server.platform.adapter.out.mongo.facility;
 
 import com.pinHouse.server.platform.domain.facility.Sport;
+import com.pinHouse.server.platform.domain.location.Location;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -45,13 +48,8 @@ public class SportDocument {
     @Field("RDNMADR_TWO_NM")
     private String roadAddressTwoName;
 
-    /** 경도 */
-    @Field("FCLTY_LO")
-    private Double facilityLongitude;
-
-    /** 위도 */
-    @Field("FCLTY_LA")
-    private Double facilityLatitude;
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+    private Location location;
 
     /** 시설 운영 형태 값 */
     @Field("FCLTY_OPER_STLE_VALUE")
@@ -69,13 +67,16 @@ public class SportDocument {
     /// toDomain
     private Sport toDomain() {
         return Sport.builder()
-                .facilityName(facilityName)
+                .id(id)
+                .name(facilityName)
                 .industryName(industryName)
                 .facilityTypeName(facilityTypeName)
                 .facilityStateValue(facilityStateValue)
                 .roadAddress(roadAddressOneName + " " + roadAddressTwoName)
-                .facilityLongitude(facilityLongitude)
-                .facilityLatitude(facilityLatitude)
+                .location(Location.builder()
+                        .type(location.getType())
+                        .coordinates(location.getCoordinates())
+                        .build())
                 .facilityOperStyleValue(facilityOperStyleValue)
                 .facilityCreationStandardDate(facilityCreationStandardDate)
                 .nationPublicFacilityAt(nationPublicFacilityAt)

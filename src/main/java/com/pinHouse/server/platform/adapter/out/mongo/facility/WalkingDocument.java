@@ -1,7 +1,10 @@
 package com.pinHouse.server.platform.adapter.out.mongo.facility;
 
 import com.pinHouse.server.platform.domain.facility.Walking;
+import com.pinHouse.server.platform.domain.location.Location;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.AllArgsConstructor;
@@ -78,17 +81,13 @@ public class WalkingDocument {
     @Field("LNM_ADDR")
     private String address;
 
-    /** 코스 주요지점 위도 */
-    @Field("COURS_SPOT_LA")
-    private Double courseSpotLatitude;
-
-    /** 코스 주요지점 경도 */
-    @Field("COURS_SPOT_LO")
-    private Double courseSpotLongitude;
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+    private Location location;
 
     /// toDomain
     private Walking toDomain() {
         return Walking.builder()
+                .id(id)
                 .esntlId(esntlId)
                 .walkingCourseFlagName(walkingCourseFlagName)
                 .walkingCourseName(walkingCourseName)
@@ -105,8 +104,10 @@ public class WalkingDocument {
                 .toiletDescription(toiletDescription)
                 .convenienceName(convenienceName)
                 .address(address)
-                .courseSpotLatitude(courseSpotLatitude)
-                .courseSpotLongitude(courseSpotLongitude)
+                .location(Location.builder()
+                        .type(location.getType())
+                        .coordinates(location.getCoordinates())
+                        .build())
                 .build();
     }
 

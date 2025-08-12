@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.domain.facility;
 
+import com.pinHouse.server.platform.domain.location.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,28 +12,30 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Walking {
 
-    /** 코스 고유 식별자 */
+    private String id;
+
+    /// 코스 고유 식별자
     private String esntlId;
 
-    /** 걷기 코스 플래그명 (코스 대표 명칭) */
+    ///걷기 코스 플래그명 (코스 대표 명칭)
     private String walkingCourseFlagName;
 
-    /** 걷기 코스명 */
+    /// 걷기 코스명
     private String walkingCourseName;
 
-    /** 코스 상세설명 */
+    /// 코스 상세설명 */
     private String courseDescription;
 
-    /** 행정구역명(시/군/구) */
+    /// 행정구역명(시/군/구) */
     private String districtName;
 
-    /** 코스 난이도 */
+    /// 코스 난이도 */
     private String courseLevelName;
 
-    /** 코스 거리 구간명 (예: 10~15㎞미만) */
+    /// 코스 거리 구간명 (예: 10~15㎞미만) */
     private String courseLengthDescription;
 
-    /** 상세 거리 (단위: km, 실수 값) */
+    /// 상세 거리 (단위: km, 실수 값) */
     private Double courseDetailLengthKm;
 
     /** 추가 설명 (코스 특성, 지역 건강증진 등) */
@@ -53,9 +56,6 @@ public class Walking {
     /** 코스 시작/대표 주소 */
     private String address;
 
-    /** 코스 주요지점 위도 */
-    private Double courseSpotLatitude;
-
-    /** 코스 주요지점 경도 */
-    private Double courseSpotLongitude;
+    /// 좌표
+    private Location location;
 }

@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.domain.facility;
 
+import com.pinHouse.server.platform.domain.location.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,84 +12,43 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Animal {
 
-    /**
-     * 시설명
-     */
-    private String facilityName;
+    /// 아이디
+    private String id;
 
-    /**
-     * 3차 카테고리명 (ex. 펜션)
-     */
-    private String categoryThreeName;
+    /// 시설명
+    private String name;
 
-    /**
-     * 위도
-     */
-    private Double latitude;
+    /// 종류
+    private String category;
 
-    /**
-     * 경도
-     */
-    private Double longitude;
+    /// 좌표
+    private Location location;
 
-    /**
-     * 우편번호
-     */
-    private Integer zipNo;
+    /// 주소
+    private String address;
 
-    /**
-     * 도로명주소
-     */
-    private String roadAddressName;
-
-    /**
-     * 휴무/운영 안내
-     */
+    /// 휴무,운영
     private String restGuide;
 
-    /**
-     * 운영시간
-     */
+    /// 운영시간
     private String operateTime;
 
-    /**
-     * 반려동물 동반 가능 여부
-     */
+    /// 가능여부
     private String petPossibleAt;
 
-    /**
-     * 반려동물 정보
-     */
-    private String petInfoContent;
-
-    /**
-     * 입장 가능 반려동물 크기 (ex. 7kg 미만)
-     */
+    /// 반려동물 크기
     private String enterPossiblePetSizeValue;
 
-    /**
-     * 반려동물 제한사항
-     */
+    /// 반려동물 제한사항
     private String petLimitMatterContent;
 
-    /**
-     * 실내 입장 가능 여부
-     */
+    /// 실내 입장 가능 여부
     private String inPlaceAcceptPossibleAt;
 
-    /**
-     * 실외 입장 가능 여부
-     */
+    /// 실외 입장 가능 여부
     private String outPlaceAcceptPossibleAt;
 
-    /**
-     * 시설 안내/특징
-     */
+    /// 시설 안내
     private String facilityInfoDescription;
-
-    /**
-     * 반려동물 추가 요금 안내
-     */
-    private String petAcceptAdditionalChargeValue;
 
 }

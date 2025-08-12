@@ -1,11 +1,14 @@
 package com.pinHouse.server.platform.adapter.out.mongo.facility;
 
 import com.pinHouse.server.platform.domain.facility.Animal;
+import com.pinHouse.server.platform.domain.location.Location;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -29,13 +32,8 @@ public class AnimalDocument {
     @Field("CTGRY_THREE_NM")
     private String categoryThreeName;
 
-    /** 위도 */
-    @Field("LC_LA")
-    private Double latitude;
-
-    /** 경도 */
-    @Field("LC_LO")
-    private Double longitude;
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+    private Location location;
 
     /** 우편번호 */
     @Field("ZIP_NO")
@@ -56,10 +54,6 @@ public class AnimalDocument {
     /** 반려동물 동반 가능 여부 */
     @Field("PET_POSBL_AT")
     private String petPossibleAt;
-
-    /** 반려동물 정보 */
-    @Field("PET_INFO_CN")
-    private String petInfoContent;
 
     /** 입장 가능 반려동물 크기 (ex. 7kg 미만) */
     @Field("ENTRN_POSBL_PET_SIZE_VALUE")
@@ -88,22 +82,21 @@ public class AnimalDocument {
     /// 도메인 변환
     public Animal toDomain(){
         return Animal.builder()
-                .facilityName(facilityName)
-                .categoryThreeName(categoryThreeName)
-                .latitude(latitude)
-                .longitude(longitude)
-                .zipNo(zipNo)
-                .roadAddressName(roadAddressName)
+                .name(facilityName)
+                .category(categoryThreeName)
+                .location(Location.builder()
+                        .type(location.getType())
+                        .coordinates(location.getCoordinates())
+                        .build())
+                .address(roadAddressName)
                 .restGuide(restGuide)
                 .operateTime(operateTime)
                 .petPossibleAt(petPossibleAt)
-                .petInfoContent(petInfoContent)
                 .enterPossiblePetSizeValue(enterPossiblePetSizeValue)
                 .petLimitMatterContent(petLimitMatterContent)
                 .inPlaceAcceptPossibleAt(inPlaceAcceptPossibleAt)
                 .outPlaceAcceptPossibleAt(outPlaceAcceptPossibleAt)
                 .facilityInfoDescription(facilityInfoDescription)
-                .petAcceptAdditionalChargeValue(petAcceptAdditionalChargeValue)
                 .build();
     }
 

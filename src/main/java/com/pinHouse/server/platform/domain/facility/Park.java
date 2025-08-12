@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.domain.facility;
 
+import com.pinHouse.server.platform.domain.location.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,25 +10,26 @@ import lombok.Getter;
 @Builder
 public class Park {
 
-    /** 공원 시스템 ID */
+    /// 아이디
+    private String id;
+
+    /// 공원 시스템 ID
     private String parkId;
 
-    /** POI 명칭 */
-    private String poiName;
+    /// 명칭
+    private String name;
 
-    /** 공원 분류 명칭 */
-    private String categoryName;
+    /// 공원 분류 명칭
+    private String category;
 
-    /** PNU (법정동+지번코드) */
+    /// PNU (법정동+지번코드)
     private String pnu;
 
-    /** 도로명주소명 */
-    private String roadAddressName;
+    //// 도로명주소명
+    private String address;
 
-    /** 경도 */
-    private Double longitude;
+    /// 좌표
+    private Location location;
 
-    /** 위도 */
-    private Double latitude;
 
 }
