@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Animal {
+public class Animal implements Facility{
 
     /// 아이디
     private String id;

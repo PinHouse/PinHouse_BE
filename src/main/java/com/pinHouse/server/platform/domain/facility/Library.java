@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Library {
+public class Library implements Facility{
 
     private String id;
     private Integer code;
