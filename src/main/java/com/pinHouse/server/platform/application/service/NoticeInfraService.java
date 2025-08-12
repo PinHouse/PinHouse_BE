@@ -44,8 +44,22 @@ public class NoticeInfraService implements NoticeInfraUseCase {
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
+        /// 객체 생성
         return NoticeInfra.of(notice, libraries);
     }
+
+    ///
+    @Override
+    public Notice getNoticeByInfra() {
+        return null;
+    }
+
+    // =================
+    //  인프라 바탕으로 공고 조회
+    // =================
+
+
+
 
     // =================
     //  내부 함수

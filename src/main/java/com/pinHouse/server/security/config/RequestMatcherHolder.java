@@ -32,7 +32,7 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/api/v1/auth/logout", Role.USER),
 
             // 상품 관련
-            new RequestInfo(GET, "/api/v1/products/**", null),
+            new RequestInfo(GET, "/api/v1/notices/**", null),
 
             // static resources
             new RequestInfo(GET, "/docs/**", null),
