@@ -27,7 +27,7 @@ public class Sport {
     private String facilityStateValue;
 
     /** 도로명주소-1 */
-    private String roadAddress;
+    private String address;
 
     /// 좌표
     private Location location;

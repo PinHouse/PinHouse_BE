@@ -43,23 +43,17 @@ public class ParkDocument {
     @Field("PNU")
     private String pnu;
 
-    /** 도로명주소명 */
-    @Field("RDNMADR_NM")
-    private String roadAddressName;
-
-
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Location location;
 
     /// 도메인 변환
-    private Park toDomain() {
+    public Park toDomain() {
         return Park.builder()
                 .id(id)
                 .parkId(parkId)
                 .name(poiName)
                 .category(categoryName)
                 .pnu(pnu)
-                .address(roadAddressName)
                 .location(Location.builder()
                         .type(location.getType())
                         .coordinates(location.getCoordinates())

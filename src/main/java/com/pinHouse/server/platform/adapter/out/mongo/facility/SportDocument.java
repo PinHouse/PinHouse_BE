@@ -65,14 +65,14 @@ public class SportDocument {
 
 
     /// toDomain
-    private Sport toDomain() {
+    public Sport toDomain() {
         return Sport.builder()
                 .id(id)
                 .name(facilityName)
                 .industryName(industryName)
                 .facilityTypeName(facilityTypeName)
                 .facilityStateValue(facilityStateValue)
-                .roadAddress(roadAddressOneName + " " + roadAddressTwoName)
+                .address(roadAddressOneName)
                 .location(Location.builder()
                         .type(location.getType())
                         .coordinates(location.getCoordinates())

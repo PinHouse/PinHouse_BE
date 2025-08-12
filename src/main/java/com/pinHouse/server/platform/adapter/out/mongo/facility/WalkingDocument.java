@@ -85,7 +85,7 @@ public class WalkingDocument {
     private Location location;
 
     /// toDomain
-    private Walking toDomain() {
+    public Walking toDomain() {
         return Walking.builder()
                 .id(id)
                 .esntlId(esntlId)

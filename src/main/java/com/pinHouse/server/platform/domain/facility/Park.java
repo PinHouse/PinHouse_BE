@@ -25,9 +25,6 @@ public class Park {
     /// PNU (법정동+지번코드)
     private String pnu;
 
-    //// 도로명주소명
-    private String address;
-
     /// 좌표
     private Location location;
 
