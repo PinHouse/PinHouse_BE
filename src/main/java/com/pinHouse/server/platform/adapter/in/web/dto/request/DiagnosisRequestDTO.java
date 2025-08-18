@@ -5,44 +5,46 @@ import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class DiagnosisRequestDTO {
 
-    @Schema(description = "무주택 여부", example = "true")
-    private boolean isHomeless;
-
-    @Schema(description = "세대원 수", example = "3")
-    private int familyCount;
+    private boolean isHomeless;                  // 무주택 여부
+    private int familyCount;                      // 세대원 수
 
     // 2. 소득 관련
-    @Schema(description = "중위소득 대비 비율(%)", example = "85.5")
-    private double incomeRatio;
+    private double incomeRatio;                   // 중위소득 대비 비율 (%) 예: 70.0, 100.0
 
     // 3. 자산 관련
-    @Schema(description = "부동산, 금융자산 가치 (만원 단위)", example = "12000.0")
-    private double assetValue;
-
-    @Schema(description = "자동차 가액 (만원 단위)", example = "1800.0")
-    private double carValue;
+    private final long propertyAsset;                  // 부동산/토지 자산
+    private final long financialAsset;                 // 금융자산
+    private final long carValue;                       // 자동차가액
 
     // 4. 연령 및 혼인 상태
-    @Schema(description = "만 나이", example = "29")
-    private int age;
-
-    @Schema(description = "혼인 상태", example = "미혼")
-    private MaritalStatus maritalStatus;
+    private int age;                             // 만 나이
+    private MaritalStatus maritalStatus;        // 혼인 상태(enum)
 
     // 5. 부양가족 유무
-    @Schema(description = "미성년 자녀 수", example = "1")
-    private int minorChildrenCount;
-
-    @Schema(description = "65세 이상 직계존속 부양 여부", example = "false")
-    private boolean hasElderDependent;
+    private int minorChildrenCount;              // 미성년 자녀 수
+    private boolean hasElderDependent;           // 65세 이상 직계존속 부양 여부
 
     // 6. 특수 대상자 여부
-    @Schema(description = "특수 대상자 여부(국가유공자, 장애인, 북한이탈주민 등)", example = "true")
-    private boolean isSpecialTarget;
+    private boolean isSpecialTarget;             // 국가유공자, 장애인, 북한이탈주민 등 해당 여부
 
+    // [추가된 필드] - RuleContext 의존 필드 반영
+    private boolean householdHead;               // 세대주 여부
+    private Long housePrice;                      // 분양가/전세가 등
+    private String region;                        // 거주 지역 코드 (예: "SUDO", "NON_SUDO")
+    private Integer marriageYears;                // 혼인 기간(년)
+    private boolean hasAccount;                   // 청약통장 보유 여부
+    private int accountYears;                     // 청약통장 가입 기간(년)
+    private long accountDeposit;                  // 청약통장 예치금(원)
+    private String accountType;                   // 청약통장 상품 타입 (예: "SAVING", "DEPOSIT", "INSTALLMENT")
+    private boolean localResident;                // 해당 주택 건설지역 내 거주 여부
+    private int localResidencyMonths;             // 해당 지역 거주 기간(월)
+    private boolean wonBefore;                     // 과거 당첨 여부
+    private LocalDate lastWinDate;                 // 마지막 당첨일 (YYYY-MM-DD)
 
 
     /// 정적 팩토리 메서드
@@ -51,14 +53,27 @@ public class DiagnosisRequestDTO {
                 .isHomeless(isHomeless)
                 .familyCount(familyCount)
                 .incomeRatio(incomeRatio)
-                .assetValue(assetValue)
+                .propertyAsset(propertyAsset)
+                .financialAsset(financialAsset)
                 .carValue(carValue)
                 .age(age)
                 .maritalStatus(maritalStatus)
                 .minorChildrenCount(minorChildrenCount)
                 .hasElderDependent(hasElderDependent)
                 .isSpecialTarget(isSpecialTarget)
+                .householdHead(householdHead)
+                .housePrice(housePrice)
+                .region(region)
+                .marriageYears(marriageYears)
+                .hasAccount(hasAccount)
+                .accountYears(accountYears)
+                .accountDeposit(accountDeposit)
+                .accountType(accountType)
+                .localResident(localResident)
+                .localResidencyMonths(localResidencyMonths)
+                .wonBefore(wonBefore)
+                .lastWinDate(lastWinDate)
                 .build();
-    }
 
+    }
 }
