@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.adapter.in.web.dto.FacilityType;
-import com.pinHouse.server.platform.application.in.NoticeInfraUseCase;
+import com.pinHouse.server.platform.application.in.notice.NoticeInfraUseCase;
 import com.pinHouse.server.platform.application.out.facility.FacilityPort;
 import com.pinHouse.server.platform.application.out.notice.NoticePort;
 import com.pinHouse.server.platform.domain.facility.*;

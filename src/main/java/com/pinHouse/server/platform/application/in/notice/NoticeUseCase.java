@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.application.in;
+package com.pinHouse.server.platform.application.in.notice;
 
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeDTO;

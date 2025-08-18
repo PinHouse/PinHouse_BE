@@ -5,7 +5,7 @@ import com.pinHouse.server.platform.adapter.in.web.dto.FacilityType;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.InfraDTO;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.adapter.in.web.swagger.NoticeInfraApiSpec;
-import com.pinHouse.server.platform.application.in.NoticeInfraUseCase;
+import com.pinHouse.server.platform.application.in.notice.NoticeInfraUseCase;
 import com.pinHouse.server.platform.domain.notice.Notice;
 import com.pinHouse.server.platform.domain.notice.NoticeInfra;
 import lombok.RequiredArgsConstructor;

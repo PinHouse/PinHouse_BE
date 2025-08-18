@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.application.in;
+package com.pinHouse.server.platform.application.in.notice;
 
 import com.pinHouse.server.platform.adapter.in.web.dto.FacilityType;
 import com.pinHouse.server.platform.domain.notice.Notice;

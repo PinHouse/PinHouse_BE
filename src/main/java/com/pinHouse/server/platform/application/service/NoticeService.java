@@ -4,7 +4,7 @@ import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeSupplyDTO;
-import com.pinHouse.server.platform.application.in.NoticeUseCase;
+import com.pinHouse.server.platform.application.in.notice.NoticeUseCase;
 import com.pinHouse.server.platform.application.out.notice.NoticePort;
 import com.pinHouse.server.platform.domain.notice.Notice;
 import com.pinHouse.server.platform.domain.notice.NoticeSupplyInfo;

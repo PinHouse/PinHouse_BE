@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.adapter.in.web;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeSupplyDTO;
 import com.pinHouse.server.platform.adapter.in.web.swagger.DepositApiSpec;
-import com.pinHouse.server.platform.application.in.NoticeUseCase;
+import com.pinHouse.server.platform.application.in.notice.NoticeUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -5,7 +5,7 @@ import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.core.response.response.pageable.PageResponse;
 import com.pinHouse.server.platform.adapter.in.web.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.adapter.in.web.swagger.NoticeApiSpec;
-import com.pinHouse.server.platform.application.in.NoticeUseCase;
+import com.pinHouse.server.platform.application.in.notice.NoticeUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
