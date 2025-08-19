@@ -1,5 +1,8 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -7,10 +10,10 @@ import java.util.Map;
 
 /** 2) 지역 거주 요건 */
 @Component
-@Order(20)
+@Order(2)
 public class LocalResidencyRule implements Rule {
-    @Override public String code() { return "LOCAL_RESIDENCY"; }
-    @Override public Severity severity() { return Severity.HARD_FAIL; }
+
+
     @Override
     public RuleResult evaluate(RuleContext c) {
         int required = c.getPolicy().requiredLocalResidencyMonths(c.getRegion());
@@ -20,4 +23,14 @@ public class LocalResidencyRule implements Rule {
         }
         return RuleResult.pass(code(), Severity.INFO, "지역 거주 요건 충족", Map.of("months", c.getLocalResidencyMonths()));
     }
+
+    @Override public String code() {
+        return "LOCAL_RESIDENCY";
+    }
+
+
+    @Override public Severity severity() {
+        return Severity.HARD_FAIL;
+    }
+
 }

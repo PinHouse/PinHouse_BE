@@ -15,6 +15,9 @@ import java.util.*;
 public record DiagnosisDTO(
         boolean eligible,
         String supplyType,
+        String displayName,
+        int score,
+        Map<String, Object> meta,
         List<Reason> reason) {
 
 
@@ -23,6 +26,9 @@ public record DiagnosisDTO(
         return DiagnosisDTO.builder()
                 .eligible(result.isEligible())
                 .supplyType(result.getSupplyTypeCode())
+                .displayName(result.getDisplayName())
+                .score(result.getScore())
+                .meta(result.getMeta())
                 .reason(result.getReasons())
                 .build();
     }

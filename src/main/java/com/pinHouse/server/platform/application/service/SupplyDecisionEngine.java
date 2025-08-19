@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.application.service;
 
-import com.pinHouse.server.platform.domain.diagnosis.rule.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

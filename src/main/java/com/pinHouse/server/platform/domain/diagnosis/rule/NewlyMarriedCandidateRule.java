@@ -1,6 +1,9 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -8,10 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-@Order(110)
+@Order(6)
 public class NewlyMarriedCandidateRule implements Rule {
-    @Override public String code() { return "CANDIDATE_NEWCOUPLE_SPECIAL"; }
-    @Override public Severity severity() { return Severity.INFO; }
+
     @Override
     public RuleResult evaluate(RuleContext c) {
         boolean isMarried = c.getMaritalStatus() == MaritalStatus.MARRIED;
@@ -24,4 +26,13 @@ public class NewlyMarriedCandidateRule implements Rule {
         }
         return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
     }
+
+    @Override public String code() {
+        return "CANDIDATE_NEWCOUPLE_SPECIAL";
+    }
+
+    @Override public Severity severity() {
+        return Severity.INFO;
+    }
+
 }

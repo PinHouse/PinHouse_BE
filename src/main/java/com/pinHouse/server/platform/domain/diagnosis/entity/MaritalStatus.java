@@ -29,7 +29,7 @@ public enum MaritalStatus {
 
     @JsonValue
     public String getValue() {
-        return name(); // 클라이언트로 나갈 때 "SINGLE", "MARRIED" 같은 영어 Enum 이름
-        // 만약 한글로 나가게 하고 싶으면 return value;
+        return value;
+
     }
 }

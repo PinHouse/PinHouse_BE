@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 public class CandidateExtractor {
     List<Candidate> extract(RuleExecutionSummary summary) {
         return summary.getResults().stream()
-                .filter(r -> r.getCode().startsWith("CANDIDATE_") && r.isPass())
+                .filter(r -> r.code().startsWith("CANDIDATE_") && r.pass())
                 .map(r -> new Candidate(
-                        SupplyType.valueOf(String.valueOf(r.getDetails().getOrDefault("candidate", SupplyType.GENERAL.name()))),
-                        Boolean.TRUE.equals(r.getDetails().get("incomeOk"))
+                        SupplyType.valueOf(String.valueOf(r.details().getOrDefault("candidate", SupplyType.GENERAL.name()))),
+                        Boolean.TRUE.equals(r.details().get("incomeOk"))
                 ))
                 .filter(c -> c.type() != SupplyType.GENERAL)
                 .distinct()

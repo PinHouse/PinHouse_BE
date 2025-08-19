@@ -1,6 +1,9 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -10,10 +13,9 @@ import java.util.Map;
 
 /** 5) 특별공급 후보 탐색 규칙 — 각 규칙은 '적합'을 발견하면 INFO로 pass + candidate 표시에 세부값 제공 */
 @Component
-@Order(100)
+@Order(5)
 public class YouthSpecialCandidateRule implements Rule {
-    @Override public String code() { return "CANDIDATE_YOUTH_SPECIAL"; }
-    @Override public Severity severity() { return Severity.INFO; }
+
     @Override
     public RuleResult evaluate(RuleContext c) {
         boolean ageOk = c.getAge() >= c.getPolicy().youthAgeMin() && c.getAge() <= c.getPolicy().youthAgeMax();
@@ -29,4 +31,13 @@ public class YouthSpecialCandidateRule implements Rule {
         }
         return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
     }
+
+    @Override public String code() {
+        return "CANDIDATE_YOUTH_SPECIAL";
+    }
+
+    @Override public Severity severity() {
+        return Severity.INFO;
+    }
+
 }

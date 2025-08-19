@@ -1,11 +1,10 @@
-package com.pinHouse.server.platform.domain.diagnosis.rule;
+package com.pinHouse.server.platform.domain.diagnosis.entity;
 
 import com.pinHouse.server.platform.adapter.out.DefaultScoreCalculator;
 import com.pinHouse.server.platform.adapter.out.InMemoryPolicyProvider;
 import com.pinHouse.server.platform.application.out.diagnosis.PolicyProvider;
 import com.pinHouse.server.platform.application.out.diagnosis.ScoreCalculator;
 import com.pinHouse.server.platform.application.service.*;
-import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
 import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +17,20 @@ import java.time.Period;
 @Builder
 @AllArgsConstructor
 public class RuleContext {
-    // 원본 요청 필드 (필요시 추가)
-    private final int age;
+
+    /** 1) 기초 자격: 세대주 + 무주택 + 재당첨 제한 */
+    private final int age;                             // 나이
     private final boolean householdHead;               // 세대주 여부
     private final boolean homeless;                    // 무주택 여부
     private final int familyCount;                     // 가구원수(세대원)
     private final double incomeRatio;                  // 도시근로자 대비 소득비율(%)
     private final Long housePrice;                     // 분양가/전세가 등 (선택)
     private final RegionCode region;                   // 거주지역/해당지역 내 여부
+    /** 2) 지역 거주 요건 */
+
+    /** 2) 고령자 제한 */
+
+    /** 3) 특별공급 후보 탐색 규칙 */
 
     // 혼인/자녀/부양
     private final MaritalStatus maritalStatus;

@@ -1,8 +1,15 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 
 interface Rule {
+
     RuleResult evaluate(RuleContext ctx);
-    String code();                    // 예: BASE_HOUSEHOLD_HEAD
-    Severity severity();              // HARD_FAIL, SOFT_WARN, INFO
+
+    String code();
+
+    Severity severity();
 }
+

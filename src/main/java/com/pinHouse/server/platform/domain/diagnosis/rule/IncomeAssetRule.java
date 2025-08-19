@@ -1,17 +1,19 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-/** 4) 소득/자산 총량 요건(공급유형 공통 상한) */
+/** 3) 소득/자산 총량 요건(공급유형 공통 상한) */
 @Component
-@Order(40)
+@Order(4)
 public class IncomeAssetRule implements Rule {
-    @Override public String code() { return "INCOME_ASSET_LIMIT"; }
-    @Override public Severity severity() { return Severity.HARD_FAIL; }
+
     @Override
     public RuleResult evaluate(RuleContext c) {
         double maxIncomeGeneral = c.getPolicy().maxIncomeRatio(SupplyType.GENERAL, c.getFamilyCount());
@@ -27,4 +29,13 @@ public class IncomeAssetRule implements Rule {
         }
         return RuleResult.pass(code(), Severity.INFO, "소득/자산 요건 충족", null);
     }
+
+    @Override public String code() {
+        return "INCOME_ASSET_LIMIT";
+    }
+
+    @Override public Severity severity() {
+        return Severity.HARD_FAIL;
+    }
+
 }

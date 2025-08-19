@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.application.service;
 import com.pinHouse.server.platform.application.in.diagnosis.DiagnosisUseCase;
 import com.pinHouse.server.platform.application.out.diagnosis.DiagnosisPort;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleChain;
-import com.pinHouse.server.platform.domain.diagnosis.rule.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.*;

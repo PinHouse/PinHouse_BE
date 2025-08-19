@@ -1,10 +1,15 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class RuleChain {
@@ -12,10 +17,12 @@ public class RuleChain {
 
     public RuleExecutionSummary evaluateAll(RuleContext ctx) {
         RuleExecutionSummary summary = new RuleExecutionSummary();
+        log.info("RuleChain rules size: " + rules.size());
+
         for (Rule rule : rules) {
             RuleResult r = rule.evaluate(ctx);
             summary.add(r);
-            if (!r.isPass() && rule.severity() == Severity.HARD_FAIL) {
+            if (!r.pass() && rule.severity() == Severity.HARD_FAIL) {
                 // 하드 실패면 즉시 중단
                 break;
             }

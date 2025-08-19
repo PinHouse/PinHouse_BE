@@ -1,5 +1,8 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
+import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -7,10 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-@Order(120)
+@Order(7)
 public class MultiChildCandidateRule implements Rule {
-    @Override public String code() { return "CANDIDATE_MULTICHILD_SPECIAL"; }
-    @Override public Severity severity() { return Severity.INFO; }
+
     @Override
     public RuleResult evaluate(RuleContext c) {
         if (c.getMinorChildrenCount() >= 3) {
@@ -21,4 +23,13 @@ public class MultiChildCandidateRule implements Rule {
         }
         return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
     }
+
+    @Override public String code() {
+        return "CANDIDATE_MULTICHILD_SPECIAL";
+    }
+
+    @Override public Severity severity() {
+        return Severity.INFO;
+    }
+
 }
