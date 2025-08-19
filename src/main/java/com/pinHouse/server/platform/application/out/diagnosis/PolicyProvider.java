@@ -20,9 +20,11 @@ public interface PolicyProvider {
 
     int newlyMarriedMaxYears();
 
+    int marriedYouthAgeMin();
+
     int elderAgeMin();
 
-    long minDepositForHousePrice(long housePrice, RegionCode region, AccountType accountType);
+    int recommendHousingSize(RegionCode region, AccountType accountType, long deposit);
 
     int reApplyBanMonths();
 }

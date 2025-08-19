@@ -18,40 +18,43 @@ import java.time.Period;
 @AllArgsConstructor
 public class RuleContext {
 
-    /** 1) 기초 자격: 세대주 + 무주택 + 재당첨 제한 */
+    /** 1) 기초 자격: 나이 + 무주택 */
     private final int age;                             // 나이
-    private final boolean householdHead;               // 세대주 여부
     private final boolean homeless;                    // 무주택 여부
-    private final int familyCount;                     // 가구원수(세대원)
-    private final double incomeRatio;                  // 도시근로자 대비 소득비율(%)
-    private final Long housePrice;                     // 분양가/전세가 등 (선택)
-    private final RegionCode region;                   // 거주지역/해당지역 내 여부
+
     /** 2) 지역 거주 요건 */
+    private final RegionCode region;                   // 거주지역/해당지역 내 여부
+    private final boolean localResident;               // 해당 주택건설지역 내 거주
+    private final int localResidencyMonths;            // 거주기간(월)
 
-    /** 2) 고령자 제한 */
-
-    /** 3) 특별공급 후보 탐색 규칙 */
-
-    // 혼인/자녀/부양
-    private final MaritalStatus maritalStatus;
-    private final Integer marriageYears;
-    private final int minorChildrenCount;
-    private final boolean hasElderDependent;           // 65세 이상 직계존속 3년 이상 부양 여부
-
-    // 청약통장/가입기간/예치금 등
+    /** 3) 청약통장 요건(가입기간/예치금/상품유형) */
     private final boolean hasAccount;
     private final int accountYears;                    // 가입년수(년)
     private final long accountDeposit;                 // 예치금
     private final AccountType accountType;             // 예: 청약저축/청약예금/청약부금
 
-    // 자산 기준
+    /** 4) 소득/자산 총량 요건(공급유형 공통 상한) */
     private final long propertyAsset;                  // 부동산/토지 자산
     private final long financialAsset;                 // 금융자산
     private final long carValue;                       // 자동차가액
 
-    // 거주기간/해당지역
-    private final boolean localResident;               // 해당 주택건설지역 내 거주
-    private final int localResidencyMonths;            // 거주기간(월)
+    private final int familyCount;                     // 가구원수(세대원)
+    private final double incomeRatio;                  // 도시근로자 대비 소득비율(%)
+
+    /** 5) 특별공급 후보 탐색
+
+    /** 6) 신혼 부부 요건 */
+    private final MaritalStatus maritalStatus;
+    private final Integer marriageYears;
+    private final int childrenAge;
+
+    /** 7) 다자녀 요건 */
+    private final int minorChildrenCount;
+
+    /** 8) 노부모 부양 지원 */
+    private final boolean hasElderDependent;           // 65세 이상 직계존속 3년 이상 부양 여부
+
+    /** 9) 고령자 제한 */
 
     // 과거 당첨/재당첨 제한
     private final boolean wonBefore;
@@ -64,11 +67,9 @@ public class RuleContext {
     public static RuleContext from(DiagnosisRequest req) {
         return RuleContext.builder()
                 .age(req.getAge())
-                .householdHead(req.isHouseholdHead())
                 .homeless(req.isHomeless())
                 .familyCount(req.getFamilyCount())
                 .incomeRatio(req.getIncomeRatio())
-                .housePrice(req.getHousePrice())
                 .region(RegionCode.from(req.getRegion()))
                 .maritalStatus(req.getMaritalStatus())
                 .marriageYears(req.getMarriageYears())
@@ -84,7 +85,6 @@ public class RuleContext {
                 .localResident(req.isLocalResident())
                 .localResidencyMonths(req.getLocalResidencyMonths())
                 .wonBefore(req.isWonBefore())
-                .lastWinDate(req.getLastWinDate())
                 .build();
     }
 

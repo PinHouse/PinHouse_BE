@@ -7,7 +7,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Optional;
 
 /** 3) 청약통장 요건(가입기간/예치금/상품유형) */
 @Component
@@ -27,14 +26,27 @@ public class AccountRule implements Rule {
             return RuleResult.fail(code(), severity(), "청약통장 2년 이상 가입 필요", Map.of("accountYears", c.getAccountYears()));
         }
 
-        /// 청약통장 금액 기준이 존재한다면
-        long minDeposit = c.getPolicy().minDepositForHousePrice(Optional.ofNullable(c.getHousePrice()).orElse(0L), c.getRegion(), c.getAccountType());
+        /// 추천 가능한 주택 규모 계산
+        int recommendedSize = c.getPolicy().recommendHousingSize(c.getRegion(), c.getAccountType(), c.getAccountDeposit());
 
-        if (c.getAccountDeposit() < minDeposit) {
-            return RuleResult.fail(code(), severity(), "예치금 기준 미달", Map.of("requiredDeposit", minDeposit, "currentDeposit", c.getAccountDeposit()));
+        /// 최소 예치금 미달 시
+        if (recommendedSize == 0) {
+            return RuleResult.fail(
+                    code(),
+                    severity(),
+                    "예치금 기준 미달",
+                    Map.of("requiredDeposit", c.getAccountDeposit(), "currentDeposit", c.getAccountDeposit())
+            );
         }
 
-        return RuleResult.pass(code(), Severity.INFO, "청약통장 요건 충족", Map.of("deposit", c.getAccountDeposit()));
+        /// 예치금 이상이면 추천 주택 규모 포함
+        return RuleResult.pass(
+                code(),
+                Severity.INFO,
+                "청약통장 요건 충족 - 추천 주택 규모: " + recommendedSize + "㎡ 이하",
+                Map.of("deposit", c.getAccountDeposit(), "recommendedHousingSize", recommendedSize)
+        );
+
     }
 
     @Override public String code() {

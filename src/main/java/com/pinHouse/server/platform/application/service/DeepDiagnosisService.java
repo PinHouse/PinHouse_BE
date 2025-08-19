@@ -32,23 +32,23 @@ public class DeepDiagnosisService implements DiagnosisUseCase {
 
     @Override
     public DiagnosisResult diagnose(DiagnosisRequest request) {
-        // 0) 요청 → 도메인 변환 및 저장
+        /// 0) 요청 → 도메인 변환 및 저장
         Diagnosis domain = request.toDomain();
         port.saveDiagnosis(domain);
 
-        // 1) 컨텍스트 구성 (모든 계산/정책 접근의 허브)
+        /// 1) 컨텍스트 구성 (모든 계산/정책 접근의 허브)
         RuleContext ctx = RuleContext.from(request);
 
-        // 2) 규칙 체인 실행 (실패/경고/성공 사유 축적)
+        /// 2) 규칙 체인 실행 (실패/경고/성공 사유 축적)
         RuleExecutionSummary summary = ruleChain.evaluateAll(ctx);
         if (summary.isHardFailed()) {
             return DiagnosisResult.of(false, "불가", summary.primaryFailMessage());
         }
 
-        // 3) 공급유형 의사결정 (특별공급 후보군 → 적합도/우선순위 산정 → 최종 선택)
+        /// 3) 공급유형 의사결정 (특별공급 후보군 → 적합도/우선순위 산정 → 최종 선택)
         SupplyDecision decision = supplyDecisionEngine.decide(ctx, summary);
 
-        // 4) 결과 조립 (설명/사유/세부값 포함)
+        /// 4) 결과 조립 (설명/사유/세부값 포함)
         DiagnosisResult result = DiagnosisResult.of(
                 decision.isEligible(),
                 decision.getSupplyTypeCode(),
@@ -60,25 +60,3 @@ public class DeepDiagnosisService implements DiagnosisUseCase {
         return result;
     }
 }
-
-/*
-컨트롤러 응답 예시
-{
-  "eligible": true,
-  "supplyType": "YOUTH_SPECIAL",
-  "displayName": "청년 특별공급",
-  "score": 73,
-  "reasons": [
-    {"code":"BASE_ELIGIBILITY","message":"기초 자격 충족","pass":true,"severity":"INFO"},
-    {"code":"LOCAL_RESIDENCY","message":"지역 거주 요건 충족","pass":true,"severity":"INFO","data":{"months":14}},
-    {"code":"ACCOUNT_REQUIREMENT","message":"청약통장 요건 충족","pass":true,"severity":"INFO","data":{"deposit":1000000}},
-    {"code":"CANDIDATE_YOUTH_SPECIAL","message":"청년 특별공급 후보","pass":true,"severity":"INFO","data":{"incomeOk":true,"incomeMax":120.0}}
-  ],
-  "meta": {
-    "rankedCandidates": [
-      {"type":"YOUTH_SPECIAL","score":73},
-      {"type":"NEWCOUPLE_SPECIAL","score":66}
-    ]
-  }
-}
-*/

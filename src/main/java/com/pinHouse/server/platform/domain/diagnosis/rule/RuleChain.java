@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class RuleChain {
-    private final List<Rule> rules; // Spring이 @Component Rule들을 주입, @Order로 순서 제어
+    private final List<Rule> rules;
 
     public RuleExecutionSummary evaluateAll(RuleContext ctx) {
         RuleExecutionSummary summary = new RuleExecutionSummary();

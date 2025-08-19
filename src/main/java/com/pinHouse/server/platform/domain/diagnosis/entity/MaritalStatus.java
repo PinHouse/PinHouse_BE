@@ -12,7 +12,8 @@ public enum MaritalStatus {
     SINGLE("미혼"),
     MARRIED("기혼"),
     DIVORCED("이혼"),
-    WIDOWED("사별");
+    WIDOWED("사별"),
+    MINOR_PARENT("혼외자");
 
     private final String value;
 

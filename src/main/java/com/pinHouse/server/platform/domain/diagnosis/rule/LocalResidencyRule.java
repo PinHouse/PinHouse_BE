@@ -16,7 +16,10 @@ public class LocalResidencyRule implements Rule {
 
     @Override
     public RuleResult evaluate(RuleContext c) {
+
+        /// 해당 지역에 몇 년 거주해야되는지 존재
         int required = c.getPolicy().requiredLocalResidencyMonths(c.getRegion());
+
         if (!c.isLocalResident() || c.getLocalResidencyMonths() < required) {
             return RuleResult.fail(code(), severity(), "해당 지역 거주 요건 미충족",
                     Map.of("requiredMonths", required, "actual", c.getLocalResidencyMonths(), "localResident", c.isLocalResident()));

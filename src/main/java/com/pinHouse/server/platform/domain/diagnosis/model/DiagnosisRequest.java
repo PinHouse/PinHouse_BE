@@ -35,9 +35,6 @@ public class DiagnosisRequest {
     // 6. 특수 대상자 여부
     private boolean isSpecialTarget;             // 국가유공자, 장애인, 북한이탈주민 등 해당 여부
 
-    // [추가된 필드] - RuleContext 의존 필드 반영
-    private boolean householdHead;               // 세대주 여부
-    private Long housePrice;                      // 분양가/전세가 등
     private String region;                        // 거주 지역 코드 (예: "SUDO", "NON_SUDO")
     private Integer marriageYears;                // 혼인 기간(년)
     private boolean hasAccount;                   // 청약통장 보유 여부

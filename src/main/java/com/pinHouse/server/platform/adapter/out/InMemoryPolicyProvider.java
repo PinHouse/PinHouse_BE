@@ -12,16 +12,17 @@ public class InMemoryPolicyProvider implements PolicyProvider {
         /// 지역마다 거주 필요한 기간이 다르다.
         return region == RegionCode.SUDO ? 12 : 6;
     }
+
+
     public double maxIncomeRatio(SupplyType type, int familyCount) {
-        // Placeholder: 실제 표준은 DB/YAML로 관리 권장
         double base = switch (type) {
             case YOUTH_SPECIAL -> 100.0;
             case NEWCOUPLE_SPECIAL -> 120.0;
             case ELDER_SPECIAL, ELDER_SUPPORT_SPECIAL -> 100.0;
             case MULTICHILD_SPECIAL -> 130.0;
-            default -> 150.0; // 일반
+            default -> 150.0;
         };
-        // 가구원에 따른 보정(예시)
+
         return base + Math.max(0, familyCount - 3) * 5.0;
     }
 
@@ -39,25 +40,62 @@ public class InMemoryPolicyProvider implements PolicyProvider {
         return 19;
     }
 
+    /// 결혼 여부는 7년으로 지정
     public int newlyMarriedMaxYears() {
         return 7;
+    }
+
+    public int marriedYouthAgeMin() {
+        return 6;
     }
 
     public int elderAgeMin() {
         return 65;
     }
 
-    public long minDepositForHousePrice(long housePrice, RegionCode region, AccountType accountType) {
+    public int recommendHousingSize(RegionCode region, AccountType accountType, long deposit) {
 
-        // 예치금 테이블은 실제로는 지역/면적별 구간으로 관리됨 — 단순화 예시
+        // 국민주택 청약저축은 85㎡ 이하만 가능
+        if (accountType == AccountType.SAVING) {
+            return 85;
+        }
 
-        if (housePrice <= 200_000_000L) return 200_000L;
+        // 지역별 최소 예치금 기준
+        int[][] regionLimits; // 각 행: [85㎡, 102㎡, 135㎡, 기타]
 
-        if (housePrice <= 400_000_000L) return 400_000L;
+        switch (region) {
+            case SEOUL:
+            case INCHEON:
+            case GYEONGGI:
+            case BUSAN:
+                regionLimits = new int[][] { {85, 3_000_000}, {102, 6_000_000}, {135, 10_000_000}, {Integer.MAX_VALUE, 15_000_000} };
+                break;
+            case DAEGU:
+            case GWANGJU:
+            case DAEJEON:
+            case ULSAN:
+                regionLimits = new int[][] { {85, 2_500_000}, {102, 4_000_000}, {135, 7_000_000}, {Integer.MAX_VALUE, 10_000_000} };
+                break;
+            default:
+                regionLimits = new int[][] { {85, 2_000_000}, {102, 3_000_000}, {135, 4_000_000}, {Integer.MAX_VALUE, 5_000_000} };
+        }
 
-        return 1_000_000L;
+        // 예치금으로 가능한 최대 주택 규모 찾기
+        int recommendedSize = 0;
+        for (int[] limit : regionLimits) {
+            int size = limit[0];
+            int minDeposit = limit[1];
+            if (deposit >= minDeposit) {
+                recommendedSize = size;
+            } else {
+                break;
+            }
+        }
 
+        return recommendedSize;
     }
+
+
 
     public int reApplyBanMonths() {
         return 24;
