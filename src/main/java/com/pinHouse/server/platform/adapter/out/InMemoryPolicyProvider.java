@@ -10,7 +10,7 @@ public class InMemoryPolicyProvider implements PolicyProvider {
     public int requiredLocalResidencyMonths(RegionCode region) {
 
         /// 지역마다 거주 필요한 기간이 다르다.
-        return region == RegionCode.SUDO ? 12 : 6;
+        return region == RegionCode.NON_SUDO ? 6 : 12;
     }
 
 

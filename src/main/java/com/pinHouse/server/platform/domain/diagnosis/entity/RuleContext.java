@@ -21,6 +21,7 @@ public class RuleContext {
     /** 1) 기초 자격: 나이 + 무주택 */
     private final int age;                             // 나이
     private final boolean homeless;                    // 무주택 여부
+    private final int familyCount;                     // 가구원수(세대원)
 
     /** 2) 지역 거주 요건 */
     private final RegionCode region;                   // 거주지역/해당지역 내 여부
@@ -38,10 +39,11 @@ public class RuleContext {
     private final long financialAsset;                 // 금융자산
     private final long carValue;                       // 자동차가액
 
-    private final int familyCount;                     // 가구원수(세대원)
     private final double incomeRatio;                  // 도시근로자 대비 소득비율(%)
 
-    /** 5) 특별공급 후보 탐색
+    /** 5) 특수공급 (미성년자/한부모) 요건*/
+    private final boolean isHouseholdHead;
+    private final boolean isSingleParent;
 
     /** 6) 신혼 부부 요건 */
     private final MaritalStatus maritalStatus;

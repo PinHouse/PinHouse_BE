@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.application.service;
 
+import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 
 import java.util.List;
