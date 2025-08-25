@@ -5,7 +5,6 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Builder
 public class DiagnosisQuestion {
