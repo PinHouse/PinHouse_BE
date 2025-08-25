@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.application.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -10,7 +11,7 @@ public enum SubscriptionAccount {
 
     private final String value;
 
-    @JsonIgnore
+    @JsonValue
     public String getValue() {
         return value;
     }

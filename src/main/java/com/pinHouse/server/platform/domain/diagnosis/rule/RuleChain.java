@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +16,22 @@ import java.util.List;
 public class RuleChain {
     private final List<Rule> rules;
 
-    public RuleExecutionSummary evaluateAll(Diagnosis ctx) {
+    public RuleExecutionSummary evaluateAll(Diagnosis diagnosis) {
+        EvaluationContext context = new EvaluationContext(diagnosis);
         RuleExecutionSummary summary = new RuleExecutionSummary();
-        log.info("RuleChain rules size: " + rules.size());
 
         for (Rule rule : rules) {
-            RuleResult r = rule.evaluate(ctx);
-            summary.add(r);
+            RuleResult result = rule.evaluate(context); // 자신만 평가
+            context.addResult(result);                   // 최신 후보 업데이트
+            summary.add(result);
 
-            /// HARD_FAIL 이면, 진단을 바로 종료
-            if (!r.pass() && rule.severity() == Severity.HARD_FAIL) {
+            // HARD_FAIL이면 즉시 종료
+            if (!result.pass() && result.severity() == Severity.HARD_FAIL) {
                 break;
             }
         }
+
         return summary;
     }
+
 }

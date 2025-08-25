@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
@@ -17,7 +18,9 @@ import java.util.List;
 public class BaseEligibilityRule implements Rule {
 
     @Override
-    public RuleResult evaluate(Diagnosis c) {
+    public RuleResult evaluate(EvaluationContext ctx) {
+
+        Diagnosis c = ctx.getDiagnosis();
 
         /// 주택 소유 여부
         boolean hasHousehold = c.isHasHousehold();

@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RentalType;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,38 +25,28 @@ public class AccountRule implements Rule {
     );
 
     @Override
-    public RuleResult evaluate(Diagnosis c) {
+    public RuleResult evaluate(EvaluationContext ctx) {
 
-        /// 청약 통장이 없다면
+        Diagnosis c = ctx.getDiagnosis();
+        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
+
+        // 청약통장 미보유
         if (!c.isHasAccount()) {
-            return RuleResult.fail(code(), Severity.INFO, "청약통장 미보유", Map.of());
+            return RuleResult.fail(code(), severity(),
+                    "청약통장 미보유",
+                    Map.of("candidate", candidates));
         }
 
-        /// 청약 통장의 기간이 짧다면
-        if (c.getAccountYears().) {
-            return RuleResult.fail(code(), severity(), "청약통장 2년 이상 가입 필요", Map.of("accountYears", c.getAccountYears()));
+        // 가입 기간 체크
+        if (c.getAccountYears().getYears() < 2) {
+            return RuleResult.fail(code(), severity(),
+                    "청약통장 2년 이상 가입 필요",
+                    Map.of("accountYears", c.getAccountYears()));
         }
 
-        /// 추천 가능한 주택 규모 계산
-        int recommendedSize = c.getPolicy().recommendHousingSize(c.getRegion(), c.getAccount(), c.getAccountDeposit());
+        // 조건 통과
+        return RuleResult.pass(code(), Severity.INFO, "청약통장 요건 충족", Map.of("accountYears", c.getAccountYears()));
 
-        /// 최소 예치금 미달 시
-        if (recommendedSize == 0) {
-            return RuleResult.fail(
-                    code(),
-                    severity(),
-                    "예치금 기준 미달",
-                    Map.of("requiredDeposit", c.getAccountDeposit(), "currentDeposit", c.getAccountDeposit())
-            );
-        }
-
-        /// 예치금 이상이면 추천 주택 규모 포함
-        return RuleResult.pass(
-                code(),
-                Severity.INFO,
-                "청약통장 요건 충족 - 추천 주택 규모: " + recommendedSize + "㎡ 이하",
-                Map.of("deposit", c.getAccountDeposit(), "recommendedHousingSize", recommendedSize)
-        );
 
     }
 

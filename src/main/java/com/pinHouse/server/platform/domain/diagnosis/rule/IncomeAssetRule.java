@@ -1,41 +1,51 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.List;
 /** 10) 가능한 후보에서 소득/자산 한번에 체크 총량 요건 */
 @Component
 @Order(10)
 public class IncomeAssetRule implements Rule {
 
     @Override
-    public RuleResult evaluate(Diagnosis c) {
+    public RuleResult evaluate(EvaluationContext ctx) {
 
-        /// 자산 기준
-        double maxIncomeGeneral = c.getPolicy().maxIncomeRatio(SupplyType.GENERAL, c.getFamilyCount());
+        Diagnosis c = ctx.getDiagnosis();
+        /// 이전 후보들 가져오기
+        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        if (c.getIncomeRatio() > maxIncomeGeneral) {
-            return RuleResult.fail(code(), severity(), "소득 기준 초과(일반공급 상한)", Map.of("max", maxIncomeGeneral, "actual", c.getIncomeRatio()));
+
+        List<SupplyType> eligible = candidates.stream()
+                .filter(supply -> {
+                    double maxIncome = c.getPolicy().maxIncomeRatio(supply, c.getFamilyCount());
+                    long maxAsset = c.getPolicy().maxFinancialAsset(supply, c.getFamilyCount());
+                    long maxCar = c.getPolicy().maxCarValue(supply);
+
+                    return c.getIncomeLevel().getPercent() <= maxIncome &&
+                            c.getFinancialAsset() <= maxAsset &&
+                            c.getCarValue() <= maxCar;
+                })
+                .toList();
+
+
+        /// 충족되는 자산이 아니라면,
+        if (eligible.isEmpty()) {
+            return RuleResult.fail(code(), Severity.HARD_FAIL, "소득/자산 기준 미충족",
+                    Map.of("candidate", candidates));
         }
-        long maxAsset = c.getPolicy().maxFinancialAsset(SupplyType.GENERAL, c.getFamilyCount());
 
-        /// 금융 자산
-        if (c.getFinancialAsset() > maxAsset) {
-            return RuleResult.fail(code(), severity(), "금융자산 기준 초과", Map.of("max", maxAsset, "actual", c.getFinancialAsset()));
-        }
-
-        /// 자동차 자산 (대학생 계층의 경우, 자동차 자산은 아예 있으면 안된다.)
-        if (c.getCarValue() > c.getPolicy().maxCarValue(SupplyType.GENERAL)) {
-            return RuleResult.fail(code(), severity(), "자동차가액 기준 초과", Map.of("max", c.getPolicy().maxCarValue(SupplyType.GENERAL), "actual", c.getCarValue()));
-        }
-
-        return RuleResult.pass(code(), Severity.INFO, "소득/자산 요건 충족", null);
+        /// 가능한 결과 리턴
+        return RuleResult.pass(code(), Severity.INFO, "소득/자산 요건 충족 후보",
+                Map.of("candidate", eligible));
     }
 
     @Override public String code() {

@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /** 9) 고령자 제한 */
@@ -15,17 +17,28 @@ import java.util.Map;
 public class ElderCandidateRule implements Rule {
 
     @Override
-    public RuleResult evaluate(Diagnosis c) {
+    public RuleResult evaluate(EvaluationContext ctx) {
+
+        Diagnosis c = ctx.getDiagnosis();
+        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
+
 
         /// 나이가 고령자 제한이 되는지 체크
         if (c.getAge() >= c.getPolicy().elderAgeMin()) {
 
+            /// 없었다면 추가 (예외처리)
+            if (!candidates.contains(SupplyType.ELDER_SPECIAL)) {
+                candidates.add(SupplyType.ELDER_SPECIAL);
+            }
+
             /// 나이가 고령자이기에 후보로 지정
             return RuleResult.pass(code(), severity(), "고령자 특별공급 후보",
-                    Map.of("candidate", SupplyType.ELDER_SPECIAL));
+                    Map.of("candidate", candidates));
         }
+        /// 나이가 안되기에 삭제
+        candidates.remove(SupplyType.ELDER_SPECIAL);
 
-        return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
+        return RuleResult.pass(code(), severity(), "고령자 해당 없음", Map.of("candidate", candidates));
     }
 
     @Override public String code() {

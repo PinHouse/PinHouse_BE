@@ -26,7 +26,6 @@ public enum IncomeLevel {
         return value;
     }
 
-    @JsonValue
     public int getPercent() {
         return percent;
     }

@@ -12,6 +12,9 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+
 /**
  * 마이홈포털 수준의 깊이로 확장한 청약 진단 엔진 예시
  *
@@ -39,32 +42,18 @@ public class DeepDiagnosisService implements DiagnosisUseCase {
 
     /// 진단하기
     @Override
-    public DiagnosisResult diagnose(DiagnosisRequest request) {
-        /// 0) 요청 → 도메인 변환 및 저장
+    public List<RuleResult> diagnose(DiagnosisRequest request) {
+        // 0) 요청 → 도메인 변환 및 저장
         Diagnosis domain = request.toDomain();
-        port.saveDiagnosis(domain);
+        Diagnosis ctx = port.saveDiagnosis(domain);
 
-        /// 1) 컨텍스트 구성 (모든 계산/정책 접근의 허브)
-        Diagnosis ctx = Diagnosis.from(request);
-
-        /// 2) 규칙 체인 실행 (실패/경고/성공 사유 축적)
+        // 1) 규칙 체인 실행
         RuleExecutionSummary summary = ruleChain.evaluateAll(ctx);
-        if (summary.isHardFailed()) {
-            return DiagnosisResult.of(false, "불가", summary.primaryFailMessage());
-        }
 
-        /// 3) 공급유형 의사결정 (특별공급 후보군 → 적합도/우선순위 산정 → 최종 선택)
-        SupplyDecision decision = supplyDecisionEngine.decide(ctx, summary);
-
-        /// 4) 결과 조립 (설명/사유/세부값 포함)
-        DiagnosisResult result = DiagnosisResult.of(
-                decision.isEligible(),
-                decision.getSupplyTypeCode(),
-                decision.getDisplayName()
-        );
-        result.addReasons(summary.toReasons());
-        result.addScore(decision.getScore());
-        result.addMeta(decision.getMeta());
-        return result;
+        // 2) 강제 실패 체크 없이 summary 결과 그대로 반환
+        return summary.getResults(); // List<RuleResult>
     }
+
+
+
 }

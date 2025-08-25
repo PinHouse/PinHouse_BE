@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.model.EvaluationContext;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.pinHouse.server.platform.domain.diagnosis.entity.FamilySituation.SUPPORTING_ELDERLY;
@@ -17,18 +19,26 @@ import static com.pinHouse.server.platform.domain.diagnosis.entity.FamilySituati
 public class ElderSupportCandidateRule implements Rule {
 
     @Override
-    public RuleResult evaluate(Diagnosis c) {
+    public RuleResult evaluate(EvaluationContext ctx) {
+
+        Diagnosis c = ctx.getDiagnosis();
+        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
         /// 노부모가 있는지 체크
         if (c.getFamilySituation().equals(SUPPORTING_ELDERLY)) {
 
+            /// 없었다면 추가
+            if (!candidates.contains(SupplyType.ELDER_SUPPORT_SPECIAL)) {
+                candidates.add(SupplyType.ELDER_SUPPORT_SPECIAL);
+            }
+
             /// 조건 충족으로 넘어간다.
             return RuleResult.pass(code(), severity(), "노부모 부양 특별공급 후보",
-                    Map.of("candidate", SupplyType.ELDER_SUPPORT_SPECIAL));
+                    Map.of("candidate", candidates));
         }
 
         /// 조건이 없으므로 넘어간다.
-        return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
+        return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", candidates));
     }
 
     @Override public String code() {
