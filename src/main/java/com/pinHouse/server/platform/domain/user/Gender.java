@@ -10,10 +10,7 @@ public enum Gender {
     Male("M"),
 
     @JsonProperty("여성")
-    Female("F"),
-
-    @JsonProperty("기타")
-    Other("U");
+    Female("F");
 
     private final String value;
 

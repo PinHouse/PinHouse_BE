@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.domain.diagnosis.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public enum SubscriptionPaymentCount {
 
     private final String description;
 
-    @JsonIgnore
+    @JsonValue
     public String getDescription() {
         return description;
     }

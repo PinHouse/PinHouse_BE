@@ -27,7 +27,7 @@ public class AccountRule implements Rule {
         }
 
         /// 추천 가능한 주택 규모 계산
-        int recommendedSize = c.getPolicy().recommendHousingSize(c.getRegion(), c.getAccountType(), c.getAccountDeposit());
+        int recommendedSize = c.getPolicy().recommendHousingSize(c.getRegion(), c.getAccount(), c.getAccountDeposit());
 
         /// 최소 예치금 미달 시
         if (recommendedSize == 0) {
