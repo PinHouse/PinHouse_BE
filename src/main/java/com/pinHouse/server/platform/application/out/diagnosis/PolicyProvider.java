@@ -3,10 +3,11 @@ package com.pinHouse.server.platform.application.out.diagnosis;
 import com.pinHouse.server.platform.application.service.SubscriptionAccount;
 import com.pinHouse.server.platform.application.service.RegionCode;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
+import com.pinHouse.server.platform.domain.region.Region;
 
 public interface PolicyProvider {
 
-    int requiredLocalResidencyMonths(RegionCode region);
+    int requiredLocalResidencyMonths(Region region);
 
     double maxIncomeRatio(SupplyType type, int familyCount);
 

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-/** 4) 소득/자산 총량 요건(공급유형 공통 상한) */
+/** 10) 가능한 후보에서 소득/자산 한번에 체크 총량 요건 */
 @Component
-@Order(4)
+@Order(10)
 public class IncomeAssetRule implements Rule {
 
     @Override
@@ -19,6 +19,7 @@ public class IncomeAssetRule implements Rule {
 
         /// 자산 기준
         double maxIncomeGeneral = c.getPolicy().maxIncomeRatio(SupplyType.GENERAL, c.getFamilyCount());
+
         if (c.getIncomeRatio() > maxIncomeGeneral) {
             return RuleResult.fail(code(), severity(), "소득 기준 초과(일반공급 상한)", Map.of("max", maxIncomeGeneral, "actual", c.getIncomeRatio()));
         }

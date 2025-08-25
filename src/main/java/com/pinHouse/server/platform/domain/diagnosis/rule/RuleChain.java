@@ -22,8 +22,9 @@ public class RuleChain {
         for (Rule rule : rules) {
             RuleResult r = rule.evaluate(ctx);
             summary.add(r);
+
+            /// HARD_FAIL 이면, 진단을 바로 종료
             if (!r.pass() && rule.severity() == Severity.HARD_FAIL) {
-                // 하드 실패면 즉시 중단
                 break;
             }
         }

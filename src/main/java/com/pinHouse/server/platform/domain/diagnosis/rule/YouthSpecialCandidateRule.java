@@ -23,20 +23,19 @@ public class YouthSpecialCandidateRule implements Rule {
         boolean ageOk = c.getAge() <= c.getPolicy().youthAgeMin();
 
         /// 결혼한 미성년자일때
-        boolean maritalOk = c.getMaritalStatus() == MaritalStatus.MINOR_PARENT;
+        boolean isMarried = c.isMaritalStatus();
 
-        if (ageOk && maritalOk) {
+        if (ageOk && isMarried) {
 
-            /// 소득 기준 체크
-            double max = c.getPolicy().maxIncomeRatio(SupplyType.YOUTH_SPECIAL, c.getFamilyCount());
-            boolean incomeOk = c.getIncomeRatio() <= max;
-            Map<String,Object> det = new HashMap<>();
-            det.put("candidate", SupplyType.YOUTH_SPECIAL.name());
-            det.put("incomeOk", incomeOk);
-            det.put("incomeMax", max);
-            return RuleResult.pass(code(), severity(), incomeOk ? "미성년자 특별공급 후보" : "미성년자 특별공급: 소득 기준 초과", det);
+            /// 미성년자 특별공급 후보
+            return RuleResult.pass(code(),
+                    severity(), "미성년자 특별공급 후보",
+                    Map.of("candidate", SupplyType.YOUTH_SPECIAL.name()));
         }
-        return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
+
+        return RuleResult.pass(code(),
+                severity(), "해당 없음",
+                Map.of("candidate", false));
     }
 
     @Override public String code() {

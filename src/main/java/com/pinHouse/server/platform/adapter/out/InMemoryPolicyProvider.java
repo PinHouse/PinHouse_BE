@@ -4,15 +4,23 @@ import com.pinHouse.server.platform.application.out.diagnosis.PolicyProvider;
 import com.pinHouse.server.platform.application.service.SubscriptionAccount;
 import com.pinHouse.server.platform.application.service.RegionCode;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
+import com.pinHouse.server.platform.domain.region.Region;
+
+import java.util.Map;
 
 public class InMemoryPolicyProvider implements PolicyProvider {
 
-    public int requiredLocalResidencyMonths(RegionCode region) {
+    /// 예시
+    private final Map<String, Integer> regionResidencyMap = Map.of(
+            "A001", 24
+    );
 
-        /// 지역마다 거주 필요한 기간이 다르다.
-        return region == RegionCode.NON_SUDO ? 6 : 12;
+
+    @Override
+    public int requiredLocalResidencyMonths(Region region) {
+        // 기본 12개월
+        return regionResidencyMap.getOrDefault(region.getCode(), 6);
     }
-
 
     public double maxIncomeRatio(SupplyType type, int familyCount) {
         double base = switch (type) {

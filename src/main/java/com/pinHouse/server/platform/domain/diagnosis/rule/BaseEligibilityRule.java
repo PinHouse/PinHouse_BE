@@ -19,9 +19,15 @@ public class BaseEligibilityRule implements Rule {
     @Override
     public RuleResult evaluate(Diagnosis c) {
 
-        /// 무주택 요건
-        if (!c.isHomeless()) {
-            return RuleResult.fail(code(), severity(), "무주택자가 아니므로 신청 불가", Map.of("homeless", c.isHomeless()));
+        /// 주택 소유 여부
+        boolean hasHousehold = c.isHasHousehold();
+        if (hasHousehold) {
+            return RuleResult.fail(
+                    code(),
+                    Severity.HARD_FAIL,
+                    "주택 소유",
+                    Map.of("household", hasHousehold)
+            );
         }
 
         /// 나이에 따른 추천 유형 매핑
@@ -57,8 +63,8 @@ public class BaseEligibilityRule implements Rule {
         return RuleResult.pass(
                 code(),
                 Severity.INFO,
-                "기초 자격 충족, 추천 공급유형 있음",
-                Map.of("recommendedSupplyTypes", recommended)
+                "나이별 추천 타입 후보",
+                Map.of("candidate", recommended)
         );
     }
 

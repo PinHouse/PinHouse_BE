@@ -5,7 +5,6 @@ import com.pinHouse.server.platform.adapter.out.InMemoryPolicyProvider;
 import com.pinHouse.server.platform.application.out.diagnosis.PolicyProvider;
 import com.pinHouse.server.platform.application.out.diagnosis.ScoreCalculator;
 import com.pinHouse.server.platform.application.service.*;
-import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisRequest;
 import com.pinHouse.server.platform.domain.region.Region;
 import com.pinHouse.server.platform.domain.user.Gender;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ public class Diagnosis {
     private final int age;                                           // 나이
 
     /** 3-4) 지역 거주 요건 */
-    private final RegionCode region;                                 // 거주지역/해당지역 내 여부
+    private final Region region;                                     // 거주지역/해당지역 내 여부
     private final int localResidencyMonths;                          // 거주기간(월)
 
     /** 7-10) 청약통장 요건(가입기간/예치금/상품유형) */
@@ -58,6 +57,7 @@ public class Diagnosis {
     /** 16-17) 세대 관련 정보 */
     private final boolean isHouseholdHead;                             // 세대원, 세대주
     private final boolean isSingle;                                    // 1인 가구 여부
+    private final boolean hasHousehold;                                // 주택 소유 여부
     private final int fetusCount;                                      // 태아 가구수
     private final int minorCount;                                      // 미성년자 가구수
     private final int adultCount;                                      // 성인 가구수
@@ -77,30 +77,10 @@ public class Diagnosis {
     private final long financialAsset;                                 // 금융자산
 
     // 정책/계산기 접근자
-    @Builder.Default private final PolicyProvider policy = new InMemoryPolicyProvider();
-    @Builder.Default private final ScoreCalculator scoreCalculator = new DefaultScoreCalculator();
+    @Builder.Default
+    private final PolicyProvider policy = new InMemoryPolicyProvider();
 
-    public static Diagnosis from(DiagnosisRequest req) {
-        return Diagnosis.builder()
-                .age(req.getAge())
-                .homeless(req.isHomeless())
-                .familyCount(req.getFamilyCount())
-                .incomeRatio(req.getIncomeRatio())
-                .region(RegionCode.from(req.getRegion()))
-                .maritalStatus(req.isMaritalStatus())
-                .marriageYears(req.getMarriageYears())
-                .minorChildrenCount(req.getMinorChildrenCount())
-                .hasElderDependent(req.isHasElderDependent())
-                .hasAccount(req.isHasAccount())
-                .accountYears(req.getAccountYears())
-                .accountDeposit(req.getAccountDeposit())
-                .account(SubscriptionAccount.from(req.getAccountType()))
-                .propertyAsset(req.getPropertyAsset())
-                .financialAsset(req.getFinancialAsset())
-                .carValue(req.getCarValue())
-                .localResident(req.isLocalResident())
-                .localResidencyMonths(req.getLocalResidencyMonths())
-                .wonBefore(req.isWonBefore())
-                .build();
-    }
+    @Builder.Default
+    private final ScoreCalculator scoreCalculator = new DefaultScoreCalculator();
+
 }

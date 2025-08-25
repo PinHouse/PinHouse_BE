@@ -17,15 +17,15 @@ public class MultiChildCandidateRule implements Rule {
     @Override
     public RuleResult evaluate(Diagnosis c) {
 
-        /// 자녀가 3명 이상이라면
+        /// 자녀가 3명 이상이라면 후보 제공
         if (c.getMinorChildrenCount() >= 3) {
-            double max = c.getPolicy().maxIncomeRatio(SupplyType.MULTICHILD_SPECIAL, c.getFamilyCount());
 
-            /// 자산 기준을 넘지 않는다면
-            boolean incomeOk = c.getIncomeRatio() <= max;
-            return RuleResult.pass(code(), severity(), incomeOk ? "다자녀 특별공급 후보" : "다자녀: 소득 기준 초과",
-                    Map.of("candidate", SupplyType.MULTICHILD_SPECIAL.name(), "incomeOk", incomeOk, "incomeMax", max));
+            return RuleResult.pass(code(),
+                    severity(),
+                    "다자녀 특별공급 후보",
+                    Map.of("candidate", SupplyType.MULTICHILD_SPECIAL));
         }
+
         return RuleResult.pass(code(), severity(), "해당 없음", Map.of("candidate", false));
     }
 
