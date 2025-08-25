@@ -2,10 +2,11 @@ package com.pinHouse.server.platform.application.service;
 
 import com.pinHouse.server.platform.application.in.diagnosis.DiagnosisUseCase;
 import com.pinHouse.server.platform.application.out.diagnosis.DiagnosisPort;
+import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisQuestion;
+import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisType;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleChain;
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
-import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
+import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 import com.pinHouse.server.platform.domain.diagnosis.model.*;
 import lombok.*;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,13 @@ public class DeepDiagnosisService implements DiagnosisUseCase {
     private final RuleChain ruleChain;
     private final SupplyDecisionEngine supplyDecisionEngine;
 
+    /// 질문 받기
+    @Override
+    public DiagnosisQuestion getDiagnose(DiagnosisType type) {
+        return null;
+    }
+
+    /// 진단하기
     @Override
     public DiagnosisResult diagnose(DiagnosisRequest request) {
         /// 0) 요청 → 도메인 변환 및 저장
@@ -37,7 +45,7 @@ public class DeepDiagnosisService implements DiagnosisUseCase {
         port.saveDiagnosis(domain);
 
         /// 1) 컨텍스트 구성 (모든 계산/정책 접근의 허브)
-        RuleContext ctx = RuleContext.from(request);
+        Diagnosis ctx = Diagnosis.from(request);
 
         /// 2) 규칙 체인 실행 (실패/경고/성공 사유 축적)
         RuleExecutionSummary summary = ruleChain.evaluateAll(ctx);

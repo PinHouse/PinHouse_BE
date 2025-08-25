@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class YouthSpecialCandidateRule implements Rule {
 
     @Override
-    public RuleResult evaluate(RuleContext c) {
+    public RuleResult evaluate(Diagnosis c) {
 
         /// 미성년자 전용 주택 공급
         boolean ageOk = c.getAge() <= c.getPolicy().youthAgeMin();

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class NewlyMarriedCandidateRule implements Rule {
 
     @Override
-    public RuleResult evaluate(RuleContext c) {
+    public RuleResult evaluate(Diagnosis c) {
 
 
 

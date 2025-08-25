@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.application.out.diagnosis;
 
-import com.pinHouse.server.platform.application.service.AccountType;
+import com.pinHouse.server.platform.application.service.SubscriptionAccount;
 import com.pinHouse.server.platform.application.service.RegionCode;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 
@@ -24,7 +24,7 @@ public interface PolicyProvider {
 
     int elderAgeMin();
 
-    int recommendHousingSize(RegionCode region, AccountType accountType, long deposit);
+    int recommendHousingSize(RegionCode region, SubscriptionAccount subscriptionAccount, long deposit);
 
     int reApplyBanMonths();
 }

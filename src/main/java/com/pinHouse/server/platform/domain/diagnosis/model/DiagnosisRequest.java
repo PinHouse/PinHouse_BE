@@ -1,7 +1,8 @@
 package com.pinHouse.server.platform.domain.diagnosis.model;
 
 import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
-import com.pinHouse.server.platform.domain.diagnosis.entity.MaritalStatus;
+import com.pinHouse.server.platform.domain.diagnosis.entity.SubscriptionPaymentCount;
+import com.pinHouse.server.platform.domain.diagnosis.entity.SubscriptionPeriod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class DiagnosisRequest {
 
     // 4. 연령 및 혼인 상태
     private int age;                             // 만 나이
-    private MaritalStatus maritalStatus;        // 혼인 상태(enum)
+    private boolean maritalStatus;        // 혼인 상태(enum)
 
     // 5. 부양가족 유무
     private int minorChildrenCount;              // 미성년 자녀 수
@@ -38,8 +39,9 @@ public class DiagnosisRequest {
     private String region;                        // 거주 지역 코드 (예: "SUDO", "NON_SUDO")
     private Integer marriageYears;                // 혼인 기간(년)
     private boolean hasAccount;                   // 청약통장 보유 여부
-    private int accountYears;                     // 청약통장 가입 기간(년)
-    private long accountDeposit;                  // 청약통장 예치금(원)
+    private SubscriptionPeriod accountYears;                     // 청약통장 가입 기간(년)
+    private SubscriptionPaymentCount accountDeposit;                  // 청약통장 예치금(원)
+
     private String accountType;                   // 청약통장 상품 타입 (예: "SAVING", "DEPOSIT", "INSTALLMENT")
     private boolean localResident;                // 해당 주택 건설지역 내 거주 여부
     private int localResidencyMonths;             // 해당 지역 거주 기간(월)

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.adapter.out;
 
 import com.pinHouse.server.platform.application.out.diagnosis.PolicyProvider;
-import com.pinHouse.server.platform.application.service.AccountType;
+import com.pinHouse.server.platform.application.service.SubscriptionAccount;
 import com.pinHouse.server.platform.application.service.RegionCode;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 
@@ -53,10 +53,10 @@ public class InMemoryPolicyProvider implements PolicyProvider {
         return 65;
     }
 
-    public int recommendHousingSize(RegionCode region, AccountType accountType, long deposit) {
+    public int recommendHousingSize(RegionCode region, SubscriptionAccount subscriptionAccount, long deposit) {
 
         // 국민주택 청약저축은 85㎡ 이하만 가능
-        if (accountType == AccountType.SAVING) {
+        if (subscriptionAccount == SubscriptionAccount.UPPER_600) {
             return 85;
         }
 

@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.domain.diagnosis.entity;
+package com.pinHouse.server.platform.domain.region;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import org.springframework.core.annotation.Order;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class AccountRule implements Rule {
 
     @Override
-    public RuleResult evaluate(RuleContext c) {
+    public RuleResult evaluate(Diagnosis c) {
 
         /// 청약 통장이 없다면
         if (!c.isHasAccount()) {

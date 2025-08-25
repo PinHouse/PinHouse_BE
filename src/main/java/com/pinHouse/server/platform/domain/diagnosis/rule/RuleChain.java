@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 public class RuleChain {
     private final List<Rule> rules;
 
-    public RuleExecutionSummary evaluateAll(RuleContext ctx) {
+    public RuleExecutionSummary evaluateAll(Diagnosis ctx) {
         RuleExecutionSummary summary = new RuleExecutionSummary();
         log.info("RuleChain rules size: " + rules.size());
 

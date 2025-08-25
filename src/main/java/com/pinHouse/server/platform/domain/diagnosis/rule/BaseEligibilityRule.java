@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.domain.diagnosis.rule;
 
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.platform.domain.diagnosis.model.Severity;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
@@ -17,7 +17,7 @@ import java.util.List;
 public class BaseEligibilityRule implements Rule {
 
     @Override
-    public RuleResult evaluate(RuleContext c) {
+    public RuleResult evaluate(Diagnosis c) {
 
         /// 무주택 요건
         if (!c.isHomeless()) {

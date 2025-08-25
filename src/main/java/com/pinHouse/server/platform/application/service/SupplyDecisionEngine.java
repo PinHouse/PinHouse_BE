@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.application.service;
 
-import com.pinHouse.server.platform.domain.diagnosis.entity.RuleContext;
+import com.pinHouse.server.platform.domain.diagnosis.entity.Diagnosis;
 import com.pinHouse.server.platform.domain.diagnosis.model.SupplyType;
 import com.pinHouse.server.platform.domain.diagnosis.rule.RuleExecutionSummary;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class SupplyDecisionEngine {
     private final CandidateExtractor extractor = new CandidateExtractor();
 
-    public SupplyDecision decide(RuleContext ctx, RuleExecutionSummary summary) {
+    public SupplyDecision decide(Diagnosis ctx, RuleExecutionSummary summary) {
         // 1) 후보군 뽑기
         List<Candidate> candidates = extractor.extract(summary);
 
@@ -38,12 +38,12 @@ public class SupplyDecisionEngine {
         return new SupplyDecision(true, SupplyType.GENERAL.name(), "일반공급", gScore, Map.of("generalScore", gScore));
     }
 
-    private int generalScore(RuleContext c) {
+    private int generalScore(Diagnosis c) {
         int homelessYears = Math.max(0, (c.getAge() - 20)); // 단순 추정치(실제는 무주택 기간 보유 필요)
         return c.getScoreCalculator().total(new ScoreInput(homelessYears, c.getFamilyCount(), c.getAccountYears()));
     }
 
-    private ScoredCandidate score(RuleContext c, Candidate candidate) {
+    private ScoredCandidate score(Diagnosis c, Candidate candidate) {
         int base = switch (candidate.type()) {
             case YOUTH_SPECIAL -> 20;
             case NEWCOUPLE_SPECIAL -> 18;
