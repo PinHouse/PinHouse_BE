@@ -16,6 +16,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Diagnosis {
 
+    private Long id;
+
+    private Long userId;
+
     /** 1) 기초 자격: 성별 */
     private Gender gender;                                           // 성별
 
@@ -23,7 +27,7 @@ public class Diagnosis {
     private final int age;                                           // 나이
 
     /** 3-4) 지역 거주 요건 */
-    private final Region region;                                     // 거주지역/해당지역 내 여부
+    private final String region;                                     // 거주지역/해당지역 내 여부
     private final int localResidencyMonths;                          // 거주기간(월)
 
     /** 7-10) 청약통장 요건(가입기간/예치금/상품유형) */
@@ -47,7 +51,7 @@ public class Diagnosis {
 
     /** 14) 대학생 요건*/
     private final EducationStatus educationStatus;                     // 학생 정보
-    private final Region schoolRegion;                                 // 대학 소재지
+    private final String schoolRegion;                                 // 대학 소재지
     private final boolean hasCar;                                      // 자동차 소유 여부
     private final long carValue;                                       // 자동차 가격
 

@@ -10,16 +10,14 @@ import java.util.Map;
 
 public class InMemoryPolicyProvider implements PolicyProvider {
 
-    /// 예시
     private final Map<String, Integer> regionResidencyMap = Map.of(
             "A001", 24
     );
 
-
     @Override
     public int requiredLocalResidencyMonths(Region region) {
         // 기본 12개월
-        return regionResidencyMap.getOrDefault(region.getCode(), 6);
+        return regionResidencyMap.getOrDefault(region.getCode(), 12);
     }
 
     public double maxIncomeRatio(SupplyType type, int familyCount) {

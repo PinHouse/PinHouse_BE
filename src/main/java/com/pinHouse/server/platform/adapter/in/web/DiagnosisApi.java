@@ -4,15 +4,16 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisQuestion;
 import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisType;
 import com.pinHouse.server.platform.adapter.in.web.dto.request.DiagnosisRequestDTO;
-import com.pinHouse.server.platform.adapter.in.web.dto.response.DiagnosisDTO;
 import com.pinHouse.server.platform.adapter.in.web.swagger.DiagnosisApiSpec;
 import com.pinHouse.server.platform.application.in.diagnosis.DiagnosisUseCase;
 import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisRequest;
-import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/diagnosis")
@@ -23,21 +24,22 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 
     /**
      * 청약 진단하는 로직
-     * @param principalDetails  로그인한 유저
-     * @param requestDTO        청약 진단할 결과 내용
+     *
+     * @param principalDetails 로그인한 유저
+     * @param requestDTO       청약 진단할 결과 내용
      */
     @PostMapping()
-    public ApiResponse<DiagnosisDTO> diagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                               @RequestBody DiagnosisRequestDTO requestDTO) {
+    public ApiResponse<List<RuleResult>> diagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                   @RequestBody DiagnosisRequestDTO requestDTO) {
 
         /// DTO를 도메인으로 변환
         DiagnosisRequest request = requestDTO.toDomain();
 
         /// 서비스
-        DiagnosisResult diagnose = service.diagnose(request);
+        List<RuleResult> diagnose = service.diagnose(request);
 
         /// 리턴
-        return ApiResponse.ok(DiagnosisDTO.from(diagnose));
+        return ApiResponse.ok(diagnose);
     }
 
 

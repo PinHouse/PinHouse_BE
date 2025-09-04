@@ -4,6 +4,7 @@ import com.pinHouse.server.platform.adapter.in.web.dto.response.DiagnosisDTO;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class DiagnosisResult {
     private int score;                  // 가점/점수
 
     private List<DiagnosisDTO.Reason> reasons = new ArrayList<>();  // 각 Rule 통과/실패 사유
-    private Map<String, Object> meta;                 // 후보군, 점수 내역 등 추가 메타정보
+    private Map<String, Object> meta = new HashMap<>();;                 // 후보군, 점수 내역 등 추가 메타정보
 
     // 팩토리 메서드
     public static DiagnosisResult of(boolean eligible, String supplyTypeCode, String displayName) {

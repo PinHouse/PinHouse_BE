@@ -4,6 +4,9 @@ import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisQuestion;
 import com.pinHouse.server.platform.domain.diagnosis.entity.DiagnosisType;
 import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisRequest;
 import com.pinHouse.server.platform.domain.diagnosis.model.DiagnosisResult;
+import com.pinHouse.server.platform.domain.diagnosis.model.RuleResult;
+
+import java.util.List;
 
 public interface DiagnosisUseCase {
 
@@ -11,6 +14,6 @@ public interface DiagnosisUseCase {
     DiagnosisQuestion getDiagnose(DiagnosisType type);
 
     /// 청약 진단하기
-    DiagnosisResult diagnose(DiagnosisRequest request);
+    List<RuleResult> diagnose(DiagnosisRequest request);
 
 }

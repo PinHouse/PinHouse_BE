@@ -23,7 +23,7 @@ public class DiagnosisRequest {
     private final int age;                                           // 나이
 
     /** 3-4) 지역 거주 요건 */
-    private final RegionCode region;                                 // 거주지역/해당지역 내 여부
+    private final String regionCode;                                 // 거주지역/해당지역 내 여부
     private final int localResidencyMonths;                          // 거주기간(월)
 
     /** 7-10) 청약통장 요건(가입기간/예치금/상품유형) */
@@ -47,7 +47,7 @@ public class DiagnosisRequest {
 
     /** 14) 대학생 요건*/
     private final EducationStatus educationStatus;                     // 학생 정보
-    private final Region schoolRegion;                                 // 대학 소재지
+    private final String schoolRegion;                                 // 대학 소재지
     private final boolean hasCar;                                      // 자동차 소유 여부
     private final long carValue;                                       // 자동차 가격
 
@@ -80,7 +80,7 @@ public class DiagnosisRequest {
         return Diagnosis.builder()
                 .gender(this.gender)
                 .age(this.age)
-                .region(this.region)
+                .region(this.regionCode)
                 .localResidencyMonths(this.localResidencyMonths)
 
                 .hasAccount(this.hasAccount)
