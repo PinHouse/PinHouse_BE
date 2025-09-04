@@ -6,7 +6,7 @@ import com.pinHouse.server.platform.notice.application.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeSupplyDTO;
 import com.pinHouse.server.platform.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.notice.application.usecase.NoticePort;
-import com.pinHouse.server.platform.notice.domain.Notice;
+import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.notice.domain.NoticeSupplyInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

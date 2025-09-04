@@ -2,11 +2,11 @@ package com.pinHouse.server.platform.user.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.presentation.swagger.DevAuthApiSpec;
-import com.pinHouse.server.platform.user.application.usecase.UserPort;
-import com.pinHouse.server.platform.user.domain.Provider;
-import com.pinHouse.server.platform.user.domain.Role;
-import com.pinHouse.server.platform.user.domain.User;
+import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
+import com.pinHouse.server.platform.user.domain.entity.Provider;
+import com.pinHouse.server.platform.user.domain.entity.Role;
 import com.pinHouse.server.security.jwt.service.JwtTokenUseCase;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DevAuthApi implements DevAuthApiSpec {
 
-    private final UserPort userPort;
+    private final UserUseCase userUseCase;
     private final JwtTokenUseCase tokenService;
 
     // 테스트용으로 만든 UUID
@@ -41,13 +41,13 @@ public class DevAuthApi implements DevAuthApiSpec {
         /// 테스트용 유저 정보 수정
         User user;
 
-        if (userPort.checkExistingById(id)) {
-            user = userPort.loadUserById(id)
+        if (userUseCase.checkExistingById(id)) {
+            user = userUseCase.loadUserById(id)
                     .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
         } else {
             User dev = createDev();
 
-            user = userPort.saveUser(dev);
+            user = userUseCase.saveUser(dev);
         }
 
         /// PrincipalDetails 생성 (시스템에 따라 다름)

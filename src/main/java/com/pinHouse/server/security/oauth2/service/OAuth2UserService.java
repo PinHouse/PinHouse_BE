@@ -1,9 +1,9 @@
 package com.pinHouse.server.security.oauth2.service;
 
-import com.pinHouse.server.platform.user.application.usecase.UserPort;
-import com.pinHouse.server.platform.user.domain.Gender;
-import com.pinHouse.server.platform.user.domain.Provider;
-import com.pinHouse.server.platform.user.domain.User;
+import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
+import com.pinHouse.server.platform.user.domain.entity.Gender;
+import com.pinHouse.server.platform.user.domain.entity.Provider;
+import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import com.pinHouse.server.security.oauth2.domain.kakao.KakaoUserInfo;
@@ -28,7 +28,7 @@ import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserPort userPort;
+    private final UserUseCase userUseCase;
 
     /**
      * 소셜 로그인 유저 가져오기
@@ -57,7 +57,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         userInfo = createOAuth2User(registrationId, oAuth2UserAttributes);
 
         Provider social = Provider.valueOf(userInfo.getProvider());
-        Optional<User> existUser = userPort.loadUserBySocialAndSocialId(social, userInfo.getProviderId());
+        Optional<User> existUser = userUseCase.loadUserBySocialAndSocialId(social, userInfo.getProviderId());
 
         /// 존재한다면 로그인
         if (existUser.isPresent()) {
@@ -82,7 +82,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                     Gender.getGender(userInfo.getGender())
             );
 
-            User savedNewUser = userPort.saveUser(user);
+            User savedNewUser = userUseCase.saveUser(user);
 
             return PrincipalDetails.of(savedNewUser, oAuth2UserAttributes);
         }

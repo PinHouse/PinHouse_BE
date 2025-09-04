@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.notice.application.dto.response;
 
-import com.pinHouse.server.platform.notice.domain.Notice;
+import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import lombok.Builder;
 
 import java.util.List;

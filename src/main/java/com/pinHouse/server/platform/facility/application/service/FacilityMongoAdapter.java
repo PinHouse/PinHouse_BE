@@ -1,7 +1,6 @@
 package com.pinHouse.server.platform.facility.application.service;
 
 import com.pinHouse.server.platform.facility.application.usecase.FacilityPort;
-import com.pinHouse.server.platform.facility.domain.*;
 import com.pinHouse.server.platform.facility.domain.entity.*;
 import com.pinHouse.server.platform.facility.domain.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -23,35 +22,35 @@ public class FacilityMongoAdapter implements FacilityPort {
     @Override
     public List<Library> loadLibrariesNearBy(double longitude, double latitude, double radiusInKm) {
         return libraryRepository.findByLocation(longitude, latitude,radiusInKm).stream()
-                .map(LibraryDocument::toDomain)
+                .map(Library::toDomain)
                 .toList();
     }
 
     @Override
     public List<Park> loadParksNearBy(double longitude, double latitude, double radiusInKm) {
         return parkRepository.findByLocation(longitude, latitude,radiusInKm).stream()
-                .map(ParkDocument::toDomain)
+                .map(Park::toDomain)
                 .toList();
     }
 
     @Override
     public List<Sport> loadSportsNearBy(double longitude, double latitude, double radiusInKm) {
         return sportRepository.findByLocation(longitude, latitude,radiusInKm).stream()
-                .map(SportDocument::toDomain)
+                .map(Sport::toDomain)
                 .toList();
     }
 
     @Override
     public List<Walking> loadWalkingsNearBy(double longitude, double latitude, double radiusInKm) {
         return walkingRepository.findByLocation(longitude, latitude,radiusInKm).stream()
-                .map(WalkingDocument::toDomain)
+                .map(Walking::toDomain)
                 .toList();
     }
 
     @Override
     public List<Animal> loadAnimalsNearBy(double longitude, double latitude, double radiusInKm) {
         return animalRepository.findByLocation(longitude, latitude,radiusInKm).stream()
-                .map(AnimalDocument::toDomain)
+                .map(Animal::toDomain)
                 .toList();
     }
 }

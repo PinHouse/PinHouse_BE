@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.notice.application.dto.response;
 
-import com.pinHouse.server.platform.facility.domain.*;
-import com.pinHouse.server.platform.notice.domain.NoticeInfra;
+import com.pinHouse.server.platform.facility.domain.entity.*;
+import com.pinHouse.server.platform.facility.domain.entity.NoticeInfra;
 import io.micrometer.common.lang.Nullable;
 import lombok.Builder;
 import java.util.List;

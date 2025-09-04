@@ -1,6 +1,6 @@
 package com.pinHouse.server.security.config;
 
-import com.pinHouse.server.platform.user.domain.Role;
+import com.pinHouse.server.platform.user.domain.entity.Role;
 import io.micrometer.common.lang.Nullable;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;

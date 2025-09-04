@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.notice.application.usecase;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeSupplyDTO;
-import com.pinHouse.server.platform.notice.domain.Notice;
+import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

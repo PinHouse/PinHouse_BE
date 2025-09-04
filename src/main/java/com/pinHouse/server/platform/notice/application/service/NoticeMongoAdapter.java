@@ -1,9 +1,8 @@
 package com.pinHouse.server.platform.notice.application.service;
 
-import com.pinHouse.server.platform.notice.domain.entity.NoticeDocument;
+import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.notice.application.usecase.NoticePort;
-import com.pinHouse.server.platform.notice.domain.Notice;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,19 +27,19 @@ public class NoticeMongoAdapter implements NoticePort {
     @Override
     public Page<Notice> loadNotices(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(NoticeDocument::toDomain);
+                .map(Notice::toDomain);
     }
 
     @Override
     public Optional<Notice> loadById(String noticeId) {
         return repository.findByNoticeId(noticeId)
-                .map(NoticeDocument::toDomain);
+                .map(Notice::toDomain);
     }
 
     @Override
     public List<Notice> loadAllNotices() {
         return repository.findAll().stream()
-                .map(NoticeDocument::toDomain)
+                .map(Notice::toDomain)
                 .toList();
     }
 

@@ -1,6 +1,6 @@
 package com.pinHouse.server.security.oauth2.domain;
 
-import com.pinHouse.server.platform.user.domain.User;
+import com.pinHouse.server.platform.user.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

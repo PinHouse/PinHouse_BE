@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.facility.application.usecase;
 
-import com.pinHouse.server.platform.facility.domain.*;
+import com.pinHouse.server.platform.facility.domain.entity.*;
 
 import java.util.List;
 
