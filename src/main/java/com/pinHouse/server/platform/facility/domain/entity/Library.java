@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.facility.domain.entity;
 
+import com.pinHouse.server.core.entity.Location;
+import com.pinHouse.server.platform.facility.domain.entity.infra.Facility;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Library implements Facility{
+public class Library implements Facility {
 
     /**
      * MongoDB unique identifier (_id)

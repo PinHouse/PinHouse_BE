@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.facility.domain.entity;
 
+import com.pinHouse.server.core.entity.Location;
+import com.pinHouse.server.platform.facility.domain.entity.infra.Facility;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Park implements Facility{
+public class Park implements Facility {
 
     @Id
     @Field("_id")

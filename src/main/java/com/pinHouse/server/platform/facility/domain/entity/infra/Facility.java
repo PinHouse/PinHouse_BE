@@ -1,4 +1,6 @@
-package com.pinHouse.server.platform.facility.domain.entity;
+package com.pinHouse.server.platform.facility.domain.entity.infra;
+
+import com.pinHouse.server.core.entity.Location;
 
 public interface Facility {
 

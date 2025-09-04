@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.distance.presentation;
 
 import com.pinHouse.server.platform.distance.presentation.swaager.DistanceApiSpec;
-import com.pinHouse.server.platform.distance.application.usecase.DistancePort;
+import com.pinHouse.server.platform.distance.application.usecase.DistanceUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 public class DistanceApi implements DistanceApiSpec {
 
-    private final DistancePort distancePort;
+    private final DistanceUseCase distanceUseCase;
 
     @GetMapping()
     public String getDistance(
@@ -22,7 +22,7 @@ public class DistanceApi implements DistanceApiSpec {
             @RequestParam double endX
     ) throws UnsupportedEncodingException {
 
-        String path = distancePort.findPath(startY, startX, endY, endX);
+        String path = distanceUseCase.findPath(startY, startX, endY, endX);
 
         return path;
     }

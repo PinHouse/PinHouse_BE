@@ -7,6 +7,8 @@ import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
+
 /**
  * [공고 기반 조회] 인터페이스
  * - 최신 기반, 공고의 목록 조회
@@ -28,12 +30,15 @@ public interface NoticeUseCase {
     // 상세 조회
     NoticeDTO.NoticeDetailResponse getNoticeById(String noticeId);
 
-    /// 시뮬레이터
-    NoticeSupplyDTO.NoticeLeaseOptionResponse getLeaseByPercent(String noticeId, String type, double percentage);
-
     /// 비교
     List<Notice> compareNotices(String noticeId1, String noticeId2);
 
+    /// 외부 사용
+    /// 상세 조회
+    Optional<Notice> loadById(String id);
+
+    /// 모든 공고 가져오기
+    List<Notice> loadAllNotices();
 
 
 }

@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.distance.application.service;
 
-import com.pinHouse.server.platform.distance.application.usecase.DistancePort;
+import com.pinHouse.server.platform.distance.application.usecase.DistanceUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.net.URLEncoder;
 
 @Component
 @RequiredArgsConstructor
-public class OdsayAdapter implements DistancePort {
+public class OdsayService implements DistanceUseCase {
 
     @Value("${odsay.apiKey}")
     private String apiKey;

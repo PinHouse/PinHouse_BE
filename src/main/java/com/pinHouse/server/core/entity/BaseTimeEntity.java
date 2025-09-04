@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform;
+package com.pinHouse.server.core.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

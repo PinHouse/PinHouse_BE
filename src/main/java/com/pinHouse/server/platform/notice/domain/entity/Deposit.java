@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.notice.domain.entity;
 
-import com.pinHouse.server.platform.notice.domain.NoticeSupplyInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

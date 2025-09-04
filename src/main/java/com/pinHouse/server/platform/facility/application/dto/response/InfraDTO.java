@@ -1,7 +1,6 @@
-package com.pinHouse.server.platform.notice.application.dto.response;
+package com.pinHouse.server.platform.facility.application.dto.response;
 
 import com.pinHouse.server.platform.facility.domain.entity.*;
-import com.pinHouse.server.platform.facility.domain.entity.NoticeInfra;
 import io.micrometer.common.lang.Nullable;
 import lombok.Builder;
 import java.util.List;
@@ -172,13 +171,13 @@ public record InfraDTO() {
             @Nullable List<WalkingResponse> walkings
     ) {
         /** NoticeInfra → 응답 DTO로 일괄 변환 */
-        public static NoticeInfraResponse from(NoticeInfra noticeInfra) {
+        public static NoticeInfraResponse from(FacilityResponse facilityResponse) {
             return NoticeInfraResponse.builder()
-                    .libraries(LibraryResponse.from(noticeInfra.getLibraries()))
-                    .animals(AnimalResponse.from(noticeInfra.getAnimals()))
-                    .sports(SportResponse.from(noticeInfra.getSports()))
-                    .parks(ParkResponse.from(noticeInfra.getParks()))
-                    .walkings(WalkingResponse.from(noticeInfra.getWalkings()))
+                    .libraries(LibraryResponse.from(facilityResponse.getLibraries()))
+                    .animals(AnimalResponse.from(facilityResponse.getAnimals()))
+                    .sports(SportResponse.from(facilityResponse.getSports()))
+                    .parks(ParkResponse.from(facilityResponse.getParks()))
+                    .walkings(WalkingResponse.from(facilityResponse.getWalkings()))
                     .build();
         }
     }

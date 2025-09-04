@@ -1,5 +1,6 @@
-package com.pinHouse.server.platform.facility.domain.entity;
+package com.pinHouse.server.platform.facility.application.dto.response;
 
+import com.pinHouse.server.platform.facility.domain.entity.*;
 import com.pinHouse.server.platform.notice.domain.entity.Notice;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Builder
 @Getter
-public class NoticeInfra {
+public class FacilityResponse {
 
     /** 공지사항 엔티티 */
     private Notice notice;
@@ -47,7 +48,7 @@ public class NoticeInfra {
      * @param parks 주변 공원 리스트
      * @return NoticeInfra 도메인 객체
      */
-    public static NoticeInfra of(
+    public static FacilityResponse of(
             Notice notice,
             List<Library> libraries,
             List<Animal> animals,
@@ -55,7 +56,7 @@ public class NoticeInfra {
             List<Walking> walkings,
             List<Park> parks
     ) {
-        return NoticeInfra.builder()
+        return FacilityResponse.builder()
                 .notice(notice)
                 .libraries(libraries)
                 .animals(animals)

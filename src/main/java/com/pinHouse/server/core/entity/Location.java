@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.facility.domain.entity;
+package com.pinHouse.server.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

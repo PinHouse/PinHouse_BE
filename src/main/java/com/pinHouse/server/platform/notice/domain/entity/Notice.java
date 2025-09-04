@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.notice.domain.entity;
 
-import com.pinHouse.server.platform.facility.domain.entity.Location;
+import com.pinHouse.server.core.entity.Location;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.notice.application.dto.response;
 
-import com.pinHouse.server.platform.notice.domain.NoticeSupplyInfo;
+import com.pinHouse.server.platform.notice.domain.entity.NoticeSupply;
 import lombok.Builder;
 
 public record NoticeSupplyDTO() {
@@ -14,7 +14,7 @@ public record NoticeSupplyDTO() {
             Integer recruitment
     ) {
         /// 정적 팩토리 메서드
-        public static NoticeSupplyResponse from(NoticeSupplyInfo notice) {
+        public static NoticeSupplyResponse from(NoticeSupply notice) {
             return NoticeSupplyResponse.builder()
                     .housingType(notice.getHousingType())
                     .area(notice.getArea())

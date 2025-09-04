@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.facility.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.facility.domain.entity.FacilityType;
-import com.pinHouse.server.platform.notice.application.dto.response.InfraDTO;
+import com.pinHouse.server.platform.facility.application.dto.request.FacilityType;
+import com.pinHouse.server.platform.facility.application.dto.response.InfraDTO;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

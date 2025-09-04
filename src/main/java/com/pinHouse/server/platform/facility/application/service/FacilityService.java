@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.facility.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.platform.facility.application.dto.request.FacilityType;
 import com.pinHouse.server.platform.facility.domain.entity.*;
-import com.pinHouse.server.platform.facility.application.usecase.NoticeInfraUseCase;
-import com.pinHouse.server.platform.facility.application.usecase.FacilityPort;
-import com.pinHouse.server.platform.notice.application.usecase.NoticePort;
+import com.pinHouse.server.platform.facility.application.usecase.FacilityUseCase;
+import com.pinHouse.server.platform.facility.domain.entity.infra.Facility;
+import com.pinHouse.server.platform.facility.domain.repository.*;
+import com.pinHouse.server.platform.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.facility.domain.entity.NoticeInfra;
+import com.pinHouse.server.platform.facility.application.dto.response.FacilityResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +19,17 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class NoticeInfraService implements NoticeInfraUseCase {
+public class FacilityService implements FacilityUseCase {
 
     /// 공고 의존성
-    private final NoticePort noticePort;
+    private final NoticeUseCase noticeService;
 
     /// 인프라 의존성
-    private final FacilityPort facilityPort;
+    private final LibraryDocumentRepository libraryRepository;
+    private final AnimalDocumentRepository animalRepository;
+    private final ParkDocumentRepository parkRepository;
+    private final WalkingDocumentRepository walkingRepository;
+    private final SportDocumentRepository sportRepository;
 
     /// 상수
     private final double radiusKm = 1.5;
@@ -35,47 +41,47 @@ public class NoticeInfraService implements NoticeInfraUseCase {
 
     /// 주변의 인프라 개수 조회
     @Override
-    public NoticeInfra getNoticeInfraById(String noticeId) {
+    public FacilityResponse getNoticeInfraById(String noticeId) {
 
         /// 예외 처리
         Notice notice = getNotice(noticeId);
 
         /// 주변에 존재하는 도서관 가져오기
-        List<Library> libraries = facilityPort.loadLibrariesNearBy(
+        List<Library> libraries = libraryRepository.findByLocation(
                 notice.getLocation().getLongitude(),
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
         /// 주변에 존재하는 동물 관련 시설 가져오기
-        List<Animal> animals = facilityPort.loadAnimalsNearBy(
+        List<Animal> animals = animalRepository.findByLocation(
                 notice.getLocation().getLongitude(),
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
 
         /// 주변에 존재하는 공원 정보 시설 가져오기
-        List<Park> parks = facilityPort.loadParksNearBy(
+        List<Park> parks = parkRepository.findByLocation(
                 notice.getLocation().getLongitude(),
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
 
         /// 주변에 존재하는 산책로 관련 시설 가져오기
-        List<Walking> walkings = facilityPort.loadWalkingsNearBy(
+        List<Walking> walkings = walkingRepository.findByLocation(
                 notice.getLocation().getLongitude(),
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
 
         /// 주변에 존재하는 스포츠 정보 시설 가져오기
-        List<Sport> sports = facilityPort.loadSportsNearBy(
+        List<Sport> sports = sportRepository.findByLocation(
                 notice.getLocation().getLongitude(),
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
 
         /// 객체 생성
-        return NoticeInfra.of(notice, libraries, animals, sports, walkings, parks);
+        return FacilityResponse.of(notice, libraries, animals, sports, walkings, parks);
     }
 
     // =================
@@ -83,7 +89,7 @@ public class NoticeInfraService implements NoticeInfraUseCase {
     // =================
     @Override
     public List<Notice> getNoticesByInfraTypesWithAllMinCount(List<FacilityType> facilityTypes) {
-        List<Notice> allNotices = noticePort.loadAllNotices();
+        List<Notice> allNotices = noticeService.loadAllNotices();
 
         return allNotices.stream()
                 .filter(notice -> {
@@ -93,11 +99,11 @@ public class NoticeInfraService implements NoticeInfraUseCase {
                     // 모든 종류가 2개 이상이어야만 true 반환
                     return facilityTypes.stream().allMatch(facilityType -> {
                         List<? extends Facility> facilityList = switch (facilityType) {
-                            case LIBRARY -> facilityPort.loadLibrariesNearBy(lng, lat, radiusInRadians);
-                            case PARK -> facilityPort.loadParksNearBy(lng, lat, radiusInRadians);
-                            case ANIMAL -> facilityPort.loadAnimalsNearBy(lng, lat, radiusInRadians);
-                            case WALKING -> facilityPort.loadWalkingsNearBy(lng, lat, radiusInRadians);
-                            case SPORT -> facilityPort.loadSportsNearBy(lng, lat, radiusInRadians);
+                            case LIBRARY -> libraryRepository.findByLocation(lng, lat, radiusInRadians);
+                            case PARK -> parkRepository.findByLocation(lng, lat, radiusInRadians);
+                            case ANIMAL -> animalRepository.findByLocation(lng, lat, radiusInRadians);
+                            case WALKING -> walkingRepository.findByLocation(lng, lat, radiusInRadians);
+                            case SPORT -> sportRepository.findByLocation(lng, lat, radiusInRadians);
                         };
                         return facilityList.size() >= 2;
                     });
@@ -111,7 +117,7 @@ public class NoticeInfraService implements NoticeInfraUseCase {
     // =================
 
     private Notice getNotice(String noticeId) {
-        return noticePort.loadById(noticeId)
+        return noticeService.loadById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_NOTICE.getMessage()));
     }
 

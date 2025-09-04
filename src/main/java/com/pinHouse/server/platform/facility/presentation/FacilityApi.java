@@ -1,13 +1,13 @@
 package com.pinHouse.server.platform.facility.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.facility.domain.entity.FacilityType;
-import com.pinHouse.server.platform.notice.application.dto.response.InfraDTO;
+import com.pinHouse.server.platform.facility.application.dto.request.FacilityType;
+import com.pinHouse.server.platform.facility.application.dto.response.InfraDTO;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.facility.presentation.swagger.FacilityApiSpec;
-import com.pinHouse.server.platform.facility.application.usecase.NoticeInfraUseCase;
+import com.pinHouse.server.platform.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.facility.domain.entity.NoticeInfra;
+import com.pinHouse.server.platform.facility.application.dto.response.FacilityResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 public class FacilityApi implements FacilityApiSpec {
 
     /// 서비스 의존성
-    private final NoticeInfraUseCase service;
+    private final FacilityUseCase service;
 
     /// 주변 인프라 조회
     @GetMapping("/{noticeId}")
@@ -26,10 +26,10 @@ public class FacilityApi implements FacilityApiSpec {
             @PathVariable String noticeId) {
 
         /// 서비스 계층
-        NoticeInfra noticeInfra = service.getNoticeInfraById(noticeId);
+        FacilityResponse facilityResponse = service.getNoticeInfraById(noticeId);
 
         /// DTO 수정
-        InfraDTO.NoticeInfraResponse response = InfraDTO.NoticeInfraResponse.from(noticeInfra);
+        InfraDTO.NoticeInfraResponse response = InfraDTO.NoticeInfraResponse.from(facilityResponse);
 
         /// 응답
         return ApiResponse.ok(response);

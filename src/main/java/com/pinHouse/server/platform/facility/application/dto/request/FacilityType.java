@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.facility.domain.entity;
+package com.pinHouse.server.platform.facility.application.dto.request;
 
 public enum FacilityType {
 
