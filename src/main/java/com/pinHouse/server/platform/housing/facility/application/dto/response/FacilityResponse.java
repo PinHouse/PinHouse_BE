@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housing.facility.application.dto.response;
 
-import com.pinHouse.server.platform.facility.domain.entity.*;
 import com.pinHouse.server.platform.housing.facility.domain.entity.*;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import lombok.Builder;

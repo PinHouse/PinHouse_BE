@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housing.facility.application.dto.response;
 
-import com.pinHouse.server.platform.facility.domain.entity.*;
 import com.pinHouse.server.platform.housing.facility.domain.entity.*;
 import io.micrometer.common.lang.Nullable;
 import lombok.Builder;
