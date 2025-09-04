@@ -12,7 +12,7 @@ public enum HousingOwnershipStatus {
     NO_ONE_OWNS_HOUSE("우리집 가구원 모두 주택을 소유하고 있지 않아요"),
 
     /** 내가 주택을 소유하고 있음 */
-    I_OWN_HOUSE("주택을 소유하고 있어요");
+    OWN_HOUSE("주택을 소유하고 있어요");
 
     private final String description;
 

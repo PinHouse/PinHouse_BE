@@ -1,11 +1,8 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.application.dto.response;
 
-import com.pinHouse.server.platform.adapter.in.web.dto.response.DiagnosisDTO;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +19,6 @@ public class DiagnosisResult {
     private String displayName;         // UI 표시명 ("청년 특별공급")
     private int score;                  // 가점/점수
 
-    private List<DiagnosisDTO.Reason> reasons = new ArrayList<>();  // 각 Rule 통과/실패 사유
     private Map<String, Object> meta = new HashMap<>();;                 // 후보군, 점수 내역 등 추가 메타정보
 
     // 팩토리 메서드
@@ -34,9 +30,6 @@ public class DiagnosisResult {
                 .build();
     }
 
-    public void addReasons(List<DiagnosisDTO.Reason> reasonList) {
-        if (reasonList != null) this.reasons.addAll(reasonList);
-    }
 
     public void addMeta(Map<String, Object> meta) {
         this.meta.putAll(meta);

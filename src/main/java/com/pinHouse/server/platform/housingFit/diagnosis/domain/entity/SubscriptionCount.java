@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum SubscriptionPaymentCount {
+public enum SubscriptionCount {
 
     FROM_0_TO_5("0회 ~ 5회"),
     FROM_6_TO_11("6회 ~ 11회"),

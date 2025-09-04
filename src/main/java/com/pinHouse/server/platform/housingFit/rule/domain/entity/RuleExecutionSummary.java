@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.entity;
 
-import com.pinHouse.server.platform.adapter.in.web.dto.response.DiagnosisDTO;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import lombok.Getter;
 
