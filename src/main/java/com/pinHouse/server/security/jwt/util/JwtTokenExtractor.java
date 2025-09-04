@@ -1,8 +1,8 @@
 package com.pinHouse.server.security.jwt.util;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.application.out.user.UserPort;
-import com.pinHouse.server.platform.domain.user.User;
+import com.pinHouse.server.platform.user.application.usecase.UserPort;
+import com.pinHouse.server.platform.user.domain.User;
 import com.pinHouse.server.security.jwt.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.jsonwebtoken.*;

@@ -15,8 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static com.pinHouse.server.platform.domain.user.Role.ADMIN;
-import static com.pinHouse.server.platform.domain.user.Role.USER;
+import static com.pinHouse.server.platform.user.domain.Role.ADMIN;
+import static com.pinHouse.server.platform.user.domain.Role.USER;
 
 /**
  * Spring Security 설정 클래스
