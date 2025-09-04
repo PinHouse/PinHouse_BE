@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.notice.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.notice.application.dto.response.NoticeSupplyDTO;
+import com.pinHouse.server.platform.notice.application.usecase.DepositUseCase;
 import com.pinHouse.server.platform.notice.presentation.swagger.DepositApiSpec;
 import com.pinHouse.server.platform.notice.application.usecase.NoticeUseCase;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DepositApi implements DepositApiSpec {
 
-    private final NoticeUseCase noticeService;
+    private final DepositUseCase service;
 
     @PutMapping("/{noticeId}")
     public ApiResponse<NoticeSupplyDTO.NoticeLeaseOptionResponse> update(
@@ -24,7 +25,7 @@ public class DepositApi implements DepositApiSpec {
             @RequestParam double percentage) {
 
         /// 서비스 호출
-        NoticeSupplyDTO.NoticeLeaseOptionResponse lease = noticeService.getLeaseByPercent(noticeId, housingType, percentage);
+        NoticeSupplyDTO.NoticeLeaseOptionResponse lease = service.getLeaseByPercent(noticeId, housingType, percentage);
 
         return ApiResponse.ok(lease);
 
