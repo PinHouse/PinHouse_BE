@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.adapter.in.web.dto.request.DiagnosisRequestDTO;
+import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +19,6 @@ public interface DiagnosisApiSpec {
             description = "청약 진단 API 입니다."
     )
     ApiResponse<List<RuleResult>> diagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                        @RequestBody DiagnosisRequestDTO requestDTO);
+                                        @RequestBody DiagnosisRequest requestDTO);
 
 }

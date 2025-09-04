@@ -2,14 +2,12 @@ package com.pinHouse.server.platform.housingFit.diagnosis.application.service;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.usecase.DiagnosisUseCase;
-import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.DiagnosisQuestion;
-import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.DiagnosisType;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.platform.housingFit.rule.application.service.SupplyDecisionEngine;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.RuleChain;
+import com.pinHouse.server.platform.housingFit.rule.application.service.RuleChain;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.RuleExecutionSummary;
+import com.pinHouse.server.platform.housingFit.rule.application.service.RuleExecutionSummary;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,19 +28,13 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class DeepDiagnosisService implements DiagnosisUseCase {
+public class DiagnosisService implements DiagnosisUseCase {
 
     private final DiagnosisJpaRepository repository;
 
     private final RuleChain ruleChain;
     private final SupplyDecisionEngine supplyDecisionEngine;
 
-
-    /// 질문 받기
-    @Override
-    public DiagnosisQuestion getDiagnose(DiagnosisType type) {
-        return null;
-    }
 
     /// 진단하기
     @Override

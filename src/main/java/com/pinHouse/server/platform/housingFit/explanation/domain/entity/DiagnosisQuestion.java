@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housingFit.diagnosis.domain.entity;
+package com.pinHouse.server.platform.housingFit.explanation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housingFit.diagnosis.domain.entity;
+package com.pinHouse.server.platform.housingFit.explanation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
