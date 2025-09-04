@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.domain.entity;
 
+import com.pinHouse.server.core.util.BirthDayUtil;
 import com.pinHouse.server.platform.BaseTimeEntity;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
@@ -102,4 +103,39 @@ public class Diagnosis extends BaseTimeEntity {
     @ElementCollection(targetClass = SpecialCategory.class)
     @Enumerated(EnumType.STRING)
     private List<SpecialCategory> hasSpecialCategory = new ArrayList<>();                        // 특수 계층인지
+
+    /// 정적 팩토리 메서드
+    public static Diagnosis of(User user, DiagnosisRequest request) {
+        return Diagnosis.builder()
+                .user(user)
+                .gender(request.getGender())
+                .age(BirthDayUtil.calculateAge(request.getBirthday()))
+                .monthPay(request.getMonthPay())
+                .hasAccount(request.isHasAccount())
+                .accountYears(request.getAccountYears())
+                .accountDeposit(request.getAccountDeposit())
+                .account(request.getAccount())
+                .maritalStatus(request.isMaritalStatus())
+                .marriageYears(request.getMarriageYears())
+                .unbornChildrenCount(request.getUnbornChildrenCount())
+                .under6ChildrenCount(request.getUnder6ChildrenCount())
+                .over7MinorChildrenCount(request.getOver7MinorChildrenCount())
+                .educationStatus(request.getEducationStatus())
+                .hasCar(request.isHasCar())
+                .carValue(request.getCarValue())
+                .isHouseholdHead(request.isHouseholdHead())
+                .isSingle(request.isSingle())
+                .fetusCount(request.getFetusCount())
+                .minorCount(request.getMinorCount())
+                .adultCount(request.getAdultCount())
+                .incomeLevel(request.getIncomeLevel())
+                .housingStatus(request.getHousingStatus())
+                .housingYears(request.getHousingYears())
+                .propertyAsset(request.getPropertyAsset())
+                .carAsset(request.getCarAsset())
+                .financialAsset(request.getFinancialAsset())
+                .hasSpecialCategory(request.getHasSpecialCategory())
+                .build();
+    }
+
 }

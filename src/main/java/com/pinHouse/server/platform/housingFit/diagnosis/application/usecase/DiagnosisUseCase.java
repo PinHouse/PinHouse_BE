@@ -1,13 +1,13 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.application.usecase;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
-import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.response.DiagnosisResponse;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface DiagnosisUseCase {
 
     /// 청약 진단하기
-    List<RuleResult> diagnose(DiagnosisRequest request);
+    DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request);
 
 }

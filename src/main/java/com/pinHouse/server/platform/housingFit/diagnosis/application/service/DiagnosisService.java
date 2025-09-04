@@ -1,18 +1,23 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.application.service;
 
+import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
+import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.response.DiagnosisResponse;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
-import com.pinHouse.server.platform.housingFit.rule.application.service.SupplyDecisionEngine;
 import com.pinHouse.server.platform.housingFit.rule.application.service.RuleChain;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
 import com.pinHouse.server.platform.housingFit.rule.application.service.RuleExecutionSummary;
+import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
+import com.pinHouse.server.platform.user.domain.entity.User;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 
 /**
@@ -30,25 +35,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiagnosisService implements DiagnosisUseCase {
 
-    /// 진단 목록 저장
+    /// 의존성
     private final DiagnosisJpaRepository repository;
 
     /// 룰 체인
     private final RuleChain ruleChain;
 
+    /// 유저 의존성
+    private final UserUseCase userService;
+
     /// 진단하기
     @Override
-    public List<RuleResult> diagnose(DiagnosisRequest request) {
-        // 0) 요청 → 도메인 변환 및 저장
-        Diagnosis domain = request.toDomain();
+    public DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request) {
 
-        Diagnosis ctx = repository.save(domain);
+        /// 유저 예외 처리
+        User user = userService.loadUserById(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
 
-        // 1) 규칙 체인 실행
+        /// 진단 도메인 생성
+        Diagnosis diagnosis = Diagnosis.of(user, request);
+
+        Diagnosis ctx = repository.save(diagnosis);
+
+        // 규칙 체인 실행
         RuleExecutionSummary summary = ruleChain.evaluateAll(ctx);
 
-        // 2) 강제 실패 체크 없이 summary 결과 그대로 반환
-        return summary.getResults(); // List<RuleResult>
+        // 강제 실패 체크 없이 summary 결과 그대로 반환
+        List<RuleResult> results = summary.getResults();// List<RuleResult>
+        return null;
     }
 
 
