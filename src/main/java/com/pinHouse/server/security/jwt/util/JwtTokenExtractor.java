@@ -1,8 +1,8 @@
 package com.pinHouse.server.security.jwt.util;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.application.out.user.UserPort;
-import com.pinHouse.server.platform.domain.user.User;
+import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
+import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.security.jwt.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.jsonwebtoken.*;
@@ -35,7 +35,7 @@ public class JwtTokenExtractor {
     private SecretKey secretKey;
 
     /// 의존성
-    private final UserPort userPort;
+    private final UserUseCase userUseCase;
     private final CookieUtil cookieUtil;
 
 
@@ -108,7 +108,7 @@ public class JwtTokenExtractor {
         UUID userId = UUID.fromString(claimUserId);
 
         // 해당 userId로 Member를 조회
-        User user = userPort.loadUserById(userId)
+        User user = userUseCase.loadUserById(userId)
                 .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.USER_NOT_FOUND_IN_COOKIE.getMessage()));
 
         PrincipalDetails details = PrincipalDetails.of(user);
