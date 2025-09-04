@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.*;
-import com.pinHouse.server.platform.housingFit.rule.application.service.SubscriptionAccount;
+import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.SubscriptionAccount;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -70,55 +70,4 @@ public class DiagnosisRequest {
     private final long propertyAsset;                                  // 부동산/토지 자산
     private final long carAsset;                                       // 자동차 가격
     private final long financialAsset;                                 // 금융자산
-
-    /// 정적 팩토리 메서드 (도메인으로 변환)
-    public Diagnosis toDomain() {
-        return Diagnosis.builder()
-                .gender(this.gender)
-                .age(this.age)
-                .region(this.regionCode)
-                .localResidencyMonths(this.localResidencyMonths)
-
-                .hasAccount(this.hasAccount)
-                .accountYears(this.accountYears)
-                .accountDeposit(this.accountDeposit)
-                .account(this.account)
-
-                .maritalStatus(this.maritalStatus)
-                .marriageYears(this.marriageYears)
-
-                .unbornChildrenCount(this.unbornChildrenCount)
-                .under6ChildrenCount(this.under6ChildrenCount)
-                .over7MinorChildrenCount(this.over7MinorChildrenCount)
-                .minorChildrenCount(this.minorChildrenCount)
-
-                .householdType(this.householdType)
-
-                .educationStatus(this.educationStatus)
-                .schoolRegion(this.schoolRegion)
-                .hasCar(this.hasCar)
-                .carValue(this.carValue)
-
-                .hasSpecialCategory(this.hasSpecialCategory)
-
-                .isHouseholdHead(this.isHouseholdHead)
-                .isSingle(this.isSingle)
-                .fetusCount(this.fetusCount)
-                .minorCount(this.minorCount)
-                .adultCount(this.adultCount)
-                .familyCount(this.familyCount)
-                .familySituation(this.familySituation)
-
-                .incomeLevel(this.incomeLevel)
-
-                .housingStatus(this.housingStatus)
-                .housingYears(this.housingYears)
-
-                .propertyAsset(this.propertyAsset)
-                .carAsset(this.carAsset)
-                .financialAsset(this.financialAsset)
-
-                .build();
-
-    }
 }

@@ -1,16 +1,19 @@
 package com.pinHouse.server.platform.housingFit.school.domain.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(name = "university")
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
 public class University {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String schoolName;
@@ -24,4 +27,5 @@ public class University {
     private String sidoName;
 
     private String sigunguName;
+
 }

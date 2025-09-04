@@ -1,9 +1,9 @@
 package com.pinHouse.server.platform.housingFit.rule.application.usecase;
 
-import com.pinHouse.server.platform.housingFit.rule.application.service.SubscriptionAccount;
-import com.pinHouse.server.platform.housingFit.rule.application.service.RegionCode;
+import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.SubscriptionAccount;
+import com.pinHouse.server.platform.region.domain.entity.RegionCode;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
-import com.pinHouse.server.platform.housingFit.school.domain.entity.Region;
+import com.pinHouse.server.platform.region.domain.entity.Region;
 
 public interface PolicyProvider {
 

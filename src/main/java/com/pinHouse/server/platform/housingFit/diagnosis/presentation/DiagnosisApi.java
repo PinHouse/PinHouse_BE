@@ -1,11 +1,11 @@
 package com.pinHouse.server.platform.housingFit.diagnosis.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.housingFit.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.DiagnosisQuestion;
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.DiagnosisType;
 import com.pinHouse.server.platform.adapter.in.web.dto.request.DiagnosisRequestDTO;
 import com.pinHouse.server.platform.housingFit.diagnosis.presentation.swagger.DiagnosisApiSpec;
-import com.pinHouse.server.platform.application.in.diagnosis.DiagnosisUseCase;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;

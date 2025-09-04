@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.adapter.in.web.dto.request;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.*;
-import com.pinHouse.server.platform.housingFit.rule.application.service.SubscriptionAccount;
+import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.SubscriptionAccount;
 import com.pinHouse.server.platform.housingFit.diagnosis.application.dto.request.DiagnosisRequest;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.entity;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.diagnosis.domain.repository.EvaluationContext;
+import com.pinHouse.server.platform.housingFit.rule.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
