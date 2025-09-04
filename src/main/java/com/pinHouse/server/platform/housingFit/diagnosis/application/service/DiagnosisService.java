@@ -30,11 +30,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiagnosisService implements DiagnosisUseCase {
 
+    /// 진단 목록 저장
     private final DiagnosisJpaRepository repository;
 
+    /// 룰 체인
     private final RuleChain ruleChain;
-    private final SupplyDecisionEngine supplyDecisionEngine;
-
 
     /// 진단하기
     @Override

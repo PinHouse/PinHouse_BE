@@ -14,10 +14,10 @@ import java.util.Map;
 @Builder
 public class DiagnosisResult {
 
-    private boolean eligible;           // 자격 여부
-    private String supplyTypeCode;      // 공급유형 코드 (YOUTH_SPECIAL 등)
-    private String displayName;         // UI 표시명 ("청년 특별공급")
-    private int score;                  // 가점/점수
+    private boolean eligible;                                           // 자격 여부
+    private String supplyTypeCode;                                      // 공급유형 코드 (YOUTH_SPECIAL 등)
+    private String displayName;                                         // UI 표시명 ("청년 특별공급")
+    private int score;                                                  // 가점/점수
 
     private Map<String, Object> meta = new HashMap<>();;                 // 후보군, 점수 내역 등 추가 메타정보
 

@@ -24,12 +24,6 @@ public class DiagnosisRequest {
     private LocalDate birthday;                                          // 생일
 
     /**
-     * 3-4) 지역 거주 요건
-     */
-    private String regionCode;                                 // 거주지역/해당지역 내 여부
-    private int localResidencyMonths;                          // 거주기간(월)
-
-    /**
      * 5-6) 소득 요건(일자리 종사)
      */
     private int monthPay;                                       // 소득 여부
