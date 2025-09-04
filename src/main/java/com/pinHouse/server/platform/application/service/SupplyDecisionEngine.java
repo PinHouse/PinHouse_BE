@@ -40,7 +40,7 @@ public class SupplyDecisionEngine {
 
     private int generalScore(Diagnosis c) {
         int homelessYears = Math.max(0, (c.getAge() - 20)); // 단순 추정치(실제는 무주택 기간 보유 필요)
-        return c.getScoreCalculator().total(new ScoreInput(homelessYears, c.getFamilyCount(), c.getAccountYears()));
+        return c.getScoreCalculator().total(new ScoreInput(homelessYears, c.getFamilyCount(), (int) c.getAccountYears().getYears()));
     }
 
     private ScoredCandidate score(Diagnosis c, Candidate candidate) {
@@ -54,7 +54,7 @@ public class SupplyDecisionEngine {
         };
         // 가점 일부 반영
         int homelessYears = Math.max(0, (c.getAge() - 20));
-        int points = c.getScoreCalculator().total(new ScoreInput(homelessYears, c.getFamilyCount(), c.getAccountYears()));
+        int points = c.getScoreCalculator().total(new ScoreInput(homelessYears, c.getFamilyCount(), (int) c.getAccountYears().getYears()));
         int incomeBonus = candidate.incomeOk() ? 5 : -100; // 소득 미충족이면 큰 페널티
         int score = base + (points / 10) + incomeBonus;
         return new ScoredCandidate(candidate, score);
