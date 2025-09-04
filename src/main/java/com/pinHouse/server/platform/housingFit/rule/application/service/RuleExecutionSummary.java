@@ -1,6 +1,7 @@
-package com.pinHouse.server.platform.housingFit.rule.domain.entity;
+package com.pinHouse.server.platform.housingFit.rule.application.service;
 
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.Severity;
 import lombok.Getter;
 
 import java.util.ArrayList;

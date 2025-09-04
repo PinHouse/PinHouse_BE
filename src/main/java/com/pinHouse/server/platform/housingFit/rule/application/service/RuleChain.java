@@ -1,8 +1,10 @@
-package com.pinHouse.server.platform.housingFit.rule.domain.entity;
+package com.pinHouse.server.platform.housingFit.rule.application.service;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
 import com.pinHouse.server.platform.housingFit.rule.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.Rule;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.Severity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

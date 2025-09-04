@@ -16,12 +16,6 @@ public class InMemoryPolicyProvider implements PolicyProvider {
             "A001", 24
     );
 
-    @Override
-    public int requiredLocalResidencyMonths(Region region) {
-        // 기본 12개월
-        return regionResidencyMap.getOrDefault(region.getCode(), 12);
-    }
-
     public double maxIncomeRatio(SupplyType type, int familyCount) {
         double base = switch (type) {
             case YOUTH_SPECIAL -> 100.0;

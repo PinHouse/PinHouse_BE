@@ -7,8 +7,6 @@ import com.pinHouse.server.platform.region.domain.entity.Region;
 
 public interface PolicyProvider {
 
-    int requiredLocalResidencyMonths(Region region);
-
     double maxIncomeRatio(SupplyType type, int familyCount);
 
     long maxFinancialAsset(SupplyType type, int familyCount);

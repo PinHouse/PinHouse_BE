@@ -1,7 +1,6 @@
 package com.pinHouse.server.platform.housingFit.rule.application.service;
 
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.RuleExecutionSummary;
 
 import java.util.List;
 import java.util.stream.Collectors;
