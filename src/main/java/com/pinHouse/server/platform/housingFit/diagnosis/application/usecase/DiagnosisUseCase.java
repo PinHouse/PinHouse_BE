@@ -10,4 +10,7 @@ public interface DiagnosisUseCase {
     /// 청약 진단하기
     DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request);
 
+    /// 나의 진단 목록 조회하기
+    DiagnosisResponse getDiagnose(UUID userId);
+
 }

@@ -1,9 +1,8 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.rule;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.rule.EvaluationContext;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.Rule;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.Severity;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
 import org.springframework.core.annotation.Order;
@@ -44,10 +43,6 @@ public class ElderCandidateRule implements Rule {
 
     @Override public String code() {
         return "CANDIDATE_ELDER_SPECIAL";
-    }
-
-    @Override public Severity severity() {
-        return Severity.INFO;
     }
 
 }

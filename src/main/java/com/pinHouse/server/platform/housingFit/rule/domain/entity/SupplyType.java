@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housingFit.rule.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 @RequiredArgsConstructor
 public enum SupplyType {
@@ -23,4 +24,11 @@ public enum SupplyType {
         return value;
     }
 
+
+    /**
+     * 모든 SupplyType enum 반환
+     */
+    public static List<SupplyType> getAllTypes() {
+        return Arrays.asList(SupplyType.values());
+    }
 }

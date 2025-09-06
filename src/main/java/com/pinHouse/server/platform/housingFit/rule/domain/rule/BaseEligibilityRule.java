@@ -1,10 +1,8 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.rule;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.rule.EvaluationContext;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.Rule;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.Severity;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -24,11 +22,10 @@ public class BaseEligibilityRule implements Rule {
         Diagnosis c = ctx.getDiagnosis();
 
         /// 주택 소유 여부
-        boolean hasHousehold = c.isHasHousehold();
+        boolean hasHousehold = c.isHouseholdHead();
         if (hasHousehold) {
             return RuleResult.fail(
                     code(),
-                    Severity.HARD_FAIL,
                     "주택 소유",
                     Map.of("household", hasHousehold)
             );
@@ -66,7 +63,6 @@ public class BaseEligibilityRule implements Rule {
 
         return RuleResult.pass(
                 code(),
-                Severity.INFO,
                 "나이별 추천 타입 후보",
                 Map.of("candidate", recommended)
         );
@@ -75,9 +71,5 @@ public class BaseEligibilityRule implements Rule {
 
     @Override public String code() {
         return "BASE_ELIGIBILITY";
-    }
-
-    @Override public Severity severity() {
-        return Severity.HARD_FAIL;
     }
 }

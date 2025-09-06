@@ -4,13 +4,15 @@ import com.pinHouse.server.platform.housingFit.rule.application.usecase.PolicyPr
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.SubscriptionAccount;
 import com.pinHouse.server.platform.region.domain.entity.RegionCode;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
-import com.pinHouse.server.platform.region.domain.entity.Region;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * Rental Type(임대 유형)에 해당하는 규칙 생성기
+ */
 @Component
-public class InMemoryPolicyProvider implements PolicyProvider {
+public class RentalPolicyProvider implements PolicyProvider {
 
     private final Map<String, Integer> regionResidencyMap = Map.of(
             "A001", 24

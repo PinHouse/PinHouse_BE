@@ -1,11 +1,9 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.rule;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.rule.EvaluationContext;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.RentalType;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.Rule;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.Severity;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +26,10 @@ public class AccountRule implements Rule {
     @Override
     public RuleResult evaluate(EvaluationContext ctx) {
 
+        /// 진단 도메인 정보 가져오기
         Diagnosis c = ctx.getDiagnosis();
+
+        /// 가능한 리스트 추출하기
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
         // 청약통장 미보유
@@ -55,8 +56,5 @@ public class AccountRule implements Rule {
         return "ACCOUNT_REQUIREMENT";
     }
 
-    @Override public Severity severity() {
-        return Severity.HARD_FAIL;
-    }
 
 }
