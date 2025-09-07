@@ -14,13 +14,15 @@ public enum SupplyType {
     COUPLE_SPECIAL("한부모 특별공급"),
     ELDER_SPECIAL("고령자 특별공급"),
     MULTICHILD_SPECIAL("다자녀 특별공급"),
+    MINOR_SPECIAL("신생아 특별공급"),
+    FIRST_SPECIAL("생애최초 특별공급"),
     ELDER_SUPPORT_SPECIAL("고령자 부양 특별공급"),
-    SPECIAL("미성년자 대상자 특별공급");
+    SPECIAL("특별공급");
 
     private final String value;
 
     @JsonGetter
-    public String getValue(){
+    public String getValue() {
         return value;
     }
 

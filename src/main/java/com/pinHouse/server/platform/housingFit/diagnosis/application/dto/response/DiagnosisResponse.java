@@ -27,7 +27,6 @@ public class DiagnosisResponse {
 
     private boolean eligible;            // 최종 자격 여부
     private String decisionMessage;      // 최종 요약 메시지 ("국민임대주택 가능", "부적합" 등)
-    private List<String> failureReasons; // 실패 이유 리스트
     private List<String> recommended;    // 추천 후보 리스트
 
     /// 정적 팩토리 메서드
@@ -45,7 +44,7 @@ public class DiagnosisResponse {
         List<String> recommended = context.getCurrentCandidates().isEmpty() ?
                 List.of("해당 없음") :
                 context.getCurrentCandidates().stream()
-                        .map(SupplyType::getValue)
+                        .map((c -> c.supplyType().name() + " / " + c.rentalType().name()))
                         .toList();
 
         return DiagnosisResponse.builder()
@@ -54,7 +53,6 @@ public class DiagnosisResponse {
                 .eligible(!recommended.contains("해당 없음"))
                 .decisionMessage(!recommended.contains("해당 없음") ?
                         "추천 임대주택이 있습니다" : "모든 조건 미충족")
-                .failureReasons(failureReasons)
                 .recommended(recommended)
                 .build();
     }

@@ -96,6 +96,7 @@ public class Diagnosis extends BaseTimeEntity {
     private long propertyAsset;                                  // 부동산/토지 자산
     private long carAsset;                                       // 자동차 가격
     private long financialAsset;                                 // 금융자산
+    private long totalAsset;                                     // 총자산
 
     /**
      * 최종) 특수 계층 요건
@@ -138,4 +139,24 @@ public class Diagnosis extends BaseTimeEntity {
                 .build();
     }
 
+
+    /// 다자녀 계산 로직
+    public boolean checkMultiple() {
+
+        int sum = unbornChildrenCount + under6ChildrenCount + over7MinorChildrenCount;
+
+        /// boolean 다자녀
+        return sum >= 3;
+    }
+
+    /// 총자산 계산 로직
+    public long getTotalAsset() {
+
+        return propertyAsset + carAsset + financialAsset;
+    }
+
+    /// 전체 세대수 계산 로직
+    public int getFamilyCount() {
+        return fetusCount + minorCount + adultCount;
+    }
 }

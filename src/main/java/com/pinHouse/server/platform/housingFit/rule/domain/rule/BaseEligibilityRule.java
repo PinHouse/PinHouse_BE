@@ -1,74 +1,87 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.rule;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
+import com.pinHouse.server.platform.housingFit.rule.application.usecase.PolicyUseCase;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationContext;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyRentalCandidate;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
 /** 1) 기초 자격: 나이 + 세대주 + 무주택  */
-@Component
 @Order(1)
+@Component
+@RequiredArgsConstructor
 public class BaseEligibilityRule implements Rule {
+
+    /// 임대주택 유형 검증기 도입
+    private final PolicyUseCase policyUseCase;
 
     @Override
     public RuleResult evaluate(EvaluationContext ctx) {
 
-        Diagnosis c = ctx.getDiagnosis();
+        Diagnosis diagnosis = ctx.getDiagnosis();
 
-        /// 주택 소유 여부
-        boolean hasHousehold = c.isHouseholdHead();
+        /// 1차, 나이에 따른 추천 유형 매핑
+        int age = diagnosis.getAge();
+
+        /// 가능한 리스트 추출하기
+        List<SupplyRentalCandidate> candidates = ctx.getCurrentCandidates();
+
+        /// 나이별 후보군 필터링
+        if (age < 19) {
+            candidates.removeIf(c ->
+                    c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL ||
+                            c.supplyType() == SupplyType.ELDER_SPECIAL ||
+                            c.supplyType() == SupplyType.GENERAL
+            );
+        } else if (age <= 39) {
+            candidates.removeIf(c -> c.supplyType() == SupplyType.ELDER_SPECIAL);
+        } else if (age <= 64) {
+            candidates.removeIf(c ->
+                    c.supplyType() == SupplyType.YOUTH_SPECIAL ||
+                            c.supplyType() == SupplyType.ELDER_SPECIAL
+            );
+        } else if (age >= 65) {
+            candidates.removeIf(c ->
+                    c.supplyType() == SupplyType.YOUTH_SPECIAL ||
+                            c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
+            );
+        }
+
+        /// 2차, 주택 소유 여부
+        boolean hasHousehold = diagnosis.isHouseholdHead();
         if (hasHousehold) {
             return RuleResult.fail(
                     code(),
-                    "주택 소유",
+                    "주택 소유는 임대주택 지원이 불가능",
                     Map.of("household", hasHousehold)
             );
         }
 
-        /// 나이에 따른 추천 유형 매핑
-        int age = c.getAge();
-
-        /// 나이에 따른 가능한 것 전부 추출
-        List<SupplyType> recommended = new ArrayList<>();
-
-        /// 미성년자 일 때는, 특수한 경우만 가능
-        if (age < 19) {
-            recommended.add(SupplyType.SPECIAL);
-        }
-
-        /// 성인만 신청 가능
-        if (age >= 19) {
-            recommended.add(SupplyType.GENERAL);
-        }
-
-        /// 성인이면서 만 39세 이하일 경우, 청년 신청 가능
-        if (age >= 19 && age <= 39) {
-            recommended.add(SupplyType.YOUTH_SPECIAL);
-        }
-
-        /// 만 64세까지 신혼부부 혜택은 다 가능
-        if (age <= 64) {
-            recommended.add(SupplyType.NEWCOUPLE_SPECIAL);
-        }
-
-        if (age >= 65) {
-            recommended.add(SupplyType.ELDER_SPECIAL);
-        }
+        /// 결과 저장하기
+        ctx.setCurrentCandidates(candidates);
 
         return RuleResult.pass(
                 code(),
-                "나이별 추천 타입 후보",
-                Map.of("candidate", recommended)
+                "나이별 추천 타입 후보 완료",
+                Map.of(
+                        "age", age,
+                        "candidates", candidates
+                )
         );
+
+
     }
 
-
+    /**
+     * 코드 저장
+     */
     @Override public String code() {
         return "BASE_ELIGIBILITY";
     }

@@ -24,7 +24,7 @@ public record RuleResult(
         return new RuleResult(true, code, msg, details == null ? Collections.emptyMap() : details);
     }
 
-    /// 정적 팩토리 메서드
+    /// 정적 팩토리 메서드, 불가능한 임대주택에 fail 부여
     public static RuleResult fail(String code, String msg, Map<String, Object> details) {
         return new RuleResult(false, code, msg, details == null ? Collections.emptyMap() : details);
     }

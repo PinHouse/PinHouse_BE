@@ -25,7 +25,7 @@ public class EvaluationContext {
     private final List<RuleResult> ruleResults;
 
     /// 진단에서 가능한 후보군 목록
-    private List<SupplyType> currentCandidates;
+    private List<SupplyRentalCandidate> currentCandidates;
 
 
     /// 정적 팩토리 메서드
@@ -34,7 +34,7 @@ public class EvaluationContext {
                 .diagnosis(diagnosis)
                 .ruleResults(new ArrayList<>())
                 /// 모든 공급유형을 추가해두고 삭제하는 방식으로 구현
-                .currentCandidates(SupplyType.getAllTypes())
+                .currentCandidates(SupplyRentalCandidate.basic())
                 .build();
     }
 
@@ -55,4 +55,11 @@ public class EvaluationContext {
     }
 
 
+    /**
+     * 함수
+     * @param candidates
+     */
+    public void setCurrentCandidates(List<SupplyRentalCandidate> candidates) {
+        this.currentCandidates = candidates;
+    }
 }

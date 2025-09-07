@@ -29,6 +29,7 @@ public class DiagnosisQuestion {
         return DiagnosisQuestion.builder()
                 .questionText(questionText)
                 .diagnosisType(diagnosisType)
+                .orderNo(0)
                 .build();
     }
 

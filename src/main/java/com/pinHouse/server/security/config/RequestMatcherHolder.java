@@ -35,7 +35,7 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/api/v1/notices/**", null),
 
             // 진단 관련
-            new RequestInfo(POST, "/api/v1/diagnosis", null),
+            new RequestInfo(POST, "/api/v1/diagnosis/**", Role.USER),
 
             // static resources
             new RequestInfo(GET, "/docs/**", null),
