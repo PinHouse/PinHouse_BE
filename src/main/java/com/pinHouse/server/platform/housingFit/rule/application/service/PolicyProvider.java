@@ -74,7 +74,7 @@ public class PolicyProvider implements PolicyUseCase {
 
                 /// 기본은
                 default -> incomeByFamily(familyCount,
-                        Map.of(1, 120.0, 2, 110.0, 3, 70.0), 70.0);
+                        Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100);
             };
             /// 장기전세
             case LONG_TERM_JEONSE -> incomeByFamily(familyCount,

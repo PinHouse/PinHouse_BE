@@ -38,21 +38,21 @@ public class EvaluationContext {
                 .build();
     }
 
-    /**
-     * 하나의 Rule을 진행할 때마다, RuleResult 값 더하기
-     * @param result    룰 결과
-     */
-    public void addResult(RuleResult result) {
-
-        /// 최종결과에 하나의 Rule에 대한 결과 추가
-        ruleResults.add(result);
-
-        /// Rule을 통과하지 못했다면, 공급유형에서 제거하도록 설정
-        if (!result.pass()) {
-            SupplyType candidate = (SupplyType) result.details().get("candidate");
-            currentCandidates.remove(candidate);
-        }
-    }
+//    /**
+//     * 하나의 Rule을 진행할 때마다, RuleResult 값 더하기
+//     * @param result    룰 결과
+//     */
+//    public void addResult(RuleResult result) {
+//
+//        /// 최종결과에 하나의 Rule에 대한 결과 추가
+//        ruleResults.add(result);
+//
+//        /// Rule을 통과하지 못했다면, 공급유형에서 제거하도록 설정
+//        if (!result.pass()) {
+//            SupplyType candidate = (SupplyType) result.details().get("candidate");
+//            currentCandidates.remove(candidate);
+//        }
+//    }
 
 
     /**

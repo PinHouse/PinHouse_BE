@@ -10,14 +10,14 @@ public class RentalSupplyMapping {
                     SupplyType.YOUTH_SPECIAL,
                     SupplyType.ELDER_SPECIAL,
                     SupplyType.NEWCOUPLE_SPECIAL,
-                    SupplyType.COUPLE_SPECIAL,
+                    SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.GENERAL,
                     SupplyType.MULTICHILD_SPECIAL,
                     SupplyType.SPECIAL
             ),
             RentalType.NATIONAL_RENTAL, List.of(
                     SupplyType.NEWCOUPLE_SPECIAL,
-                    SupplyType.COUPLE_SPECIAL,
+                    SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.GENERAL,
                     SupplyType.SPECIAL
             ),
@@ -25,7 +25,7 @@ public class RentalSupplyMapping {
                     SupplyType.STUDENT_SPECIAL,
                     SupplyType.YOUTH_SPECIAL,
                     SupplyType.NEWCOUPLE_SPECIAL,
-                    SupplyType.COUPLE_SPECIAL,
+                    SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.ELDER_SPECIAL
             ),
             RentalType.PUBLIC_RENTAL, List.of(
@@ -40,14 +40,14 @@ public class RentalSupplyMapping {
             ),
             RentalType.PERMANENT_RENTAL, List.of(
                     SupplyType.NEWCOUPLE_SPECIAL,
-                    SupplyType.COUPLE_SPECIAL,
+                    SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.ELDER_SUPPORT_SPECIAL,
                     SupplyType.ELDER_SPECIAL,
                     SupplyType.SPECIAL
             ),
             RentalType.LONG_TERM_JEONSE, List.of(
                     SupplyType.NEWCOUPLE_SPECIAL,
-                    SupplyType.COUPLE_SPECIAL,
+                    SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.MULTICHILD_SPECIAL
             )
     );

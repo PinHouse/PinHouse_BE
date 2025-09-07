@@ -35,8 +35,7 @@ public class RuleService implements RuleChainUseCase {
         for (Rule rule : rules) {
 
             /// 진행한 룰 결과 더하기
-            RuleResult result = rule.evaluate(context);
-            context.addResult(result);
+            rule.evaluate(context);
         }
 
         return context;

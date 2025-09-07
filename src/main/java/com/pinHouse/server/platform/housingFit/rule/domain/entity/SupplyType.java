@@ -11,7 +11,7 @@ public enum SupplyType {
     YOUTH_SPECIAL("청년 특별공급"),
     STUDENT_SPECIAL("대학생 특별공급"),
     NEWCOUPLE_SPECIAL("신혼부부 특별공급"),
-    COUPLE_SPECIAL("한부모 특별공급"),
+    SINGLE_PARENT_SPECIAL("한부모 특별공급"),
     ELDER_SPECIAL("고령자 특별공급"),
     MULTICHILD_SPECIAL("다자녀 특별공급"),
     MINOR_SPECIAL("신생아 특별공급"),

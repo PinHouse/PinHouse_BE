@@ -1,7 +1,6 @@
 package com.pinHouse.server.platform.housingFit.rule.domain.rule;
 
 import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.EducationStatus;
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.platform.housingFit.rule.application.usecase.PolicyUseCase;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationContext;
@@ -13,58 +12,53 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Order(11)
+@Order(16)
 @Component
 @RequiredArgsConstructor
-public class StudentRule implements Rule {
+public class MinorRule implements Rule {
 
+    /// 임대주택 유형 검증기 도입
     private final PolicyUseCase policyUseCase;
 
     @Override
     public RuleResult evaluate(EvaluationContext ctx) {
 
+        /// 진단 정보 가져오기
         Diagnosis diagnosis = ctx.getDiagnosis();
+
+        /// 현재 후보 리스트 복사
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        boolean isStudent = !diagnosis.getEducationStatus().equals(EducationStatus.NONE);
-        boolean isMarried = diagnosis.isMaritalStatus();
-        boolean hasCar = diagnosis.getCarValue() > 0 || diagnosis.isHasCar();
+        /// 결혼 여부 & 신생아 여부
+        boolean minorOk = diagnosis.getUnbornChildrenCount() >= 1;
 
-        // 기본적으로 실패 이유를 수집
-        var failReasons = new ArrayList<String>();
+        /// 신생아가 1명이상 없다면, 제거한다.
+        if (!minorOk) {
 
-        if (!isStudent) {
-            failReasons.add("학생이 아님");
-        }
-        if (isMarried) {
-            failReasons.add("기혼 상태");
-        }
-        if (hasCar) {
-            failReasons.add("차량 보유");
-        }
+            /// 삭제
+            candidates.removeIf(c ->
+                    c.supplyType() == SupplyType.MINOR_SPECIAL);
 
-        // 조건 불충족 -> 후보에서 제거
-        if (!failReasons.isEmpty()) {
-            candidates.removeIf(c -> c.supplyType() == SupplyType.STUDENT_SPECIAL);
+            /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
 
             return RuleResult.pass(code(),
-                    "대학생 특별공급 해당 없음",
+                    "신생아 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,
-                            "failReason", failReasons
+                            "failReason", "신생아의 자녀가 없음"
                     ));
         }
 
-        // 모든 조건 만족
         return RuleResult.pass(code(),
-                "대학생 특별공급 후보",
-                Map.of("candidate", candidates));
+                "신생아 특별공급 후보",
+                Map.of(
+                        "candidate", candidates));
     }
+
 
     @Override
     public String code() {
-        return "CANDIDATE_STUDENT_SPECIAL";
+        return "MINOR_SPECIAL";
     }
 }
-
