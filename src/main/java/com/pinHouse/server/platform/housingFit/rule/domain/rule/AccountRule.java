@@ -8,7 +8,6 @@ import com.pinHouse.server.platform.housingFit.rule.domain.entity.EvaluationCont
 import com.pinHouse.server.platform.housingFit.rule.application.dto.response.RuleResult;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.RentalType;
 import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyRentalCandidate;
-import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ import java.util.Map;
 import static com.pinHouse.server.platform.housingFit.rule.domain.entity.RentalType.*;
 
 /** 3) 청약통장 요건(가입기간/예치금/상품유형) */
-@Order(3)
+@Order(2)
 @Component
 @RequiredArgsConstructor
 public class AccountRule implements Rule {

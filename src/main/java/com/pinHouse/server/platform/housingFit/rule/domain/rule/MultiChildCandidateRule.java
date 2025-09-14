@@ -40,7 +40,7 @@ public class MultiChildCandidateRule implements Rule {
             /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
 
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "다자녀 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,

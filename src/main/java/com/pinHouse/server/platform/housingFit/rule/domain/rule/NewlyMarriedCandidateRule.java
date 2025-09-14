@@ -14,7 +14,7 @@ import java.util.Map;
 
 /** 6) 신혼 부부 요건 */
 
-@Order(6)
+@Order(8)
 @Component
 @RequiredArgsConstructor
 public class NewlyMarriedCandidateRule implements Rule {
@@ -65,7 +65,7 @@ public class NewlyMarriedCandidateRule implements Rule {
                 failReason = "자녀 요건 미충족";
             }
 
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "신혼부부 조건 해당 없음",
                     Map.of(
                             "candidate", candidates,

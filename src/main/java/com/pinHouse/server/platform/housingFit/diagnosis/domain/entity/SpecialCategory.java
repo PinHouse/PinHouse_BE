@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housingFit.diagnosis.domain.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.platform.housingFit.rule.domain.entity.SupplyType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -18,16 +19,19 @@ public enum SpecialCategory {
     SUBSTITUTE_CARE("대리양육가정"),
 
     /// 15) 기타 특수 계층
-    FOSTER_FAMILY_OR_CHILDCARE_TERMINATING_WITHIN_2Y("위탁가정/보육원 시설종료2년이내, 종료예정자"),
+    DEMOLITION("철거민"),
     NATIONAL_HERO_PERSON_OR_HOUSEHOLD("국가 유공자 본인/가구"),
     COMFORT_WOMAN_PERSON_OR_HOUSEHOLD("위안부 피해자 본인/가구"),
     NORTH_KOREAN_DEFECTOR("북한이탈주민 본인"),
-    RETURNED_MILITARY_PERSONNEL("귀한 국군포로 본인"),
     DISABLED_PERSON_OR_HOUSEHOLD("장애인 등록자/장애인 가구"),
-    TRAFFIC_ACCIDENT_SURVIVOR_CHILD_HOUSEHOLD("교통사고 유자녀 가정"),
-    PUBLIC_RENTAL_EXIT("부도 공공임대 퇴거자"),
     YEONGGU_RENTAL_EXIT("영구임대 퇴거자"),
+    LONG_SERVICE_VETERAN("장기복무 제대군인"),
     HOUSING_VULNERABLE_OR_EMERGENCY_SUPPORT("주거 취약계층/긴급 주거지원 대상자"),
+
+
+    FOSTER_FAMILY_OR_CHILDCARE_TERMINATING_WITHIN_2Y("위탁가정/보육원 시설종료2년이내, 종료예정자"),
+    RETURNED_MILITARY_PERSONNEL("귀한 국군포로 본인"),
+    TRAFFIC_ACCIDENT_SURVIVOR_CHILD_HOUSEHOLD("교통사고 유자녀 가정"),
     INDUSTRIAL_WORKER("산단근로자"),
     GUARANTOR_REFUSER("보증 거절자"),
 
@@ -41,5 +45,36 @@ public enum SpecialCategory {
     @JsonValue
     public String getDescription() {
         return description;
+    }
+
+    /// 변환하기
+    public SupplyType toSupplyType() {
+        return switch (this) {
+            /// 철거민
+            case DEMOLITION -> SupplyType.DEMOLITION;
+
+            /// 국가유공자
+            case NATIONAL_HERO_PERSON_OR_HOUSEHOLD -> SupplyType.NATIONAL_MERIT;
+
+            /// 장기복무
+            case LONG_SERVICE_VETERAN -> SupplyType.LONG_SERVICE_VETERAN;
+
+            /// 북한 이탈주민
+            case NORTH_KOREAN_DEFECTOR -> SupplyType.NORTH_DEFECTOR;
+
+            /// 위안부
+            case COMFORT_WOMAN_PERSON_OR_HOUSEHOLD -> SupplyType.COMFORT_WOMAN_VICTIM;
+
+            /// 장애인
+            case DISABLED_PERSON_OR_HOUSEHOLD -> SupplyType.DISABLED;
+
+            /// 비주택자
+            case HOUSING_VULNERABLE_OR_EMERGENCY_SUPPORT -> SupplyType.NON_HOUSING_RESIDENT;
+
+            /// 영구임대 퇴거
+            case YEONGGU_RENTAL_EXIT -> SupplyType.PERMANENT_LEASE_EVICTEE;
+
+            default -> null;
+        };
     }
 }

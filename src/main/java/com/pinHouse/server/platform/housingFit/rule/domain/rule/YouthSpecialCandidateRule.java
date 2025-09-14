@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /** 5) 미성년자 후보 탐색 규칙 */
-@Order(10)
+@Order(12)
 @Component
 @RequiredArgsConstructor
 public class YouthSpecialCandidateRule implements Rule {
@@ -57,7 +57,7 @@ public class YouthSpecialCandidateRule implements Rule {
                 failReason = "미혼";
             }
 
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "미성년자 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,

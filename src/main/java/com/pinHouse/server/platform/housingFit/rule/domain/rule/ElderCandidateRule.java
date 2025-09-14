@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /** 9) 고령자 제한 */
-@Order(9)
+@Order(3)
 @Component
 @RequiredArgsConstructor
 public class ElderCandidateRule implements Rule {

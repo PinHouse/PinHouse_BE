@@ -21,7 +21,7 @@ import static com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Sp
  * 한부모 특별 공급 조사
  */
 
-@Order(12)
+@Order(9)
 @Component
 @RequiredArgsConstructor
 public class SingleParentRule implements Rule {
@@ -58,7 +58,7 @@ public class SingleParentRule implements Rule {
                     Map.of("candidate", candidates));
         }
 
-        return RuleResult.fail(code(),
+        return RuleResult.pass(code(),
                 "한부모 특별공급 후보",
                 Map.of("candidate", candidates));
     }

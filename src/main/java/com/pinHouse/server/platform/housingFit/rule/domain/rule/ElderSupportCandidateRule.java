@@ -16,7 +16,7 @@ import static com.pinHouse.server.platform.housingFit.diagnosis.domain.entity.Sp
 
 
 /** 8) 노부모 부양 지원 */
-@Order(8)
+@Order(4)
 @Component
 @RequiredArgsConstructor
 public class ElderSupportCandidateRule implements Rule {
@@ -43,13 +43,13 @@ public class ElderSupportCandidateRule implements Rule {
             ctx.setCurrentCandidates(candidates);
 
             /// 조건이 없으므로 넘어간다.
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "노부모 부양 특별공급 해당 없음",
                     Map.of("candidate", candidates));
         }
 
         /// 조건 충족으로 넘어간다.
-        return RuleResult.fail(code(),
+        return RuleResult.pass(code(),
                 "노부모 부양 특별공급 후보",
                 Map.of("candidate", candidates));
     }

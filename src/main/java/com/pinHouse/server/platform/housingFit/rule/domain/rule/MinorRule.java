@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Order(16)
+@Order(6)
 @Component
 @RequiredArgsConstructor
 public class MinorRule implements Rule {
@@ -42,7 +42,7 @@ public class MinorRule implements Rule {
             /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
 
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "신생아 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,

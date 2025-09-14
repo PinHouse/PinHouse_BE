@@ -18,7 +18,7 @@ import java.util.Map;
  * 생애 최초 특별 공급
  */
 
-@Order(12)
+@Order(5)
 @Component
 @RequiredArgsConstructor
 public class FirstSpecialRule implements Rule {

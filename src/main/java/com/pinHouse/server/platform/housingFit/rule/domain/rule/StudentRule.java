@@ -48,7 +48,7 @@ public class StudentRule implements Rule {
             candidates.removeIf(c -> c.supplyType() == SupplyType.STUDENT_SPECIAL);
             ctx.setCurrentCandidates(candidates);
 
-            return RuleResult.pass(code(),
+            return RuleResult.fail(code(),
                     "대학생 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,
