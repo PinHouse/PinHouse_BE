@@ -9,6 +9,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * 카카오API 좌표변환 활용 컴포넌트
+ */
 @Component
 @RequiredArgsConstructor
 public class KakaoApi implements LocationUtil {
@@ -21,6 +24,10 @@ public class KakaoApi implements LocationUtil {
 
     private static final String KAKAO_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
+    /**
+     * 좌표 변환 로직
+     * @param address   변환할 주소
+     */
     @Override
     public Location getLocation(String address) {
         // 헤더 생성
@@ -44,7 +51,7 @@ public class KakaoApi implements LocationUtil {
                 double latitude = first.path("y").asDouble();  // 위도
                 double longitude = first.path("x").asDouble(); // 경도
 
-                return Location.of(latitude, longitude);
+                return Location.of(longitude, latitude);
             }
         } catch (Exception e) {
             throw new RuntimeException("Kakao API 호출 실패: " + e.getMessage());

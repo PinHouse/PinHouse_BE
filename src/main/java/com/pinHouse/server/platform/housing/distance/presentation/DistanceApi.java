@@ -1,11 +1,14 @@
 package com.pinHouse.server.platform.housing.distance.presentation;
 
+import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.distance.presentation.swaager.DistanceApiSpec;
 import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notices/distance")
@@ -14,17 +17,16 @@ public class DistanceApi implements DistanceApiSpec {
 
     private final DistanceUseCase distanceUseCase;
 
-    @GetMapping()
-    public String getDistance(
+    @GetMapping
+    public ApiResponse<List<DistanceResponse>> getDistance(
             @RequestParam double startY,
             @RequestParam double startX,
             @RequestParam double endY,
             @RequestParam double endX
     ) throws UnsupportedEncodingException {
 
-        String path = distanceUseCase.findPath(startY, startX, endY, endX);
-
-        return path;
+        /// 리턴
+        return ApiResponse.ok(distanceUseCase.findPath(startY, startX, endY, endX));
     }
 
 }
