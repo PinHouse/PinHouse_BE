@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.notice.application.usecase;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.response.NoticeDTO;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
+import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -38,6 +39,9 @@ public interface NoticeUseCase {
 
     /// 모든 공고 가져오기
     List<Notice> loadAllNotices();
+
+    /// 필터링을 위한 함수
+    List<Notice> filterNotices(FastSearchRequest request);
 
 
 }

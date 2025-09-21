@@ -33,6 +33,7 @@ public enum ErrorCode {
     INVALID_INPUT(400_002, HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
     NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
     TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
+    BAD_REQUEST_PINPOINT(400_005, HttpStatus.BAD_REQUEST, "핀포인트와 유저가 일치하지않습니다."),
 
 
     // ========================
@@ -75,6 +76,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     NOT_NOTICE(404_007,HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다"),
+    NOT_PINPOINT(404_008, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
 
     // ========================
     // 409 Conflict
