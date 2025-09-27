@@ -67,9 +67,6 @@ public class Exhibition implements Facility {
     @Field("RDNMADR_NM")
     private String roadNameAddress;
 
-    @Field("BULD_NO")
-    private int buildingNumber;
-
     @Field("LC_LO")
     private double longitude;
 

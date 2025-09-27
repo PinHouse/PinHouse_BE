@@ -41,9 +41,6 @@ public class Hospital implements Facility {
     @Field("도로명전체주소")
     private String roadFullAddress;
 
-    @Field("도로명우편번호")
-    private int roadPostalCode;
-
     @Field("사업장명")
     private String businessName;
 

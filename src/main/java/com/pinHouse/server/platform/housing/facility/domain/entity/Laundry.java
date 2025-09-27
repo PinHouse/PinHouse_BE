@@ -34,9 +34,6 @@ public class Laundry implements Facility {
     @Field("소재지면적")
     private double area;
 
-    @Field("소재지우편번호")
-    private String zipcode;
-
     @Field("소재지전체주소")
     private String fullAddress;
 

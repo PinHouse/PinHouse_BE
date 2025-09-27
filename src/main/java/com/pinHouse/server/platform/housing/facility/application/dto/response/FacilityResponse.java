@@ -37,6 +37,20 @@ public class FacilityResponse {
     /** 주변 공원 리스트 */
     private List<Park> parks;
 
+    /** 주변 전시관 리스트 */
+    private List<Exhibition> exhibitions;
+
+    /** 주변 빨래방 리스트 */
+    private List<Laundry> laundries;
+
+    /** 주변 병원 리스트 */
+    private List<Hospital> hospitals;
+
+    /** 주변 마트 리스트 */
+    private List<Mart> marts;
+
+
+
     /**
      * NoticeInfra 팩토리 메서드
      *
@@ -46,6 +60,10 @@ public class FacilityResponse {
      * @param sports 주변 스포츠 시설 리스트
      * @param walkings 주변 산책로 리스트
      * @param parks 주변 공원 리스트
+     * @param exhibitions 주변 전시관 리스트
+     * @param laundries 주변 빨래방 리스트
+     * @param hospitals 주변 병원 리스트
+     * @param marts 주변 마트 리스트
      * @return NoticeInfra 도메인 객체
      */
     public static FacilityResponse of(
@@ -54,7 +72,11 @@ public class FacilityResponse {
             List<Animal> animals,
             List<Sport> sports,
             List<Walking> walkings,
-            List<Park> parks
+            List<Park> parks,
+            List<Exhibition> exhibitions,
+            List<Laundry> laundries,
+            List<Hospital> hospitals,
+            List<Mart> marts
     ) {
         return FacilityResponse.builder()
                 .notice(notice)
@@ -63,6 +85,10 @@ public class FacilityResponse {
                 .sports(sports)
                 .walkings(walkings)
                 .parks(parks)
+                .exhibitions(exhibitions)
+                .laundries(laundries)
+                .hospitals(hospitals)
+                .marts(marts)
                 .build();
     }
 }

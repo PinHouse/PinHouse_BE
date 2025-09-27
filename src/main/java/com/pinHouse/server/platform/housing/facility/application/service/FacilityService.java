@@ -31,8 +31,14 @@ public class FacilityService implements FacilityUseCase {
     private final WalkingDocumentRepository walkingRepository;
     private final SportDocumentRepository sportRepository;
 
+    /// 추가된 부분
+    private final ExhibitionDocumentRepository exhibitionRepository;
+    private final LaundryDocumentRepository laundryRepository;
+    private final HospitalDocumentRepository hospitalRepository;
+    private final MartDocumentRepository martRepository;
+
     /// 상수
-    private final double radiusKm = 1.5;
+    private final double radiusKm = 2;
     private final double radiusInRadians = radiusKm / 6371.0;
 
     // =================
@@ -79,9 +85,35 @@ public class FacilityService implements FacilityUseCase {
                 notice.getLocation().getLatitude(),
                 radiusInRadians);
 
+        /// 주변에 존재하는 전시회
+        List<Exhibition> exhibitions = exhibitionRepository.findByLocation(
+                notice.getLocation().getLongitude(),
+                notice.getLocation().getLatitude(),
+                radiusInRadians
+        );
 
+        /// 주변에 존재하는 빨래
+        List<Laundry> laundries = laundryRepository.findByLocation(
+                notice.getLocation().getLongitude(),
+                notice.getLocation().getLatitude(),
+                radiusInRadians
+        );
+
+        /// 주변에 존재하는 병원
+        List<Hospital> hospitals = hospitalRepository.findByLocation(
+                notice.getLocation().getLongitude(),
+                notice.getLocation().getLatitude(),
+                radiusInRadians
+        );
+
+        /// 주변에 존재하는 대형마트
+        List<Mart> marts = martRepository.findByLocation(
+                notice.getLocation().getLongitude(),
+                notice.getLocation().getLatitude(),
+                radiusInRadians
+        );
         /// 객체 생성
-        return FacilityResponse.of(notice, libraries, animals, sports, walkings, parks);
+        return FacilityResponse.of(notice, libraries, animals, sports, walkings, parks, exhibitions, laundries, hospitals, marts);
     }
 
     // =================
@@ -104,6 +136,10 @@ public class FacilityService implements FacilityUseCase {
                             case ANIMAL -> animalRepository.findByLocation(lng, lat, radiusInRadians);
                             case WALKING -> walkingRepository.findByLocation(lng, lat, radiusInRadians);
                             case SPORT -> sportRepository.findByLocation(lng, lat, radiusInRadians);
+                            case EXHIBITION -> exhibitionRepository.findByLocation(lng, lat, radiusInRadians);
+                            case LAUNDRY -> laundryRepository.findByLocation(lng, lat, radiusInRadians);
+                            case HOSPITAL -> hospitalRepository.findByLocation(lng, lat, radiusInRadians);
+                            case STORE -> martRepository.findByLocation(lng, lat, radiusInRadians);
                         };
                         return facilityList.size() >= 2;
                     });
