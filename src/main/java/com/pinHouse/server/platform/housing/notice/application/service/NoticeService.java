@@ -6,6 +6,7 @@ import com.pinHouse.server.platform.housing.notice.application.dto.response.Noti
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
+import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -116,6 +117,18 @@ public class NoticeService implements NoticeUseCase {
     @Override
     public List<Notice> loadAllNotices() {
         return repository.findAll();
+    }
+
+    /**
+     * 필터링을 위한 함수
+     * @param request   DTO
+     */
+    @Override
+    public List<Notice> filterNotices(FastSearchRequest request) {
+        return repository.findAll()
+                .stream()
+                .findFirst().stream()
+                .toList();
     }
 
 }

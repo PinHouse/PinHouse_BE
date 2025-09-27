@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
 
-import com.pinHouse.server.platform.region.domain.entity.Location;
+import com.pinHouse.server.platform.Location;
 
 public interface Facility {
 
