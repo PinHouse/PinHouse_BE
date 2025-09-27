@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.housing.facility.domain.entity;
 
 
+import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.facility.domain.entity.infra.Facility;
-import com.pinHouse.server.platform.region.domain.entity.Location;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -84,6 +84,5 @@ public class Exhibition implements Facility {
 
     @Field("location")
     private Location location;
-
 
 }
