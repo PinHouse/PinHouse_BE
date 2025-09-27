@@ -153,6 +153,78 @@ public record InfraDTO() {
         }
     }
 
+    /** 전시관 정보 */
+    @Builder
+    public record ExhibitionResponse(String name, String category, String address) {
+        public static ExhibitionResponse from(Exhibition exhibition) {
+            // address 조합
+            String address = String.format("%s %s %s %s",
+                    exhibition.getProvinceName(),   // 시·도
+                    exhibition.getCityName(),   // 시·군·구
+                    exhibition.getLegalDongName(),// 읍·면·동
+                    exhibition.getLotNumber()      // 번지
+            );
+
+            return ExhibitionResponse.builder()
+                    .name(exhibition.getPoiName())
+                    .category(exhibition.getMainClassificationName())
+                    .address(address)
+                    .build();
+        }
+
+        public static List<ExhibitionResponse> from(List<Exhibition> exhibitions) {
+            return exhibitions.stream()
+                    .map(ExhibitionResponse::from)
+                    .toList();
+        }
+    }
+
+    /** 빨래방 정보 */
+    @Builder
+    public record LaundryResponse(String name, String address) {
+        public static LaundryResponse from(Laundry laundry) {
+            return LaundryResponse.builder()
+                    .name(laundry.getBusinessName())
+                    .address(laundry.getFullAddress())
+                    .build();
+        }
+        public static List<LaundryResponse> from(List<Laundry> laundries) {
+            return laundries.stream().map(LaundryResponse::from).toList();
+        }
+    }
+
+    /** 병원 정보 */
+    @Builder
+    public record HospitalResponse(String name, String type, String address) {
+        public static HospitalResponse from(Hospital hospital) {
+            return HospitalResponse.builder()
+                    .name(hospital.getBusinessName())
+                    .type(hospital.getMedicalInstitutionType())
+                    .address(hospital.getFullAddress())
+                    .build();
+        }
+        public static List<HospitalResponse> from(List<Hospital> hospitals) {
+            return hospitals.stream().map(HospitalResponse::from).toList();
+        }
+    }
+
+    /** 마트 정보 */
+    @Builder
+    public record MartResponse(String name, String address) {
+        public static MartResponse from(Mart mart) {
+            return MartResponse.builder()
+                    .name(mart.getBusinessName())
+                    .address(mart.getFullAddress())
+                    .build();
+        }
+        public static List<MartResponse> from(List<Mart> marts) {
+            return marts.stream().map(MartResponse::from).toList();
+        }
+    }
+
+
+    // ... (위 DTO들은 동일)
+
     /**
      * 공지 인프라 통합 응답 객체입니다.
      *
@@ -161,6 +233,10 @@ public record InfraDTO() {
      * @param sports 스포츠 응답 목록
      * @param parks 공원 응답 목록
      * @param walkings 산책로 응답 목록
+     * @param exhibitions 전시관 응답 목록
+     * @param laundries 빨래방 응답 목록
+     * @param hospitals 병원 응답 목록
+     * @param marts 마트 응답 목록
      */
     @Builder
     public record NoticeInfraResponse(
@@ -168,16 +244,33 @@ public record InfraDTO() {
             @Nullable List<AnimalResponse> animals,
             @Nullable List<SportResponse> sports,
             @Nullable List<ParkResponse> parks,
-            @Nullable List<WalkingResponse> walkings
+            @Nullable List<WalkingResponse> walkings,
+            @Nullable List<ExhibitionResponse> exhibitions,
+            @Nullable List<LaundryResponse> laundries,
+            @Nullable List<HospitalResponse> hospitals,
+            @Nullable List<MartResponse> marts
     ) {
-        /** NoticeInfra → 응답 DTO로 일괄 변환 */
+        /** FacilityResponse → 통합 응답 DTO로 일괄 변환 (null-safe 매핑) */
         public static NoticeInfraResponse from(FacilityResponse facilityResponse) {
             return NoticeInfraResponse.builder()
-                    .libraries(LibraryResponse.from(facilityResponse.getLibraries()))
-                    .animals(AnimalResponse.from(facilityResponse.getAnimals()))
-                    .sports(SportResponse.from(facilityResponse.getSports()))
-                    .parks(ParkResponse.from(facilityResponse.getParks()))
-                    .walkings(WalkingResponse.from(facilityResponse.getWalkings()))
+                    .libraries(facilityResponse.getLibraries() == null
+                            ? null : LibraryResponse.from(facilityResponse.getLibraries()))
+                    .animals(facilityResponse.getAnimals() == null
+                            ? null : AnimalResponse.from(facilityResponse.getAnimals()))
+                    .sports(facilityResponse.getSports() == null
+                            ? null : SportResponse.from(facilityResponse.getSports()))
+                    .parks(facilityResponse.getParks() == null
+                            ? null : ParkResponse.from(facilityResponse.getParks()))
+                    .walkings(facilityResponse.getWalkings() == null
+                            ? null : WalkingResponse.from(facilityResponse.getWalkings()))
+                    .exhibitions(facilityResponse.getExhibitions() == null
+                            ? null : ExhibitionResponse.from(facilityResponse.getExhibitions()))
+                    .laundries(facilityResponse.getLaundries() == null
+                            ? null : LaundryResponse.from(facilityResponse.getLaundries()))
+                    .hospitals(facilityResponse.getHospitals() == null
+                            ? null : HospitalResponse.from(facilityResponse.getHospitals()))
+                    .marts(facilityResponse.getMarts() == null
+                            ? null : MartResponse.from(facilityResponse.getMarts()))
                     .build();
         }
     }
