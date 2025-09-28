@@ -1,6 +1,8 @@
 package com.pinHouse.server.platform.user.application.service;
 
 import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
+import com.pinHouse.server.platform.user.application.dto.response.TempUserResponse;
+import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
@@ -13,11 +15,14 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
 
+    /// 저장하기
     private final UserJpaRepository repository;
 
     /// 레디스
@@ -30,11 +35,21 @@ public class UserService implements UserUseCase {
 
     /**
      * 온보딩을 통한 유저 회원가입
-     * @param request   회원가입
+     * @param request 회원가입
      */
     @Override
-    public void saveUser(UserRequest request) {
+    public void saveUser(String tempUserKey, UserRequest request) {
 
+        /// 값 가져오기
+        Object raw = redisTemplate.opsForValue().get(tempUserKey);
+
+        if (raw instanceof TempUserInfo info) {
+
+            /// 값 저장하기
+            saveUser(createUser(info));
+
+            /// 관심
+        }
     }
 
     /**
@@ -52,12 +67,6 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        Optional<User> userJpaEntity = repository.findByEmail(email);
-        return userJpaEntity.isPresent();
-    }
-
-    @Override
     public Optional<User> loadUserBySocialAndSocialId(Provider social, String socialId) {
         return repository.findByProviderAndSocialId(social, socialId);
     }
@@ -65,7 +74,7 @@ public class UserService implements UserUseCase {
 
     /// 최초 회원가입에서 사용하는 함수
     @Override
-    public TempUserInfo getUserByKey(String tempUserKey) {
+    public TempUserResponse getUserByKey(String tempUserKey) {
 
         /// 값 가져오기
         Object raw = redisTemplate.opsForValue().get(tempUserKey);
@@ -77,10 +86,8 @@ public class UserService implements UserUseCase {
 
         try {
             if (raw instanceof TempUserInfo info) {
-                /// 레디스에서 삭제
-                redisTemplate.delete(tempUserKey);
                 /// 리턴
-                return info;
+                return TempUserResponse.from(info);
             }
 
             throw new IllegalStateException("지원하지 않는 Redis 값 타입: " + raw.getClass());
@@ -89,6 +96,20 @@ public class UserService implements UserUseCase {
         }
     }
 
+    /// 내부함수 유저 생성
+    private User createUser(TempUserInfo userInfo) {
+
+        return User.of(
+                Provider.valueOf(userInfo.getSocial()),
+                userInfo.getSocialId(),
+                userInfo.getUsername(),
+                userInfo.getEmail(),
+                userInfo.getImageUrl(),
+                null,
+                parseBirthday(userInfo.getBirthyear(), userInfo.getBirthday()),
+                Gender.getGender(userInfo.getGender())
+        );
+    }
 
 
 }

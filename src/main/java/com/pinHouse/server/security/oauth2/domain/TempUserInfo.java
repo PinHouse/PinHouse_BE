@@ -16,7 +16,9 @@ public class TempUserInfo {
     private String email;
     private String username;
     private String gender;
+    private String birthyear;
     private String birthday;
+    private String imageUrl;
 
     /// 온보딩을 위한 정보를 포함하는 도메인
     public static TempUserInfo from (OAuth2UserInfo userInfo) {
@@ -26,7 +28,9 @@ public class TempUserInfo {
                 .email(userInfo.getEmail())
                 .username(userInfo.getUserName())
                 .gender(userInfo.getGender() == null ? Gender.Other.name() : userInfo.getGender())
-                .birthday(userInfo.getBirthYear() + userInfo.getBirthday())
+                .birthyear(userInfo.getBirthYear())
+                .birthday(userInfo.getBirthday())
+                .imageUrl(userInfo.getImageUrl())
                 .build();
     }
 

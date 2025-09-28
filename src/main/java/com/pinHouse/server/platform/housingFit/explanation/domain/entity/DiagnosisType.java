@@ -1,6 +1,8 @@
 package com.pinHouse.server.platform.housingFit.explanation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.response.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,5 +18,16 @@ public enum DiagnosisType {
     public String getDescription() {
         return description;
     }
+
+    @JsonCreator
+    public static DiagnosisType fromDescription(String description) {
+        for (DiagnosisType diagnosisType : DiagnosisType.values()) {
+            if (diagnosisType.getDescription().equals(description)) {
+                return diagnosisType;
+            }
+        }
+        throw new IllegalArgumentException(ErrorCode.INVALID_INPUT_ENUM.getMessage());
+    }
+
 }
 

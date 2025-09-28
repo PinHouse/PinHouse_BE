@@ -9,7 +9,6 @@ import java.util.Arrays;
 /**
  * 애플리케이션 전역에서 사용하는 에러 코드 Enum입니다.
  * 각 에러는 고유 코드, HTTP 상태, 메시지를 포함합니다.
- *
  * 0~999 : 공통 에러
  * 1000~1999 : 유저 관련 에러
  * 2000~2999 : 영화관 관련 에러
@@ -34,7 +33,9 @@ public enum ErrorCode {
     NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
     TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
     BAD_REQUEST_PINPOINT(400_005, HttpStatus.BAD_REQUEST, "핀포인트와 유저가 일치하지않습니다."),
-
+    INVALID_INPUT_ENUM(400_006, HttpStatus.BAD_REQUEST, "Enum의 입력값이 올바르지 않습니다."),
+    BAD_OAUTH2(400_007, HttpStatus.BAD_REQUEST, "Provider가 적절하지 않습니다"),
+    INTERNAL_LOGIN_SERVER_ERROR(400_008, HttpStatus.BAD_REQUEST, "회원가입 온보딩 중 오류가 발생했습니다."),
 
     // ========================
     // 401 Unauthorized
@@ -55,8 +56,6 @@ public enum ErrorCode {
     UNSUPPORTED_SOCIAL_LOGIN(401_012, HttpStatus.UNAUTHORIZED, "지원하지 않는 소셜 로그인 방식입니다."),
 
 
-
-
     // ========================
     // 403 Forbidden
     // ========================
@@ -75,7 +74,7 @@ public enum ErrorCode {
     POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-    NOT_NOTICE(404_007,HttpStatus.NOT_FOUND,"해당 공고를 찾을 수 없습니다"),
+    NOT_NOTICE(404_007, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
     NOT_PINPOINT(404_008, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
 
     // ========================
@@ -83,23 +82,30 @@ public enum ErrorCode {
     // ========================
     DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
-    BOOKMARK_ALREADY(409_003,HttpStatus.CONFLICT,"이미 해당 상품에 북마크를 등록했습니다"),
+    BOOKMARK_ALREADY(409_003, HttpStatus.CONFLICT, "이미 해당 상품에 북마크를 등록했습니다"),
 
 
     // ========================
     // 500 Internal Server Error
     // ========================
     INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
-    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다."),;
+    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다."),
+    ;
 
 
-    /** 에러 코드 (고유값) */
+    /**
+     * 에러 코드 (고유값)
+     */
     private final Integer code;
 
-    /** HTTP 상태 코드 */
+    /**
+     * HTTP 상태 코드
+     */
     private final HttpStatus httpStatus;
 
-    /** 에러 메시지 */
+    /**
+     * 에러 메시지
+     */
     private final String message;
 
 
