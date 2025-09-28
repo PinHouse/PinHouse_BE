@@ -1,13 +1,16 @@
 package com.pinHouse.server.security.oauth2.service;
 
+import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
-import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
+import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import com.pinHouse.server.security.oauth2.domain.kakao.KakaoUserInfo;
 import com.pinHouse.server.security.oauth2.domain.naver.NaverUserInfo;
+import com.pinHouse.server.security.oauth2.handler.OAuth2FailureHandler;
+import com.pinHouse.server.security.oauth2.handler.SignupRequiredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
-
-@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,8 +48,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        log.info(registrationId + ": " + userNameAttributeName);
-
         /// OAuth2를 바탕으로 정보 생성
         OAuth2UserInfo userInfo = null;
 
@@ -62,30 +60,14 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         /// 존재한다면 로그인
         if (existUser.isPresent()) {
             ///  이미 존재하는 유저를 반환한다.
-
             User user = existUser.get();
-            log.info("이미 로그인한 유저입니다.");
-
             return PrincipalDetails.of(user, oAuth2UserAttributes);
-
         } else {
-            ///  정보를 통해 임시 저장한 뒤, 개인정보 추가하도록 한다.
-
-            User user = User.of(
-                    Provider.valueOf(userInfo.getProvider()),
-                    userInfo.getProviderId(),
-                    userInfo.getUserName(),
-                    userInfo.getEmail(),
-                    userInfo.getImageUrl(),
-                    null,
-                    parseBirthday(userInfo.getBirthYear(), userInfo.getBirthday()),
-                    Gender.getGender(userInfo.getGender())
-            );
-
-            User savedNewUser = userUseCase.saveUser(user);
-
-            return PrincipalDetails.of(savedNewUser, oAuth2UserAttributes);
+            /// 기존에 유저가 없다면, 실패 핸들러로 예외 던지기
+            var temp = TempUserInfo.from(userInfo);
+            throw new SignupRequiredException(temp);
         }
+
     }
 
 
@@ -105,7 +87,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 userInfo = new NaverUserInfo(oAuth2UserAttributes);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown provider: " + registrationId);
+                throw new IllegalArgumentException(ErrorCode.BAD_OAUTH2.getMessage());
         }
 
         return userInfo;
