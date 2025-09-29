@@ -2,12 +2,13 @@ package com.pinHouse.server.platform.user.domain.entity;
 
 import com.pinHouse.server.core.util.BirthDayUtil;
 import com.pinHouse.server.platform.BaseTimeEntity;
+import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -45,6 +46,16 @@ public class User extends BaseTimeEntity {
 
     private LocalDate birthday;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "user_facility_types",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "facility_type")
+    private List<FacilityType> facilityTypes;
+
+
     @PrePersist
     public void generateUUID() {
         if (this.id == null) {
@@ -71,7 +82,7 @@ public class User extends BaseTimeEntity {
     /// 정적 팩토리 메서드
     public static User of(
             Provider provider, String socialId, String name, String email,
-            String profileImage, String phoneNumber, LocalDate birthday, Gender gender
+            String profileImage, String phoneNumber, LocalDate birthday, Gender gender, List<FacilityType> facilityTypes
     ) {
         return User.builder()
                 .id(UUID.randomUUID())
@@ -84,6 +95,7 @@ public class User extends BaseTimeEntity {
                 .birthday(birthday)
                 .gender(gender)
                 .role(Role.USER)
+                .facilityTypes(facilityTypes)
                 .build();
     }
 

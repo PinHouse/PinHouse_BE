@@ -89,6 +89,9 @@ public class JwtTokenService implements JwtTokenUseCase {
 
     }
 
+    /**
+     * 로그아웃
+     */
     @Override
     public void logout(UUID userId, HttpServletRequest request, HttpServletResponse response) {
 

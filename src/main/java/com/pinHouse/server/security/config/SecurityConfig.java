@@ -3,6 +3,7 @@ package com.pinHouse.server.security.config;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationDeniedHandler;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationFailureHandler;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationFilter;
+import com.pinHouse.server.security.oauth2.handler.OAuth2FailureHandler;
 import com.pinHouse.server.security.oauth2.handler.OAuth2SuccessHandler;
 import com.pinHouse.server.security.oauth2.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,18 @@ import static com.pinHouse.server.platform.user.domain.entity.Role.USER;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    /// OAUTH2 관련
     private final OAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+
+    /// JWT 관련
     private final JwtAuthenticationFilter jwtFilter;
     private final JwtAuthenticationFailureHandler jwtFailureHandler;
     private final JwtAuthenticationDeniedHandler jwtDeniedHandler;
+
+    /// 시큐리티 및 CORS
     private final RequestMatcherHolder requestMatcherHolder;
     private final CorsConfigurationSource corsConfigurationSource;
 
@@ -57,9 +65,7 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService)
                         )
                         .successHandler(oAuth2SuccessHandler)
-                        .failureHandler((request, response, exception) -> {
-                            response.sendRedirect("/login?error");
-                        })
+                        .failureHandler(oAuth2FailureHandler)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> {

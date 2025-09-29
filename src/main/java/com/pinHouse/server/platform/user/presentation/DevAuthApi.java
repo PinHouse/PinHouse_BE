@@ -35,7 +35,7 @@ public class DevAuthApi implements DevAuthApiSpec {
 
 
 
-    @PostMapping("/dev-login")
+    @PostMapping("/dev")
     public ApiResponse<Void> devLogin(HttpServletResponse httpServletResponse) {
 
         /// 테스트용 유저 정보 수정
