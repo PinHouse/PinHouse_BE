@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.user.application.service;
 
+import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
 import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
 import com.pinHouse.server.platform.user.application.dto.response.TempUserResponse;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
@@ -12,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
 
@@ -45,10 +45,8 @@ public class UserService implements UserUseCase {
 
         if (raw instanceof TempUserInfo info) {
 
-            /// 값 저장하기
-            saveUser(createUser(info));
-
-            /// 관심
+            /// 관심 목록과 함께, 값 저장하기
+            saveUser(createUser(info, request.getFacilityTypes()));
         }
     }
 
@@ -97,7 +95,7 @@ public class UserService implements UserUseCase {
     }
 
     /// 내부함수 유저 생성
-    private User createUser(TempUserInfo userInfo) {
+    private User createUser(TempUserInfo userInfo, List<FacilityType> facilityTypeList) {
 
         return User.of(
                 Provider.valueOf(userInfo.getSocial()),
@@ -107,7 +105,8 @@ public class UserService implements UserUseCase {
                 userInfo.getImageUrl(),
                 null,
                 parseBirthday(userInfo.getBirthyear(), userInfo.getBirthday()),
-                Gender.getGender(userInfo.getGender())
+                Gender.getGender(userInfo.getGender()),
+                facilityTypeList
         );
     }
 
