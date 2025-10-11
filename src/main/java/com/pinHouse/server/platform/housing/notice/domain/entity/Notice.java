@@ -3,10 +3,7 @@ package com.pinHouse.server.platform.housing.notice.domain.entity;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.deposit.domain.entity.NoticeSupply;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,9 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.*;
 @Document(collection = "home")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notice {
 
     @Id
@@ -82,5 +77,35 @@ public class Notice {
 
     @Field("총세대수")
     private String totalHouseholds;
+
+    /// 빌더 생성자
+    @Builder
+    public Notice(String id, String noticeId, String complexName, String status, String startDate,
+                  String type, String title, String supplier, String views, String endDate,
+                  String address, String region, Location location, List<NoticeSupply> supplyInfo,
+                  String noticeUrl, String myHomePcUrl, String myHomeMobileUrl, String contact,
+                  String winnerAnnouncementDate, String heatingMethod, String totalHouseholds) {
+        this.id = id;
+        this.noticeId = noticeId;
+        this.complexName = complexName;
+        this.status = status;
+        this.startDate = startDate;
+        this.type = type;
+        this.title = title;
+        this.supplier = supplier;
+        this.views = views;
+        this.endDate = endDate;
+        this.address = address;
+        this.region = region;
+        this.location = location;
+        this.supplyInfo = supplyInfo;
+        this.noticeUrl = noticeUrl;
+        this.myHomePcUrl = myHomePcUrl;
+        this.myHomeMobileUrl = myHomeMobileUrl;
+        this.contact = contact;
+        this.winnerAnnouncementDate = winnerAnnouncementDate;
+        this.heatingMethod = heatingMethod;
+        this.totalHouseholds = totalHouseholds;
+    }
 }
 

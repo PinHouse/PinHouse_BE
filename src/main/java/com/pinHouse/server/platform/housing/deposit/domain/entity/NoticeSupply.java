@@ -1,15 +1,10 @@
 package com.pinHouse.server.platform.housing.deposit.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeSupply {
 
     @Field("공급유형")
@@ -26,4 +21,14 @@ public class NoticeSupply {
 
     @Field("모집호수")
     private Recruitment recruitmentCount;
+
+    /// 빌더 생성자
+    @Builder
+    public NoticeSupply(String housingType, String area, Integer monthlyRent, Deposit deposit, Recruitment recruitmentCount) {
+        this.housingType = housingType;
+        this.area = area;
+        this.monthlyRent = monthlyRent;
+        this.deposit = deposit;
+        this.recruitmentCount = recruitmentCount;
+    }
 }

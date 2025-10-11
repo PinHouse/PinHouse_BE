@@ -1,15 +1,10 @@
 package com.pinHouse.server.platform.housing.deposit.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deposit {
 
     @Field("계")
@@ -23,4 +18,13 @@ public class Deposit {
 
     @Field("잔금")
     private Integer balance;
+
+    /// 빌더 생성자
+    @Builder
+    public Deposit(Integer total, Integer contract, Integer middle, Integer balance) {
+        this.total = total;
+        this.contract = contract;
+        this.middle = middle;
+        this.balance = balance;
+    }
 }

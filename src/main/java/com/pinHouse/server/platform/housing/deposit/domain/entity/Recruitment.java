@@ -1,14 +1,10 @@
 package com.pinHouse.server.platform.housing.deposit.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class Recruitment {
 
@@ -20,5 +16,12 @@ public class Recruitment {
 
     @Field("일반공급")
     private Integer general;
-}
 
+    /// 빌더 생성자
+    @Builder
+    public Recruitment(Integer total, Integer priority, Integer general) {
+        this.total = total;
+        this.priority = priority;
+        this.general = general;
+    }
+}
