@@ -1,8 +1,8 @@
-package com.pinHouse.server.security.jwt.util;
+package com.pinHouse.server.security.jwt.application.util;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.security.auth.domain.entity.JwtToken;
-import com.pinHouse.server.security.auth.domain.repository.JwtTokenRedisRepository;
+import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
+import com.pinHouse.server.security.jwt.domain.repository.JwtTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

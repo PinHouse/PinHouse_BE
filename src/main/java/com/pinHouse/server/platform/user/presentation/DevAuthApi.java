@@ -7,7 +7,7 @@ import com.pinHouse.server.platform.user.presentation.swagger.DevAuthApiSpec;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.platform.user.domain.entity.Role;
-import com.pinHouse.server.security.jwt.service.JwtTokenUseCase;
+import com.pinHouse.server.security.jwt.application.usecase.JwtTokenUseCase;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

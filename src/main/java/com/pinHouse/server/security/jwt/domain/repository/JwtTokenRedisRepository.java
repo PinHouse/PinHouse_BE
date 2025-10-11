@@ -1,6 +1,6 @@
-package com.pinHouse.server.security.auth.domain.repository;
+package com.pinHouse.server.security.jwt.domain.repository;
 
-import com.pinHouse.server.security.auth.domain.entity.JwtToken;
+import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
@@ -9,6 +9,9 @@ import java.util.UUID;
 public interface JwtTokenRedisRepository extends CrudRepository<JwtToken, String> {
 
     Optional<JwtToken> findByRefreshToken(String refreshToken);
+
+    Optional<JwtToken> findByRefreshTokenAndUserId(String refreshToken, UUID userId);
+
 
     void deleteByRefreshToken(String refreshToken);
 

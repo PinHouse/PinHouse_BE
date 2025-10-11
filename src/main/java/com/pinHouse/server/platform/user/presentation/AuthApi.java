@@ -3,9 +3,9 @@ package com.pinHouse.server.platform.user.presentation;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.user.application.dto.UserRequest;
 import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
-import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.presentation.swagger.AuthApiSpec;
-import com.pinHouse.server.security.jwt.service.JwtTokenUseCase;
+import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
+import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthApi implements AuthApiSpec {
 
-    private final UserUseCase service;
-    private final JwtTokenUseCase tokenService;
+    private final AuthUseCase service;
+
+    /// HTTP 서비스
+    private final HttpUtil httpUtil;
+
 
     /**
      * 임시 유저 정보 조회

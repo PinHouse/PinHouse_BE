@@ -1,6 +1,6 @@
 package com.pinHouse.server.security.oauth2.handler;
 
-import com.pinHouse.server.security.jwt.service.JwtTokenUseCase;
+import com.pinHouse.server.security.jwt.application.usecase.JwtTokenUseCase;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
