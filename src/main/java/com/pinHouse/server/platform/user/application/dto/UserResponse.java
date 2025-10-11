@@ -8,14 +8,14 @@ import java.util.UUID;
 
 @Builder
 public record UserResponse(
-        @Schema(description = "유저 식별자", example = "1")
+        @Schema(description = "유저 식별자", example = "UUID")
         UUID userId,
 
         @Schema(description = "프로필 이미지 URL", example = "https://cdn.example.com/profile/1.png")
         String imageUrl,
 
-        @Schema(description = "닉네임", example = "이도연")
-        String name
+        @Schema(description = "닉네임", example = "단단한 집")
+        String nickName
 ) {
 
     /// 정적 팩토리 메서드
@@ -23,7 +23,7 @@ public record UserResponse(
         return UserResponse.builder()
                 .userId(user.getId())
                 .imageUrl(user.getProfileImage())
-                .name(user.getName())
+                .nickName(user.getNickname())
                 .build();
     }
 

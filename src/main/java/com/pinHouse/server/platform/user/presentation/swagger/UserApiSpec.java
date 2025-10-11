@@ -1,14 +1,12 @@
 package com.pinHouse.server.platform.user.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.user.application.dto.MyPageResponse;
-import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
-import com.pinHouse.server.platform.user.application.dto.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.UserResponse;
+import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,14 +33,6 @@ public interface UserApiSpec {
     )
     ApiResponse<TempUserResponse> getUser(@RequestParam String tempKey);
 
-
-    /// 핀 포인트 수정
-    @Operation(
-            summary = "유저 핀포인트 수정 API",
-            description = "유저가 저장한, 핀포인트 저장합니다."
-    )
-    ApiResponse<Void> savePinPoint(@AuthenticationPrincipal PrincipalDetails principalDetails);
-
     /// 마이페이지
     @Operation(
             summary = "마이페이지 조회 API",
@@ -59,6 +49,26 @@ public interface UserApiSpec {
     ApiResponse<UserResponse> getOthetUser(
             @Parameter(description = "개발자아이디", example = "12345678-aaaa-bbbb-cccc-123456789abc")
             @PathVariable UUID userId);
+
+    /// 수정하기
+    @Operation(
+            summary = "개인정보 수정 API",
+            description = "JWT를 바탕으로 나만의 정보를 수정합니다."
+    )
+    ApiResponse<Void> updateUser(
+            @RequestBody @Valid UpdateUserRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
+
+    /// 탈퇴하기
+    @Operation(
+            summary = "탈퇴 API",
+            description = "JWT를 바탕으로 탈퇴를 진행합니다."
+    )
+    ApiResponse<Void> delete(
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
 
 }
 

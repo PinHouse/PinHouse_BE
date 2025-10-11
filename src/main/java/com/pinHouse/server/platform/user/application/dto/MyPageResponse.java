@@ -14,6 +14,7 @@ public record MyPageResponse(
         String provider,
         String socialId,
         String name,
+        String nickName,
         String email,
         String phoneNumber,
         String role,
@@ -29,6 +30,7 @@ public record MyPageResponse(
                 .userId(user.getId())
                 .provider(user.getProvider().name())
                 .socialId(user.getSocialId())
+                .nickName(user.getNickname())
                 .name(user.getName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())

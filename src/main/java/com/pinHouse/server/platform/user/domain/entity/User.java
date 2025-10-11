@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.user.domain.entity;
 
 import com.pinHouse.server.core.util.BirthDayUtil;
+import com.pinHouse.server.core.util.NicknameUtil;
 import com.pinHouse.server.platform.BaseTimeEntity;
 import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
@@ -28,6 +29,9 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String nickname;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -61,6 +65,7 @@ public class User extends BaseTimeEntity {
                    Provider provider,
                    String socialId,
                    String name,
+                   String nickname,
                    String email,
                    String phoneNumber,
                    Role role,
@@ -72,6 +77,7 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.socialId = socialId;
         this.name = name;
+        this.nickname = nickname;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
@@ -79,22 +85,6 @@ public class User extends BaseTimeEntity {
         this.profileImage = profileImage;
         this.birthday = birthday;
         this.facilityTypes = facilityTypes;
-    }
-
-    /// 정적 팩토리 메서드
-    public static User of(OAuth2UserInfo userInfo) {
-        return User.builder()
-                .id(UUID.randomUUID())
-                .provider(Provider.valueOf(userInfo.getProvider()))
-                .socialId(userInfo.getProviderId())
-                .name(userInfo.getUserName())
-                .email(userInfo.getEmail())
-                .phoneNumber("phoneNumber")
-                .profileImage(userInfo.getImageUrl())
-                .birthday(BirthDayUtil.parseBirthday(userInfo.getBirthYear(), userInfo.getBirthday()))
-                .gender(Gender.getGender(userInfo.getGender()))
-                .role(Role.USER)
-                .build();
     }
 
     /// 정적 팩토리 메서드
@@ -107,6 +97,7 @@ public class User extends BaseTimeEntity {
                 .provider(provider)
                 .socialId(socialId)
                 .name(name)
+                .nickname(NicknameUtil.generateFromSocial(name, socialId))
                 .email(email)
                 .profileImage(profileImage)
                 .phoneNumber(phoneNumber)
@@ -126,6 +117,7 @@ public class User extends BaseTimeEntity {
                 .profileImage("http://image-url")
                 .phoneNumber("010-1111-1111")
                 .name("naver개발자")
+                .nickname("단단한집")
                 .provider(Provider.NAVER)
                 .role(Role.ADMIN)
                 .birthday(LocalDate.now())
@@ -135,5 +127,17 @@ public class User extends BaseTimeEntity {
     }
 
     /// 비즈니스 로직
+    /// 업데이트
+    public void update(String imageUrl, String nickname) {
 
+        if (imageUrl != null) {
+            /// 프로필이미지를 수정할 내용이 존재한다면,
+            this.profileImage = imageUrl;
+        }
+
+        if (nickname != null) {
+            /// 닉네임을 수정할 내용이 존재한다면,
+            this.nickname = nickname;
+        }
+    }
 }

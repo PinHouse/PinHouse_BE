@@ -2,10 +2,7 @@ package com.pinHouse.server.platform.user.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
-import com.pinHouse.server.platform.user.application.dto.MyPageResponse;
-import com.pinHouse.server.platform.user.application.dto.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
-import com.pinHouse.server.platform.user.application.dto.UserResponse;
+import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
@@ -73,6 +70,29 @@ public class UserService implements UserUseCase {
             throw new IllegalStateException("TempUserInfo 복원 실패", e);
         }
     }
+
+    /// 수정
+    @Override
+    @Transactional
+    public void updateUser(UpdateUserRequest request, UUID userId) {
+
+        /// 트랜잭션 (영속성 컨테이너 불러와서 더티체킹)
+        User user = loadUser(userId);
+
+        /// 더티체킹
+        user.update(request.imageUrl(), request.nickname());
+
+    }
+
+    /// 삭제
+    @Override
+    @Transactional
+    public void deleteUser(UUID userId) {
+
+        /// DB에서 삭제
+        repository.deleteById(userId);
+    }
+
 
     /// 나의 정보 조회
     @Override

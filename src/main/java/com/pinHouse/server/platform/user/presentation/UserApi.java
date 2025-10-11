@@ -1,13 +1,12 @@
 package com.pinHouse.server.platform.user.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.user.application.dto.MyPageResponse;
-import com.pinHouse.server.platform.user.application.dto.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
-import com.pinHouse.server.platform.user.application.dto.UserResponse;
+import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.presentation.swagger.UserApiSpec;
+import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +20,9 @@ import java.util.UUID;
 public class UserApi implements UserApiSpec {
 
     private final UserUseCase service;
+
+    /// 쿠키 삭제
+    private final HttpUtil httpUtil;
 
     /// 최초 유저 정보 조횐
     @GetMapping()
@@ -37,15 +39,6 @@ public class UserApi implements UserApiSpec {
 
         /// 서비스
         service.saveUser(tempKey, request);
-
-        return ApiResponse.created();
-    }
-
-    /// 유저가 저장한, 핀포인트 저장하기
-    @PatchMapping()
-    public ApiResponse<Void> savePinPoint(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-        /// 서비스
 
         return ApiResponse.created();
     }
@@ -72,7 +65,37 @@ public class UserApi implements UserApiSpec {
 
         /// 리턴
         return ApiResponse.ok(response);
+    }
 
+    /// 회원정보 수정하기
+    @PatchMapping()
+    public ApiResponse<Void> updateUser(
+            @RequestBody @Valid UpdateUserRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 서비스
+        service.updateUser(request, principalDetails.getId());
+
+        /// 리턴
+        return ApiResponse.updated();
+    }
+
+    /// 회원탈퇴
+    @DeleteMapping()
+    public ApiResponse<Void> delete(
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+
+        /// 서비스
+        service.deleteUser(principalDetails.getId());
+
+        /// 쿠키 삭제
+        httpUtil.removeAccessTokenCookie(httpServletResponse);
+        httpUtil.removeRefreshTokenCookie(httpServletResponse);
+
+        /// 리턴
+        return ApiResponse.deleted();
     }
 
 }
