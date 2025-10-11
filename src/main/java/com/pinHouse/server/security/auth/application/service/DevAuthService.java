@@ -46,7 +46,7 @@ public class DevAuthService {
             user = repository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
         } else {
-            User dev = User.devOf();
+            User dev = User.devOf(id);
             user = repository.save(dev);
         }
 
@@ -54,7 +54,6 @@ public class DevAuthService {
         PrincipalDetails principalDetails = PrincipalDetails.of(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
         /// 토큰 발급하기
         var tokenRequest = JwtTokenRequest.from(user);

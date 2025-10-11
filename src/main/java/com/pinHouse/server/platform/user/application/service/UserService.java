@@ -1,8 +1,11 @@
 package com.pinHouse.server.platform.user.application.service;
 
+import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.user.application.dto.MyPageResponse;
 import com.pinHouse.server.platform.user.application.dto.UserRequest;
 import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
+import com.pinHouse.server.platform.user.application.dto.UserResponse;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
@@ -10,34 +13,30 @@ import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
 
-@Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
 
-    /// 저장하기
     private final UserJpaRepository repository;
 
     /// 레디스
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Override
-    public User saveUser(User user) {
-        return repository.save(user);
-    }
+    // =================
+    //  퍼블릭 로직
+    // =================
 
-    /**
-     * 온보딩을 통한 유저 회원가입
-     * @param request 회원가입
-     */
+    /// 온보딩을 통한 유저 회원가입
     @Override
+    @Transactional
     public void saveUser(String tempUserKey, UserRequest request) {
 
         /// 값 가져오기
@@ -46,32 +45,13 @@ public class UserService implements UserUseCase {
         if (raw instanceof TempUserInfo info) {
 
             /// 관심 목록과 함께, 값 저장하기
-            saveUser(createUser(info, request.facilityTypes()));
+            repository.save(createUser(info, request.facilityTypes()));
         }
     }
 
-    /**
-     * 이메일이 존재하는지 체크
-     * @param userId    유저ID
-     */
+    /// 레디스에 존재하는 데이터 조회
     @Override
-    public boolean checkExistingById(UUID userId) {
-        return repository.existsById(userId);
-    }
-
-    @Override
-    public Optional<User> loadUserById(UUID userId) {
-        return repository.findById(userId);
-    }
-
-    @Override
-    public Optional<User> loadUserBySocialAndSocialId(Provider social, String socialId) {
-        return repository.findByProviderAndSocialId(social, socialId);
-    }
-
-
-    /// 최초 회원가입에서 사용하는 함수
-    @Override
+    @Transactional(readOnly = true)
     public TempUserResponse getUserByKey(String tempUserKey) {
 
         /// 값 가져오기
@@ -94,6 +74,52 @@ public class UserService implements UserUseCase {
         }
     }
 
+    /// 나의 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public MyPageResponse getMyPage(UUID userId) {
+
+        /// 유저 정보 조회
+        User user = loadUserWithFacilityType(userId);
+
+        /// 리턴
+        return MyPageResponse.from(user);
+    }
+
+
+
+    /// 타인의 유저 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getOtherUser(UUID otherUserId) {
+
+        /// 유저 정보 조회
+        User user = loadUser(otherUserId);
+
+        /// 리턴
+        return UserResponse.from(user);
+    }
+
+    // =================
+    //  외부 로직
+    // =================
+    /// ID 기반 조회
+    @Transactional(readOnly = true)
+    public User loadUser(UUID userId) {
+        return repository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+    }
+
+    /// 소셜로그인 중복 로그인 조횐
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> loadUserBySocialAndSocialId(Provider social, String socialId) {
+        return repository.findByProviderAndSocialId(social, socialId);
+    }
+
+    // =================
+    //  내부 로직
+    // =================
     /// 내부함수 유저 생성
     private User createUser(TempUserInfo userInfo, List<FacilityType> facilityTypeList) {
 
@@ -108,6 +134,13 @@ public class UserService implements UserUseCase {
                 Gender.getGender(userInfo.getGender()),
                 facilityTypeList
         );
+    }
+
+    protected User loadUserWithFacilityType(UUID userId) {
+        return repository.findWithFacilityTypesById(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+
+
     }
 
 

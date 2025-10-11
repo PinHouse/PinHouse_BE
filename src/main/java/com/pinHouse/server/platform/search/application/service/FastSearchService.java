@@ -50,8 +50,8 @@ public class FastSearchService implements FastSearchUseCase {
     public List<FastSearchResponse> search(UUID userId, FastSearchRequest request) {
 
         /// 유저가 존재하는지 체크
-        User user = userService.loadUserById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+        User user = userService.loadUser(userId);
+
 
         /// 유저와 핀 포인트가 일치하는지 조회
         boolean checkPinPoint = pinPointService.checkPinPoint(request.pinPointId(), user.getId());

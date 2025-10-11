@@ -14,17 +14,16 @@ import java.util.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-@AllArgsConstructor
-@Builder
 public class User extends BaseTimeEntity {
 
     @Id
-    @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "id", columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
+    @Column(nullable = false)
     private String socialId;
 
     @Column(nullable = false)
@@ -42,6 +41,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(nullable = true)
     private String profileImage;
 
     private LocalDate birthday;
@@ -55,12 +55,30 @@ public class User extends BaseTimeEntity {
     @Column(name = "facility_type")
     private List<FacilityType> facilityTypes;
 
-
-    @PrePersist
-    public void generateUUID() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
+    /// 빌더 생성자
+    @Builder
+    protected User(UUID id,
+                   Provider provider,
+                   String socialId,
+                   String name,
+                   String email,
+                   String phoneNumber,
+                   Role role,
+                   Gender gender,
+                   String profileImage,
+                   LocalDate birthday,
+                   List<FacilityType> facilityTypes) {
+        this.id = id;
+        this.provider = provider;
+        this.socialId = socialId;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.gender = gender;
+        this.profileImage = profileImage;
+        this.birthday = birthday;
+        this.facilityTypes = facilityTypes;
     }
 
     /// 정적 팩토리 메서드
@@ -98,5 +116,24 @@ public class User extends BaseTimeEntity {
                 .facilityTypes(facilityTypes)
                 .build();
     }
+
+    /// 정적 팩토리 메서드
+    public static User devOf(UUID id) {
+        return User.builder()
+                .id(id)
+                .socialId("dev-naver-id")
+                .email("pinhouse_naver@example.com")
+                .profileImage("http://image-url")
+                .phoneNumber("010-1111-1111")
+                .name("naver개발자")
+                .provider(Provider.NAVER)
+                .role(Role.ADMIN)
+                .birthday(LocalDate.now())
+                .gender(Gender.Male)
+                .facilityTypes(List.of())
+                .build();
+    }
+
+    /// 비즈니스 로직
 
 }
