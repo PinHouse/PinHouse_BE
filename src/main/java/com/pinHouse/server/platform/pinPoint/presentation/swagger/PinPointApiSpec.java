@@ -40,7 +40,7 @@ public interface PinPointApiSpec {
 
     /// 목록 조회
     @Operation(
-            summary = "핀포인트들 목록조회 API",
+            summary = "핀포인트 목록조회 API",
             description = "나의 핀포인트 목록 들을 조회하는 API 입니다."
     )
     ApiResponse<List<PinPointResponse>> getPinPoints(
@@ -50,7 +50,7 @@ public interface PinPointApiSpec {
 
     /// 수정
     @Operation(
-            summary = "핀포인트들 수정 API",
+            summary = "핀포인트 수정 API",
             description = "나의 핀포인트를 수정하는 API 입니다."
     )
     ApiResponse<Void> updatePinPoint(
@@ -61,7 +61,7 @@ public interface PinPointApiSpec {
 
     /// 삭제
     @Operation(
-            summary = "핀포인트들 삭제 API",
+            summary = "핀포인트 삭제 API",
             description = "나의 핀포인트를 삭제하는 API 입니다."
     )
     ApiResponse<Void> deletePinPoint(

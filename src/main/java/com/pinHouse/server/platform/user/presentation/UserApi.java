@@ -70,7 +70,7 @@ public class UserApi implements UserApiSpec {
     }
 
     /// 회원정보 수정하기
-    @PatchMapping()
+    @PatchMapping("/mypage")
     @CheckLogin
     public ApiResponse<Void> updateUser(
             @RequestBody @Valid UpdateUserRequest request,

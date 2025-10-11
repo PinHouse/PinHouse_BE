@@ -7,6 +7,7 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder
+@Schema(name = "[응답][사용자] 사용자 정보 Response", description = "사용자 정보를 포함하는 응답 DTO입니다.")
 public record UserResponse(
         @Schema(description = "유저 식별자", example = "UUID")
         UUID userId,
