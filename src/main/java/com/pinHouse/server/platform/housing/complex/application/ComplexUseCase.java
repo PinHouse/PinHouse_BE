@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application;
 
+import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
@@ -13,11 +14,16 @@ public interface ComplexUseCase {
     //  퍼블릭 로직
     // =================
 
+    /// 상세 조회
+    ComplexDetailResponse getComplex(String id);
+
     /// 예산 시뮬레이터
     DepositResponse getLeaseByPercent(String id, String type, double percentage);
 
     /// 거리 시뮬레이터
     List<DistanceResponse> getDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
+
+    /// 비교 기능
 
     // =================
     //  외부 로직

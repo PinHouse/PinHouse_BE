@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.presentation.swagger.ComplexApiSpec;
@@ -20,6 +21,20 @@ import java.util.List;
 public class ComplexApi implements ComplexApiSpec {
 
     private final ComplexUseCase service;
+
+
+    /// 상세 조회
+    @GetMapping("/{complexId}")
+    public ApiResponse<ComplexDetailResponse> getComplex(
+            @PathVariable String complexId
+    ) {
+
+        /// 서비스 호출
+        var response = service.getComplex(complexId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
 
     /// 예산 시뮬레이터
     @GetMapping("/deposit/{complexId}")

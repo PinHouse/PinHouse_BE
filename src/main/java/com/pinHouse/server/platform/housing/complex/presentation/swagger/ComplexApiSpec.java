@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +16,19 @@ import java.util.List;
 @Tag(name = "임대주택 정보 조회 API", description = "보증금 및 거리를 계산하는 API입니다.")
 public interface ComplexApiSpec {
 
+    /// 상세 조회
+    @Operation(
+            summary = "임대주택 상세 조회 API",
+            description = "임대주택 ID로 상세 조회하는 API 입니다."
+    )
+    ApiResponse<ComplexDetailResponse> getComplex(
+            @Parameter(example = "18407#1")
+            @PathVariable String complexId
+    );
+
     /// 임대주택 시뮬레이터
     @Operation(
-            summary = "임대주택 예산 시뮬레이터API",
+            summary = "임대주택 예산 시뮬레이터 API",
             description = "임대주택 ID로, 예산의 변동을 조회하는 API 입니다."
     )
     ApiResponse<DepositResponse> deposit(

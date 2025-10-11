@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application;
 
 import com.pinHouse.server.platform.Location;
+import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
@@ -30,6 +31,18 @@ public class ComplexService implements ComplexUseCase{
     // =================
     //  퍼블릭 로직
     // =================
+
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexDetailResponse getComplex(String id) {
+
+        /// 조회
+        ComplexDocument complex = loadComplex(id);
+
+        /// 리턴
+        return ComplexDetailResponse.from(complex);
+
+    }
 
     /**
      * 임대보증금과 월임대료 전환 옵션 계산 메서드
