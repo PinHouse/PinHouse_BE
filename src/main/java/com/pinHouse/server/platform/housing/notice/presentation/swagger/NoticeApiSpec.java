@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
@@ -17,7 +17,7 @@ public interface NoticeApiSpec {
             summary = "공고 목록 조회 API",
             description = "최신 날짜 기준으로, 공고 목록을 조회하는 API 입니다."
     )
-    ApiResponse<SliceResponse<NoticeListResponse>> getNotices(SliceRequest request);
+    ApiResponse<SliceResponse<NoticeListResponse>> getNotices(PageRequest request);
 
 
     @Operation(

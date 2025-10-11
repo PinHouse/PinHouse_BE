@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
@@ -23,7 +23,7 @@ public class NoticeApi implements NoticeApiSpec {
 
     /// 공고 목록 조회
     @GetMapping
-    public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(SliceRequest sliceRequest) {
+    public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(PageRequest sliceRequest) {
 
         /// 서비스 계층
         var response = noticeService.getNotices(sliceRequest);

@@ -32,14 +32,17 @@ public class NoticeService implements NoticeUseCase {
         /// Pageable 제작
         Pageable pageable = getPageable(sliceRequest);
 
-        /// port 조회
-        Page<Notice> notices = repository.findAll(pageable);
+        /// DB 조회
+        Slice<Notice> notices = repository.findAll(pageable);
 
         /// DTO 변환
         List<Notice> contents = notices.getContent();
         List<NoticeListResponse> responseList = NoticeListResponse.from(contents);
 
-        return new SliceImpl<>(responseList, pageable, contents.size());
+        /// 객체
+        SliceImpl<NoticeListResponse> response = new SliceImpl<>(responseList, pageable, notices.hasNext());
+
+        return SliceResponse.from(response);
     }
 
     /// 공고 상세 조횐
@@ -47,7 +50,7 @@ public class NoticeService implements NoticeUseCase {
     public NoticeDetailResponse getNoticeById(String noticeId) {
 
         /// 공고 조회
-        Notice notice = getNotice(noticeId);
+        Notice notice = loadNotice(noticeId);
 
         /// DTO 변환
         return NoticeDetailResponse.from(notice);
@@ -58,7 +61,7 @@ public class NoticeService implements NoticeUseCase {
     public SliceResponse<NoticeListResponse> getNoticesByRegion(String region, PageRequest sliceRequest) {
 
         /// 페이징 변환
-        Pageable pageable = getPageable(pageRequest);
+        Pageable pageable = getPageable(sliceRequest);
 
         return null;
     }
@@ -67,18 +70,6 @@ public class NoticeService implements NoticeUseCase {
     @Override
     public List<Notice> compareNotices(String noticeId1, String noticeId2) {
         return List.of();
-    }
-
-    /// 공통 함수 모음
-
-    /**
-     * - ID를 바탕으로 공고를 조회하는 함수입니다.
-     * @param noticeId  공고 ID
-     * @return          Notice 객체
-     */
-    private Notice getNotice(String noticeId) {
-        return repository.findByNoticeId(noticeId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_NOTICE.getMessage()));
     }
 
 
@@ -92,15 +83,13 @@ public class NoticeService implements NoticeUseCase {
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_NOTICE.getMessage()));
     }
 
+    ///
     @Override
     public List<Notice> loadAllNotices() {
         return repository.findAll();
     }
 
-    /**
-     * 필터링을 위한 함수
-     * @param request   DTO
-     */
+    /// 필터링
     @Override
     public List<Notice> filterNotices(FastSearchRequest request) {
         return repository.findAll()
@@ -109,11 +98,8 @@ public class NoticeService implements NoticeUseCase {
                 .toList();
     }
 
-    /**
-     * 페이지 요청을 Pageable 변환하는 함수 입니다.
-     * @param pageRequest   페이지 요청 DTO
-     * @return              Pageable
-     */
+
+    /// Pageable 생성
     private Pageable getPageable(PageRequest pageRequest) {
         return org.springframework.data.domain.PageRequest.of(pageRequest.getPage() - 1, pageRequest.getSize(), Sort.by("id"));
     }

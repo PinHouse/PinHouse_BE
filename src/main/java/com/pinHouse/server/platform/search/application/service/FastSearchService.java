@@ -62,8 +62,7 @@ public class FastSearchService implements FastSearchUseCase {
         }
 
         /// 핀 포인트 조회
-        var pinPoint = pinPointService.loadPinPoint(request.pinPointId())
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_PINPOINT.getMessage()));
+        var pinPoint = pinPointService.loadPinPoint(request.pinPointId());
 
         /// 필터링 실행
         List<Notice> notices = noticeService.filterNotices(request);
