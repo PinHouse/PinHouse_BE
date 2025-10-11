@@ -1,9 +1,12 @@
 package com.pinHouse.server.platform.user.presentation;
 
+import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.presentation.swagger.UserApiSpec;
+import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1/user")
+@RequestMapping("/v1/users")
 @RequiredArgsConstructor
 public class UserApi implements UserApiSpec {
 
@@ -45,6 +48,7 @@ public class UserApi implements UserApiSpec {
 
     /// 나의 정보 조회하기
     @GetMapping("/mypage")
+    @CheckLogin
     public ApiResponse<MyPageResponse> getMyPage(
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
@@ -69,6 +73,7 @@ public class UserApi implements UserApiSpec {
 
     /// 회원정보 수정하기
     @PatchMapping()
+    @CheckLogin
     public ApiResponse<Void> updateUser(
             @RequestBody @Valid UpdateUserRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -82,6 +87,7 @@ public class UserApi implements UserApiSpec {
 
     /// 회원탈퇴
     @DeleteMapping()
+    @CheckLogin
     public ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal PrincipalDetails principalDetails
