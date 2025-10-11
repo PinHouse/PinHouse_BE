@@ -1,115 +1,81 @@
-    package com.pinHouse.server.security.jwt.filter;
+package com.pinHouse.server.security.jwt.filter;
 
-    import com.pinHouse.server.core.response.response.ErrorCode;
-    import com.pinHouse.server.security.config.RequestMatcherHolder;
-    import com.pinHouse.server.security.jwt.exception.JwtAuthenticationException;
-    import com.pinHouse.server.security.jwt.util.JwtTokenExtractor;
-    import jakarta.servlet.FilterChain;
-    import jakarta.servlet.ServletException;
-    import jakarta.servlet.http.HttpServletRequest;
-    import jakarta.servlet.http.HttpServletResponse;
-    import lombok.RequiredArgsConstructor;
-    import lombok.extern.slf4j.Slf4j;
-    import org.springframework.security.core.context.SecurityContextHolder;
-    import org.springframework.stereotype.Component;
-    import org.springframework.web.filter.OncePerRequestFilter;
+import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
+import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.security.jwt.application.util.JwtValidator;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-    import java.io.IOException;
-    import java.util.Optional;
+import java.io.IOException;
+import java.util.Optional;
 
-    import static com.pinHouse.server.core.response.response.ErrorCode.*;
+/**
+ * JWT 검증 필터
+ */
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final JwtValidator jwtValidator;
+    private final JwtAuthenticationFailureHandler failureHandler;
+    private final HttpUtil httpUtil;
 
-    @Slf4j
-    @Component
-    @RequiredArgsConstructor
-    public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    /// 작동하지 않는 필터
+    private final RequestMatcherHolder requestMatcherHolder;
 
-        private final JwtTokenExtractor extractor;
-        private final JwtAuthenticationFailureHandler failureHandler;
-        private final RequestMatcherHolder requestMatcherHolder;
+    /// 필터 작동
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        public final static String JWT_ERROR = "jwtError";
+        /// OPTIONS 필터에서 타지않도록 넣는다.
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        // doFilterInternal
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            /// 토큰 추출
+            Optional<String> accessTokenOptional = httpUtil.getAccessToken(request);
 
-            // OPTIONS 필터에서 타지않도록 넣는다.
-            if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+            /// 토큰이 존재할 때만 인증 처리
+            if (accessTokenOptional.isPresent()) {
+                String accessToken = accessTokenOptional.get();
 
-            //
-            boolean isAnonymousAllowed = requestMatcherHolder.getRequestMatchersByMinRole(null)
-                    .matches(request);
-
-            // 토큰 추출
-            try {
-                Optional<String> token = extractor.extractAccessToken(request);
-
-                if (isAnonymousAllowed) {
-                    // anonymous 허용: 토큰 있으면 인증, 없으면 anonymous로 통과
-                    if (token.isPresent()) {
-                        String accessToken = token.get();
-                        if (!extractor.validateToken(accessToken)) {
-                            request.setAttribute(JWT_ERROR, INVALID_TOKEN);
-                            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN.getMessage());
-                        }
-                        if (extractor.isExpired(accessToken)) {
-                            request.setAttribute(JWT_ERROR, TOKEN_EXPIRED);
-                            throw new JwtAuthenticationException(TOKEN_EXPIRED.getMessage());
-                        }
-                        var authentication = extractor.getAuthentication(accessToken);
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-
-                // 토큰 검증
-                // 비어있는 지
-                if (token.isEmpty()) {
-                    request.setAttribute(JWT_ERROR, TOKEN_NOT_FOUND);
-                    throw new JwtAuthenticationException(TOKEN_NOT_FOUND.getMessage());
-                }
-
-                String accessToken = token.get();
-
-                // 타당한지
-                if (!extractor.validateToken(accessToken)) {
-                    request.setAttribute(JWT_ERROR, INVALID_TOKEN);
-                    throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN.getMessage());
-                }
-
-                // 만료가 안되었는지
-                if (extractor.isExpired(accessToken)) {
-                    request.setAttribute(JWT_ERROR, TOKEN_EXPIRED);
-                    throw new JwtAuthenticationException(TOKEN_EXPIRED.getMessage());
-                }
-
-                // 권한 생성하기
-                var authentication = extractor.getAuthentication(token.get());
-
-                /// 시큐리티 홀더에 해당 멤버 저장
+                /// 토큰 검증 후, Authentication 객체 반환
+                Authentication authentication = jwtValidator.validateAccessToken(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+                /// 필터 넘기기
                 filterChain.doFilter(request, response);
-
-            } catch (JwtAuthenticationException ex) {
-
-                /// 실패 핸들러로 이동
-                failureHandler.commence(request, response, ex);
             }
+
+            /// 토큰이 없으면 예외 처리
+            if (accessTokenOptional.isEmpty()){
+                throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
+            }
+
+        } catch (JwtAuthenticationException ex) {
+
+            /// 인증 실패 시 핸들러 호출 후 필터 체인 중단
+            failureHandler.commence(request, response, ex);
         }
-
-        @Override
-        protected boolean shouldNotFilter(HttpServletRequest request) {
-
-            /// null 인 것 해결
-            return requestMatcherHolder.getRequestMatchersByMinRole(null)
-                    .matches(request);
-        }
-
     }
+
+    /// null인 것은 JWT 필터 통과
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest httpServletRequest) {
+
+        /// null 인 것 해결
+        return requestMatcherHolder.getRequestMatchersByMinRole(null)
+                .matches(httpServletRequest);
+    }
+
+}

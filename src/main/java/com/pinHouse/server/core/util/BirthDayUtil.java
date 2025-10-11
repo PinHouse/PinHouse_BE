@@ -10,6 +10,15 @@ import java.time.format.DateTimeParseException;
 @Component
 public class BirthDayUtil {
 
+    public static String formatString(LocalDate birthday) {
+        if (birthday == null) {
+            return "생년월일 정보 없음";
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+        return birthday.format(formatter);
+    }
+
     /**
      * 생년월일 합치는 유틸 클래스
      * @param year      년도

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * JWT 인가 실패 핸들러
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
@@ -26,7 +29,7 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
 
         ErrorCode errorCode = ErrorCode.fromMessage(accessDeniedException.getMessage());
 
-        // 권한 부족 403 Error
+        /// 403 에러 코드 발생
         CustomException exception = new CustomException(errorCode, null);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 

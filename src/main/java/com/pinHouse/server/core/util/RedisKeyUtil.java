@@ -7,26 +7,33 @@ import java.util.UUID;
 @Component
 public class RedisKeyUtil {
 
-    /// 개별 키 목록
-    private static final String OAUTH2_TEMP_USER = "OAUTH2_TEMP_USER:";
+    /// 공통 키
     private static final String SEPARATOR = ":";
-    private static final String LIST = "list";
-    private static final String BEST = "best";
-    private static final String AUDITORIUM = "auditorium";
-    private static final String REVIEW = "review";
-    private static final String RECENT_SEARCH_PREFIX = "recentSearch:guest:";
-    private static final String SUMMARY = "Summary";
+    private static final String DELIMITER = "-";
 
     /// 합쳐서 사용하는 키 목록
-    private static final String BEST_AUDITORIUM_LIST_KEY = BEST + SEPARATOR + AUDITORIUM + SEPARATOR + LIST;
-    private static final String BEST_REVIEW_LIST_KEY = BEST + SEPARATOR + REVIEW + SEPARATOR + LIST;
-    private static final String REVIEW_SUMMARY_KEY = REVIEW + SUMMARY;
+
+    /// OAUTH
+    private static final String OAUTH2_TEMP_USER = "OAUTH2_TEMP_USER:";
+
+
+    /// JWT
+    public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String ID_CLAIM = "user_id";
+    public static final String ROLE_CLAIM = "role";
+
+    // =====================
+    //  합쳐서 사용하는 키 목록
+    // =====================
 
     /// 키 생성 함수
     public String generateOAuth2TempUserKey() {
         return OAUTH2_TEMP_USER + UUID.randomUUID();
     }
-    public  String getGuestRecentSearchKey(String guestToken) { return RECENT_SEARCH_PREFIX + guestToken; }
 
+    public static String getRefreshTokenKey(UUID userId) {
+        return REFRESH_TOKEN + SEPARATOR + userId ;
+    }
 
 }

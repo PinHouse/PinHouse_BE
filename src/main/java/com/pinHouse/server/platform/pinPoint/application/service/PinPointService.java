@@ -28,7 +28,7 @@ public class PinPointService implements PinPointUseCase {
     private final PinPointJpaRepository repository;
 
     /// 외부 의존성
-    private final UserUseCase userUseCase;
+    private final UserUseCase userService;
     private final LocationUtil locationTool;
 
     /**
@@ -40,7 +40,7 @@ public class PinPointService implements PinPointUseCase {
     public void savePinPoint(UUID userId, PinPointRequest request) {
 
         /// 유저 검증
-        User user = getUser(userId);
+        User user = userService.loadUser(userId);
 
         /// 주소를 좌표로 변환
         Location location = locationTool.getLocation(request.address());
@@ -56,7 +56,7 @@ public class PinPointService implements PinPointUseCase {
     public List<PinPointResponse> loadPinPoints(UUID userId) {
 
         /// 유저 검증
-        User user = getUser(userId);
+        User user = userService.loadUser(userId);
 
         /// 유저가 존재하는 핀포인트 목록 조회
         List<PinPoint> pinPoints = repository.findByUser(user);
@@ -74,7 +74,7 @@ public class PinPointService implements PinPointUseCase {
     public boolean checkPinPoint(Long pinPointId, UUID userId) {
 
         /// 유저 검증
-        User user = getUser(userId);
+        User user = userService.loadUser(userId);
 
         /// 존재여부가 중요한 것이 아니니 DB조회 1번으로 마무리하기
         return repository.existsByIdAndUser(pinPointId, user);
@@ -86,10 +86,4 @@ public class PinPointService implements PinPointUseCase {
         return repository.findById(pinPointId);
     }
 
-
-    /// 공통 함수
-    private User getUser(UUID userId) {
-        return userUseCase.loadUserById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
-    }
 }

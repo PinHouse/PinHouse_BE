@@ -46,7 +46,7 @@ public class DiagnosisService implements DiagnosisUseCase {
     public DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request) {
 
         /// 유저 예외 처리
-        User user = getUser(userId);
+        User user = userService.loadUser(userId);
 
         /// 진단 도메인 생성
         var diagnosis = Diagnosis.of(user, request);
@@ -68,7 +68,7 @@ public class DiagnosisService implements DiagnosisUseCase {
     public DiagnosisResponse getDiagnose(UUID userId) {
 
         /// 유저 예외 처리
-        User user = getUser(userId);
+        User user = userService.loadUser(userId);
 
         /// DB에서 결과 조회하기, 영속성 컨텍스트에 저장
         Diagnosis diagnosis = repository.findByUser(user);
@@ -79,16 +79,5 @@ public class DiagnosisService implements DiagnosisUseCase {
         /// DTO 생성
         return DiagnosisResponse.from(context);
     }
-
-
-    /**
-     * 나의 진단 목록 결과하기
-     * @param userId    유저 ID
-     */
-    private User getUser(UUID userId) {
-        return userService.loadUserById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
-    }
-
 
 }

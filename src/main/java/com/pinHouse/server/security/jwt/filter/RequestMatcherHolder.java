@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.config;
+package com.pinHouse.server.security.jwt.filter;
 
 import com.pinHouse.server.platform.user.domain.entity.Role;
 import io.micrometer.common.lang.Nullable;
@@ -22,9 +22,28 @@ public class RequestMatcherHolder {
             new RequestInfo(OPTIONS, "/**", null),
             new RequestInfo(GET, "/", null),
             new RequestInfo(GET, "/login", null),
-            new RequestInfo(POST, "/api/v1/auth/dev-login", null),
+
+            // user
+            new RequestInfo(GET, "/v1/user", null),     /// 임시 정보
+            new RequestInfo(PATCH, "/v1/user", Role.USER),      /// 추가
+            new RequestInfo(POST, "/v1/user", null),    /// 회원가입
+
+            // auth-dev
+            new RequestInfo(POST, "/v1/auth/dev", null),    /// 개발용 토큰
 
             // auth
+            new RequestInfo(DELETE, "/v1/auth", Role.USER),     /// 로그아웃
+            new RequestInfo(PUT, "/v1/auth", null),     /// 재발급
+
+            // users
+            new RequestInfo(DELETE, "/v1/users", Role.USER),     /// 회원탈퇴
+            new RequestInfo(GET, "/v1/users/mypage", Role.USER),    /// 내 정보
+            new RequestInfo(GET, "/v1/users/{userId}", null),      /// 다른 정보
+            new RequestInfo(GET, "/v1/users", null),      /// 레디스
+            new RequestInfo(PATCH, "/v1/users", Role.USER),         /// 수정
+            new RequestInfo(POST, "/v1/users", null),       /// 회원가입
+
+            // oauth2
             new RequestInfo(POST, "/api/v1/oauth2/**", null),
 
             // 유저 관련
