@@ -52,11 +52,11 @@ public class IncomeAssetRule implements Rule {
 
             /// 소득 비율 체크
             boolean incomeOk = incomeLevel.getPercent() <=
-                    policyUseCase.maxIncomeRatio(candidate.supplyType(), candidate.rentalType(), familyCount);
+                    policyUseCase.maxIncomeRatio(candidate.supplyType(), candidate.noticeType(), familyCount);
 
             /// 총 자산 체크
             boolean assetOk = totalAsset <=
-                    policyUseCase.maxTotalAsset(candidate.supplyType(), candidate.rentalType(), familyCount);
+                    policyUseCase.maxTotalAsset(candidate.supplyType(), candidate.noticeType(), familyCount);
 
             /// 요건 불충족 시 후보 제거
             if (!carOk || !incomeOk || !assetOk) {

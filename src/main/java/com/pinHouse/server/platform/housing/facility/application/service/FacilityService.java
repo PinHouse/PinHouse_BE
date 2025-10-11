@@ -50,7 +50,7 @@ public class FacilityService implements FacilityUseCase {
     public NoticeFacility getNoticeInfraById(String noticeId) {
 
         /// 예외 처리
-        Notice notice = getNotice(noticeId);
+        Notice notice = noticeService.loadNotice(noticeId);
 
         /// 주변에 존재하는 도서관 가져오기
         List<Library> libraries = libraryRepository.findByLocation(
@@ -151,10 +151,5 @@ public class FacilityService implements FacilityUseCase {
     // =================
     //  내부 함수
     // =================
-
-    private Notice getNotice(String noticeId) {
-        return noticeService.loadById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_NOTICE.getMessage()));
-    }
 
 }

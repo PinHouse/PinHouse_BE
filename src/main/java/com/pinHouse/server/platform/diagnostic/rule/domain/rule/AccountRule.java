@@ -6,7 +6,7 @@ import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Subscript
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.SubscriptionPeriod;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;
 import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
-import com.pinHouse.server.platform.diagnostic.rule.domain.entity.RentalType;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.SupplyRentalCandidate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.pinHouse.server.platform.diagnostic.rule.domain.entity.RentalType.*;
+import static com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType.*;
 
 /** 3) 청약통장 요건(가입기간/예치금/상품유형) */
 @Order(2)
@@ -25,7 +25,7 @@ import static com.pinHouse.server.platform.diagnostic.rule.domain.entity.RentalT
 public class AccountRule implements Rule {
 
     /// 청약통장이 없으면 불가능한 목록들
-    private static final List<RentalType> NO_ACCOUNT_ALLOWED = List.of(
+    private static final List<NoticeType> NO_ACCOUNT_ALLOWED = List.of(
             NATIONAL_RENTAL,
             PUBLIC_INTEGRATED,
             LONG_TERM_JEONSE,
@@ -46,7 +46,7 @@ public class AccountRule implements Rule {
         if (!diagnosis.isHasAccount()) {
 
             /// 청약통장 없는 경우, NO_ACCOUNT_ALLOWED에 해당하는 RentalType 제거
-            candidates.removeIf(c -> NO_ACCOUNT_ALLOWED.contains(c.rentalType()));
+            candidates.removeIf(c -> NO_ACCOUNT_ALLOWED.contains(c.noticeType()));
 
             return RuleResult.pass(code(),
                     "청약통장 미보유로 인한 유형 제거 완료",
@@ -75,7 +75,7 @@ public class AccountRule implements Rule {
     private static void removePUBLIC_RENTAL(ArrayList<SupplyRentalCandidate> candidates, double years, Diagnosis diagnosis) {
 
         for (SupplyRentalCandidate c : new ArrayList<>(candidates)) { // 반복 중 수정 방지
-            if (c.rentalType() != PUBLIC_RENTAL) continue;
+            if (c.noticeType() != PUBLIC_RENTAL) continue;
 
             switch (c.supplyType()) {
                 case FIRST_SPECIAL -> {

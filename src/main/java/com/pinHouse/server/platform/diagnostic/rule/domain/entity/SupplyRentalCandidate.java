@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.diagnostic.rule.domain.entity;
 
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType;
 import lombok.Builder;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 public record SupplyRentalCandidate(
         SupplyType supplyType,
-        RentalType rentalType
+        NoticeType noticeType
 ) {
 
     /// 정적 팩토리 메서드 (기본 값)
@@ -22,12 +23,12 @@ public record SupplyRentalCandidate(
         List<SupplyType> supplyTypes = SupplyType.getAllTypes();
 
         /// 모든 값 가져오기
-        List<RentalType> rentalTypes = RentalType.getAllTypes();
+        List<NoticeType> noticeTypes = NoticeType.getAllTypes();
 
         List<SupplyRentalCandidate> candidates = new ArrayList<>();
 
         /// for문 돌리면서 값 합치기
-        for (RentalType rental : RentalType.getAllTypes()) {
+        for (NoticeType rental : NoticeType.getAllTypes()) {
 
             /// 매핑 되는 Supply 가져오기
             List<SupplyType> allowedSupplies = RentalSupplyMapping.RENTAL_SUPPLY_MAP.get(rental);
@@ -45,10 +46,10 @@ public record SupplyRentalCandidate(
     }
 
     /// 정적 팩토리 메서드
-    public static SupplyRentalCandidate basic(SupplyType supplyType, RentalType rentalType) {
+    public static SupplyRentalCandidate basic(SupplyType supplyType, NoticeType noticeType) {
         return SupplyRentalCandidate.builder()
                 .supplyType(supplyType)
-                .rentalType(rentalType)
+                .noticeType(noticeType)
                 .build();
     }
 

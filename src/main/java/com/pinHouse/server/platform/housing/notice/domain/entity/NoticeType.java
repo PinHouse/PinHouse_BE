@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.diagnostic.rule.domain.entity;
+package com.pinHouse.server.platform.housing.notice.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
-public enum RentalType {
+public enum NoticeType {
 
     PUBLIC_INTEGRATED("통합공공임대"),
     NATIONAL_RENTAL("국민임대"),
@@ -16,7 +16,9 @@ public enum RentalType {
     PERMANENT_RENTAL("영구임대"),
     LONG_TERM_JEONSE("장기전세"),
     PURCHASE_RENTAL("매입임대"),
-    JEONSE_RENTAL("전세임대");
+    JEONSE_RENTAL("전세임대"),
+    N_RENTAL("N년임대"),
+    PRIVATE_RENTAL("민간임대");
 
     private final String value;
 
@@ -28,7 +30,7 @@ public enum RentalType {
     /**
      * 모든 SupplyType enum 반환
      */
-    public static List<RentalType> getAllTypes() {
-        return Arrays.asList(RentalType.values());
+    public static List<NoticeType> getAllTypes() {
+        return Arrays.asList(NoticeType.values());
     }
 }
