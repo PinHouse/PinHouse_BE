@@ -8,8 +8,6 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class PinPoint extends BaseTimeEntity {
 
     @Id
@@ -21,16 +19,33 @@ public class PinPoint extends BaseTimeEntity {
     private User user;
 
     /// 주소
+    @Column(nullable = false)
     private String address;
 
     /// 설정한 이름
+    @Column(nullable = false)
     private String name;
 
     /// 좌표
+    @Column(nullable = false)
     private double latitude;
+
+    @Column(nullable = false)
     private double longitude;
 
+    @Column(nullable = false)
     private boolean isFirst;
+
+    /// 빌더 생성자
+    @Builder
+    public PinPoint(User user, String address, String name, double latitude, double longitude, boolean isFirst) {
+        this.user = user;
+        this.address = address;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.isFirst = isFirst;
+    }
 
     /// 생성자
     public static PinPoint of (User user, String address, String name, double latitude, double longitude, boolean isFirst) {
@@ -44,4 +59,13 @@ public class PinPoint extends BaseTimeEntity {
                 .build();
     }
 
+    /// 비즈니스 로직
+    public void updateName(String newName) {
+
+        if( newName != null || !newName.isEmpty()){
+            /// 값이 있을 때만 변경 가능
+            this.name = newName;
+        }
+
+    }
 }
