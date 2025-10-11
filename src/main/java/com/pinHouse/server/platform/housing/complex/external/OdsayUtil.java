@@ -1,7 +1,7 @@
-package com.pinHouse.server.platform.housing.distance.application.service;
+package com.pinHouse.server.platform.housing.complex.external;
 
-import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
-import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
+import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.DistanceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class OdsayService implements DistanceUseCase {
+public class OdsayUtil implements DistanceUtil {
 
     @Value("${odsay.apiKey}")
     private String apiKey;

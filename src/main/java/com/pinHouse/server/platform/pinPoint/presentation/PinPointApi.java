@@ -59,7 +59,7 @@ public class PinPointApi implements PinPointApiSpec {
     ) {
 
         /// 서비스
-        List<PinPointResponse> responses = service.loadPinPoints(principalDetails.getId());
+        var responses = service.loadPinPoints(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(responses);

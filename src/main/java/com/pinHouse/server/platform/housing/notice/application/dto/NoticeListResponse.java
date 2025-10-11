@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.application.dto;
 
 import com.pinHouse.server.core.util.DateUtil;
-import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -23,8 +23,8 @@ public record NoticeListResponse(
         @Schema(description = "공급주체", example = "LH")
         String supplier,
 
-        @Schema(description = "방타입 개수", example = "3")
-        Integer rooms,
+        @Schema(description = "공급 주택 개수", example = "3")
+        Integer complexes,
 
         @Schema(description = "공급유형", example = "영구임대")
         String type,
@@ -33,22 +33,23 @@ public record NoticeListResponse(
         String period
 ) {
     /// 정적 팩토리 메서드입니다.
-    public static NoticeListResponse from(Notice notice) {
+    public static NoticeListResponse from(NoticeDocument notice) {
 
         /// 날짜
-        String period = DateUtil.formatDate(notice.getStartDate(), notice.getEndDate());
+        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
 
         return NoticeListResponse.builder()
-                .id(notice.getId())
+                .id(notice.getNoticeId())
                 .name(notice.getTitle())
-                .supplier(notice.getSupplier())
+                .supplier(notice.getAgency())
+                .complexes(notice.getMeta().getTotalComplexCount())
                 .period(period)
-                .type(notice.getType())
+                .type(notice.getSupplyType())
                 .build();
     }
 
     /// 정적 팩토리 메서드입니다.
-    public static List<NoticeListResponse> from(List<Notice> notices) {
+    public static List<NoticeListResponse> from(List<NoticeDocument> notices) {
 
         return notices.stream()
                 .map(NoticeListResponse::from)

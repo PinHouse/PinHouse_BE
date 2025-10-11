@@ -8,6 +8,10 @@ import java.util.List;
 @Schema(name = "[응답][핀포인트] 핀포인트 응답", description = "핀포인트 응답을 위한 DTO입니다.")
 @Builder
 public record PinPointResponse(
+
+        @Schema(description = "아이디", example = "1")
+        Long id,
+
         @Schema(description = "저장한 이름", example = "회사 본사")
         String name,
 
@@ -27,6 +31,7 @@ public record PinPointResponse(
     /// 정적 팩토리 메서드
     public static PinPointResponse from(PinPoint pinPoint) {
         return PinPointResponse.builder()
+                .id(pinPoint.getId())
                 .name(pinPoint.getName())
                 .address(pinPoint.getAddress())
                 .longitude(pinPoint.getLongitude())

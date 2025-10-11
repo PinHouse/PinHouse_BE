@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housing.distance.application.dto;
+package com.pinHouse.server.platform.housing.complex.application.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,10 +92,10 @@ public record DistanceResponse(
             throw new RuntimeException("JSON 파싱 실패", e);
         }
     }
-}
+
     @Builder
     @Schema(name = "[응답][거리 단계] 거리 단계 정보 응답", description = "거리 단계 정보를 나타내는 DTO입니다.")
-    record DistanceStep(
+    protected record DistanceStep(
 
             @Schema(description = "타입", example = "15")
             TransportType type,
@@ -122,7 +122,9 @@ public record DistanceResponse(
     }
 
 
-    enum TransportType {
+    protected enum TransportType {
         WALK, BUS, SUBWAY
     }
+}
+
 
