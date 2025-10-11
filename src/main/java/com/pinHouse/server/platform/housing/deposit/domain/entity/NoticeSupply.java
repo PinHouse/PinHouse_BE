@@ -17,18 +17,18 @@ public class NoticeSupply {
     private Integer monthlyRent;
 
     @Field("임대보증금(원)")
-    private Deposit deposit;
+    private NoticeDeposit noticeDeposit;
 
     @Field("모집호수")
-    private Recruitment recruitmentCount;
+    private NoticeRecruitment noticeRecruitmentCount;
 
     /// 빌더 생성자
     @Builder
-    public NoticeSupply(String housingType, String area, Integer monthlyRent, Deposit deposit, Recruitment recruitmentCount) {
+    public NoticeSupply(String housingType, String area, Integer monthlyRent, NoticeDeposit noticeDeposit, NoticeRecruitment noticeRecruitmentCount) {
         this.housingType = housingType;
         this.area = area;
         this.monthlyRent = monthlyRent;
-        this.deposit = deposit;
-        this.recruitmentCount = recruitmentCount;
+        this.noticeDeposit = noticeDeposit;
+        this.noticeRecruitmentCount = noticeRecruitmentCount;
     }
 }

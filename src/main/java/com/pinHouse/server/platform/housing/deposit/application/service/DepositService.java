@@ -45,7 +45,7 @@ public class DepositService implements DepositUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유형(" + type + ")의 공급 정보가 없습니다."));
 
         // 3. 원본 보증금, 월세
-        long originalDeposit = matchedSupplyInfo.getDeposit().getTotal();
+        long originalDeposit = matchedSupplyInfo.getNoticeDeposit().getTotal();
         long originalRent = matchedSupplyInfo.getMonthlyRent();
 
         // 4. 최대 전환 가능한 보증금 (예: 10,000,000원으로 조정 가능)

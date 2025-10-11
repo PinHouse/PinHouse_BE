@@ -5,8 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-public class Recruitment {
+public class NoticeRecruitment {
 
     @Field("계")
     private Integer total;
@@ -19,7 +18,7 @@ public class Recruitment {
 
     /// 빌더 생성자
     @Builder
-    public Recruitment(Integer total, Integer priority, Integer general) {
+    public NoticeRecruitment(Integer total, Integer priority, Integer general) {
         this.total = total;
         this.priority = priority;
         this.general = general;

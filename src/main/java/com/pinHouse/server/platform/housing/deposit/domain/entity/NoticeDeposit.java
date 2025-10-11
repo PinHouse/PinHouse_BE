@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Deposit {
+public class NoticeDeposit {
 
     @Field("계")
     private Integer total;
@@ -21,7 +21,7 @@ public class Deposit {
 
     /// 빌더 생성자
     @Builder
-    public Deposit(Integer total, Integer contract, Integer middle, Integer balance) {
+    public NoticeDeposit(Integer total, Integer contract, Integer middle, Integer balance) {
         this.total = total;
         this.contract = contract;
         this.middle = middle;

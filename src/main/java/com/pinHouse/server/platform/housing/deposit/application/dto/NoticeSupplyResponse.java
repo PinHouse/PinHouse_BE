@@ -27,9 +27,9 @@ public record NoticeSupplyResponse(
         return NoticeSupplyResponse.builder()
                 .housingType(notice.getHousingType())
                 .area(notice.getArea())
-                .deposit(notice.getDeposit().getTotal())
+                .deposit(notice.getNoticeDeposit().getTotal())
                 .monthlyRent(notice.getMonthlyRent())
-                .recruitment(notice.getRecruitmentCount().getTotal())
+                .recruitment(notice.getNoticeRecruitmentCount().getTotal())
                 .build();
     }
 
