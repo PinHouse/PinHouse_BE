@@ -1,5 +1,6 @@
-package com.pinHouse.server.security.jwt.domain;
+package com.pinHouse.server.security.auth.domain.repository;
 
+import com.pinHouse.server.security.auth.domain.entity.JwtToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

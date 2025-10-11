@@ -3,8 +3,7 @@ package com.pinHouse.server.security.jwt.util;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,35 +15,30 @@ import java.util.*;
 import static com.pinHouse.server.security.jwt.util.TokenNameUtil.ID_CLAIM;
 import static com.pinHouse.server.security.jwt.util.TokenNameUtil.ROLE_CLAIM;
 
-
+/**
+ * 토큰 발급기
+ */
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${kikihi.jwt.key}")
-    private String key;
+    private final SecretKey secretKey;
 
-    @Value("${kikihi.jwt.access.expiration}")
-    private Long accessTokenExpiration;
+    @Value("${auth.jwt.access.expiration}")
+    private Long accessExpiration;
 
-    @Value("${kikihi.jwt.refresh.expiration}")
-    private Long refreshTokenExpiration;
+    @Value("${auth.jwt.refresh.expiration}")
+    private Long refreshExpiration;
 
-    private SecretKey secretKey;
-
-
-    @PostConstruct
-    private void setSecretKey() {
-        secretKey = Keys.hmacShaKeyFor(key.getBytes());
-    }
 
     // Access token 발급
     public String generateAccessToken(Authentication authentication) {
-        return generateToken(authentication, accessTokenExpiration);
+        return generateToken(authentication, accessExpiration);
     }
 
     // Refresh token 발급
     public String generateRefreshToken(Authentication authentication) {
-        return generateToken(authentication, refreshTokenExpiration);
+        return generateToken(authentication, refreshExpiration);
     }
 
     /// 토큰 생성 함수

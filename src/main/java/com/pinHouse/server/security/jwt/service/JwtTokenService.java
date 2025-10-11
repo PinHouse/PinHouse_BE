@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * 토큰 서비스
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor

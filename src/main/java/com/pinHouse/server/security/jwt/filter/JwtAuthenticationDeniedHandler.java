@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * JWT 인가 실패 핸들러
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {

@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.jwt.domain;
+package com.pinHouse.server.security.auth.domain.entity;
 
 import lombok.Builder;
 import lombok.Getter;
