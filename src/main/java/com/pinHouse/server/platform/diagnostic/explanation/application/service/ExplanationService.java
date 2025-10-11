@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.diagnostic.explanation.application.service;
 
 import com.pinHouse.server.platform.diagnostic.explanation.domain.entity.DiagnosisType;
-import com.pinHouse.server.platform.diagnostic.explanation.application.dto.response.DiagnosisQuestionResponse;
-import com.pinHouse.server.platform.diagnostic.explanation.application.dto.response.ExplanationResponse;
+import com.pinHouse.server.platform.diagnostic.explanation.application.dto.DiagnosisQuestionResponse;
+import com.pinHouse.server.platform.diagnostic.explanation.application.dto.ExplanationResponse;
 import com.pinHouse.server.platform.diagnostic.explanation.application.usecase.ExplanationUseCase;
 import com.pinHouse.server.platform.diagnostic.explanation.domain.repository.DiagnosisQuestionJpaRepository;
 import com.pinHouse.server.platform.diagnostic.explanation.domain.repository.ExplanationJpaRepository;

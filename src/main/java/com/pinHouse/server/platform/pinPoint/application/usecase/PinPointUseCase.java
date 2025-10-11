@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.pinPoint.application.usecase;
 
-import com.pinHouse.server.platform.pinPoint.application.dto.request.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.response.PinPointResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 
 import java.util.List;

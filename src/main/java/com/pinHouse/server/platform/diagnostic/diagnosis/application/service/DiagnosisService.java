@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;

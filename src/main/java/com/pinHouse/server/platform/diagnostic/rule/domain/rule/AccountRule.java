@@ -5,7 +5,7 @@ import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Subscript
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.SubscriptionCount;
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.SubscriptionPeriod;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;
-import com.pinHouse.server.platform.diagnostic.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.RentalType;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.SupplyRentalCandidate;
 import lombok.RequiredArgsConstructor;

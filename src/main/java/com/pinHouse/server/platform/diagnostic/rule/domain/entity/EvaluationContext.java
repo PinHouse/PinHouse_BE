@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.diagnostic.rule.domain.entity;
 
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Diagnosis;
-import com.pinHouse.server.platform.diagnostic.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

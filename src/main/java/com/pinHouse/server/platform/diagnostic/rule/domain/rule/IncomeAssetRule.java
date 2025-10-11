@@ -4,7 +4,7 @@ import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Diagnosis
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.IncomeLevel;
 import com.pinHouse.server.platform.diagnostic.rule.application.usecase.PolicyUseCase;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;
-import com.pinHouse.server.platform.diagnostic.rule.application.dto.response.RuleResult;
+import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

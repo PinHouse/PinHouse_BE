@@ -1,10 +1,10 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.diagnostic.diagnosis.presentation.swagger.DiagnosisApiSpec;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

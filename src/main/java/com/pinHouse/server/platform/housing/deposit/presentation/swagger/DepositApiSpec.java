@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.deposit.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.deposit.application.dto.response.NoticeSupplyDTO;
+import com.pinHouse.server.platform.housing.deposit.application.dto.NoticeLeaseOptionResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface DepositApiSpec {
 
     @PutMapping("/{noticeId}")
-    ApiResponse<NoticeSupplyDTO.NoticeLeaseOptionResponse> update(
+    ApiResponse<NoticeLeaseOptionResponse> update(
 
             @Parameter(example = "18384", description = "공고 ID")
             @PathVariable String noticeId,

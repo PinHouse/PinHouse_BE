@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.diagnostic.school.application.usecase;
 
-import com.pinHouse.server.platform.diagnostic.school.application.dto.response.SchoolResponse;
+import com.pinHouse.server.platform.diagnostic.school.application.dto.SchoolResponse;
 
 import java.util.List;
 

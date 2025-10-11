@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.user.application.usecase;
 
-import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.response.TempUserResponse;
+import com.pinHouse.server.platform.user.application.dto.UserRequest;
+import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.platform.user.domain.entity.User;
 

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase;
 
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 
 import java.util.UUID;
 

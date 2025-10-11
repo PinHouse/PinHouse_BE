@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.housing.distance.application.service;
 
-import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

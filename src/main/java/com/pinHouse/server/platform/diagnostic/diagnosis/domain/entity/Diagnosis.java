@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity;
 
 import com.pinHouse.server.core.util.BirthDayUtil;
 import com.pinHouse.server.platform.BaseTimeEntity;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import jakarta.persistence.*;
@@ -109,33 +109,33 @@ public class Diagnosis extends BaseTimeEntity {
     public static Diagnosis of(User user, DiagnosisRequest request) {
         return Diagnosis.builder()
                 .user(user)
-                .gender(request.getGender())
-                .age(BirthDayUtil.calculateAge(request.getBirthday()))
-                .monthPay(request.getMonthPay())
-                .hasAccount(request.isHasAccount())
-                .accountYears(request.getAccountYears())
-                .accountDeposit(request.getAccountDeposit())
-                .account(request.getAccount())
-                .maritalStatus(request.isMaritalStatus())
-                .marriageYears(request.getMarriageYears())
-                .unbornChildrenCount(request.getUnbornChildrenCount())
-                .under6ChildrenCount(request.getUnder6ChildrenCount())
-                .over7MinorChildrenCount(request.getOver7MinorChildrenCount())
-                .educationStatus(request.getEducationStatus())
-                .hasCar(request.isHasCar())
-                .carValue(request.getCarValue())
+                .gender(request.gender())
+                .age(BirthDayUtil.calculateAge(request.birthday()))
+                .monthPay(request.monthPay())
+                .hasAccount(request.hasAccount())
+                .accountYears(request.accountYears())
+                .accountDeposit(request.accountDeposit())
+                .account(request.account())
+                .maritalStatus(request.maritalStatus())
+                .marriageYears(request.marriageYears())
+                .unbornChildrenCount(request.unbornChildrenCount())
+                .under6ChildrenCount(request.under6ChildrenCount())
+                .over7MinorChildrenCount(request.over7MinorChildrenCount())
+                .educationStatus(request.educationStatus())
+                .hasCar(request.hasCar())
+                .carValue(request.carValue())
                 .isHouseholdHead(request.isHouseholdHead())
                 .isSingle(request.isSingle())
-                .fetusCount(request.getFetusCount())
-                .minorCount(request.getMinorCount())
-                .adultCount(request.getAdultCount())
-                .incomeLevel(request.getIncomeLevel())
-                .housingStatus(request.getHousingStatus())
-                .housingYears(request.getHousingYears())
-                .propertyAsset(request.getPropertyAsset())
-                .carAsset(request.getCarAsset())
-                .financialAsset(request.getFinancialAsset())
-                .hasSpecialCategory(request.getHasSpecialCategory())
+                .fetusCount(request.fetusCount())
+                .minorCount(request.minorCount())
+                .adultCount(request.adultCount())
+                .incomeLevel(request.incomeLevel())
+                .housingStatus(request.housingStatus())
+                .housingYears(request.housingYears())
+                .propertyAsset(request.propertyAsset())
+                .carAsset(request.carAsset())
+                .financialAsset(request.financialAsset())
+                .hasSpecialCategory(request.hasSpecialCategory())
                 .build();
     }
 

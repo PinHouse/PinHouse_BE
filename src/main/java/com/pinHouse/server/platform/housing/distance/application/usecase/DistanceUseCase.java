@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.housing.distance.application.usecase;
 
-import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;

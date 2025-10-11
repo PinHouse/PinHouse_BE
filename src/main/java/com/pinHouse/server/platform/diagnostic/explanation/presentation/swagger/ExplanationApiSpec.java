@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.diagnostic.explanation.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.diagnostic.explanation.application.dto.response.ExplanationResponse;
+import com.pinHouse.server.platform.diagnostic.explanation.application.dto.ExplanationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

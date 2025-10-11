@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.distance.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.distance.presentation.swaager.DistanceApiSpec;
 import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.search.application.usecase;
 
-import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
-import com.pinHouse.server.platform.search.application.dto.response.FastSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 
 import java.util.UUID;
 import java.util.List;

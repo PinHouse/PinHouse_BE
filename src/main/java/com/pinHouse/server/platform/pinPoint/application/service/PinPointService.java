@@ -2,8 +2,8 @@ package com.pinHouse.server.platform.pinPoint.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.pinPoint.application.dto.request.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.response.PinPointResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.util.LocationUtil;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
@@ -43,10 +43,10 @@ public class PinPointService implements PinPointUseCase {
         User user = getUser(userId);
 
         /// 주소를 좌표로 변환
-        Location location = locationTool.getLocation(request.getAddress());
+        Location location = locationTool.getLocation(request.address());
 
         /// 도메인 생성
-        var entity = PinPoint.of(user, request.getAddress(), request.getName(), location.getLatitude(), location.getLongitude(), request.isFirst());
+        var entity = PinPoint.of(user, request.address(), request.name(), location.getLatitude(), location.getLongitude(), request.first());
 
         /// 저장하기
         repository.save(entity);

@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

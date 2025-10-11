@@ -3,7 +3,8 @@ package com.pinHouse.server.platform.housing.notice.presentation;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.core.response.response.pageable.PageResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.response.NoticeDTO;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +27,19 @@ public class NoticeApi implements NoticeApiSpec {
      * @return
      */
     @GetMapping
-    public ApiResponse<PageResponse<NoticeDTO.NoticeListResponse>> getNotices(PageRequest request) {
+    public ApiResponse<PageResponse<NoticeListResponse>> getNotices(PageRequest request) {
 
         /// 서비스 계층
-        Page<NoticeDTO.NoticeListResponse> notices = noticeService.getNotices(request);
+        Page<NoticeListResponse> notices = noticeService.getNotices(request);
 
         /// PageDTO 감싸기
-        PageResponse<NoticeDTO.NoticeListResponse> response = new PageResponse<>(notices.getContent(), request, notices.getTotalElements());
+        PageResponse<NoticeListResponse> response = new PageResponse<>(notices.getContent(), request, notices.getTotalElements());
 
         return ApiResponse.ok(response);
     }
 
     @GetMapping("/{noticeId}")
-    public ApiResponse<NoticeDTO.NoticeDetailResponse> showNotice(
+    public ApiResponse<NoticeDetailResponse> showNotice(
             @PathVariable String noticeId
     ) {
 

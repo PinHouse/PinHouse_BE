@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.pinPoint.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.pinPoint.application.dto.request.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.response.PinPointResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.presentation.swagger.PinPointApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;

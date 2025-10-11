@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.diagnostic.school.application.service;
 
-import com.pinHouse.server.platform.diagnostic.school.application.dto.response.SchoolResponse;
+import com.pinHouse.server.platform.diagnostic.school.application.dto.SchoolResponse;
 import com.pinHouse.server.platform.diagnostic.school.application.usecase.SchoolUseCase;
 import com.pinHouse.server.platform.diagnostic.school.domain.entity.School;
 import com.pinHouse.server.platform.diagnostic.school.domain.entity.University;
