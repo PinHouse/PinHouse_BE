@@ -3,8 +3,8 @@ package com.pinHouse.server.security.jwt.application.util;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
-import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
-import com.pinHouse.server.security.jwt.domain.repository.JwtTokenRedisRepository;
+import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
+import com.pinHouse.server.security.jwt.domain.repository.JwtRefreshTokenRepository;
 import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -30,7 +30,7 @@ public class JwtValidator {
     private final SecretKey secretKey;
     private final UserJpaRepository userRepository;
     /// 레디스 저장소
-    private final JwtTokenRedisRepository repository;
+    private final JwtRefreshTokenRepository repository;
 
 
     // =================
@@ -72,7 +72,7 @@ public class JwtValidator {
     }
 
     /// 리프레쉬 토큰 검증
-    public JwtToken validateRefreshToken(String refreshToken) {
+    public JwtRefreshToken validateRefreshToken(String refreshToken) {
 
         try {
             /// 토큰 자체의 유효성 검증 (서명, 만료일)
@@ -105,7 +105,7 @@ public class JwtValidator {
     public void removeRefreshToken(UUID userId, String refreshToken) {
 
         /// 토큰 추출
-        JwtToken token = validateRefreshToken(refreshToken);
+        JwtRefreshToken token = validateRefreshToken(refreshToken);
 
         /// 토큰에서 유저 ID 추출
         UUID userIdFromAccessToken = token.getUserId();

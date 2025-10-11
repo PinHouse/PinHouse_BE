@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "인증 API", description = "회원가입, 로그아웃, 토큰 재발급에 관한 API 입니다.")
-public interface AuthApiSpec {
+public interface UserApiSpec {
 
     /**
      * 회원가입 API
@@ -25,30 +25,5 @@ public interface AuthApiSpec {
             description = "온보딩의 데이터를 바탕으로 회원가입합니다."
     )
     ApiResponse<Void> signUp(@RequestParam String tempKey, @RequestBody @Valid UserRequest request);
-
-
-    /**
-     * 로그아웃 API
-     *
-     * @param request  HTTP 요청
-     * @param response HTTP 응답
-     */
-    @Operation(
-            summary = "로그아웃 API",
-            description = "리프레쉬 토큰을 쿠키 및 DB 에서 삭제합니다."
-    )
-    ApiResponse<Void> logout(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletRequest request, HttpServletResponse response);
-
-
-    /**
-     * 토큰 재발급 API
-     * @param request   HTTP 요청
-     * @param response  HTTP 응답
-     */
-    @Operation(
-            summary = "토큰 재발급 API",
-            description = "액세스 토큰을 바탕으로"
-    )
-    ApiResponse<Void> refresh(HttpServletRequest request, HttpServletResponse response);
 
 }

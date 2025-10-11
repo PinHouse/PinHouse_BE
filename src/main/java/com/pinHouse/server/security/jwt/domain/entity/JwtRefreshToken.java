@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Builder
 @RedisHash
-public class JwtToken {
+public class JwtRefreshToken {
 
     @Id
     private UUID userId;
@@ -21,12 +21,12 @@ public class JwtToken {
     @Indexed
     private String refreshToken;
 
-    @TimeToLive(unit = TimeUnit.DAYS)
+    @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expireTime;
 
     /// 정적 팩토리 메소드
-    public static JwtToken of(UUID userId, String refreshToken, Long expireTime) {
-        return JwtToken.builder()
+    public static JwtRefreshToken of(UUID userId, String refreshToken, Long expireTime) {
+        return JwtRefreshToken.builder()
                 .userId(userId)
                 .refreshToken(refreshToken)
                 .expireTime(expireTime)

@@ -1,9 +1,9 @@
-package com.pinHouse.server.platform.user.presentation;
+package com.pinHouse.server.security.auth.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
-import com.pinHouse.server.platform.user.presentation.swagger.DevAuthApiSpec;
+import com.pinHouse.server.security.auth.presentation.swagger.DevAuthApiSpec;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.platform.user.domain.entity.Role;
@@ -32,8 +32,6 @@ public class DevAuthApi implements DevAuthApiSpec {
 
     // 테스트용으로 만든 UUID
     private final UUID id = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
-
-
 
     @PostMapping("/dev")
     public ApiResponse<Void> devLogin(HttpServletResponse httpServletResponse) {

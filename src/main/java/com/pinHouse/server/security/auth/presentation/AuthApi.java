@@ -2,6 +2,7 @@ package com.pinHouse.server.security.auth.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
+import com.pinHouse.server.security.auth.presentation.swagger.AuthApiSpec;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
 import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -19,7 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthApi {
+public class AuthApi implements AuthApiSpec {
 
     private final AuthUseCase service;
 
@@ -66,7 +67,7 @@ public class AuthApi {
         Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
 
         /// 서비스 로직 실행
-        JwtTokenResponse response = service.reissue(deviceType, refreshToken);
+        JwtTokenResponse response = service.reissue(refreshToken);
 
         /// 액세스 쿠키로 전송하기
         httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());

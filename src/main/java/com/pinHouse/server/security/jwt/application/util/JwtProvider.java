@@ -1,8 +1,8 @@
 package com.pinHouse.server.security.jwt.application.util;
 
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
-import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
-import com.pinHouse.server.security.jwt.domain.repository.JwtTokenRedisRepository;
+import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
+import com.pinHouse.server.security.jwt.domain.repository.JwtRefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class JwtProvider {
     private final SecretKey secretKey;
 
     /// 레디스 저장소
-    private final JwtTokenRedisRepository repository;
+    private final JwtRefreshTokenRepository repository;
 
 
     // =================
@@ -56,7 +56,7 @@ public class JwtProvider {
         String refreshToken = createToken(userInfo, refreshExpiration);
 
         /// 객체 생성
-        var token = JwtToken.of(userInfo.userId(), refreshToken, refreshExpiration);
+        var token = JwtRefreshToken.of(userInfo.userId(), refreshToken, refreshExpiration);
 
         /// 레디스에 저장하기
         return repository.save(token)

@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.user.presentation.swagger;
+package com.pinHouse.server.security.auth.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

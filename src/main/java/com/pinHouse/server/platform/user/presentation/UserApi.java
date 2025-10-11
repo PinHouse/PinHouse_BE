@@ -3,12 +3,10 @@ package com.pinHouse.server.platform.user.presentation;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.user.application.dto.UserRequest;
 import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
-import com.pinHouse.server.platform.user.presentation.swagger.AuthApiSpec;
-import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
+import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
+import com.pinHouse.server.platform.user.presentation.swagger.UserApiSpec;
 import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthApi implements AuthApiSpec {
+public class UserApi implements UserApiSpec {
 
-    private final AuthUseCase service;
+    private final UserUseCase service;
 
     /// HTTP 서비스
     private final HttpUtil httpUtil;
@@ -61,38 +59,5 @@ public class AuthApi implements AuthApiSpec {
 
         return ApiResponse.created();
     }
-
-
-    /**
-     * 로그아웃
-     * @param request  HTTP 요청
-     * @param response HTTP 응답
-     */
-    @DeleteMapping()
-    public ApiResponse<Void> logout(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletRequest request, HttpServletResponse response) {
-
-        /// 서비스 실행
-        tokenService.logout(principalDetails.getId(), request, response);
-
-        /// 응답
-        return ApiResponse.deleted();
-    }
-
-    /**
-     * 리프레쉬 토큰 재발급
-     * @param request   HTTP 요청
-     * @param response  HTTP 응답
-     */
-    @PutMapping()
-    public ApiResponse<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
-
-        /// 서비스 실행
-        tokenService.reissueByRefreshToken(request, response);
-
-        /// 응답
-        return ApiResponse.updated();
-    }
-
-
 }
 

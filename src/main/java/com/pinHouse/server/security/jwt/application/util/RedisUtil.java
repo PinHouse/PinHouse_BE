@@ -1,8 +1,8 @@
 package com.pinHouse.server.security.jwt.application.util;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
-import com.pinHouse.server.security.jwt.domain.repository.JwtTokenRedisRepository;
+import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
+import com.pinHouse.server.security.jwt.domain.repository.JwtRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class RedisUtil {
     @Value("${kikihi.jwt.refresh.expiration}")
     private Long refreshTokenExpiration;
 
-    private final JwtTokenRedisRepository repository;
+    private final JwtRefreshTokenRepository repository;
 
 
     /// 리프레쉬 토큰 저장
@@ -30,8 +30,8 @@ public class RedisUtil {
         Long expiredAt = plusSeconds.atZone(ZoneId.systemDefault()).toEpochSecond();
 
         // 해당 토큰을 레디스에 저장한다.
-        JwtToken jwtToken = JwtToken.of(userId, refreshToken, expiredAt);
-        repository.save(jwtToken);
+        JwtRefreshToken jwtRefreshToken = JwtRefreshToken.of(userId, refreshToken, expiredAt);
+        repository.save(jwtRefreshToken);
 
     }
 
@@ -40,19 +40,19 @@ public class RedisUtil {
     public String getRefreshTokenByUserId(UUID userId) {
 
         /// 유저 Id로 리프레쉬 토큰 조회
-        JwtToken jwtToken = repository.findByUserId(userId)
+        JwtRefreshToken jwtRefreshToken = repository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.REFRESH_TOKEN_NOT_FOUND.getMessage()));
 
-        return jwtToken.getRefreshToken();
+        return jwtRefreshToken.getRefreshToken();
     }
 
     public String getRefreshTokenById(String refreshToken) {
 
         /// 리프레쉬 토큰으로 유저 조회
-        JwtToken jwtToken = repository.findByRefreshToken(refreshToken)
+        JwtRefreshToken jwtRefreshToken = repository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.REFRESH_TOKEN_NOT_FOUND.getMessage()));
 
-        return jwtToken.getRefreshToken();
+        return jwtRefreshToken.getRefreshToken();
     }
 
     /// 존재 여부 체크

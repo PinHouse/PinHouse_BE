@@ -9,7 +9,7 @@ import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
 import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.jwt.application.util.JwtProvider;
 import com.pinHouse.server.security.jwt.application.util.JwtValidator;
-import com.pinHouse.server.security.jwt.domain.entity.JwtToken;
+import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +45,7 @@ public class AuthService implements AuthUseCase {
         }
 
         /// 레디스에서 삭제하도록 로직 수행
-        jwtValidator.removeRefreshToken(userId, refreshToken.get());
+        jwtValidator.removeRefreshToken(user.getId(), refreshToken.get());
     }
 
     /// 토큰 재발급
@@ -59,7 +59,7 @@ public class AuthService implements AuthUseCase {
         }
 
         /// 존재하는 리프레쉬 토큰 검증
-        JwtToken token = jwtValidator.validateRefreshToken(refreshToken.get());
+        JwtRefreshToken token = jwtValidator.validateRefreshToken(refreshToken.get());
 
         /// 리프레쉬 토큰 바탕으로 조회
         User user = repository.findById(token.getUserId())
