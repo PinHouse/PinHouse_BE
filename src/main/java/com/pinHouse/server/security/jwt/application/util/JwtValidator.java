@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.pinHouse.server.core.util.RedisKeyUtil.ID_CLAIM;
-
 
 @Component
 @RequiredArgsConstructor
@@ -45,11 +45,12 @@ public class JwtValidator {
             assertJwtValid(accessToken);
 
             /// 검증 완료되었다면 유저 정보 가져오기
-            UUID userId = getUserIdFromAccessToken(accessToken);
+            UUID userId = UUID.fromString(getUserIdFromToken(accessToken));
 
-            /// 유저 응답
+            /// 유저 예외처리
             User user = userRepository.findById(userId)
-                    .orElseThrow(NoSuchElementException::new);
+                    .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_USER));
+
 
             /// 시큐리티에 넣을 인증 객체 생성
             PrincipalDetails principalDetails = PrincipalDetails.of(user);
@@ -79,12 +80,15 @@ public class JwtValidator {
             assertJwtValid(refreshToken);
 
             /// 토큰에서 유저 ID 추출
-            UUID userId = getUserIdFromAccessToken(refreshToken);
+            UUID userId = UUID.fromString(getUserIdFromToken(refreshToken));
+
+            /// 유저 예외처리
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.REFRESH_TOKEN_NOT_USER.getMessage()));
 
             /// 리턴
-            return repository.findByRefreshTokenAndUserId(refreshToken, userId)
+            return repository.findByUserIdAndRefreshToken(user.getId(), refreshToken)
                     .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN));
-
 
         } catch (ExpiredJwtException e) {
             // 토큰이 '만료'된 경우의 처리
@@ -96,7 +100,6 @@ public class JwtValidator {
             // 토큰 구조가 잘못된 경우의 처리
             throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_UNSUPPORTED);
         } catch (Exception e) {
-            // 기타 예외 처리
             throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -134,13 +137,13 @@ public class JwtValidator {
 
 
     /// 토큰에서 유저ID 추출하기
-    private UUID getUserIdFromAccessToken(String accessToken) {
+    private String getUserIdFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJws(accessToken)
+                .parseClaimsJws(token)
                 .getBody()
-                .get(ID_CLAIM, UUID.class);
+                .get(ID_CLAIM, String.class);
     }
 
 }

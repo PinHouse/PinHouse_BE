@@ -32,7 +32,7 @@ public class RedisKeyUtil {
         return OAUTH2_TEMP_USER + UUID.randomUUID();
     }
 
-    public static String getRefreshTokenKey(Long userId) {
+    public static String getRefreshTokenKey(UUID userId) {
         return REFRESH_TOKEN + SEPARATOR + userId ;
     }
 

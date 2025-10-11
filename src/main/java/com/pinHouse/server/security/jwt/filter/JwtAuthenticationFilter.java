@@ -9,7 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import java.util.Optional;
 /**
  * JWT 검증 필터
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -54,9 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 /// 토큰 검증 후, Authentication 객체 반환
                 Authentication authentication = jwtValidator.validateAccessToken(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                /// 필터 넘기기
+                filterChain.doFilter(request, response);
             }
 
-            /// 토큰이 없거나, 인증에 성공했으면 다음 필터로 진행
+            /// 토큰이 없으면 예외 처리
             if (accessTokenOptional.isEmpty()){
                 throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
             }

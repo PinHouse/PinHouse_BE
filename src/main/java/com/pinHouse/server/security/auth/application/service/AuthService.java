@@ -67,7 +67,7 @@ public class AuthService implements AuthUseCase {
 
         /// 리프레쉬 토큰 바탕으로 조회
         User user = repository.findById(token.getUserId())
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디를 가진 유저가 없습니다"));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
 
         /// 인증된 유저에게 JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);

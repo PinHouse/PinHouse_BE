@@ -88,7 +88,7 @@ public class JwtProvider {
 
         /// JWT 내용 생성
         Map<String, Object> claims = new HashMap<>();
-        claims.put(ID_CLAIM, tokenInfo.userId());
+        claims.put(ID_CLAIM, tokenInfo.userId().toString());
         claims.put(ROLE_CLAIM, tokenInfo.role());
 
         return Jwts.builder()

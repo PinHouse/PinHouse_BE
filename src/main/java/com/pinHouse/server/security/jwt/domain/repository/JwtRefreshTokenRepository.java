@@ -8,14 +8,6 @@ import java.util.UUID;
 
 public interface JwtRefreshTokenRepository extends CrudRepository<JwtRefreshToken, String> {
 
-    Optional<JwtRefreshToken> findByRefreshToken(String refreshToken);
-
-    Optional<JwtRefreshToken> findByRefreshTokenAndUserId(String refreshToken, UUID userId);
-
-
-    void deleteByRefreshToken(String refreshToken);
-
-    Optional<JwtRefreshToken> findByUserId(UUID userId);
-
-
+    /// 유저 아이디와 토큰 기반으로 추출
+    Optional<JwtRefreshToken> findByUserIdAndRefreshToken(UUID userId, String refreshToken);
 }
