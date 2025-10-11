@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-@Tag(name = "인증 API", description = "로그인/로그아웃/재발급를 수행하는 API입니다")
+@Tag(name = "인증 API", description = "로그아웃/액세스 토큰 재발급을 수행하는 API입니다")
 public interface AuthApiSpec {
 
     /// 로그아웃

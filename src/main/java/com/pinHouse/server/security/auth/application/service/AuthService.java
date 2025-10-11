@@ -30,9 +30,13 @@ public class AuthService implements AuthUseCase {
     private final JwtValidator jwtValidator;
     private final JwtProvider jwtProvider;
 
+    // =================
+    //  퍼블릭 로직
+    // =================
+
     /// 로그아웃
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void logout(UUID userId, Optional<String> refreshToken) {
 
         /// DB 검증
@@ -50,7 +54,7 @@ public class AuthService implements AuthUseCase {
 
     /// 토큰 재발급
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public JwtTokenResponse reissue(Optional<String> refreshToken) {
 
         /// 없다면 예외처리

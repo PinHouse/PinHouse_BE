@@ -1,6 +1,6 @@
 package com.pinHouse.server.security.jwt.filter;
 
-import com.pinHouse.server.security.config.RequestMatcherHolder;
+import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.jwt.application.util.HttpUtil;
 import com.pinHouse.server.security.jwt.application.util.JwtValidator;
@@ -28,12 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtValidator jwtValidator;
     private final JwtAuthenticationFailureHandler failureHandler;
-    private final RequestMatcherHolder requestMatcherHolder;
     private final HttpUtil httpUtil;
 
-    public final static String JWT_ERROR = "jwtError";
+    /// 작동하지 않는 필터
+    private final RequestMatcherHolder requestMatcherHolder;
 
-    // doFilterInternal
+    /// 필터 작동
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -57,7 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             /// 토큰이 없거나, 인증에 성공했으면 다음 필터로 진행
-            filterChain.doFilter(request, response);
+            if (accessTokenOptional.isEmpty()){
+                throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
+            }
 
         } catch (JwtAuthenticationException ex) {
 

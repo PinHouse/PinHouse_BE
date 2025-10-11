@@ -1,6 +1,10 @@
 package com.pinHouse.server.security.oauth2.handler;
 
-import com.pinHouse.server.security.jwt.application.usecase.JwtTokenUseCase;
+import com.pinHouse.server.platform.user.domain.entity.User;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
+import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.security.jwt.application.util.JwtProvider;
+import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,15 +17,17 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenUseCase tokenService;
+    private final JwtProvider jwtProvider;
+    private final HttpUtil httpUtil;
 
     @Value("${cors.front.local}")
-    public String REDIRECT_PATH;
+    private String REDIRECT_PATH;
 
     /*
         기존에 존재하는 유저의 경우, 토큰 발급을 진행합니다.
@@ -29,16 +35,29 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
      */
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
 
-        /// AccessToken과 Refresh 토큰 생성
-        tokenService.createAccessToken(response, authentication);
-        tokenService.createRefreshToken(response, authentication);
+        try {
+            /// 인증객체에서 User 가져오기
+            PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+            User user = principal.getUser();
 
-        /// 시큐리티 홀더에 해당 멤버 저장
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            /// Access, Refresh 토큰 생성
+            JwtTokenRequest tokenRequest = JwtTokenRequest.from(user);
+            String accessToken = jwtProvider.createAccessToken(tokenRequest);
+            String refreshToken = jwtProvider.createRefreshToken(tokenRequest);
 
-        /// 쿠키와 함께 리다이렉트 (프론트 홈 주소)
-        getRedirectStrategy().sendRedirect(request, response, REDIRECT_PATH);
+            /// HTTP 쿠키 추가
+            httpUtil.addAccessTokenCookie(httpServletResponse, accessToken);
+            httpUtil.addRefreshTokenCookie(httpServletResponse, refreshToken);
+
+            /// 시큐리티 홀더에 해당 멤버 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            /// 쿠키와 함께 리다이렉트 (프론트 홈 주소)
+            getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, REDIRECT_PATH);
+        } catch (Exception e) {
+            log.error("OAuth2 회원가입 진행중 에러 발생", e);
+        }
     }
 }

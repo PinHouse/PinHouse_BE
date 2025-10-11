@@ -19,13 +19,15 @@ import java.util.Map;
 import static com.pinHouse.server.core.util.RedisKeyUtil.ID_CLAIM;
 import static com.pinHouse.server.core.util.RedisKeyUtil.ROLE_CLAIM;
 
-
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
 
     @Value("${auth.jwt.access.expiration}")
     private long accessExpiration;
+
+    @Value("${auth.jwt.access.dev_expiration}")
+    private long devExpiration;
 
     @Value("${auth.jwt.refresh.expiration}")
     private long refreshExpiration;
@@ -47,6 +49,13 @@ public class JwtProvider {
 
         /// 액세스 토큰 생성
         return createToken(userInfo, accessExpiration);
+    }
+
+    /// 개발용 엑세스 토큰 발급
+    public String createDevAccessToken(JwtTokenRequest userInfo) {
+
+        /// 액세스 토큰 생성
+        return createToken(userInfo, devExpiration);
     }
 
     /// 리프레쉬 토큰 발급

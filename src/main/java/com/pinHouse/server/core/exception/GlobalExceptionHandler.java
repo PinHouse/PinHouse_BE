@@ -4,6 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.core.response.response.FieldErrorResponse;
+import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +62,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             IllegalStateException.class, IllegalArgumentException.class})
     public ApiResponse<CustomException> handleIllegalStateException(Exception e, HttpServletRequest request) {
+
+        /// 메세지 바탕으로 예외 코드 검색
+        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+
+        /// 해당 예외 코드로 예외 처리
+        CustomException exception = new CustomException(errorCode, null);
+
+        return handleCustomException(exception, request);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({
+            JwtAuthenticationException.class})
+    public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e, HttpServletRequest request) {
 
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());

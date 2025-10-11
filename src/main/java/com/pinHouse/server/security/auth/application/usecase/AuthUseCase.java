@@ -13,5 +13,4 @@ public interface AuthUseCase {
     /// 로그아웃 진행하기
     void logout(UUID userId, Optional<String> refreshToken);
 
-
 }

@@ -3,6 +3,7 @@ package com.pinHouse.server.security.config;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationDeniedHandler;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationFailureHandler;
 import com.pinHouse.server.security.jwt.filter.JwtAuthenticationFilter;
+import com.pinHouse.server.security.jwt.filter.RequestMatcherHolder;
 import com.pinHouse.server.security.oauth2.handler.OAuth2FailureHandler;
 import com.pinHouse.server.security.oauth2.handler.OAuth2SuccessHandler;
 import com.pinHouse.server.security.oauth2.service.OAuth2UserService;
