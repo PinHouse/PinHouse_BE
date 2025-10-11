@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
+package com.pinHouse.server.platform.housing.facility.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

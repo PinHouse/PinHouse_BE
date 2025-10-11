@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.housing.facility.application.usecase;
 
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
-import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacility;
+import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 
 import java.util.List;
 
@@ -11,10 +11,9 @@ import java.util.List;
  */
 public interface FacilityUseCase {
 
-    /// 조회
-    // 주변의 인프라 개수 조회
-    NoticeFacility getNoticeInfraById(String noticeId);
+    /// 주변의 인프라 목록 조회
+    NoticeFacilityListResponse getFacilities(String complexId);
 
-    // 원하는 인프라 바탕으로 많이 존재하는 공고 조회
-    List<Notice> getNoticesByInfraTypesWithAllMinCount(List<FacilityType> facilityTypes);
+    /// 원하는 인프라가 많은 임대주택 목록 조회
+    List<ComplexDocument> getComplexes(List<FacilityType> facilityTypes);
 }

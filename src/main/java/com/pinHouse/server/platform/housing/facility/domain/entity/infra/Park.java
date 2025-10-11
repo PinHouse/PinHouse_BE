@@ -1,7 +1,7 @@
-package com.pinHouse.server.platform.housing.facility.domain.entity;
+package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
 
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.Facility;
+import com.pinHouse.server.platform.housing.facility.domain.entity.Facility;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;

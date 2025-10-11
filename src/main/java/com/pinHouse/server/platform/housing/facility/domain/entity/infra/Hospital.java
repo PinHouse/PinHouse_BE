@@ -1,7 +1,7 @@
-package com.pinHouse.server.platform.housing.facility.domain.entity;
+package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
 
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.Facility;
 import com.pinHouse.server.platform.Location;
+import com.pinHouse.server.platform.housing.facility.domain.entity.Facility;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "mart")
+@Document(collection = "hospital")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Mart implements Facility {
+public class Hospital implements Facility {
 
     @Id
     private String id;
@@ -24,16 +24,13 @@ public class Mart implements Facility {
     private int number;
 
     @Field("개방서비스명")
-    private String openServiceName;
-
-    @Field("개방자치단체코드")
-    private int localGovCode;
+    private String serviceName;
 
     @Field("관리번호")
     private String managementNumber;
 
-    @Field("영업상태구분코드")
-    private int businessStatusCode;
+    @Field("소재지전화")
+    private String phone;
 
     @Field("소재지면적")
     private double area;
@@ -50,11 +47,31 @@ public class Mart implements Facility {
     @Field("업태구분명")
     private String businessType;
 
-    @Field("점포구분명")
-    private String storeType;
+    @Field("의료기관종별명")
+    private String medicalInstitutionType;
+
+    @Field("의료인수")
+    private int medicalStaffCount;
+
+    @Field("입원실수")
+    private int inpatientRoomCount;
+
+    @Field("병상수")
+    private int bedCount;
+
+    @Field("총면적")
+    private double totalArea;
+
+    @Field("진료과목내용")
+    private String medicalSubjectCodes;
+
+    @Field("진료과목내용명")
+    private String medicalSubjectNames;
+
+    @Field("관리주체")
+    private String managingEntity;
 
     @Field("location")
     private Location location;
-
 
 }

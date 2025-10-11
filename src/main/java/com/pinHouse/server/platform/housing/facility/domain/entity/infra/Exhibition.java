@@ -1,8 +1,8 @@
-package com.pinHouse.server.platform.housing.facility.domain.entity;
+package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
 
 
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.Facility;
+import com.pinHouse.server.platform.housing.facility.domain.entity.Facility;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

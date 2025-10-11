@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.housing.facility.application.dto;
 
-import com.pinHouse.server.platform.housing.facility.domain.entity.*;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.*;
 import io.micrometer.common.lang.Nullable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -11,7 +11,8 @@ import java.util.List;
  */
 @Schema(name = "[응답][인프라] 공고 인프라 통합 응답", description = "공고 인프라 관련 시설 목록 응답 DTO입니다.")
 @Builder
-public record NoticeFacilityResponse(
+public record NoticeFacilityListResponse(
+
         @Schema(description = "도서관 응답 목록")
         @Nullable List<LibraryResponse> libraries,
 
@@ -40,8 +41,8 @@ public record NoticeFacilityResponse(
         @Nullable List<MartResponse> marts
 ) {
     /** FacilityResponse → 통합 응답 DTO로 일괄 변환 (null-safe 매핑) */
-    public static NoticeFacilityResponse from(NoticeFacility noticeFacility) {
-        return NoticeFacilityResponse.builder()
+    public static NoticeFacilityListResponse from(NoticeFacility noticeFacility) {
+        return NoticeFacilityListResponse.builder()
                 .libraries(noticeFacility.getLibraries() == null
                         ? null : LibraryResponse.from(noticeFacility.getLibraries()))
                 .animals(noticeFacility.getAnimals() == null
@@ -62,7 +63,6 @@ public record NoticeFacilityResponse(
                         ? null : MartResponse.from(noticeFacility.getMarts()))
                 .build();
     }
-}
 
     @Schema(name = "[응답][도서관] 도서관 정보 응답", description = "도서관 이름과 주소 정보를 담고 있습니다.")
     @Builder
@@ -304,3 +304,5 @@ public record NoticeFacilityResponse(
             return marts.stream().map(MartResponse::from).toList();
         }
     }
+
+}

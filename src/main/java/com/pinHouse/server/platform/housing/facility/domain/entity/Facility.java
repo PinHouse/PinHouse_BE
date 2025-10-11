@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housing.facility.domain.entity.infra;
+package com.pinHouse.server.platform.housing.facility.domain.entity;
 
 import com.pinHouse.server.platform.Location;
 
