@@ -2,11 +2,12 @@ package com.pinHouse.server.platform.housing.notice.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.response.NoticeDTO;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
-import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,7 +32,7 @@ public class NoticeService implements NoticeUseCase {
      * @param pageRequest  페이지 기반
      */
     @Override
-    public Page<NoticeDTO.NoticeListResponse> getNotices(PageRequest pageRequest) {
+    public Page<NoticeListResponse> getNotices(PageRequest pageRequest) {
 
         /// 페이징 변환
         Pageable pageable = getPageable(pageRequest);
@@ -41,7 +42,7 @@ public class NoticeService implements NoticeUseCase {
 
         /// DTO 변환
         List<Notice> contents = notices.getContent();
-        List<NoticeDTO.NoticeListResponse> responseList = NoticeDTO.NoticeListResponse.from(contents);
+        List<NoticeListResponse> responseList = NoticeListResponse.from(contents);
 
         return new PageImpl<>(responseList, pageable, contents.size());
     }
@@ -52,7 +53,7 @@ public class NoticeService implements NoticeUseCase {
      * @param pageRequest  페이지 기반
      */
     @Override
-    public Page<NoticeDTO.NoticeListResponse> getNoticesByRegion(String region, PageRequest pageRequest) {
+    public Page<NoticeListResponse> getNoticesByRegion(String region, PageRequest pageRequest) {
 
         /// 페이징 변환
         Pageable pageable = getPageable(pageRequest);
@@ -65,13 +66,13 @@ public class NoticeService implements NoticeUseCase {
      * @param noticeId  조회할 공고 ID
      */
     @Override
-    public NoticeDTO.NoticeDetailResponse getNoticeById(String noticeId) {
+    public NoticeDetailResponse getNoticeById(String noticeId) {
 
         /// 공고 조회
         Notice notice = getNotice(noticeId);
 
         /// DTO 변환
-        return NoticeDTO.NoticeDetailResponse.from(notice);
+        return NoticeDetailResponse.from(notice);
     }
 
     /**

@@ -1,9 +1,9 @@
 package com.pinHouse.server.platform.housing.facility.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
-import com.pinHouse.server.platform.housing.facility.application.dto.response.InfraDTO;
-import com.pinHouse.server.platform.housing.notice.application.dto.response.NoticeDTO;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ public interface FacilityApiSpec {
             description = "공고 주변 3KM내 존재하는 인프라를 확인하는 API입니다."
     )
     @GetMapping("/{noticeId}")
-    ApiResponse<InfraDTO.NoticeInfraResponse> showNotice(
+    ApiResponse<NoticeFacilityResponse> showNotice(
             @Parameter(example = "18407")
             @PathVariable String noticeId);
 
@@ -30,7 +30,7 @@ public interface FacilityApiSpec {
             description = "해당 인프라가 2개 이상 존재하는 공고를 조회하는 API입니다."
     )
     @GetMapping("/type")
-    ApiResponse<List<NoticeDTO.NoticeListResponse>> showNoticeList(
+    ApiResponse<List<NoticeListResponse>> showNoticeList(
             @RequestParam List<FacilityType> facilityTypes
     );
 }

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.deposit.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.deposit.application.dto.response.NoticeSupplyDTO;
+import com.pinHouse.server.platform.housing.deposit.application.dto.NoticeLeaseOptionResponse;
 import com.pinHouse.server.platform.housing.deposit.application.usecase.DepositUseCase;
 import com.pinHouse.server.platform.housing.deposit.presentation.swagger.DepositApiSpec;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class DepositApi implements DepositApiSpec {
     private final DepositUseCase service;
 
     @PutMapping("/{noticeId}")
-    public ApiResponse<NoticeSupplyDTO.NoticeLeaseOptionResponse> update(
+    public ApiResponse<NoticeLeaseOptionResponse> update(
             @PathVariable String noticeId,
             @RequestParam String housingType,
             @RequestParam double percentage) {
 
         /// 서비스 호출
-        NoticeSupplyDTO.NoticeLeaseOptionResponse lease = service.getLeaseByPercent(noticeId, housingType, percentage);
+        NoticeLeaseOptionResponse lease = service.getLeaseByPercent(noticeId, housingType, percentage);
 
         return ApiResponse.ok(lease);
 

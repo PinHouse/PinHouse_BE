@@ -1,0 +1,58 @@
+package com.pinHouse.server.platform.diagnostic.rule.domain.rule;
+
+import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Diagnosis;
+import com.pinHouse.server.platform.diagnostic.rule.application.usecase.PolicyUseCase;
+import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;
+import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
+import com.pinHouse.server.platform.diagnostic.rule.domain.entity.SupplyType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+/** 9) 고령자 제한 */
+@Order(3)
+@Component
+@RequiredArgsConstructor
+public class ElderCandidateRule implements Rule {
+
+    /// 임대주택 유형 검증기 도입
+    private final PolicyUseCase policyUseCase;
+
+    @Override
+    public RuleResult evaluate(EvaluationContext ctx) {
+
+        Diagnosis diagnosis = ctx.getDiagnosis();
+
+        /// 가능한 리스트 추출하기
+        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
+
+        /// 나이가 고령자 제한이 안된다면 삭제
+        if (diagnosis.getAge() < policyUseCase.elderAge()) {
+
+            /// 만약 있다면 삭제
+            candidates.removeIf(c ->
+                    c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
+
+            /// 결과 저장하기
+            ctx.setCurrentCandidates(candidates);
+
+            return RuleResult.fail(code(),
+                    "고령자 해당 없음",
+                    Map.of("candidate", candidates));
+        }
+
+        /// 나이가 고령자이기에 그대로 후보로 지정
+        return RuleResult.pass(code(),
+                "고령자 특별공급 후보",
+                Map.of("candidate", candidates));
+
+    }
+
+    @Override public String code() {
+        return "CANDIDATE_ELDER_SPECIAL";
+    }
+
+}

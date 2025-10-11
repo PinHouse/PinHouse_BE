@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.user.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
+import com.pinHouse.server.platform.user.application.dto.UserRequest;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

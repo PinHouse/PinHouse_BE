@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.user.application.service;
 
-import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
-import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.response.TempUserResponse;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.user.application.dto.UserRequest;
+import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
@@ -46,7 +46,7 @@ public class UserService implements UserUseCase {
         if (raw instanceof TempUserInfo info) {
 
             /// 관심 목록과 함께, 값 저장하기
-            saveUser(createUser(info, request.getFacilityTypes()));
+            saveUser(createUser(info, request.facilityTypes()));
         }
     }
 

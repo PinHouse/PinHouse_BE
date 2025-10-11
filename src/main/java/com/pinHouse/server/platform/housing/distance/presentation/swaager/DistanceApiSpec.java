@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.distance.presentation.swaager;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

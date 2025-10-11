@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.deposit.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.housing.deposit.application.dto.response.NoticeSupplyDTO;
+import com.pinHouse.server.platform.housing.deposit.application.dto.NoticeLeaseOptionResponse;
 import com.pinHouse.server.platform.housing.deposit.application.usecase.DepositUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.housing.deposit.domain.entity.NoticeSupply;
@@ -33,7 +33,7 @@ public class DepositService implements DepositUseCase {
      * - 전환 이율 변동 시, 변경된 이율로 재산정
      */
     @Override
-    public NoticeSupplyDTO.NoticeLeaseOptionResponse getLeaseByPercent(String noticeId, String type, double percentage) {
+    public NoticeLeaseOptionResponse getLeaseByPercent(String noticeId, String type, double percentage) {
 
         // 1. 공고 예외처리
         Notice notice = getNotice(noticeId);
@@ -93,7 +93,7 @@ public class DepositService implements DepositUseCase {
         }
         // clampedPercentage == 0 이면 원본 값 그대로 유지
 
-        return NoticeSupplyDTO.NoticeLeaseOptionResponse
+        return NoticeLeaseOptionResponse
                 .from(notice.getNoticeId(), type, adjustedDeposit, adjustedRent);
     }
 
