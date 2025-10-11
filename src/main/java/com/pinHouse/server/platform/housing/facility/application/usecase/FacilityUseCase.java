@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.housing.facility.application.usecase;
 
-import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.housing.facility.application.dto.response.FacilityResponse;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacility;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface FacilityUseCase {
 
     /// 조회
     // 주변의 인프라 개수 조회
-    FacilityResponse getNoticeInfraById(String noticeId);
+    NoticeFacility getNoticeInfraById(String noticeId);
 
     // 원하는 인프라 바탕으로 많이 존재하는 공고 조회
     List<Notice> getNoticesByInfraTypesWithAllMinCount(List<FacilityType> facilityTypes);

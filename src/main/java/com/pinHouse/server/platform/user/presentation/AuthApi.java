@@ -1,13 +1,12 @@
 package com.pinHouse.server.platform.user.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.user.application.dto.request.UserRequest;
-import com.pinHouse.server.platform.user.application.dto.response.TempUserResponse;
+import com.pinHouse.server.platform.user.application.dto.UserRequest;
+import com.pinHouse.server.platform.user.application.dto.TempUserResponse;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.presentation.swagger.AuthApiSpec;
 import com.pinHouse.server.security.jwt.service.JwtTokenUseCase;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
-import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

@@ -1,9 +1,10 @@
 package com.pinHouse.server.platform.housing.notice.application.usecase;
 
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.response.NoticeDTO;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -22,13 +23,13 @@ public interface NoticeUseCase {
 
     /// 조회
     // 최신 목록 조회
-    Page<NoticeDTO.NoticeListResponse> getNotices(PageRequest pageRequest);
+    Page<NoticeListResponse> getNotices(PageRequest pageRequest);
 
     // 지역 필터링 기반, 공고 목록 조회
-    Page<NoticeDTO.NoticeListResponse> getNoticesByRegion(String region, PageRequest pageRequest);
+    Page<NoticeListResponse> getNoticesByRegion(String region, PageRequest pageRequest);
 
     // 상세 조회
-    NoticeDTO.NoticeDetailResponse getNoticeById(String noticeId);
+    NoticeDetailResponse getNoticeById(String noticeId);
 
     /// 비교
     List<Notice> compareNotices(String noticeId1, String noticeId2);

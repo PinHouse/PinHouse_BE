@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.pinPoint.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.pinPoint.application.dto.request.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.response.PinPointResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

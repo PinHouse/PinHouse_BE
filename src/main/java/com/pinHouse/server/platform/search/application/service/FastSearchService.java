@@ -2,13 +2,13 @@ package com.pinHouse.server.platform.search.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.distance.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
-import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
-import com.pinHouse.server.platform.search.application.dto.response.FastSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.platform.search.application.usecase.FastSearchUseCase;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.User;
@@ -54,7 +54,7 @@ public class FastSearchService implements FastSearchUseCase {
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
 
         /// 유저와 핀 포인트가 일치하는지 조회
-        boolean checkPinPoint = pinPointService.checkPinPoint(request.getPinPointId(), user.getId());
+        boolean checkPinPoint = pinPointService.checkPinPoint(request.pinPointId(), user.getId());
 
         /// 일치하지 않는다면 예외 처리
         if (!checkPinPoint) {
@@ -62,7 +62,7 @@ public class FastSearchService implements FastSearchUseCase {
         }
 
         /// 핀 포인트 조회
-        var pinPoint = pinPointService.loadPinPoint(request.getPinPointId())
+        var pinPoint = pinPointService.loadPinPoint(request.pinPointId())
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_PINPOINT.getMessage()));
 
         /// 필터링 실행

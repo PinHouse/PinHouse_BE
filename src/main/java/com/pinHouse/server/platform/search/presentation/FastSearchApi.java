@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.search.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.search.application.dto.request.FastSearchRequest;
-import com.pinHouse.server.platform.search.application.dto.response.FastSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.platform.search.application.usecase.FastSearchUseCase;
 import com.pinHouse.server.platform.search.presentation.swagger.FastSearchApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;

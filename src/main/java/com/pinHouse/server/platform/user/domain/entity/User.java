@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.user.domain.entity;
 
 import com.pinHouse.server.core.util.BirthDayUtil;
 import com.pinHouse.server.platform.BaseTimeEntity;
-import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
 import com.pinHouse.server.security.oauth2.domain.OAuth2UserInfo;
 import jakarta.persistence.*;
 import lombok.*;

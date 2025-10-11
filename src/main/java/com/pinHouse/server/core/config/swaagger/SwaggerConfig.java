@@ -54,7 +54,7 @@ public class SwaggerConfig {
     public OpenApiCustomizer removeGenericSchemas() {
         return openApi -> {
             openApi.getComponents().getSchemas().keySet().removeIf(name ->
-                    name.contains("ApiResponse") || name.contains("SliceResponse")
+                    name.contains("PageRequest") || name.contains("PageResponse") || name.contains("FieldErrorResponse") || name.contains("ApiResponse") || name.contains("SliceResponse") || name.contains("SliceRequest")
             );
         };
     }

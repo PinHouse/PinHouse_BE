@@ -1,14 +1,14 @@
 package com.pinHouse.server.platform.housing.facility.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.housing.facility.application.dto.request.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacility;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.housing.facility.domain.entity.*;
 import com.pinHouse.server.platform.housing.facility.domain.entity.infra.Facility;
 import com.pinHouse.server.platform.housing.facility.domain.repository.*;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
-import com.pinHouse.server.platform.housing.facility.application.dto.response.FacilityResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +47,7 @@ public class FacilityService implements FacilityUseCase {
 
     /// 주변의 인프라 개수 조회
     @Override
-    public FacilityResponse getNoticeInfraById(String noticeId) {
+    public NoticeFacility getNoticeInfraById(String noticeId) {
 
         /// 예외 처리
         Notice notice = getNotice(noticeId);
@@ -113,7 +113,7 @@ public class FacilityService implements FacilityUseCase {
                 radiusInRadians
         );
         /// 객체 생성
-        return FacilityResponse.of(notice, libraries, animals, sports, walkings, parks, exhibitions, laundries, hospitals, marts);
+        return NoticeFacility.of(notice, libraries, animals, sports, walkings, parks, exhibitions, laundries, hospitals, marts);
     }
 
     // =================
