@@ -7,6 +7,7 @@ import com.pinHouse.server.platform.user.application.dto.UserRequest;
 import com.pinHouse.server.platform.user.application.dto.UserResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,6 +57,7 @@ public interface UserApiSpec {
             description = "유저아이디를 바탕으로 다른 유저의 정보를 조회합니다."
     )
     ApiResponse<UserResponse> getOthetUser(
+            @Parameter(description = "개발자아이디", example = "12345678-aaaa-bbbb-cccc-123456789abc")
             @PathVariable UUID userId);
 
 }

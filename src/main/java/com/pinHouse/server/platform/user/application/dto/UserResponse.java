@@ -22,9 +22,9 @@ public record UserResponse(
     public static UserResponse from(User user) {
         return UserResponse.builder()
                 .userId(user.getId())
+                .imageUrl(user.getProfileImage())
                 .name(user.getName())
                 .build();
-
     }
 
 }
