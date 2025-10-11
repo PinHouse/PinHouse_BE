@@ -19,6 +19,9 @@ public class HttpUtil {
     @Value("${auth.jwt.access.expiration}")
     private long accessExpiration;
 
+    @Value("${auth.jwt.access.dev_expiration}")
+    private long devExpiration;
+
     @Value("${auth.jwt.refresh.expiration}")
     private long refreshExpiration;
 
@@ -47,6 +50,14 @@ public class HttpUtil {
 
         /// 쿠키 생성 및 저장
         createCookie(httpServletResponse, ACCESS_TOKEN, accessToken, accessExpiration);
+
+    }
+
+    /// 개발용 액세스 토큰을 쿠키에 저장하기
+    public void addDevAccessTokenCookie(HttpServletResponse httpServletResponse, String devAccessToken) {
+
+        /// 쿠키 생성 및 저장
+        createCookie(httpServletResponse, ACCESS_TOKEN, devAccessToken, devExpiration);
 
     }
 
