@@ -26,6 +26,9 @@ public record NoticeDetailResponse(
         @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
         String period,
 
+        @Schema(description = "전체 임대주택 개수", example = "6")
+        long totalCount,
+
         List<ComplexDetailResponse> complexes
 ) {
 
@@ -43,6 +46,7 @@ public record NoticeDetailResponse(
                 .supplier(notice.getAgency())
                 .period(period)
                 .type(notice.getSupplyType())
+                .totalCount(complexesResponse.size())
                 .complexes(complexesResponse)
                 .build();
     }
