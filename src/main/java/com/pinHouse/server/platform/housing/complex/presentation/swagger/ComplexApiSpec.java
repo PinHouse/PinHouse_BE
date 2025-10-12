@@ -22,7 +22,7 @@ public interface ComplexApiSpec {
             description = "임대주택 ID로 상세 조회하는 API 입니다."
     )
     ApiResponse<ComplexDetailResponse> getComplex(
-            @Parameter(example = "18407#1")
+            @Parameter(example = "18407#1", description = "임대주택 ID")
             @PathVariable String complexId
     );
 
@@ -33,7 +33,7 @@ public interface ComplexApiSpec {
     )
     ApiResponse<DepositResponse> deposit(
 
-            @Parameter(example = "18407#1", description = "공고 ID")
+            @Parameter(example = "18407#1", description = "임대주택 ID")
             @PathVariable String complexId,
 
             @Parameter(example = "26A", description = "주거 타입")
@@ -47,7 +47,10 @@ public interface ComplexApiSpec {
             summary = "거리 시뮬레이터 API",
             description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
     ApiResponse<List<DistanceResponse>> distance(
+            @Parameter(example = "18407#1", description = "임대주택 ID")
             @PathVariable String complexId,
+
+            @Parameter(example = "1", description = "핀포인트 ID")
             @RequestParam Long pinPointId) throws UnsupportedEncodingException;
 
 
