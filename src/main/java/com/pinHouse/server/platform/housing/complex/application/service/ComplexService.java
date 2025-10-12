@@ -1,10 +1,13 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
 import com.pinHouse.server.platform.Location;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
+import com.pinHouse.server.platform.housing.complex.application.util.TransitResponseMapper;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
@@ -34,7 +37,7 @@ public class ComplexService implements ComplexUseCase {
 
     /// 거리 계산 툴
     private final DistanceUtil distanceUtil;
-
+    private final TransitResponseMapper mapper;
     // =================
     //  퍼블릭 로직
     // =================
@@ -154,6 +157,27 @@ public class ComplexService implements ComplexUseCase {
         );
     }
 
+    /// 간편 대중교통 시뮬레이터
+    @Override
+    public List<TransitResponse> getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+        /// 임대주택 예외처리
+        ComplexDocument complex = loadComplex(id);
+        Location location = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+
+        /// 대중교통 목록 비교하기
+        PathResult pathResult = distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+
+        /// 조건 바탕으로 가져오기
+        RootResult rootResult = mapper.selectBest(pathResult);
+
+        /// 리턴
+        return mapper.from(rootResult);
+
+    }
+
     /// 대중교통 시뮬레이터
     @Override
     @Transactional()
@@ -166,13 +190,8 @@ public class ComplexService implements ComplexUseCase {
         /// 핀포인트 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 
-        /// 2개의 좌표 비교하기
-        PathResult result = distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
-
-        log.info("비교 {}", result);
-
-        /// 결과 중 처음 내용 리턴
-        return result;
+        /// 대중교통 목록 가져오기
+        return distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
 
     }
 
