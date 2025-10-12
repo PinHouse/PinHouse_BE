@@ -12,7 +12,6 @@ import java.util.UUID;
 public record MyPageResponse(
         UUID userId,
         String provider,
-        String socialId,
         String name,
         String nickName,
         String email,
@@ -29,7 +28,6 @@ public record MyPageResponse(
         return MyPageResponse.builder()
                 .userId(user.getId())
                 .provider(user.getProvider().name())
-                .socialId(user.getSocialId())
                 .nickName(user.getNickname())
                 .name(user.getName())
                 .email(user.getEmail())
