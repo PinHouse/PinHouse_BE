@@ -1,9 +1,9 @@
-package com.pinHouse.server.platform.housing.complex.application;
+package com.pinHouse.server.platform.housing.complex.application.usecase;
 
-import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
 import java.io.UnsupportedEncodingException;
@@ -22,7 +22,7 @@ public interface ComplexUseCase {
     DepositResponse getLeaseByPercent(String id, String type, double percentage);
 
     /// 거리 시뮬레이터
-    List<DistanceResponse> getDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
+    PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
 
     /// 비교 기능
 
