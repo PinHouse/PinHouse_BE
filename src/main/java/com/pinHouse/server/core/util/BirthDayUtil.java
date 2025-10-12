@@ -14,7 +14,7 @@ public class BirthDayUtil {
 
     public static String formatString(LocalDate birthday) {
         if (birthday == null) {
-            return "생년월일 정보 없음";
+            return "정보 없음";
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");

@@ -38,7 +38,7 @@ public class RequestMatcherHolder {
             // users
             new RequestInfo(DELETE, "/v1/users", Role.USER),     /// 회원탈퇴
             new RequestInfo(GET, "/v1/users/mypage", Role.USER),    /// 내 정보
-            new RequestInfo(GET, "/v1/users/{userId}", null),      /// 다른 정보
+            new RequestInfo(GET, "/v1/users/{userId}", Role.USER),      /// 다른 정보
             new RequestInfo(GET, "/v1/users", null),      /// 레디스
             new RequestInfo(PATCH, "/v1/users", Role.USER),         /// 수정
             new RequestInfo(POST, "/v1/users", null),       /// 회원가입
