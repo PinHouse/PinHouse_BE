@@ -11,15 +11,13 @@ import java.util.List;
 public record SliceResponse<T>(
         List<T> content,
         boolean hasNext,
-        int page,
-        int size
+        int page
 ) {
     public static <T> SliceResponse<T> from(Slice<T> slice) {
         return SliceResponse.<T>builder()
                 .content(slice.getContent())
                 .hasNext(slice.hasNext())
                 .page(slice.getNumber() + 1)
-                .size(slice.getSize())
                 .build();
     }
 }

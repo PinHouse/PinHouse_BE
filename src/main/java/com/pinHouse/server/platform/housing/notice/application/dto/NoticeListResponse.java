@@ -29,21 +29,22 @@ public record NoticeListResponse(
         @Schema(description = "공급유형", example = "영구임대")
         String type,
 
-        @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
-        String period
+        @Schema(description = "모집 일정", example = "2025년 10월 ~ 11월")
+        String applyPeriod
+
 ) {
     /// 정적 팩토리 메서드입니다.
     public static NoticeListResponse from(NoticeDocument notice) {
 
         /// 날짜
-        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
+        String period = DateUtil.formatDate(notice.getApplyStart(), notice.getApplyEnd());
 
         return NoticeListResponse.builder()
                 .id(notice.getNoticeId())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
-                .period(period)
+                .applyPeriod(period)
                 .type(notice.getSupplyType())
                 .build();
     }
