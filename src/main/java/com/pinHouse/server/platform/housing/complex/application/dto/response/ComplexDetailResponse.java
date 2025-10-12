@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housing.complex.application.dto;
+package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
