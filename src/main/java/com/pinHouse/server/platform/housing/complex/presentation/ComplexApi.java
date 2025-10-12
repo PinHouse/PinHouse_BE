@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 /**
  * 예산 시뮬레이터 관련 API 입니다
  */
@@ -52,7 +51,7 @@ public class ComplexApi implements ComplexApiSpec {
 
     /// 간편 대중교통 시뮬레이터
     @GetMapping("/{complexId}/transit/easy")
-    public ApiResponse<List<TransitResponse>> distanceEasy(
+    public ApiResponse<DistanceResponse> distanceEasy(
             @PathVariable String complexId,
             @RequestParam Long pinPointId) throws UnsupportedEncodingException {
 

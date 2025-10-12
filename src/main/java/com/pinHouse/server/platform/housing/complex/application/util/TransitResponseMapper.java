@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application.util;
 
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ChipType;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import lombok.AccessLevel;
@@ -37,10 +37,10 @@ public class TransitResponseMapper {
 
 
     /// 출력을 위한 매퍼
-    public List<TransitResponse> from(RootResult route) {
+    public List<DistanceResponse.TransitResponse> from(RootResult route) {
 
         /// 출력할 값 리스트
-        List<TransitResponse> chips = new ArrayList<>();
+        List<DistanceResponse.TransitResponse> chips = new ArrayList<>();
 
         /// 없으면 Null
         if (route == null || route.steps() == null) {
@@ -59,7 +59,7 @@ public class TransitResponseMapper {
             /// 라인
             String line = normalizeLine(step, type);
 
-            chips.add(TransitResponse.builder()
+            chips.add(DistanceResponse.TransitResponse.builder()
                     .type(type)
                     .minutesText(minutes)
                     .lineText(line)

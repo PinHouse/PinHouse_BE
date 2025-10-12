@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.housing.complex.presentation.swagger;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,7 +47,7 @@ public interface ComplexApiSpec {
     @Operation(
             summary = "간편 거리 시뮬레이터 API",
             description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
-    ApiResponse<List<TransitResponse>> distanceEasy(
+    ApiResponse<DistanceResponse> distanceEasy(
             @Parameter(example = "18399#1", description = "시도 내 조회")
             @PathVariable String complexId,
 

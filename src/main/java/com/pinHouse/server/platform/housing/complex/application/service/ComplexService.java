@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
@@ -159,7 +159,7 @@ public class ComplexService implements ComplexUseCase {
 
     /// 간편 대중교통 시뮬레이터
     @Override
-    public List<TransitResponse> getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
         Location location = complex.getLocation();
@@ -173,8 +173,11 @@ public class ComplexService implements ComplexUseCase {
         /// 조건 바탕으로 가져오기
         RootResult rootResult = mapper.selectBest(pathResult);
 
+        /// 간편 조건 탐색 DTO
+        List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
+
         /// 리턴
-        return mapper.from(rootResult);
+        return DistanceResponse.from(rootResult, routes);
 
     }
 
