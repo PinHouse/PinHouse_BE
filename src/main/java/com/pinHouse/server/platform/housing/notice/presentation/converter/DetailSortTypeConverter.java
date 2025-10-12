@@ -5,9 +5,10 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SortTypeConverter implements Converter<String, SortType> {
+public class DetailSortTypeConverter implements Converter<String, SortType.DetailSortType> {
+
     @Override
-    public SortType convert(String source) {
-        return SortType.from(source);
+    public SortType.DetailSortType convert(String source) {
+        return SortType.DetailSortType.from(source);
     }
 }

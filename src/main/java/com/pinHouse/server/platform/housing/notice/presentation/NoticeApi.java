@@ -22,7 +22,7 @@ public class NoticeApi implements NoticeApiSpec {
     /// 공고 목록 조회
     @GetMapping
     public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
-            @RequestParam SortType sort,
+            @RequestParam SortType.ListSortType sort,
             SliceRequest sliceRequest
     ) {
 
@@ -35,10 +35,12 @@ public class NoticeApi implements NoticeApiSpec {
 
     /// 공고 상세 조회
     @GetMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailResponse> getNotice(@PathVariable String noticeId) {
+    public ApiResponse<NoticeDetailResponse> getNotice(
+            @PathVariable String noticeId,
+            @RequestParam SortType.DetailSortType sort) {
 
         /// 서비스 계층
-        var response = service.getNotice(noticeId);
+        var response = service.getNotice(noticeId, sort);
 
         /// 리턴
         return ApiResponse.ok(response);

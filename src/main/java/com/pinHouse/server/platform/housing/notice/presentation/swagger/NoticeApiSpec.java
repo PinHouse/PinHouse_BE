@@ -15,20 +15,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "공고 API", description = "공고 기능 API 입니다")
 public interface NoticeApiSpec {
 
+    /// 목록 조회
     @Operation(
             summary = "공고 목록 조회 API",
             description = "최신 날짜 기준으로, 공고 목록을 조회하는 API 입니다."
     )
     ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
-            @RequestParam SortType sort, SliceRequest sliceRequest
+            @RequestParam SortType.ListSortType sort,
+            SliceRequest sliceRequest
     );
 
 
+    /// 상세 조회
     @Operation(
             summary = "공고 상세 조회 API",
             description = "공고 ID를 기준으로, 공고 상세 정보를 조회하는 API 입니다."
     )
     ApiResponse<NoticeDetailResponse> getNotice(
             @Parameter(example = "18442")
-            @PathVariable String noticeId);
+            @PathVariable String noticeId,
+            @RequestParam SortType.DetailSortType sort);
+
 }

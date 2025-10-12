@@ -34,19 +34,19 @@ public class NoticeService implements NoticeUseCase {
     //  퍼블릭 로직
     // =================
 
-    public SliceResponse<NoticeListResponse> getNotices(SortType sortType, SliceRequest req) {
+    public SliceResponse<NoticeListResponse> getNotices(SortType.ListSortType sortType, SliceRequest req) {
 
         // 오늘(한국) 기준 Instant
         Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
 
         // 안정적 정렬: 정렬필드 + _id
-        Sort sort = (sortType == SortType.END)
+        Sort sort = (sortType == SortType.ListSortType.END)
                 ? Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("_id"))
                 : Sort.by(Sort.Order.desc("applyStart"), Sort.Order.desc("_id"));
 
         Pageable pageable = PageRequest.of(req.page() - 1, req.offSet(), sort);
 
-        Page<NoticeDocument> page = (sortType == SortType.END)
+        Page<NoticeDocument> page = (sortType == SortType.ListSortType.END)
                 ? repository.findByApplyEndGreaterThanEqual(now, pageable)       // 마감 임박: 오늘 이후만
                 : repository.findByAnnounceDateLessThanEqual(now, pageable);     // 최신: 오늘까지 공개된 것만
 
@@ -54,20 +54,19 @@ public class NoticeService implements NoticeUseCase {
                 .map(NoticeListResponse::from)
                 .toList();
 
-        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()));
+        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
     }
 
 
     /// 공고 상세 조회
     @Override
-    public NoticeDetailResponse getNotice(String noticeId) {
+    public NoticeDetailResponse getNotice(String noticeId, SortType.DetailSortType sortType) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
 
         /// 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
-
 
         /// 리턴
         return NoticeDetailResponse.from(notice, complexes);

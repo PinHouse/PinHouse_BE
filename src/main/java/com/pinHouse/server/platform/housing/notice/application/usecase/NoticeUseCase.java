@@ -17,10 +17,10 @@ public interface NoticeUseCase {
     // =================
 
     /// 공고 목록 전체 조회
-    SliceResponse<NoticeListResponse> getNotices(SortType sortType, SliceRequest sliceRequest);
+    SliceResponse<NoticeListResponse> getNotices(SortType.ListSortType sortType, SliceRequest sliceRequest);
 
     /// 공고 상세 조회
-    NoticeDetailResponse getNotice(String noticeId);
+    NoticeDetailResponse getNotice(String noticeId, SortType.DetailSortType sortType);
 
     // =================
     //  외부 로직
