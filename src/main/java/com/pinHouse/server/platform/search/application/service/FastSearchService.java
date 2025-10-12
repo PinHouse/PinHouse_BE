@@ -1,13 +1,11 @@
 package com.pinHouse.server.platform.search.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.complex.application.ComplexUseCase;
-import com.pinHouse.server.platform.housing.complex.application.DistanceUtil;
-import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
-import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
@@ -21,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.ToIntFunction;
@@ -87,11 +84,11 @@ public class FastSearchService implements FastSearchUseCase {
 
         /// 거리계산 로직
         if (loc != null) {
-            List<DistanceResponse> path = findPathUnchecked(
+            List<RootResult> path = findPathUnchecked(
                     loc.getLatitude(), loc.getLongitude(),
                     pinPoint.getLatitude(), pinPoint.getLongitude()
             );
-            avgTime = averageInt(path, DistanceResponse::totalTime);
+            avgTime = averageInt(path, RootResult::totalTime);
         }
 
         /// 유닛 통계 계산(빈/널 가드 포함)
@@ -108,8 +105,8 @@ public class FastSearchService implements FastSearchUseCase {
     }
 
     /// 거리계산
-    private List<DistanceResponse> findPathUnchecked(double fromLat, double fromLng,
-                                                     double toLat, double toLng) {
+    private List<RootResult> findPathUnchecked(double fromLat, double fromLng,
+                                               double toLat, double toLng) {
         try {
             return distanceUtil.findPath(fromLat, fromLng, toLat, toLng);
         } catch (UnsupportedEncodingException e) {
@@ -119,7 +116,7 @@ public class FastSearchService implements FastSearchUseCase {
     }
 
     /// 거리 평균
-    private double averageInt(List<DistanceResponse> list, ToIntFunction<DistanceResponse> getter) {
+    private double averageInt(List<RootResult> list, ToIntFunction<RootResult> getter) {
         if (list == null || list.isEmpty()) return 0.0;
 
         return list.stream()

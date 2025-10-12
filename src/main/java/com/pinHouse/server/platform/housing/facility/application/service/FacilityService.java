@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.housing.facility.application.service;
 
-import com.pinHouse.server.platform.housing.complex.application.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
