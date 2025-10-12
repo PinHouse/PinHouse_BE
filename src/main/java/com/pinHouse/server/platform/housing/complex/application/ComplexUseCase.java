@@ -4,6 +4,7 @@ import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetai
 import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -37,4 +38,9 @@ public interface ComplexUseCase {
 
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
+
+    /// 필터링
+    List<ComplexDocument> filterComplexes(FastSearchRequest request);
+
+
 }

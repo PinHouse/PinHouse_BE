@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.search.application.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @Schema(name = "[요청][검색] 빠른 검색 요청", description = "빠른 검색 조건을 위한 요청 DTO입니다.")
 public record FastSearchRequest(
 
-        @Schema(description = "방 개수", example = "3")
+        @Schema(description = "같이 살 인원", example = "3")
         int count,
 
         @Schema(description = "방 최소 크기 (제곱미터)", example = "30.00")
@@ -37,45 +37,40 @@ public record FastSearchRequest(
         @Schema(description = "대중교통 소요 시간(분)", example = "120")
         int transitTime,
 
-        @Schema(description = "원하는 생활환경, 최대 3개까지 가능")
+        @Schema(description = "원하는 인프라, 최대 3개까지 가능")
         @Size(max = 3)
         List<FacilityType> facilityTypes,
 
-        @Schema(description = "공급유형 목록")
+        @Schema(description = "모집 대상")
         List<SupplyType> supplyTypes,
 
-        @Schema(description = "렌탈 유형 목록")
+        @Schema(description = "공급 유형")
         List<RentalType> rentalTypes
 ) {
 
     @RequiredArgsConstructor
     enum SupplyType {
 
-        GENERAL("일반 공급"),
-        YOUTH_SPECIAL("청년 특별공급"),
-        STUDENT_SPECIAL("대학생 특별공급"),
-        NEWCOUPLE_SPECIAL("신혼부부 특별공급"),
-        ELDER_SUPPORT_SPECIAL("고령자 부양 특별공급"),
-        ELDER_SPECIAL("고령자 특별공급"),
-        MULTICHILD_SPECIAL("다자녀 특별공급"),
-        WEAK_SPECIAL("취약계층 특별공급"),
-        BASIC_SPECIAL("기초수급자 특별공급"),
-        NO_OWN_SPECIAL("무주택자 특별공급");
+        GENERAL("일반"),
+        YOUTH_SPECIAL("청년"),
+        STUDENT_SPECIAL("대학생"),
+        COUPLE_SPECIAL("신혼부부"),
+        ELDER_SPECIAL("고령자"),
+        MULTI_CHILD_SPECIAL("다자녀"),
+        BASIC_SPECIAL("기초수급자"),
+        WEAK_SPECIAL("취약계층"),
+        NO_OWN_SPECIAL("무주택자");
 
         private final String value;
 
-        /**
-         * enum 에서 보여주는 value 값 가져오기
-         */
+        /// 한글값
         @JsonValue
         public String getValue() {
             return value;
         }
 
-        /**
-         * 받은 결과를 바탕으로 enum 값 만들기
-         * @param value 주는 값
-         */
+
+        /// 생성기
         @JsonCreator
         public static SupplyType fromValue(String value) {
             for (SupplyType type : SupplyType.values()) {
@@ -98,18 +93,14 @@ public record FastSearchRequest(
 
         private final String value;
 
-        /**
-         * enum 에서 보여주는 value 값 가져오기
-         */
+        /// 한글값
         @JsonValue
         public String getValue() {
             return value;
         }
 
-        /**
-         * 받은 결과를 바탕으로 enum 값 만들기
-         * @param value 주는 값
-         */
+
+        /// 생성값
         @JsonCreator
         public static RentalType fromValue(String value) {
             for (RentalType type : RentalType.values()) {

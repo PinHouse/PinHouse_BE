@@ -9,6 +9,7 @@ import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDoc
 import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
+import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,5 +200,11 @@ public class ComplexService implements ComplexUseCase{
     @Transactional(readOnly = true)
     public List<ComplexDocument> loadComplexes(String noticeId) {
         return repository.findByNoticeId(noticeId);
+    }
+
+    /// 필터링
+    @Override
+    public List<ComplexDocument> filterComplexes(FastSearchRequest request) {
+        return List.of();
     }
 }

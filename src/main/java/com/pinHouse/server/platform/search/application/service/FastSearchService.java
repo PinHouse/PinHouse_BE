@@ -2,11 +2,14 @@ package com.pinHouse.server.platform.search.application.service;
 
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.distance.application.dto.DistanceResponse;
-import com.pinHouse.server.platform.housing.distance.application.usecase.DistanceUseCase;
+import com.pinHouse.server.platform.housing.complex.application.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.DistanceUtil;
+import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
-import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
+import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.platform.search.application.usecase.FastSearchUseCase;
@@ -20,8 +23,8 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.function.ToIntFunction;
 
 /**
  * 빠른 검색을 위한 로직
@@ -32,67 +35,127 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FastSearchService implements FastSearchUseCase {
 
-    /// 필터링 의존성
-    private final NoticeUseCase noticeService;
-
-    /// 외부 의존성
+    /// 의존성
+    private final ComplexUseCase complexService;
     private final UserUseCase userService;
-    private final DistanceUseCase distanceService;
     private final PinPointUseCase pinPointService;
 
-    /**
-     * 빠른 검색을 하는 로직
-     *
-     * @param userId  유저ID
-     * @param request 요청DTO
-     */
+    /// 외부 API 의존성
+    private final DistanceUtil distanceUtil;
+
+    // =================
+    //  퍼블릭 로직
+    // =================
+
+    /// 검색
     @Override
     public List<FastSearchResponse> search(UUID userId, FastSearchRequest request) {
 
-        /// 유저가 존재하는지 체크
+        /// 유저/핀포인트 검증
         User user = userService.loadUser(userId);
 
-
-        /// 유저와 핀 포인트가 일치하는지 조회
-        boolean checkPinPoint = pinPointService.checkPinPoint(request.pinPointId(), user.getId());
-
-        /// 일치하지 않는다면 예외 처리
-        if (!checkPinPoint) {
+        if (!pinPointService.checkPinPoint(request.pinPointId(), user.getId())) {
             throw new IllegalArgumentException(ErrorCode.BAD_REQUEST_PINPOINT.getMessage());
         }
 
-        /// 핀 포인트 조회
+        /// 핀포인트 조회
         var pinPoint = pinPointService.loadPinPoint(request.pinPointId());
 
-        /// 필터링 실행
-        List<Notice> notices = noticeService.filterNotices(request);
+        /// 단지 필터링 (없으면 바로 빈 리스트)
+        List<ComplexDocument> complexes = complexService.filterComplexes(request);
 
-        /// 나온 목록들, 거리 API 조회
-        List<FastSearchResponse> responses = new ArrayList<>();
+        if (complexes == null || complexes.isEmpty()) {
+            return List.of();
+        }
 
-        notices.forEach(
-                notice -> {
-                    Location n = notice.getLocation();
-                    List<DistanceResponse> servicePath;
-
-                    try {
-                        servicePath = distanceService.findPath(n.getLatitude(), n.getLongitude(), pinPoint.getLatitude(), pinPoint.getLongitude());
-                        log.info("로그{}", servicePath.toString());
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    double avgTime = servicePath.stream()
-                            .mapToInt(DistanceResponse::totalTime)  // int 스트림으로 변환
-                            .average()                              // OptionalDouble 반환
-                            .orElse(0.0);                     // 값이 없을 경우 기본값
-
-                    FastSearchResponse response = FastSearchResponse.from(notice, avgTime);
-                    responses.add(response);
-                }
-        );
-
-        return responses;
+        /// 변환 파이프라인
+        return complexes.stream()
+                .map(complex -> toFastSearchResponse(complex, pinPoint))
+                .toList();
     }
+
+    /* =========================
+     * 내부 로직
+     * ========================= */
+
+    /// 변환 로직
+    private FastSearchResponse toFastSearchResponse(ComplexDocument complex, PinPoint pinPoint) {
+
+        /// 위치 없으면 0
+        double avgTime = 0.0;
+        var loc = complex.getLocation();
+
+        /// 거리계산 로직
+        if (loc != null) {
+            List<DistanceResponse> path = findPathUnchecked(
+                    loc.getLatitude(), loc.getLongitude(),
+                    pinPoint.getLatitude(), pinPoint.getLongitude()
+            );
+            avgTime = averageInt(path, DistanceResponse::totalTime);
+        }
+
+        /// 유닛 통계 계산(빈/널 가드 포함)
+        var stats = computeUnitStats(complex.getUnitTypes());
+
+        /// DTO 변환리턴
+        return FastSearchResponse.from(
+                complex,
+                stats.avgAreaM2(),
+                stats.avgDeposit(),
+                stats.avgMonthlyRent(),
+                avgTime
+        );
+    }
+
+    /// 거리계산
+    private List<DistanceResponse> findPathUnchecked(double fromLat, double fromLng,
+                                                     double toLat, double toLng) {
+        try {
+            return distanceUtil.findPath(fromLat, fromLng, toLat, toLng);
+        } catch (UnsupportedEncodingException e) {
+            // 호출부 단순화를 위해 런타임 예외로 래핑
+            throw new RuntimeException("거리 경로 조회 실패", e);
+        }
+    }
+
+    /// 거리 평균
+    private double averageInt(List<DistanceResponse> list, ToIntFunction<DistanceResponse> getter) {
+        if (list == null || list.isEmpty()) return 0.0;
+
+        return list.stream()
+                .mapToInt(getter)
+                .average()
+                .orElse(0.0);
+    }
+
+    /// 임대주택 내부 평균
+    private UnitStats computeUnitStats(List<UnitType> unitTypes) {
+        if (unitTypes == null || unitTypes.isEmpty()) {
+            return new UnitStats(0.0, 0L, 0);
+        }
+
+        double avgAreaM2 = unitTypes.stream()
+                .mapToDouble(UnitType::getExclusiveAreaM2)
+                .average()
+                .orElse(0.0);
+
+        double avgDepositD = unitTypes.stream()
+                .mapToLong(u -> u.getDeposit().getTotal())
+                .average()
+                .orElse(0.0);
+
+        double avgMonthlyRentD = unitTypes.stream()
+                .mapToInt(UnitType::getMonthlyRent)
+                .average()
+                .orElse(0.0);
+
+        long avgDeposit = Math.round(avgDepositD);
+        int avgMonthlyRent = (int) Math.round(avgMonthlyRentD);
+
+        return new UnitStats(avgAreaM2, avgDeposit, avgMonthlyRent);
+    }
+
+    /// 임대주택 내부 정보 담기
+    private record UnitStats(double avgAreaM2, long avgDeposit, int avgMonthlyRent) {}
 
 }

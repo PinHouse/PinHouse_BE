@@ -52,6 +52,10 @@ public class RequestMatcherHolder {
             // infra
             new RequestInfo(GET, "/v1/complexes/infra/**", null),
 
+            // search
+            new RequestInfo(GET, "/v1/search/fast", Role.USER),
+
+
             // 진단 관련
             new RequestInfo(POST, "/api/v1/diagnosis/**", Role.USER),
 
