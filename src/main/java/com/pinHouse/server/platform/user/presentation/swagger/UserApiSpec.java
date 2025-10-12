@@ -23,7 +23,8 @@ public interface UserApiSpec {
             summary = "회원가입 API",
             description = "온보딩의 데이터를 바탕으로 회원가입합니다."
     )
-    ApiResponse<Void> signUp(@RequestParam String tempKey,
+    ApiResponse<Void> signUp(HttpServletResponse httpServletResponse,
+                             @RequestParam String tempKey,
                              @RequestBody @Valid UserRequest request);
 
     /// 임시 유저 조회

@@ -8,9 +8,16 @@ import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
+import com.pinHouse.server.security.jwt.application.util.JwtProvider;
+import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +33,7 @@ public class UserService implements UserUseCase {
 
     /// 레디스
     private final RedisTemplate<String, Object> redisTemplate;
+    private final JwtProvider jwtProvider;
 
     // =================
     //  퍼블릭 로직
@@ -34,7 +42,7 @@ public class UserService implements UserUseCase {
     /// 온보딩을 통한 유저 회원가입
     @Override
     @Transactional
-    public void saveUser(String tempUserKey, UserRequest request) {
+    public JwtTokenResponse saveUser(String tempUserKey, UserRequest request) {
 
         /// 값 가져오기
         Object raw = redisTemplate.opsForValue().get(tempUserKey);
@@ -42,8 +50,23 @@ public class UserService implements UserUseCase {
         if (raw instanceof TempUserInfo info) {
 
             /// 관심 목록과 함께, 값 저장하기
-            repository.save(createUser(info, request.facilityTypes()));
+            User user = repository.save(createUser(info, request.facilityTypes()));
+
+            /// 인증필터에 적용
+            PrincipalDetails principalDetails = PrincipalDetails.of(user);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            /// 토큰 발급
+            var tokenRequest = JwtTokenRequest.from(user);
+            String accessToken = jwtProvider.createAccessToken(tokenRequest);
+            String refreshToken = jwtProvider.createRefreshToken(tokenRequest);
+
+            return JwtTokenResponse.of(accessToken, refreshToken);
         }
+
+        /// 에러 발생
+        throw new IllegalStateException(ErrorCode.INTERNAL_LOGIN_SERVER_ERROR.getMessage());
     }
 
     /// 레디스에 존재하는 데이터 조회

@@ -32,7 +32,7 @@ public enum Gender {
                 return gender;
             }
         }
-        throw new IllegalArgumentException("존재하지 않는 성별 코드입니다: " + value);
+        return Gender.Other;
     }
 
 
