@@ -61,6 +61,7 @@ public enum ErrorCode {
     FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
     ACCESS_DENY(403_001, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
     UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
+    DELETE_DENY(403_003, HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다."),
 
 
     // ========================

@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.user.application.dto;
 
 import com.pinHouse.server.core.util.BirthDayUtil;
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import lombok.Builder;
 

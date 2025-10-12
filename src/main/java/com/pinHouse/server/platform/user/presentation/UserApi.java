@@ -51,7 +51,7 @@ public class UserApi implements UserApiSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스
-        MyPageResponse response = service.getMyPage(principalDetails.getId());
+        var response = service.getMyPage(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(response);
@@ -63,14 +63,14 @@ public class UserApi implements UserApiSpec {
             @PathVariable UUID userId) {
 
         /// 서비스
-        UserResponse response = service.getOtherUser(userId);
+        var response = service.getOtherUser(userId);
 
         /// 리턴
         return ApiResponse.ok(response);
     }
 
     /// 회원정보 수정하기
-    @PatchMapping()
+    @PatchMapping("/mypage")
     @CheckLogin
     public ApiResponse<Void> updateUser(
             @RequestBody @Valid UpdateUserRequest request,

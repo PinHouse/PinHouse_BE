@@ -52,7 +52,7 @@ public interface FastSearchApiSpec {
                   "도서관"
                 ],
                 "supplyTypes": [
-                  "일반 공급"
+                  "일반"
                 ],
                 "rentalTypes": [
                   "통합공공임대"

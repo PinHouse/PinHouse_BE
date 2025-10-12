@@ -51,7 +51,7 @@ public record DiagnosisResponse(
         List<String> recommended = context.getCurrentCandidates().isEmpty() ?
                 List.of("해당 없음") :
                 context.getCurrentCandidates().stream()
-                        .map((c -> c.rentalType().getValue() + " : " + c.supplyType().getValue()))
+                        .map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
                         .toList();
 
         return DiagnosisResponse.builder()

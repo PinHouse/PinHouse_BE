@@ -46,12 +46,15 @@ public class RequestMatcherHolder {
             // oauth2
             new RequestInfo(POST, "/api/v1/oauth2/**", null),
 
-            // 유저 관련
-            new RequestInfo(POST, "/api/v1/auth/reissue", null),
-            new RequestInfo(POST, "/api/v1/auth/logout", Role.USER),
+            // notice
+            new RequestInfo(GET, "/v1/notices/**", null),
 
-            // 상품 관련
-            new RequestInfo(GET, "/api/v1/notices/**", null),
+            // infra
+            new RequestInfo(GET, "/v1/complexes/infra/**", null),
+
+            // search
+            new RequestInfo(GET, "/v1/search/fast", Role.USER),
+
 
             // 진단 관련
             new RequestInfo(POST, "/api/v1/diagnosis/**", Role.USER),

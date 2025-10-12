@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.facility.application.dto;
 
-import com.pinHouse.server.platform.housing.facility.domain.entity.*;
-import com.pinHouse.server.platform.housing.notice.domain.entity.Notice;
+import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.facility.domain.entity.infra.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class NoticeFacility {
 
     /** 공지사항 엔티티 */
-    private Notice notice;
+    private ComplexDocument notice;
 
     /** 주변 도서관 리스트 */
     private List<Library> libraries;
@@ -49,23 +49,9 @@ public class NoticeFacility {
 
 
 
-    /**
-     * NoticeInfra 팩토리 메서드
-     *
-     * @param notice 공지사항 엔티티
-     * @param libraries 주변 도서관 리스트
-     * @param animals 주변 동물 관련 시설 리스트
-     * @param sports 주변 스포츠 시설 리스트
-     * @param walkings 주변 산책로 리스트
-     * @param parks 주변 공원 리스트
-     * @param exhibitions 주변 전시관 리스트
-     * @param laundries 주변 빨래방 리스트
-     * @param hospitals 주변 병원 리스트
-     * @param marts 주변 마트 리스트
-     * @return NoticeInfra 도메인 객체
-     */
+    /// 정적 팩토리 메서드
     public static NoticeFacility of(
-            Notice notice,
+            ComplexDocument notice,
             List<Library> libraries,
             List<Animal> animals,
             List<Sport> sports,

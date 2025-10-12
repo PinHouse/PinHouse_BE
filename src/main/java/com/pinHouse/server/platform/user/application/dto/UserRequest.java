@@ -1,6 +1,6 @@
 package com.pinHouse.server.platform.user.application.dto;
 
-import com.pinHouse.server.platform.housing.facility.domain.entity.infra.FacilityType;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

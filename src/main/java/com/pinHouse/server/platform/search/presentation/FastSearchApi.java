@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/search/fast")
+@RequestMapping("/v1/search/fast")
 public class FastSearchApi implements FastSearchApiSpec {
 
     private final FastSearchUseCase service;

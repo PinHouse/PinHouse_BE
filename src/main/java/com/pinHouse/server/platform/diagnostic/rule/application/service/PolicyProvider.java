@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.diagnostic.rule.application.service;
 
 import com.pinHouse.server.platform.diagnostic.rule.application.usecase.PolicyUseCase;
-import com.pinHouse.server.platform.diagnostic.rule.domain.entity.RentalType;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.SupplyType;
 import org.springframework.stereotype.Component;
 import java.util.*;
@@ -16,7 +16,7 @@ public class PolicyProvider implements PolicyUseCase {
      * 최대 소득 비율 (%) -가구원수 반영
      */
     @Override
-    public double maxIncomeRatio(SupplyType supply, RentalType rental, int familyCount) {
+    public double maxIncomeRatio(SupplyType supply, NoticeType rental, int familyCount) {
         return switch (rental) {
 
             /// 통합공공임대 경우
@@ -121,7 +121,7 @@ public class PolicyProvider implements PolicyUseCase {
      * 최대 금융자산 제한, 3억 3천 7백만원
      */
     @Override
-    public long maxTotalAsset(SupplyType supply, RentalType rental, int familyCount) {
+    public long maxTotalAsset(SupplyType supply, NoticeType rental, int familyCount) {
         return switch (rental) {
             case HAPPY_HOUSING -> switch (supply) {
                 // 대학생, 청년, 고령자는 1억 400만 이하
@@ -169,7 +169,7 @@ public class PolicyProvider implements PolicyUseCase {
     }
 
     @Override
-    public int reApplyBanMonths(RentalType rental) {
+    public int reApplyBanMonths(NoticeType rental) {
         return 24;
     }
 }

@@ -1,51 +1,44 @@
 package com.pinHouse.server.platform.housing.notice.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.core.response.response.pageable.PageRequest;
-import com.pinHouse.server.core.response.response.pageable.PageResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
+import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/notices")
+@RequestMapping("/v1/notices")
 @RequiredArgsConstructor
 public class NoticeApi implements NoticeApiSpec {
 
-    private final NoticeUseCase noticeService;
+    /// 의존성 주입
+    private final NoticeUseCase service;
 
-    /**
-     * 최신 공고 API
-     * @param request   페이징 요청
-     * @return
-     */
+    /// 공고 목록 조회
     @GetMapping
-    public ApiResponse<PageResponse<NoticeListResponse>> getNotices(PageRequest request) {
+    public ApiResponse<List<NoticeListResponse>> getNotices() {
 
         /// 서비스 계층
-        Page<NoticeListResponse> notices = noticeService.getNotices(request);
+        var response = service.getNotices();
 
-        /// PageDTO 감싸기
-        PageResponse<NoticeListResponse> response = new PageResponse<>(notices.getContent(), request, notices.getTotalElements());
-
+        /// 리턴
         return ApiResponse.ok(response);
     }
 
+    /// 공고 상세 조회
     @GetMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailResponse> showNotice(
-            @PathVariable String noticeId
-    ) {
+    public ApiResponse<NoticeDetailResponse> getNotice(@PathVariable String noticeId) {
 
         /// 서비스 계층
-        return ApiResponse.ok(noticeService.getNoticeById(noticeId));
+        var response = service.getNotice(noticeId);
 
+        /// 리턴
+        return ApiResponse.ok(response);
     }
-
 }

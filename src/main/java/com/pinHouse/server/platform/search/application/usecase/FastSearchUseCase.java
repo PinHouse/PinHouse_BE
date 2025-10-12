@@ -10,4 +10,5 @@ public interface FastSearchUseCase {
 
     /// 빠른 검색
     List<FastSearchResponse> search(UUID userId, FastSearchRequest request);
+
 }

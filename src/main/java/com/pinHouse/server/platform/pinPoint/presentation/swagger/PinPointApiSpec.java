@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.pinPoint.presentation.swagger;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointRequest;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,18 +12,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Tag(name = "핀포인트 API", description = "핀포인트에 해당하는 API 입니다.")
+@Tag(name = "핀포인트 API", description = "핀포인트 생성/조회/삭제 API 입니다.")
 public interface PinPointApiSpec {
 
-    /**
-     * 핀포인트 API
-     * @param principalDetails  유저
-     * @param request           DTO
-     */
+    /// 저장
     @Operation(
             summary = "핀포인트 설정 API",
             description = "핀포인트 설정 API 입니다.",
@@ -39,17 +38,36 @@ public interface PinPointApiSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid PinPointRequest request);
 
-    /**
-     * 핀포인트 목록 API
-     * @param principalDetails  유저
-     */
+    /// 목록 조회
     @Operation(
-            summary = "핀포인트들 목록조회 API",
+            summary = "핀포인트 목록조회 API",
             description = "나의 핀포인트 목록 들을 조회하는 API 입니다."
     )
     ApiResponse<List<PinPointResponse>> getPinPoints(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
+
+
+    /// 수정
+    @Operation(
+            summary = "핀포인트 수정 API",
+            description = "나의 핀포인트를 수정하는 API 입니다."
+    )
+    ApiResponse<Void> updatePinPoint(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody @Valid UpdatePinPointRequest request);
+
+
+    /// 삭제
+    @Operation(
+            summary = "핀포인트 삭제 API",
+            description = "나의 핀포인트를 삭제하는 API 입니다."
+    )
+    ApiResponse<Void> deletePinPoint(
+            @RequestParam Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
+
 
     /**
      * SUCCESS_PAYLOAD 응답

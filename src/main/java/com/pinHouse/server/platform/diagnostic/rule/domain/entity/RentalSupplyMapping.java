@@ -1,12 +1,14 @@
 package com.pinHouse.server.platform.diagnostic.rule.domain.entity;
 
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType;
+
 import java.util.List;
 import java.util.Map;
 
 public class RentalSupplyMapping {
 
-    public static final Map<RentalType, List<SupplyType>> RENTAL_SUPPLY_MAP = Map.of(
-            RentalType.PUBLIC_INTEGRATED, List.of(
+    public static final Map<NoticeType, List<SupplyType>> RENTAL_SUPPLY_MAP = Map.of(
+            NoticeType.PUBLIC_INTEGRATED, List.of(
                     SupplyType.SPECIAL,         // 미성년자
                     SupplyType.YOUTH_SPECIAL,
                     SupplyType.ELDER_SPECIAL,
@@ -21,7 +23,7 @@ public class RentalSupplyMapping {
                     SupplyType.DISABLED,
                     SupplyType.NON_HOUSING_RESIDENT
             ),
-            RentalType.NATIONAL_RENTAL, List.of(
+            NoticeType.NATIONAL_RENTAL, List.of(
                     SupplyType.SPECIAL,         // 미성년자
                     SupplyType.NEWCOUPLE_SPECIAL,
                     SupplyType.SINGLE_PARENT_SPECIAL,
@@ -29,7 +31,7 @@ public class RentalSupplyMapping {
                     SupplyType.DEMOLITION,
                     SupplyType.UNAUTHORIZED_BUILDING_TENANT
             ),
-            RentalType.HAPPY_HOUSING, List.of(
+            NoticeType.HAPPY_HOUSING, List.of(
                     SupplyType.STUDENT_SPECIAL,
                     SupplyType.YOUTH_SPECIAL,
                     SupplyType.NEWCOUPLE_SPECIAL,
@@ -40,7 +42,7 @@ public class RentalSupplyMapping {
                     SupplyType.PERMANENT_LEASE_EVICTEE,
                     SupplyType.TEMPORARY_STRUCTURE_RESIDENT
             ),
-            RentalType.PUBLIC_RENTAL, List.of(
+            NoticeType.PUBLIC_RENTAL, List.of(
                     SupplyType.GENERAL,
                     SupplyType.MULTICHILD_SPECIAL,
                     SupplyType.ELDER_SUPPORT_SPECIAL,
@@ -50,7 +52,7 @@ public class RentalSupplyMapping {
                     SupplyType.YOUTH_SPECIAL,   // 청년
                     SupplyType.NATIONAL_MERIT
             ),
-            RentalType.PERMANENT_RENTAL, List.of(
+            NoticeType.PERMANENT_RENTAL, List.of(
                     SupplyType.NEWCOUPLE_SPECIAL,
                     SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.ELDER_SUPPORT_SPECIAL,
@@ -60,7 +62,7 @@ public class RentalSupplyMapping {
                     SupplyType.COMFORT_WOMAN_VICTIM,
                     SupplyType.DISABLED
             ),
-            RentalType.LONG_TERM_JEONSE, List.of(
+            NoticeType.LONG_TERM_JEONSE, List.of(
                     SupplyType.NEWCOUPLE_SPECIAL,
                     SupplyType.SINGLE_PARENT_SPECIAL,
                     SupplyType.MULTICHILD_SPECIAL
