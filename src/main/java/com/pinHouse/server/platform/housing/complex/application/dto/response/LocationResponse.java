@@ -1,4 +1,4 @@
-package com.pinHouse.server.platform.housing.complex.application.dto;
+package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import lombok.Builder;
 
