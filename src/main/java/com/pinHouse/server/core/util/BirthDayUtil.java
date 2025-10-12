@@ -1,5 +1,6 @@
 package com.pinHouse.server.core.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -7,6 +8,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Slf4j
 @Component
 public class BirthDayUtil {
 
@@ -29,7 +31,7 @@ public class BirthDayUtil {
             String fullDate = year + "-" + monthDay;
             return LocalDate.parse(fullDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 생년월일 형식입니다. year=" + year + ", monthDay=" + monthDay);
+            return null;
         }
     }
 

@@ -35,12 +35,18 @@ public class UserApi implements UserApiSpec {
 
     /// 회원가입
     @PostMapping()
-    public ApiResponse<Void> signUp(@RequestParam String tempKey,
+    public ApiResponse<Void> signUp(HttpServletResponse httpServletResponse ,
+                                    @RequestParam String tempKey,
                                     @RequestBody @Valid UserRequest request) {
 
         /// 서비스
-        service.saveUser(tempKey, request);
+        var tokenResponse = service.saveUser(tempKey, request);
 
+        /// 쿠키 발급
+        httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
+        httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
+
+        /// 리턴
         return ApiResponse.created();
     }
 
