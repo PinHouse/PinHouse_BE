@@ -1,7 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.application.dto;
 
 import com.pinHouse.server.core.util.DateUtil;
-import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
