@@ -33,7 +33,7 @@ public interface ComplexApiSpec {
     )
     ApiResponse<DepositResponse> deposit(
 
-            @Parameter(example = "18384", description = "공고 ID")
+            @Parameter(example = "18407#1", description = "공고 ID")
             @PathVariable String complexId,
 
             @Parameter(example = "26A", description = "주거 타입")
