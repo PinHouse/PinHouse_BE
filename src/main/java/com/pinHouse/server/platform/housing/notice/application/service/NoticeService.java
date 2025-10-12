@@ -1,8 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.application.service;
 
-import com.pinHouse.server.platform.housing.complex.application.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;

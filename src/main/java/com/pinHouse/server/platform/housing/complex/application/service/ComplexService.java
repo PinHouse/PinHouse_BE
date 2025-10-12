@@ -1,26 +1,35 @@
-package com.pinHouse.server.platform.housing.complex.application;
+package com.pinHouse.server.platform.housing.complex.application.service;
 
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
+import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
+import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
+import com.pinHouse.server.platform.housing.complex.application.util.TransitResponseMapper;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
-import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class ComplexService implements ComplexUseCase{
+public class ComplexService implements ComplexUseCase {
 
     /// 의존성
     private final ComplexDocumentRepository repository;
@@ -28,7 +37,7 @@ public class ComplexService implements ComplexUseCase{
 
     /// 거리 계산 툴
     private final DistanceUtil distanceUtil;
-
+    private final TransitResponseMapper mapper;
     // =================
     //  퍼블릭 로직
     // =================
@@ -148,10 +157,34 @@ public class ComplexService implements ComplexUseCase{
         );
     }
 
+    /// 간편 대중교통 시뮬레이터
+    @Override
+    public DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+        /// 임대주택 예외처리
+        ComplexDocument complex = loadComplex(id);
+        Location location = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+
+        /// 대중교통 목록 비교하기
+        PathResult pathResult = distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+
+        /// 조건 바탕으로 가져오기
+        RootResult rootResult = mapper.selectBest(pathResult);
+
+        /// 간편 조건 탐색 DTO
+        List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
+
+        /// 리턴
+        return DistanceResponse.from(rootResult, routes);
+
+    }
+
     /// 대중교통 시뮬레이터
     @Override
     @Transactional()
-    public List<DistanceResponse> getDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -160,20 +193,9 @@ public class ComplexService implements ComplexUseCase{
         /// 핀포인트 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 
-        /// 2개의 좌표 비교하기
-        List<DistanceResponse> path = distanceUtil.findPath(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+        /// 대중교통 목록 가져오기
+        return distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
 
-        /// 결과 중 처음 내용 리턴
-        return path;
-
-    }
-
-
-    /**
-     * 연 3.5% 이자율 기준 월 전환
-     */
-    private double percentageRateFactor() {
-        return 0.035 / 12;
     }
 
     // =================
@@ -205,6 +227,69 @@ public class ComplexService implements ComplexUseCase{
     /// 필터링
     @Override
     public List<ComplexDocument> filterComplexes(FastSearchRequest request) {
-        return List.of();
+        /// 모든 단지 로드
+        final List<ComplexDocument> all = repository.findAll();
+
+        /// 각 단지의 unitTypes를 필터링 → 남는 unitType이 있으면 그 단지를 결과에 포함
+        return all.stream()
+                .map(complex -> filterUnitTypesByRequest(complex, request))
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    // =================
+    //  내부 로직
+    // =================
+
+    private ComplexDocument filterUnitTypesByRequest(ComplexDocument complex, FastSearchRequest req) {
+        if (complex.getUnitTypes() == null || complex.getUnitTypes().isEmpty()) {
+            return null;
+        }
+
+        final double minSize = req.minSize();   /// 사이즈
+        final double maxSize = req.maxSize();   /// 사이즈
+        final long minDeposit = req.minPrice(); /// “보증금 최소값”
+        final long maxDeposit = req.maxPrice(); /// “보증금 최대값”
+
+        // unit 단위 필터
+        List<UnitType> matchedUnits = complex.getUnitTypes().stream()
+                .filter(ut -> {
+                    // 면적 체크
+                    double area = ut.getExclusiveAreaM2();
+                    if (Double.isNaN(area)) return false;
+                    if (area < minSize || area > maxSize) return false;
+
+                    // 보증금 체크 (Deposit.total 기준)
+                    if (ut.getDeposit() == null) return false;
+                    long total = ut.getDeposit().getTotal();
+                    if (total < minDeposit || total > maxDeposit) return false;
+
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        if (matchedUnits.isEmpty()) {
+            return null; // 이 단지는 조건에 맞는 타입이 없음
+        }
+
+        // 조건을 만족하는 unitTypes만 유지한 Complex로 재구성
+        return ComplexDocument.builder()
+                .id(complex.getId())
+                .noticeId(complex.getNoticeId())
+                .houseSn(complex.getHouseSn())
+                .complexKey(complex.getComplexKey())
+                .name(complex.getName())
+                .address(complex.getAddress())
+                .pnu(complex.getPnu())
+                .city(complex.getCity())
+                .county(complex.getCounty())
+                .heating(complex.getHeating())
+                .totalHouseholds(complex.getTotalHouseholds())
+                .totalSupplyInNotice(complex.getTotalSupplyInNotice())
+                .applyStart(complex.getApplyStart())
+                .applyEnd(complex.getApplyEnd())
+                .location(complex.getLocation())
+                .unitTypes(matchedUnits)
+                .build();
     }
 }

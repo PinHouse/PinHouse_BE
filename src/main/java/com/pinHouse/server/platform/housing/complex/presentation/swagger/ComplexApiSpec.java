@@ -1,9 +1,10 @@
 package com.pinHouse.server.platform.housing.complex.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.ComplexDetailResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.DepositResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,16 +43,25 @@ public interface ComplexApiSpec {
             @Parameter(example = "0.001", description = "변환율")
             @RequestParam double percentage);
 
-    /// 거리 시뮬레이터
+    /// 간편 거리 시뮬레이터
     @Operation(
-            summary = "거리 시뮬레이터 API",
+            summary = "간편 거리 시뮬레이터 API",
             description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
-    ApiResponse<List<DistanceResponse>> distance(
-            @Parameter(example = "18407#1", description = "임대주택 ID")
+    ApiResponse<DistanceResponse> distanceEasy(
+            @Parameter(example = "18399#1", description = "시도 내 조회")
             @PathVariable String complexId,
 
             @Parameter(example = "1", description = "핀포인트 ID")
             @RequestParam Long pinPointId) throws UnsupportedEncodingException;
 
+    /// 거리 시뮬레이터
+    @Operation(
+            summary = "거리 시뮬레이터 API",
+            description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
+    ApiResponse<PathResult> distance(
+            @Parameter(example = "18407#1", description = "시도 간 조회")
+            @PathVariable String complexId,
+            @Parameter(example = "1", description = "핀포인트 ID")
+            @RequestParam Long pinPointId) throws UnsupportedEncodingException;
 
 }
