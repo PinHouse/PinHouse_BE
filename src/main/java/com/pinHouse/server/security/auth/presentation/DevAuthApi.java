@@ -30,8 +30,8 @@ public class DevAuthApi implements DevAuthApiSpec {
         /// 서비스
         JwtTokenResponse jwtTokenResponse = service.devCreate();
 
-        /// 쿠키에 저장하기
-        httpUtil.addDevAccessTokenCookie(httpServletResponse, jwtTokenResponse.accessToken());
+        /// 토큰 발급하기
+        httpUtil.addDevAccessTokenHeader(httpServletResponse, jwtTokenResponse.accessToken());
         httpUtil.addRefreshTokenCookie(httpServletResponse, jwtTokenResponse.refreshToken());
 
         /// 리턴

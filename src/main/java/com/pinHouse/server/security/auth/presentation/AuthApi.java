@@ -47,7 +47,6 @@ public class AuthApi implements AuthApiSpec {
         service.logout(principalDetails.getId(), refreshToken);
 
         /// 쿠키 삭제하기
-        httpUtil.removeAccessTokenCookie(httpServletResponse);
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
 
         /// 리턴
@@ -69,8 +68,8 @@ public class AuthApi implements AuthApiSpec {
         /// 서비스 로직 실행
         JwtTokenResponse response = service.reissue(refreshToken);
 
-        /// 액세스 쿠키로 전송하기
-        httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());
+        /// 토큰 재발급하기
+        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
 
         /// 리턴
         return ApiResponse.updated();

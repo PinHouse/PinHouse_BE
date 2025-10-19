@@ -45,7 +45,7 @@ public class AuthService implements AuthUseCase {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN);
+            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         /// 레디스에서 삭제하도록 로직 수행
@@ -59,7 +59,7 @@ public class AuthService implements AuthUseCase {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN);
+            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         /// 존재하는 리프레쉬 토큰 검증
