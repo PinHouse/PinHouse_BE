@@ -18,7 +18,7 @@ import javax.crypto.SecretKey;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static com.pinHouse.server.core.util.RedisKeyUtil.ID_CLAIM;
+import static com.pinHouse.server.core.util.KeyUtil.ID_CLAIM;
 
 @Component
 @RequiredArgsConstructor

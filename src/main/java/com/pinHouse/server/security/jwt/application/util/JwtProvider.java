@@ -16,8 +16,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.pinHouse.server.core.util.RedisKeyUtil.ID_CLAIM;
-import static com.pinHouse.server.core.util.RedisKeyUtil.ROLE_CLAIM;
+import static com.pinHouse.server.core.util.KeyUtil.ID_CLAIM;
+import static com.pinHouse.server.core.util.KeyUtil.ROLE_CLAIM;
 
 @Component
 @RequiredArgsConstructor

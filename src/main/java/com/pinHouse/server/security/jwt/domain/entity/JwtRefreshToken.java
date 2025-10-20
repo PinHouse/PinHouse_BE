@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.pinHouse.server.core.util.RedisKeyUtil.getRefreshTokenKey;
+import static com.pinHouse.server.core.util.KeyUtil.getRefreshTokenKey;
 
 @Getter
 @RedisHash

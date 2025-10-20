@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.security.jwt.application.util.HttpLogUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_403;
+
 /**
  * JWT 인증 실패 핸들러
  */
@@ -23,6 +26,7 @@ import java.io.IOException;
 public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private final HttpLogUtil httpUtil;
 
     @Override
     public void commence(HttpServletRequest request,
@@ -45,7 +49,10 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // JSON 응답
+        /// 로그 찍기
+        httpUtil.logHttpRequest(request, HTTP_ERROR_403);
+
+        /// JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);
     }
 }
