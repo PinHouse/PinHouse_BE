@@ -1,4 +1,4 @@
-package com.pinHouse.server.core.aop;
+package com.pinHouse.server.core.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

@@ -2,7 +2,7 @@ package com.pinHouse.server.security.oauth2.handler;
 
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import com.pinHouse.server.security.jwt.application.util.JwtProvider;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.ServletException;

@@ -1,8 +1,7 @@
 package com.pinHouse.server.security.jwt.filter;
 
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import com.pinHouse.server.security.jwt.application.util.JwtValidator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

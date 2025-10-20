@@ -4,7 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
 import com.pinHouse.server.security.auth.presentation.swagger.AuthApiSpec;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.jwt.application.util;
+package com.pinHouse.server.core.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,6 +83,43 @@ public class HttpUtil {
         deleteCookie(httpServletResponse, REFRESH_TOKEN);
     }
 
+    /// 요청자의 실제 IP를 조회하기 위한 함수
+    public String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        /// X-Forwarded-For이 있다면
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // 여러 개라면 첫 번째 값이 클라이언트 IP
+            return ip.split(",")[0].trim();
+        }
+
+        /// X-Forwarded-For이 없다면
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
+    }
+
+    /// 요청자의 정보를 헤더에서 조회하기 위한 함수
+    public HeaderInfo getClientInfo(HttpServletRequest request) {
+
+        /// 메서드
+        String httpMethod = request.getMethod();
+
+        /// 요청 주소
+        String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+
+        /// 요청자
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
+
+        return new HeaderInfo(httpMethod, uri, username);
+    }
+
+    /// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
+    public record HeaderInfo(String httpMethod, String uri, String userName) {
+    }
+
     // =================
     //  내부 공통 함수
     // =================
@@ -159,43 +196,6 @@ public class HttpUtil {
         /// Bearer (띄어쓰기 포함 7글자) 빼고 가져오기
         return headerToken.substring(7);
 
-    }
-
-    /// 요청자의 실제 IP를 조회하기 위한 함수
-    protected String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-
-        /// X-Forwarded-For이 있다면
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            // 여러 개라면 첫 번째 값이 클라이언트 IP
-            return ip.split(",")[0].trim();
-        }
-
-        /// X-Forwarded-For이 없다면
-        ip = request.getHeader("X-Real-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-        return request.getRemoteAddr();
-    }
-
-    /// 요청자의 정보를 헤더에서 조회하기 위한 함수
-    protected HeaderInfo getClientInfo(HttpServletRequest request) {
-
-        /// 메서드
-        String httpMethod = request.getMethod();
-
-        /// 요청 주소
-        String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
-
-        /// 요청자
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
-
-        return new HeaderInfo(httpMethod, uri, username);
-    }
-
-    /// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
-    protected record HeaderInfo(String httpMethod, String uri, String userName) {
     }
 
 }

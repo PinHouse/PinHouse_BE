@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
-import com.pinHouse.server.security.jwt.application.util.HttpLogUtil;
+import com.pinHouse.server.core.logging.HttpLogUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

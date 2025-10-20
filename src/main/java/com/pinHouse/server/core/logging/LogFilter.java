@@ -1,6 +1,5 @@
-package com.pinHouse.server.core.aop;
+package com.pinHouse.server.core.logging;
 
-import com.pinHouse.server.security.jwt.application.util.HttpLogUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,5 +1,6 @@
-package com.pinHouse.server.security.jwt.application.util;
+package com.pinHouse.server.core.logging;
 
+import com.pinHouse.server.core.util.HttpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
