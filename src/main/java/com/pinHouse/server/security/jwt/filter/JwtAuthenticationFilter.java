@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.Optional;
 /**
  * JWT 검증 필터
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -27,9 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtValidator jwtValidator;
     private final JwtAuthenticationFailureHandler failureHandler;
     private final HttpUtil httpUtil;
-
-    /// 작동하지 않는 필터
-    private final RequestMatcherHolder requestMatcherHolder;
 
     /// 필터 작동
     @Override
@@ -57,9 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
 
-            /// 토큰이 없으면 예외 처리
+            /// 토큰이 없으면 익명으로 처리하기
             if (accessTokenOptional.isEmpty()){
-                throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+                filterChain.doFilter(request, response);
+                return;
             }
 
         } catch (JwtAuthenticationException ex) {
@@ -68,14 +68,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             failureHandler.commence(request, response, ex);
         }
     }
-
-    /// null인 것은 JWT 필터 통과
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest httpServletRequest) {
-
-        /// null 인 것 해결
-        return requestMatcherHolder.getRequestMatchersByMinRole(null)
-                .matches(httpServletRequest);
-    }
-
 }

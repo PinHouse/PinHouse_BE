@@ -25,16 +25,16 @@ import java.util.NoSuchElementException;
 
 @Hidden
 @Slf4j
-//@RestControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /// 공통 처리 메서드
     private ApiResponse<CustomException> handleCustomException(CustomException customException, HttpServletRequest request) {
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
         ErrorCode errorCode = customException.getErrorCode();
 
         log.info("[EXCEPTION] 사용자: {}, 메서드: {}, URI: {}, 예외: {}",
-                username, request.getMethod(), request.getRequestURI(), errorCode.getMessage());
+                username, request.getMethod(), request.getRequestURI(), customException.getErrorCode().getCode());
 
         return ApiResponse.fail(customException);
     }
@@ -63,6 +63,9 @@ public class GlobalExceptionHandler {
             IllegalStateException.class, IllegalArgumentException.class})
     public ApiResponse<CustomException> handleIllegalStateException(Exception e, HttpServletRequest request) {
 
+
+        log.error(e.getMessage(), e);
+
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
 
@@ -73,9 +76,11 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({
-            JwtAuthenticationException.class})
+    @ExceptionHandler({JwtAuthenticationException.class})
     public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e, HttpServletRequest request) {
+
+        log.error(e.getMessage(), e);
+
 
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
@@ -90,6 +95,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
     public ApiResponse<CustomException> handleNoSuchException(Exception e, HttpServletRequest request) {
 
+        log.error(e.getMessage(), e);
+
+
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
 
@@ -102,6 +110,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e, HttpServletRequest request) {
+
+        log.error(e.getMessage(), e);
+
 
         /// 파라미터용 예외 코드
         ErrorCode errorCode = ErrorCode.BAD_PARAMETER;

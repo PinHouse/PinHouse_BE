@@ -84,7 +84,7 @@ public class JwtValidator {
 
         } catch (Exception e) {
             /// 예상치 못한 모든 예외
-            throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
@@ -116,7 +116,7 @@ public class JwtValidator {
             // 토큰 구조가 잘못된 경우의 처리
             throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_UNSUPPORTED);
         } catch (Exception e) {
-            throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
