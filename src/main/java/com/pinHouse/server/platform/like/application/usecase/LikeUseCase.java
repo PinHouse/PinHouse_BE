@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.like.application.usecase;
 
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.like.application.dto.ComplexLikeResponse;
 import com.pinHouse.server.platform.like.application.dto.LikeRequest;
-import com.pinHouse.server.platform.like.application.dto.NoticeLikeResponse;
 
 import java.util.UUID;
 import java.util.List;
@@ -20,7 +20,7 @@ public interface LikeUseCase {
     void deleteLike(Long id, UUID userId);
 
     /// 나의 좋아요 공고 목록 조회
-    List<NoticeLikeResponse> getNoticeLikes(UUID userId);
+    List<NoticeListResponse> getNoticeLikes(UUID userId);
 
     /// 나의 좋아요 방 목록 조회
     List<ComplexLikeResponse> getComplexesLikes(UUID userId);

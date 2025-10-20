@@ -5,11 +5,13 @@ import com.pinHouse.server.platform.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Like extends BaseTimeEntity {
 
     @Id
