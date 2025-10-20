@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 
 @Hidden
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /// 공통 처리 메서드

@@ -48,7 +48,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String refreshToken = jwtProvider.createRefreshToken(tokenRequest);
 
             /// HTTP 쿠키 추가
-            httpUtil.addAccessTokenCookie(httpServletResponse, accessToken);
+            httpUtil.addAccessTokenHeader(httpServletResponse, accessToken);
             httpUtil.addRefreshTokenCookie(httpServletResponse, refreshToken);
 
             /// 시큐리티 홀더에 해당 멤버 저장

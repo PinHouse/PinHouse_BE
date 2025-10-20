@@ -29,7 +29,7 @@ public class LoginCheckAspect {
                 !(auth.getPrincipal() instanceof PrincipalDetails principal)) {
 
             /// 401 매핑
-            throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
         }
 
         return pjp.proceed();

@@ -7,12 +7,9 @@ import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
 import com.pinHouse.server.security.jwt.domain.repository.JwtRefreshTokenRepository;
 import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -58,16 +55,35 @@ public class JwtValidator {
 
 
         } catch (ExpiredJwtException e) {
-            // 토큰이 '만료'된 경우의 처리
+            /// 만료된 토큰
             throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+
         } catch (SignatureException e) {
-            // 서명이 잘못된 경우의 처리
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_INVALID);
+            /// 잘못된 서명
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_SIGNATURE);
+
         } catch (MalformedJwtException e) {
-            // 토큰 구조가 잘못된 경우의 처리
+            //// 구조가 깨진 토큰
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_MALFORMED);
+
+        } catch (UnsupportedJwtException e) {
+            /// 지원되지 않는 JWT 형식 (예: 압축/암호화된 JWT)
             throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_UNSUPPORTED);
+
+        } catch (IllegalArgumentException e) {
+            /// 토큰이 비어있거나 null
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+
+        } catch (JwtException e) {
+            /// JWT 관련 기타 예외 (상위 클래스)
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_INVALID);
+
+        } catch (JwtAuthenticationException e) {
+            /// 커스텀 JWT 예외 (예: USER_NOT_FOUND 등)
+            throw e;
+
         } catch (Exception e) {
-            // 기타 예외 처리
+            /// 예상치 못한 모든 예외
             throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -88,7 +104,7 @@ public class JwtValidator {
 
             /// 리턴
             return repository.findByUserIdAndRefreshToken(user.getId(), refreshToken)
-                    .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN));
+                    .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         } catch (ExpiredJwtException e) {
             // 토큰이 '만료'된 경우의 처리

@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             /// 토큰이 없으면 예외 처리
             if (accessTokenOptional.isEmpty()){
-                throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
+                throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
             }
 
         } catch (JwtAuthenticationException ex) {
