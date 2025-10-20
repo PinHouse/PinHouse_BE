@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
         ErrorCode errorCode = customException.getErrorCode();
 
-        log.info("[EXCEPTION] 사용자: {}, 메서드: {}, URI: {}, 예외: {}",
+        log.info("[예외 로깅] 사용자: {}, 메서드: {}, URI: {}, 예외: {}",
                 username, request.getMethod(), request.getRequestURI(), customException.getErrorCode().getCode());
 
         return ApiResponse.fail(customException);
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ApiResponse<CustomException> handleException(Exception e, HttpServletRequest request) {
 
-        /// 로그 발생
+        /// 예외 찍기
         log.error(e.getMessage(), e);
 
         /// 500 예외 코드 검색
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
             IllegalStateException.class, IllegalArgumentException.class})
     public ApiResponse<CustomException> handleIllegalStateException(Exception e, HttpServletRequest request) {
 
-
+        /// 예외 찍기
         log.error(e.getMessage(), e);
 
         /// 메세지 바탕으로 예외 코드 검색
@@ -79,8 +79,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({JwtAuthenticationException.class})
     public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e, HttpServletRequest request) {
 
+        /// 예외 찍기
         log.error(e.getMessage(), e);
-
 
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
@@ -95,8 +95,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
     public ApiResponse<CustomException> handleNoSuchException(Exception e, HttpServletRequest request) {
 
+        /// 예외 찍기
         log.error(e.getMessage(), e);
-
 
         /// 메세지 바탕으로 예외 코드 검색
         ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
@@ -111,8 +111,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e, HttpServletRequest request) {
 
+        /// 예외 찍기
         log.error(e.getMessage(), e);
-
 
         /// 파라미터용 예외 코드
         ErrorCode errorCode = ErrorCode.BAD_PARAMETER;
