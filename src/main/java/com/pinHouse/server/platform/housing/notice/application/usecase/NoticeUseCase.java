@@ -30,6 +30,9 @@ public interface NoticeUseCase {
     /// 모든 공고 가져오기
     List<NoticeDocument> loadAllNotices();
 
+    /// 아이디 목록에 따른 공고 다 가져오기
+    List<NoticeDocument> loadNotices(List<String> noticeIds);
+
     /// 필터링을 위한 함수
     List<NoticeDocument> filterNotices(FastSearchRequest request);
 

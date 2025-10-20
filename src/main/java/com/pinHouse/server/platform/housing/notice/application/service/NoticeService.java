@@ -69,6 +69,12 @@ public class NoticeService implements NoticeUseCase {
         return repository.findAll();
     }
 
+    /// 아이디 목록에 따른 한번에 엔티티 가져오기
+    @Override
+    public List<NoticeDocument> loadNotices(List<String> noticeIds) {
+        return repository.findByNoticeIdIn(noticeIds);
+    }
+
     @Override
     public List<NoticeDocument> filterNotices(FastSearchRequest request) {
         return List.of();

@@ -38,6 +38,23 @@ public record NoticeListResponse(
         ) {
 
     /// 정적 팩토리 메서드입니다.
+    public static NoticeListResponse from(NoticeDocument notice, boolean liked) {
+
+        /// 날짜
+        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
+
+        return NoticeListResponse.builder()
+                .id(notice.getNoticeId())
+                .name(notice.getTitle())
+                .supplier(notice.getAgency())
+                .complexes(notice.getMeta().getTotalComplexCount())
+                .period(period)
+                .type(notice.getSupplyType())
+                .liked(liked)
+                .build();
+    }
+
+    /// 정적 팩토리 메서드입니다.
     public static NoticeListResponse from(NoticeDocument notice) {
 
         /// 날짜
@@ -50,7 +67,7 @@ public record NoticeListResponse(
                 .complexes(notice.getMeta().getTotalComplexCount())
                 .period(period)
                 .type(notice.getSupplyType())
-                .liked(false)
+                .liked(true)
                 .build();
     }
 

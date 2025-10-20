@@ -224,6 +224,17 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
+    /// 방 유닛 기반 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<UnitType> loadRooms(List<String> roomIds) {
+
+        repository.findBy
+
+        return List.of();
+    }
+
+
     /// 필터링
     @Override
     public List<ComplexDocument> filterComplexes(FastSearchRequest request) {
