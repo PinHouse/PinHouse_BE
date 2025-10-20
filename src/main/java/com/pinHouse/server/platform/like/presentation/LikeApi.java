@@ -2,9 +2,10 @@ package com.pinHouse.server.platform.like.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.like.application.dto.ComplexLikeResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexLikeResponse;
 import com.pinHouse.server.platform.like.application.dto.LikeRequest;
-import com.pinHouse.server.platform.like.application.usecase.LikeUseCase;
+import com.pinHouse.server.platform.like.application.usecase.LikeCommandUseCase;
+import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.like.presentation.swagger.LikeApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.validation.Valid;
@@ -18,8 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeApi implements LikeApiSpec {
 
-    private final LikeUseCase service;
-
+    private final LikeCommandUseCase service;
+    private final LikeQueryUseCase queryService;
     /// 좋아요 생성
     @PostMapping
     public ApiResponse<Void> like(
@@ -41,7 +42,7 @@ public class LikeApi implements LikeApiSpec {
     ) {
 
         /// 서비스 호출
-        var response = service.getNoticeLikes(principalDetails.getId());
+        var response = queryService.getNoticesLike(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(response);
@@ -54,7 +55,7 @@ public class LikeApi implements LikeApiSpec {
     ) {
 
         /// 서비스 호출
-        var response = service.getComplexesLikes(principalDetails.getId());
+        var response = queryService.getComplexesLikes(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(response);
