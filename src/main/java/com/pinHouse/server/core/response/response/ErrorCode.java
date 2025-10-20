@@ -36,31 +36,31 @@ public enum ErrorCode {
     INVALID_INPUT_ENUM(400_006, HttpStatus.BAD_REQUEST, "Enum의 입력값이 올바르지 않습니다."),
     BAD_OAUTH2(400_007, HttpStatus.BAD_REQUEST, "Provider가 적절하지 않습니다"),
     INTERNAL_LOGIN_SERVER_ERROR(400_008, HttpStatus.BAD_REQUEST, "회원가입 온보딩 중 오류가 발생했습니다."),
+    BAD_REQUEST_REDIS(400_009, HttpStatus.BAD_REQUEST, "지원하지 않는 Redis 값 타입입니다."),
 
     // ========================
     // 401 Unauthorized
     // ========================
-    ACCESS_TOKEN_EXPIRED(401_000, HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
-    ACCESS_TOKEN_INVALID(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않습니다."),
-    ACCESS_TOKEN_SIGNATURE(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰의 서명이 유효하지 않습니다."),
-    ACCESS_TOKEN_UNSUPPORTED(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 지원하지 않는 형식입니다."),
-    ACCESS_TOKEN_MALFORMED(401_003, HttpStatus.UNAUTHORIZED, "액세스 토큰의 구조가 깨진 형식입니다."),
-    ACCESS_TOKEN_NOT_FOUND(401_004, HttpStatus.UNAUTHORIZED, "액세스 토큰이 존재하지 않습니다."),
-    ACCESS_TOKEN_NOT_USER(401_005, HttpStatus.UNAUTHORIZED, "액세스 토큰에 해당하는 유저가 존재하지 않습니다."),
+    ACCESS_TOKEN_EXPIRED(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
+    ACCESS_TOKEN_INVALID(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않습니다."),
+    ACCESS_TOKEN_SIGNATURE(401_003, HttpStatus.UNAUTHORIZED, "액세스 토큰의 서명이 유효하지 않습니다."),
+    ACCESS_TOKEN_UNSUPPORTED(401_004, HttpStatus.UNAUTHORIZED, "액세스 토큰이 지원하지 않는 형식입니다."),
+    ACCESS_TOKEN_MALFORMED(401_005, HttpStatus.UNAUTHORIZED, "액세스 토큰의 구조가 깨진 형식입니다."),
+    ACCESS_TOKEN_NOT_FOUND(401_006, HttpStatus.UNAUTHORIZED, "액세스 토큰이 존재하지 않습니다."),
+    ACCESS_TOKEN_NOT_USER(401_007, HttpStatus.UNAUTHORIZED, "액세스 토큰에 해당하는 유저가 존재하지 않습니다."),
 
-    REFRESH_TOKEN_EXPIRED(401_006, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 만료되었습니다."),
-    REFRESH_TOKEN_INVALID(401_007, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 유효하지 않은 토큰입니다."),
-    REFRESH_TOKEN_UNSUPPORTED(401_008, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 지원하지 않는 토큰 형식입니다."),
-    REFRESH_TOKEN_NOT_USER(401_009, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰에 해당하는 유저가 존재하지 않습니다."),
-    REFRESH_TOKEN_NOT_FOUND(401_010, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
+    REFRESH_TOKEN_EXPIRED(401_008, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 만료되었습니다."),
+    REFRESH_TOKEN_INVALID(401_009, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 유효하지 않은 토큰입니다."),
+    REFRESH_TOKEN_UNSUPPORTED(401_010, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 지원하지 않는 토큰 형식입니다."),
+    REFRESH_TOKEN_NOT_USER(401_011, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰에 해당하는 유저가 존재하지 않습니다."),
+    REFRESH_TOKEN_NOT_FOUND(401_012, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
 
 
     // ========================
     // 403 Forbidden
     // ========================
-    FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
+    FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "해당 기능에 접속 권한이 없습니다."),
     ACCESS_DENY(403_001, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
-    UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
     DELETE_DENY(403_003, HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다."),
 
 
@@ -76,6 +76,8 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     NOT_NOTICE(404_007, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
     NOT_PINPOINT(404_008, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
+    NOT_TEMP_USER(400_008, HttpStatus.NOT_FOUND, "해당 tempKey를 가진 유저는 없습니다."),
+
 
     // ========================
     // 409 Conflict
@@ -89,8 +91,8 @@ public enum ErrorCode {
     // 500 Internal Server Error
     // ========================
     INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
-    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다."),
-    ;
+    BASE_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "기본 값 오류입니다."),
+    BAD_PARAMETER(999, HttpStatus.BAD_REQUEST, "요청 파라미터에 문제가 존재합니다.");
 
 
     /**
@@ -120,6 +122,7 @@ public enum ErrorCode {
         return Arrays.stream(values())
                 .filter(code -> code.message.equalsIgnoreCase(message))
                 .findFirst()
-                .orElse(ErrorCode.INTERNAL_SERVER_ERROR); // 기본 에러 처리
+                .orElse(ErrorCode.BASE_ERROR);
     }
+
 }

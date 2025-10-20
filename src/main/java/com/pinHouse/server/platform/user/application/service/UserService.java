@@ -14,6 +14,7 @@ import com.pinHouse.server.security.jwt.application.util.JwtProvider;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.util.*;
 
 import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
@@ -79,7 +81,7 @@ public class UserService implements UserUseCase {
 
         /// 없다면 예외 처리
         if (raw == null){
-            throw new IllegalStateException("TempUserInfo 복원 실패");
+            throw new IllegalStateException(ErrorCode.NOT_TEMP_USER.getMessage());
         }
 
         try {
@@ -87,11 +89,12 @@ public class UserService implements UserUseCase {
                 /// 리턴
                 return TempUserResponse.from(info);
             }
-
-            throw new IllegalStateException("지원하지 않는 Redis 값 타입: " + raw.getClass());
+            throw new IllegalStateException(ErrorCode.BAD_REQUEST_REDIS.getMessage());
         } catch (Exception e) {
-            throw new IllegalStateException("TempUserInfo 복원 실패", e);
+            /// 무슨 이유로 발생한 것인지
+            throw e;
         }
+
     }
 
     /// 수정

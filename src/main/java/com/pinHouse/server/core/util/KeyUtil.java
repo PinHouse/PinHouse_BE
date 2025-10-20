@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class RedisKeyUtil {
+public class KeyUtil {
 
     /// 공통 키
     private static final String SEPARATOR = ":";
@@ -16,7 +16,6 @@ public class RedisKeyUtil {
     /// OAUTH
     private static final String OAUTH2_TEMP_USER = "OAUTH2_TEMP_USER:";
 
-
     /// JWT
     public static final String REFRESH_TOKEN = "refresh_token";
     public static final String ID_CLAIM = "user_id";
@@ -24,6 +23,12 @@ public class RedisKeyUtil {
     public static final String BEARER = "Bearer";
     public static final String AUTHORIZATION = "Authorization";
     public static final String JWT = "JWT";
+
+    /// 예외
+    public static final String HTTP_ERROR_401 = "[HTTP_인증 실패]";
+    public static final String HTTP_ERROR_403 = "[HTTP_인가 실패]";
+    public static final String HTTP_REQ = "[HTTP_요청]";
+
 
     // =====================
     //  합쳐서 사용하는 키 목록
