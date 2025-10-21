@@ -71,5 +71,6 @@ public class LikeQueryService implements LikeQueryUseCase {
         /// 한번에 조회하기
         List<UnitType> rooms = complexService.loadRooms(roomIds);
 
+        return null;
     }
 }

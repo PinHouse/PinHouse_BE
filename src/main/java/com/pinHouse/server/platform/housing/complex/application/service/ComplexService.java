@@ -17,6 +17,7 @@ import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -229,9 +230,18 @@ public class ComplexService implements ComplexUseCase {
     @Transactional(readOnly = true)
     public List<UnitType> loadRooms(List<String> roomIds) {
 
-        repository.findBy
+        /// ObjectId 리스트로 변환
+        List<ObjectId> typeIdsAsObjectId = roomIds.stream()
+                .map(ObjectId::new)
+                .toList();
 
-        return List.of();
+        /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
+        List<ComplexDocument> complexDocuments = repository.findFirstMatchingUnitType(typeIdsAsObjectId);
+
+        /// 스트림을 사용하여 List<ComplexDocument>를 List<UnitType>으로 변환
+        return complexDocuments.stream()
+                .map(doc -> doc.getUnitTypes().getFirst())
+                .toList();ㅂㅂ
     }
 
 

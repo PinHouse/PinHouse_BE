@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.like.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexLikeResponse;
+import com.pinHouse.server.platform.like.application.dto.ComplexLikeResponse;
 import com.pinHouse.server.platform.like.application.dto.LikeRequest;
 import com.pinHouse.server.platform.like.application.usecase.LikeCommandUseCase;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
