@@ -17,6 +17,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * 전역 예외 처리 핸들러
@@ -60,11 +61,14 @@ public class GlobalExceptionHandler {
             IllegalStateException.class, IllegalArgumentException.class})
     public ApiResponse<CustomException> handleIllegalStateException(Exception e) {
 
-
         log.error(e.getMessage(), e);
 
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 400에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.BAD_REQUEST);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
@@ -78,9 +82,12 @@ public class GlobalExceptionHandler {
 
         log.error(e.getMessage(), e);
 
-
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 401에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.UNAUTHORIZED);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
@@ -92,11 +99,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
     public ApiResponse<CustomException> handleNoSuchException(Exception e) {
 
-        log.error(e.getMessage(), e);
-
-
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 404에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.NOT_FOUND);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
@@ -107,9 +115,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e) {
-
-        log.error(e.getMessage(), e);
-
 
         /// 파라미터용 예외 코드
         ErrorCode errorCode = ErrorCode.BAD_PARAMETER;
@@ -124,21 +129,4 @@ public class GlobalExceptionHandler {
 
         return handleCustomException(exception);
     }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ApiResponse<CustomException> handleValidationExceptions(NoResourceFoundException e) {
-
-        log.error(e.getMessage(), e);
-
-        /// 파라미터용 예외 코드
-        ErrorCode errorCode = ErrorCode.NOT_FOUND;
-
-        CustomException exception = new CustomException(errorCode, null);
-
-        return handleCustomException(exception);
-    }
-
-
-
 }

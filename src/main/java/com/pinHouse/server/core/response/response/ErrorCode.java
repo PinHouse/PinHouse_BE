@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 애플리케이션 전역에서 사용하는 에러 코드 Enum입니다.
@@ -41,6 +42,7 @@ public enum ErrorCode {
     // ========================
     // 401 Unauthorized
     // ========================
+    UNAUTHORIZED(401_000, HttpStatus.UNAUTHORIZED, "인증 관련 문제가 발생했습니다."),
     ACCESS_TOKEN_EXPIRED(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
     ACCESS_TOKEN_INVALID(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않습니다."),
     ACCESS_TOKEN_SIGNATURE(401_003, HttpStatus.UNAUTHORIZED, "액세스 토큰의 서명이 유효하지 않습니다."),
@@ -54,7 +56,6 @@ public enum ErrorCode {
     REFRESH_TOKEN_UNSUPPORTED(401_010, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 지원하지 않는 토큰 형식입니다."),
     REFRESH_TOKEN_NOT_USER(401_011, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰에 해당하는 유저가 존재하지 않습니다."),
     REFRESH_TOKEN_NOT_FOUND(401_012, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
-
 
     // ========================
     // 403 Forbidden
@@ -119,11 +120,10 @@ public enum ErrorCode {
      * @param message 에러 메시지
      * @return 일치하는 ErrorCode
      */
-    public static ErrorCode fromMessage(String message) {
+    public static Optional<ErrorCode> fromMessage(String message) {
         return Arrays.stream(values())
                 .filter(code -> code.message.equalsIgnoreCase(message))
-                .findFirst()
-                .orElse(ErrorCode.BASE_ERROR);
+                .findFirst();
     }
 
 }
