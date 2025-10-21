@@ -43,7 +43,7 @@ public class UserApi implements UserApiSpec {
         var tokenResponse = service.saveUser(tempKey, request);
 
         /// 토큰 발급
-        httpUtil.addAccessTokenHeader(httpServletResponse, tokenResponse.accessToken());
+        httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
         httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
 
         /// 리턴
@@ -101,6 +101,7 @@ public class UserApi implements UserApiSpec {
         service.deleteUser(principalDetails.getId());
 
         /// 쿠키 삭제
+        httpUtil.removeAccessTokenCookie(httpServletResponse);
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
 
         /// 리턴
