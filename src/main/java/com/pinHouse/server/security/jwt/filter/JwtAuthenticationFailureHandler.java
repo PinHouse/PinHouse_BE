@@ -14,7 +14,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
+import static com.pinHouse.server.core.response.response.ErrorCode.ACCESS_TOKEN_NOT_FOUND;
 import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_403;
 
 /**
@@ -34,13 +36,13 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
                          AuthenticationException authException) throws IOException {
 
         /// 401 에러코드 발생
-        ErrorCode errorCode;
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(authException.getMessage());
 
-        errorCode = ErrorCode.fromMessage(authException.getMessage());
-        if (errorCode.equals(ErrorCode.BASE_ERROR)) {
-            errorCode = ErrorCode.ACCESS_TOKEN_NOT_FOUND;
-        }
+        /// 없으면 기본 401
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ACCESS_TOKEN_NOT_FOUND);
 
+        /// 예외 처리
         CustomException exception = new CustomException(errorCode, null);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 애플리케이션 전역에서 사용하는 에러 코드 Enum입니다.
@@ -41,6 +42,7 @@ public enum ErrorCode {
     // ========================
     // 401 Unauthorized
     // ========================
+    UNAUTHORIZED(401_000, HttpStatus.UNAUTHORIZED, "인증 관련 문제가 발생했습니다."),
     ACCESS_TOKEN_EXPIRED(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
     ACCESS_TOKEN_INVALID(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않습니다."),
     ACCESS_TOKEN_SIGNATURE(401_003, HttpStatus.UNAUTHORIZED, "액세스 토큰의 서명이 유효하지 않습니다."),
@@ -55,7 +57,6 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_USER(401_011, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰에 해당하는 유저가 존재하지 않습니다."),
     REFRESH_TOKEN_NOT_FOUND(401_012, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
 
-
     // ========================
     // 403 Forbidden
     // ========================
@@ -67,16 +68,17 @@ public enum ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
-    NOT_FOUND_END_POINT(404_000, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
-    USER_NOT_FOUND(404_001, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    USER_NOT_FOUND_IN_COOKIE(404_002, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
-    POST_NOT_FOUND(404_003, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
-    POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
-    PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-    NOT_NOTICE(404_007, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
-    NOT_PINPOINT(404_008, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
-    NOT_TEMP_USER(400_008, HttpStatus.NOT_FOUND, "해당 tempKey를 가진 유저는 없습니다."),
+    NOT_FOUND(400_000, HttpStatus.NOT_FOUND, "해당 자원이 존재하지 않습니다."),
+    NOT_FOUND_END_POINT(404_001, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
+    USER_NOT_FOUND(404_002, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND_IN_COOKIE(404_003, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
+    POST_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
+    POST_TYPE_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(404_007, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
+    NOT_NOTICE(404_008, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
+    NOT_PINPOINT(404_009, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
+    NOT_TEMP_USER(400_010, HttpStatus.NOT_FOUND, "해당 tempKey를 가진 유저는 없습니다."),
 
 
     // ========================
@@ -118,11 +120,10 @@ public enum ErrorCode {
      * @param message 에러 메시지
      * @return 일치하는 ErrorCode
      */
-    public static ErrorCode fromMessage(String message) {
+    public static Optional<ErrorCode> fromMessage(String message) {
         return Arrays.stream(values())
                 .filter(code -> code.message.equalsIgnoreCase(message))
-                .findFirst()
-                .orElse(ErrorCode.BASE_ERROR);
+                .findFirst();
     }
 
 }
