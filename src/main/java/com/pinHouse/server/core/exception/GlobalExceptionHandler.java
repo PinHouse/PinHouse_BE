@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     // 최하위 예외처리
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public ApiResponse<CustomException> handleException(Exception e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleException(Exception e) {
 
         /// 로그 발생
         log.error(e.getMessage(), e);
@@ -52,13 +52,13 @@ public class GlobalExceptionHandler {
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
             IllegalStateException.class, IllegalArgumentException.class})
-    public ApiResponse<CustomException> handleIllegalStateException(Exception e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleIllegalStateException(Exception e) {
 
 
         log.error(e.getMessage(), e);
@@ -69,12 +69,12 @@ public class GlobalExceptionHandler {
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({JwtAuthenticationException.class})
-    public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e) {
 
         log.error(e.getMessage(), e);
 
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e) {
 
         log.error(e.getMessage(), e);
 
