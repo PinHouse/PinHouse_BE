@@ -67,16 +67,17 @@ public enum ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
-    NOT_FOUND_END_POINT(404_000, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
-    USER_NOT_FOUND(404_001, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    USER_NOT_FOUND_IN_COOKIE(404_002, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
-    POST_NOT_FOUND(404_003, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
-    POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
-    PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-    NOT_NOTICE(404_007, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
-    NOT_PINPOINT(404_008, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
-    NOT_TEMP_USER(400_008, HttpStatus.NOT_FOUND, "해당 tempKey를 가진 유저는 없습니다."),
+    NOT_FOUND(400_000, HttpStatus.NOT_FOUND, "해당 자원이 존재하지 않습니다."),
+    NOT_FOUND_END_POINT(404_001, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
+    USER_NOT_FOUND(404_002, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND_IN_COOKIE(404_003, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
+    POST_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
+    POST_TYPE_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(404_007, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
+    NOT_NOTICE(404_008, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
+    NOT_PINPOINT(404_009, HttpStatus.NOT_FOUND, "해당 핀포인트를 찾을 수 없습니다"),
+    NOT_TEMP_USER(400_010, HttpStatus.NOT_FOUND, "해당 tempKey를 가진 유저는 없습니다."),
 
 
     // ========================

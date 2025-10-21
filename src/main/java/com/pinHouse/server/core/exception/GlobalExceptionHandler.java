@@ -29,12 +29,9 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     /// 공통 처리 메서드
-    private ApiResponse<CustomException> handleCustomException(CustomException customException, HttpServletRequest request) {
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
-        ErrorCode errorCode = customException.getErrorCode();
+    private ApiResponse<CustomException> handleCustomException(CustomException customException) {
 
-        log.info("[EXCEPTION] 사용자: {}, 메서드: {}, URI: {}, 예외: {}",
-                username, request.getMethod(), request.getRequestURI(), customException.getErrorCode().getCode());
+        log.error(customException.getMessage());
 
         return ApiResponse.fail(customException);
     }
@@ -93,7 +90,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
-    public ApiResponse<CustomException> handleNoSuchException(Exception e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleNoSuchException(Exception e) {
 
         log.error(e.getMessage(), e);
 
@@ -104,7 +101,7 @@ public class GlobalExceptionHandler {
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -125,7 +122,23 @@ public class GlobalExceptionHandler {
 
         CustomException exception = new CustomException(errorCode, errors);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ApiResponse<CustomException> handleValidationExceptions(NoResourceFoundException e) {
+
+        log.error(e.getMessage(), e);
+
+        /// 파라미터용 예외 코드
+        ErrorCode errorCode = ErrorCode.NOT_FOUND;
+
+        CustomException exception = new CustomException(errorCode, null);
+
+        return handleCustomException(exception);
+    }
+
+
 
 }
