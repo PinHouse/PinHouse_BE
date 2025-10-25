@@ -15,6 +15,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_401;
 /**
@@ -32,15 +33,13 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        /// 기본 값 설정
-        ErrorCode errorCode;
-
-
         /// 에러 코드
-        errorCode = ErrorCode.fromMessage(accessDeniedException.getMessage());
-        if (errorCode.equals(ErrorCode.BASE_ERROR)) {
-            errorCode = ErrorCode.FORBIDDEN;
-        }
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(accessDeniedException.getMessage());
+
+        /// 없으면 기본 403
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.FORBIDDEN);
+
         /// 403 에러 코드 발생
         CustomException exception = new CustomException(errorCode, null);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);

@@ -17,6 +17,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * 전역 예외 처리 핸들러
@@ -29,12 +30,9 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     /// 공통 처리 메서드
-    private ApiResponse<CustomException> handleCustomException(CustomException customException, HttpServletRequest request) {
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
-        ErrorCode errorCode = customException.getErrorCode();
+    private ApiResponse<CustomException> handleCustomException(CustomException customException) {
 
-        log.info("[예외 로깅] 사용자: {}, 메서드: {}, URI: {}, 예외: {}",
-                username, request.getMethod(), request.getRequestURI(), customException.getErrorCode().getCode());
+        log.error(customException.getMessage());
 
         return ApiResponse.fail(customException);
     }
@@ -44,7 +42,7 @@ public class GlobalExceptionHandler {
     // 최하위 예외처리
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public ApiResponse<CustomException> handleException(Exception e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleException(Exception e) {
 
         /// 예외 찍기
         log.error(e.getMessage(), e);
@@ -55,56 +53,72 @@ public class GlobalExceptionHandler {
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
             IllegalStateException.class, IllegalArgumentException.class})
+    public ApiResponse<CustomException> handleIllegalStateException(Exception e) {
+
     public ApiResponse<CustomException> handleIllegalStateException(Exception e, HttpServletRequest request) {
 
         /// 예외 찍기
         log.error(e.getMessage(), e);
 
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 400에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.BAD_REQUEST);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({JwtAuthenticationException.class})
-    public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e, HttpServletRequest request) {
+    public ApiResponse<CustomException> handleJwtAuthenticationException(JwtAuthenticationException e) {
 
         /// 예외 찍기
         log.error(e.getMessage(), e);
 
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 401에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.UNAUTHORIZED);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
+    public ApiResponse<CustomException> handleNoSuchException(Exception e) {
+
     public ApiResponse<CustomException> handleNoSuchException(Exception e, HttpServletRequest request) {
 
         /// 예외 찍기
         log.error(e.getMessage(), e);
 
         /// 메세지 바탕으로 예외 코드 검색
-        ErrorCode errorCode = ErrorCode.fromMessage(e.getMessage());
+        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(e.getMessage());
+
+        /// Error 없으면 404에러
+        ErrorCode errorCode = errorCodeOptional
+                .orElse(ErrorCode.NOT_FOUND);
 
         /// 해당 예외 코드로 예외 처리
         CustomException exception = new CustomException(errorCode, null);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -113,6 +127,8 @@ public class GlobalExceptionHandler {
 
         /// 예외 찍기
         log.error(e.getMessage(), e);
+
+    public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e) {
 
         /// 파라미터용 예외 코드
         ErrorCode errorCode = ErrorCode.BAD_PARAMETER;
@@ -125,7 +141,6 @@ public class GlobalExceptionHandler {
 
         CustomException exception = new CustomException(errorCode, errors);
 
-        return handleCustomException(exception, request);
+        return handleCustomException(exception);
     }
-
 }
