@@ -241,7 +241,7 @@ public class ComplexService implements ComplexUseCase {
         /// 스트림을 사용하여 List<ComplexDocument>를 List<UnitType>으로 변환
         return complexDocuments.stream()
                 .map(doc -> doc.getUnitTypes().getFirst())
-                .toList();ㅂㅂ
+                .toList();
     }
 
 
