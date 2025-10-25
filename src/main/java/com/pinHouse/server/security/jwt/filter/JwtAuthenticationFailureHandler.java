@@ -1,10 +1,11 @@
 package com.pinHouse.server.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.core.logging.HttpLogUtil;
+import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.pinHouse.server.core.response.response.ErrorCode.ACCESS_TOKEN_NOT_FOUND;
-import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_403;
+import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_401;
 
 /**
  * JWT 인증 실패 핸들러
@@ -35,15 +35,15 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        /// 401 에러코드 발생
-        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(authException.getMessage());
+        /// 인증 문제 발생시, 401 Error 발생
+        CustomException exception = new CustomException(CommonErrorCode.UNAUTHORIZED);
 
-        /// 없으면 기본 401
-        ErrorCode errorCode = errorCodeOptional
-                .orElse(ACCESS_TOKEN_NOT_FOUND);
+        /// JWT 예외인 경우
+        if (authException instanceof JwtAuthenticationException jwtEx) {
+            exception = new CustomException(jwtEx.getErrorCode());
+        }
 
         /// 예외 처리
-        CustomException exception = new CustomException(errorCode, null);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 
         /// 응답 설정
@@ -52,7 +52,7 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
         response.setCharacterEncoding("UTF-8");
 
         /// 로그 찍기
-        httpUtil.logHttpRequest(request, HTTP_ERROR_403);
+        httpUtil.logHttpRequest(request, HTTP_ERROR_401);
 
         /// JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);

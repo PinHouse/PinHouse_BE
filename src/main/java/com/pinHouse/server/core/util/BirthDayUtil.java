@@ -1,5 +1,7 @@
 package com.pinHouse.server.core.util;
 
+import com.pinHouse.server.core.exception.code.UserErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +43,9 @@ public class BirthDayUtil {
      */
     public static int calculateAge(LocalDate birthday) {
         if (birthday == null) {
-            throw new IllegalArgumentException("생년월일이 null일 수 없습니다.");
+            throw new CustomException(UserErrorCode.BAD_REQUEST_BIRTHDAY);
         }
+
         LocalDate today = LocalDate.now();
         return Period.between(birthday, today).getYears();
     }

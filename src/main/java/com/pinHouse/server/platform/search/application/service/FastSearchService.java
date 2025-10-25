@@ -1,5 +1,8 @@
 package com.pinHouse.server.platform.search.application.service;
 
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.exception.code.PinPointErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
@@ -52,7 +55,7 @@ public class FastSearchService implements FastSearchUseCase {
         User user = userService.loadUser(userId);
 
         if (!pinPointService.checkPinPoint(request.pinPointId(), user.getId())) {
-            throw new IllegalArgumentException(ErrorCode.BAD_REQUEST_PINPOINT.getMessage());
+            throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
         }
 
         /// 핀포인트 조회
@@ -110,9 +113,9 @@ public class FastSearchService implements FastSearchUseCase {
         try {
             return distanceUtil.findPath(fromLat, fromLng, toLat, toLng);
         } catch (UnsupportedEncodingException e) {
-            // 호출부 단순화를 위해 런타임 예외로 래핑
-            throw new RuntimeException("거리 경로 조회 실패", e);
+            throw new CustomException(ComplexErrorCode.BAD_REQUEST_DISTANCE);
         }
+
     }
 
     /// 거리 평균

@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.housing.notice.application.service;
 
+import com.pinHouse.server.core.exception.code.NoticeErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
@@ -61,7 +63,7 @@ public class NoticeService implements NoticeUseCase {
     @Override
     public NoticeDocument loadNotice(String id) {
         return repository.findByNoticeId(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_NOTICE.getMessage()));
+                .orElseThrow(() -> new CustomException(NoticeErrorCode.NOT_FOUND_NOTICE));
     }
 
     @Override

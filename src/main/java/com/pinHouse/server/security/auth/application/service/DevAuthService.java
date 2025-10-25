@@ -1,5 +1,7 @@
 package com.pinHouse.server.security.auth.application.service;
 
+import com.pinHouse.server.core.exception.code.SecurityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
@@ -44,7 +46,7 @@ public class DevAuthService {
         /// 유저 생성하기
         if (repository.existsById(id)) {
             user = repository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                    .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
         } else {
             User dev = User.devOf(id);
             user = repository.save(dev);

@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.pinPoint.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinHouse.server.core.exception.code.PinPointErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +56,7 @@ public class KakaoApi implements LocationUtil {
                 return Location.of(longitude, latitude);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Kakao API 호출 실패: " + e.getMessage());
+            throw new CustomException(PinPointErrorCode.KAKAO_SERVER_ERROR);
         }
 
         return null;

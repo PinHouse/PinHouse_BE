@@ -1,5 +1,7 @@
 package com.pinHouse.server.core.aop;
 
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,7 @@ public class LoginCheckAspect {
                 !(auth.getPrincipal() instanceof PrincipalDetails principal)) {
 
             /// 401 매핑
-            throw new NoSuchElementException(ErrorCode.ACCESS_TOKEN_NOT_FOUND.getMessage());
+            throw new CustomException(CommonErrorCode.UNAUTHORIZED);
         }
 
         return pjp.proceed();

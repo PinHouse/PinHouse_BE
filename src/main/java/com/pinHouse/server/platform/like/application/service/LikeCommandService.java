@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.like.application.service;
 
+import com.pinHouse.server.core.exception.code.LikeErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
@@ -43,12 +45,13 @@ public class LikeCommandService implements LikeCommandUseCase {
         switch (request.type()) {
             case NOTICE -> noticeService.loadNotice(request.targetId());
             case ROOM -> complexService.loadComplex(request.targetId());
-            default -> throw new IllegalStateException(ErrorCode.BAD_REQUEST.getMessage());
+            default -> throw new CustomException(LikeErrorCode.BAD_REQUEST_LIKE);
+
         }
 
         /// 중복 조회
         if (repository.existsByUserIdAndTargetIdAndType(userId, request.targetId(), request.type())) {
-            throw new IllegalStateException(ErrorCode.DUPLICATE_LIKE.getMessage());
+            throw new CustomException(LikeErrorCode.DUPLICATE_LIKE);
         }
 
         /// 엔티티 생성 및 저장
@@ -67,7 +70,7 @@ public class LikeCommandService implements LikeCommandUseCase {
 
         /// 존재 여부 체크 (영속성 컨테이너)
         Like like = repository.findByIdAndUser_Id(id, userId)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(LikeErrorCode.NOT_FOUND_LIKE));
 
         /// DB에서 삭제
         repository.delete(like);

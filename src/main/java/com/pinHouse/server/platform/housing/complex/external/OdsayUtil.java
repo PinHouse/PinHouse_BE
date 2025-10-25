@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.housing.complex.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.InterCityResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.IntraCityResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -54,7 +56,7 @@ public class OdsayUtil implements DistanceUtil {
                     .uri(uri)
                     .retrieve()
                     .bodyToMono(String.class)
-                    .onErrorMap(e -> new RuntimeException("ODsay API 호출 실패", e))
+                    .onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
                     .block(); // 동기
 
             /// 자동 판별
@@ -71,8 +73,9 @@ public class OdsayUtil implements DistanceUtil {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("ODsay API 응답 처리 실패", e);
+            throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
         }
+        
     }
 
     // =================

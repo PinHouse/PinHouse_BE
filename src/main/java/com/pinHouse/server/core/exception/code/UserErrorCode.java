@@ -15,6 +15,10 @@ public enum UserErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
+    BAD_REQUEST_ONBOARDING(400_201,HttpStatus.BAD_REQUEST,"회원가입 온보딩 중에 문제가 발생했습니다."),
+    BAD_REQUEST_REDIS(400_202, HttpStatus.BAD_REQUEST, "지원하지 않는 Redis 값 타입입니다."),
+    BAD_REQUEST_BIRTHDAY(400_203, HttpStatus.BAD_REQUEST, "생년월일이 null일 수 없습니다."),
+    BAD_REQUEST_ROLE(400_204, HttpStatus.BAD_REQUEST, "유저 역할 파라미터에 오류가 있습니다."),
 
     // ========================
     // 401 Unauthorized
@@ -27,6 +31,7 @@ public enum UserErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
+    NOT_TEMP_USER_KEY(404_000, HttpStatus.NOT_FOUND, "해당 임시 키를 가진 유저를 찾을 수 없습니다."),
     NOT_FOUND_USER(404_001, HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
 
     // ========================

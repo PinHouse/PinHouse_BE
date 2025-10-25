@@ -1,9 +1,9 @@
 package com.pinHouse.server.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.core.logging.HttpLogUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_401;
+import static com.pinHouse.server.core.util.KeyUtil.HTTP_ERROR_403;
+
 /**
  * JWT 인가 실패 핸들러
  */
@@ -33,15 +34,8 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        /// 에러 코드
-        Optional<ErrorCode> errorCodeOptional = ErrorCode.fromMessage(accessDeniedException.getMessage());
-
-        /// 없으면 기본 403
-        ErrorCode errorCode = errorCodeOptional
-                .orElse(ErrorCode.FORBIDDEN);
-
-        /// 403 에러 코드 발생
-        CustomException exception = new CustomException(errorCode, null);
+        /// 권한 부족 403 Error
+        CustomException exception = new CustomException(CommonErrorCode.FORBIDDEN);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 
         /// response 제작
@@ -50,7 +44,7 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
         response.setCharacterEncoding("UTF-8");
 
         /// 로그 찍기
-        httpUtil.logHttpRequest(request, HTTP_ERROR_401);
+        httpUtil.logHttpRequest(request, HTTP_ERROR_403);
 
         /// JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);

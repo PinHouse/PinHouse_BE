@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -208,7 +210,7 @@ public class ComplexService implements ComplexUseCase {
     @Transactional(readOnly = true)
     public ComplexDocument loadComplex(String id) {
         return repository.findByComplexKey(id)
-                .orElseThrow(() -> new NoSuchElementException("Complex Not Found"));
+                .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
 
     /// 목록 조회
