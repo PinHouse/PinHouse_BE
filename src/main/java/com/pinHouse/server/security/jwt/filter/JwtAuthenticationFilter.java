@@ -50,16 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 /// 토큰 검증 후, Authentication 객체 반환
                 Authentication authentication = jwtValidator.validateAccessToken(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                /// 필터 넘기기
-                filterChain.doFilter(request, response);
             }
 
-            /// 토큰이 없으면 익명으로 처리하기
-            if (accessTokenOptional.isEmpty()){
-                filterChain.doFilter(request, response);
-                return;
-            }
+            /// 토큰이 없거나, 인증에 성공했으면 다음 필터로 진행
+            filterChain.doFilter(request, response);
 
         } catch (JwtAuthenticationException ex) {
 
