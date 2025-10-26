@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.search.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -78,7 +80,7 @@ public record FastSearchRequest(
                     return type;
                 }
             }
-            throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getMessage());
+            throw new CustomException(CommonErrorCode.BAD_PARAMETER);
         }
     }
 
@@ -108,7 +110,7 @@ public record FastSearchRequest(
                     return type;
                 }
             }
-            throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getMessage());
+            throw new CustomException(CommonErrorCode.BAD_PARAMETER);
         }
 
     }

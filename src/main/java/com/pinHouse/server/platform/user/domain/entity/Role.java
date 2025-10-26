@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.user.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.exception.code.UserErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +34,7 @@ public enum Role {
                 return userRole;
             }
         }
-        throw new IllegalArgumentException("Unknown UserRole label: " + label);
+        throw new CustomException(UserErrorCode.BAD_REQUEST_ROLE);
     }
 
 }

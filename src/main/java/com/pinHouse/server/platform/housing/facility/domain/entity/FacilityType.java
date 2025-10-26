@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.housing.facility.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.exception.code.FacilityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +33,7 @@ public enum FacilityType {
                 return facilityType;
             }
         }
-        throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getMessage());
+        throw new CustomException(FacilityErrorCode.BAD_REQUEST_INPUT_FACILITY);
     }
+
 }

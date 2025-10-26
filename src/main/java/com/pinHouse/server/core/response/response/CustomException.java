@@ -11,12 +11,23 @@ import java.util.List;
  */
 
 @Getter
-@RequiredArgsConstructor
 public class CustomException extends RuntimeException{
 
     private final ErrorCode errorCode;
 
     private final List<FieldErrorResponse> fieldErrorResponses;
 
+
+    /// 에러코드만 있는 경우
+    public CustomException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+        this.fieldErrorResponses = null;
+    }
+
+    /// 에러코드와 필드에러가 같이 있는 경우
+    public CustomException(ErrorCode errorCode, List<FieldErrorResponse> fieldErrorResponses) {
+        this.errorCode = errorCode;
+        this.fieldErrorResponses = fieldErrorResponses;
+    }
 
 }

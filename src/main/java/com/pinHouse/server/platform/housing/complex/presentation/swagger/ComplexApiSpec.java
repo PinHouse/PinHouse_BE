@@ -5,9 +5,12 @@ import com.pinHouse.server.platform.housing.complex.application.dto.response.Com
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
+import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
+import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,6 +28,15 @@ public interface ComplexApiSpec {
     ApiResponse<ComplexDetailResponse> getComplex(
             @Parameter(example = "18407#1", description = "임대주택 ID")
             @PathVariable String complexId
+    );
+
+
+    @Operation(
+            summary = "좋아요 한 임대주택 목록 조회",
+            description = "좋아요 누른 임대주택을 조회하는 API 입니다."
+    )
+    ApiResponse<List<UnityTypeLikeResponse>> getLikeComplexes(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
     /// 임대주택 시뮬레이터

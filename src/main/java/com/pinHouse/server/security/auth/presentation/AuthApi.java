@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -74,6 +71,22 @@ public class AuthApi implements AuthApiSpec {
 
         /// 리턴
         return ApiResponse.updated();
+    }
+
+    /**
+     * 토큰 여부 판단
+     */
+    @GetMapping()
+    public ApiResponse<Boolean> checkAccessToken(HttpServletRequest httpServletRequest) {
+
+        /// 토큰 있는지 체크
+        Optional<String> accessToken = httpUtil.getAccessToken(httpServletRequest);
+
+        /// 서비스
+        var response = service.checkToken(accessToken);
+
+        /// 리턴
+        return ApiResponse.ok(response);
     }
 
 }

@@ -34,6 +34,7 @@ public class RequestMatcherHolder {
             // auth
             new RequestInfo(DELETE, "/v1/auth", Role.USER),     /// 로그아웃
             new RequestInfo(PUT, "/v1/auth", null),     /// 재발급
+            new RequestInfo(GET, "/v1/auth", null),     /// 토큰 여부 체크
 
             // users
             new RequestInfo(DELETE, "/v1/users", Role.USER),     /// 회원탈퇴
@@ -47,7 +48,16 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/api/v1/oauth2/**", null),
 
             // notice
+            new RequestInfo(GET, "/v1/notices/likes", Role.USER),
             new RequestInfo(GET, "/v1/notices/**", null),
+
+            // complex
+            new RequestInfo(GET, "/v1/complexes/likes", Role.USER),
+            new RequestInfo(GET, "/v1/complexes/**", null),
+
+            // like
+            new RequestInfo(POST, "/v1/likes/**", Role.USER),
+            new RequestInfo(DELETE, "/v1/likes/**", Role.USER),
 
             // infra
             new RequestInfo(GET, "/v1/complexes/infra/**", null),

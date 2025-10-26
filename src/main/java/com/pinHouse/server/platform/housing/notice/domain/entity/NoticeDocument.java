@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDate;
+
 @Document(collection = "notices")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,16 +40,16 @@ public class NoticeDocument {
     private String prevNoticeId;
 
     @Field("announceDate")
-    private String announceDate;
+    private LocalDate announceDate;
 
     @Field("winnerDate")
-    private String winnerDate;
+    private LocalDate winnerDate;
 
     @Field("applyStart")
-    private String applyStart;
+    private LocalDate applyStart;
 
     @Field("applyEnd")
-    private String applyEnd;
+    private LocalDate applyEnd;
 
     @Field("contact")
     private String contact;
@@ -67,8 +69,8 @@ public class NoticeDocument {
     /// 빌더 생성자
     @Builder
     public NoticeDocument(String id, String noticeId, String status, String title, String agency,
-                          String houseType, String supplyType, String prevNoticeId, String announceDate,
-                          String winnerDate, String applyStart, String applyEnd,
+                          String houseType, String supplyType, String prevNoticeId, LocalDate announceDate,
+                          LocalDate winnerDate, LocalDate applyStart, LocalDate applyEnd,
                           String contact, Urls urls, String city, String county, Meta meta) {
         this.id = id;
         this.noticeId = noticeId;

@@ -1,5 +1,9 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
+import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -12,18 +16,21 @@ import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocumen
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
+import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +45,10 @@ public class ComplexService implements ComplexUseCase {
     /// 거리 계산 툴
     private final DistanceUtil distanceUtil;
     private final TransitResponseMapper mapper;
+
+    /// 좋아요 목록 조회
+    private final LikeQueryUseCase likeService;
+
     // =================
     //  퍼블릭 로직
     // =================
@@ -159,7 +170,9 @@ public class ComplexService implements ComplexUseCase {
 
     /// 간편 대중교통 시뮬레이터
     @Override
+    @Transactional(readOnly = true)
     public DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
         Location location = complex.getLocation();
@@ -183,7 +196,7 @@ public class ComplexService implements ComplexUseCase {
 
     /// 대중교통 시뮬레이터
     @Override
-    @Transactional()
+    @Transactional
     public PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
@@ -198,34 +211,68 @@ public class ComplexService implements ComplexUseCase {
 
     }
 
+    /// 좋아요 누른 방 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<UnityTypeLikeResponse> getComplexesLikes(UUID userId) {
+
+        /// 방 ID 목록 조회
+        List<String> typeIds = likeService.getLikeUnitTypeIds(userId);
+
+        /// ID 목록 바탕으로 조회하기 (하나씩 포함됨)
+        List<ComplexDocument> complexDocumentList = loadRooms(typeIds);
+
+        /// DTO 변환하기
+        return UnityTypeLikeResponse.from(complexDocumentList);
+
+    }
+
     // =================
     //  외부 로직
     // =================
 
     /// 상세 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ComplexDocument loadComplex(String id) {
         return repository.findByComplexKey(id)
-                .orElseThrow(() -> new NoSuchElementException("Complex Not Found"));
+                .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexDocument loadComplexByUnitTypeId(String typeId) {
+
+        List<ComplexDocument> results = loadRooms(List.of(typeId));
+
+        if (results.isEmpty()) {
+            throw new CustomException(ComplexErrorCode.NOT_FOUND_UNITTYPE);
+        }
+
+        return results.getFirst(); // 또는 results.get(0)
+    }
+
 
     /// 목록 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ComplexDocument> loadComplexes() {
         return repository.findAll();
     }
 
     /// 공고 기반 목록 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ComplexDocument> loadComplexes(String noticeId) {
         return repository.findByNoticeId(noticeId);
     }
 
+
+
+
     /// 필터링
     @Override
+    @Transactional(readOnly = true)
     public List<ComplexDocument> filterComplexes(FastSearchRequest request) {
         /// 모든 단지 로드
         final List<ComplexDocument> all = repository.findAll();
@@ -240,7 +287,7 @@ public class ComplexService implements ComplexUseCase {
     // =================
     //  내부 로직
     // =================
-
+    /// 필터링하는 로직
     private ComplexDocument filterUnitTypesByRequest(ComplexDocument complex, FastSearchRequest req) {
         if (complex.getUnitTypes() == null || complex.getUnitTypes().isEmpty()) {
             return null;
@@ -292,4 +339,18 @@ public class ComplexService implements ComplexUseCase {
                 .unitTypes(matchedUnits)
                 .build();
     }
+
+    /// 유닛 해당하는 임대주택 목록 조회
+    @Transactional(readOnly = true)
+    protected List<ComplexDocument> loadRooms(List<String> roomIds) {
+
+        /// ObjectId 리스트로 변환
+        List<ObjectId> typeIdsAsObjectId = roomIds.stream()
+                .map(ObjectId::new)
+                .toList();
+
+        /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
+        return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
+    }
+
 }

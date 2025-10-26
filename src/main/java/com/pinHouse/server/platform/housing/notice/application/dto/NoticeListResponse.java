@@ -30,8 +30,30 @@ public record NoticeListResponse(
         String type,
 
         @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
-        String period
-) {
+        String period,
+
+        @Schema(description = "좋아요 여부", example = "false")
+        boolean liked
+
+        ) {
+
+    /// 정적 팩토리 메서드입니다.
+    public static NoticeListResponse from(NoticeDocument notice, boolean liked) {
+
+        /// 날짜
+        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
+
+        return NoticeListResponse.builder()
+                .id(notice.getNoticeId())
+                .name(notice.getTitle())
+                .supplier(notice.getAgency())
+                .complexes(notice.getMeta().getTotalComplexCount())
+                .period(period)
+                .type(notice.getSupplyType())
+                .liked(liked)
+                .build();
+    }
+
     /// 정적 팩토리 메서드입니다.
     public static NoticeListResponse from(NoticeDocument notice) {
 
@@ -45,6 +67,7 @@ public record NoticeListResponse(
                 .complexes(notice.getMeta().getTotalComplexCount())
                 .period(period)
                 .type(notice.getSupplyType())
+                .liked(true)
                 .build();
     }
 

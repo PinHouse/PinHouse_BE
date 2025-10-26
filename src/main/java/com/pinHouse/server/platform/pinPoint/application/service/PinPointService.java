@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.pinPoint.application.service;
 
+import com.pinHouse.server.core.exception.code.PinPointErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
@@ -93,7 +95,7 @@ public class PinPointService implements PinPointUseCase {
             repository.delete(pinPoint.get());
         } else {
             /// 삭제할 수 있는 권한이 없음
-            throw new IllegalStateException(ErrorCode.DELETE_DENY.getMessage());
+            throw new CustomException(PinPointErrorCode.FORBIDDEN_DELETE);
         }
 
     }
@@ -119,7 +121,7 @@ public class PinPointService implements PinPointUseCase {
     public PinPoint loadPinPoint(Long pinPointId) {
 
         return repository.findById(pinPointId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.NOT_PINPOINT.getMessage()));
+                .orElseThrow(() -> new CustomException(PinPointErrorCode.NOT_FOUND_PINPOINT));
     }
 
     /// 유저와 함께 상세 조회

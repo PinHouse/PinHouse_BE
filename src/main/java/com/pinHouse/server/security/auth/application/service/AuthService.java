@@ -1,5 +1,7 @@
 package com.pinHouse.server.security.auth.application.service;
 
+import com.pinHouse.server.core.exception.code.SecurityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
@@ -41,16 +43,34 @@ public class AuthService implements AuthUseCase {
 
         /// DB 검증
         User user = repository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 고유번호를 가진 유저가 없습니다"));
+                .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+            throw new CustomException(SecurityErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         /// 레디스에서 삭제하도록 로직 수행
         jwtValidator.removeRefreshToken(user.getId(), refreshToken.get());
     }
+
+    /// 토큰 여부 및 검증성 체크
+    @Override
+    public boolean checkToken(Optional<String> optionalAccessToken) {
+
+        /// 토큰이 없으면 false 반환
+        if (optionalAccessToken.isEmpty()) {
+            return false;
+        }
+
+        // 토큰이 있다면 검증 시도
+        String jwtToken = optionalAccessToken.get();
+        jwtValidator.validateAccessToken(jwtToken);
+
+        /// 검증 성공 시 true 반환
+        return true;
+    }
+
 
     /// 토큰 재발급
     @Override
@@ -59,7 +79,7 @@ public class AuthService implements AuthUseCase {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+            throw new CustomException(SecurityErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         /// 존재하는 리프레쉬 토큰 검증
@@ -67,7 +87,7 @@ public class AuthService implements AuthUseCase {
 
         /// 리프레쉬 토큰 바탕으로 조회
         User user = repository.findById(token.getUserId())
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
         /// 인증된 유저에게 JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);

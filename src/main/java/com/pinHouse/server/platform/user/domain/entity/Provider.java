@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.user.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.exception.code.SecurityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public enum Provider {
                 return provider;
             }
         }
-        throw new IllegalArgumentException("Invalid provider label: " + label);
+        throw new CustomException(SecurityErrorCode.BAD_REQUEST_OAUTH2);
     }
+
 }

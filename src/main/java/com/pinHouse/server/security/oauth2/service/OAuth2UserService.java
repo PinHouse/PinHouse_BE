@@ -1,5 +1,7 @@
 package com.pinHouse.server.security.oauth2.service;
 
+import com.pinHouse.server.core.exception.code.SecurityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
@@ -44,10 +46,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         /// resistrationId 가져오기
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        /// userNameAttributeName 가져오기
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                .getUserInfoEndpoint().getUserNameAttributeName();
-
         /// OAuth2를 바탕으로 정보 생성
         OAuth2UserInfo userInfo = null;
 
@@ -87,7 +85,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 userInfo = new NaverUserInfo(oAuth2UserAttributes);
                 break;
             default:
-                throw new IllegalArgumentException(ErrorCode.BAD_OAUTH2.getMessage());
+                throw new CustomException(SecurityErrorCode.BAD_REQUEST_OAUTH2);
         }
 
         return userInfo;

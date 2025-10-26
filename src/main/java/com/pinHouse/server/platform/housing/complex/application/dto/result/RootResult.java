@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.housing.complex.application.dto.result;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -70,8 +72,9 @@ public record RootResult(
             }
             return responses;
         } catch (Exception e) {
-            throw new RuntimeException("JSON 파싱 실패", e);
+            throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
         }
+
     }
 
     @Builder

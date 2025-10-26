@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.user.application.service;
 
-import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.core.exception.code.UserErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
@@ -68,7 +69,7 @@ public class UserService implements UserUseCase {
         }
 
         /// 에러 발생
-        throw new IllegalStateException(ErrorCode.INTERNAL_LOGIN_SERVER_ERROR.getMessage());
+        throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
     }
 
     /// 레디스에 존재하는 데이터 조회
@@ -81,20 +82,15 @@ public class UserService implements UserUseCase {
 
         /// 없다면 예외 처리
         if (raw == null){
-            throw new IllegalStateException(ErrorCode.NOT_TEMP_USER.getMessage());
+            throw new CustomException(UserErrorCode.NOT_TEMP_USER_KEY);
         }
 
-        try {
-            if (raw instanceof TempUserInfo info) {
-                /// 리턴
-                return TempUserResponse.from(info);
-            }
-            throw new IllegalStateException(ErrorCode.BAD_REQUEST_REDIS.getMessage());
-        } catch (Exception e) {
-            /// 무슨 이유로 발생한 것인지
-            throw e;
+        if (raw instanceof TempUserInfo info) {
+            /// 리턴
+            return TempUserResponse.from(info);
+        } else {
+            throw new CustomException(UserErrorCode.BAD_REQUEST_REDIS);
         }
-
     }
 
     /// 수정
@@ -153,7 +149,7 @@ public class UserService implements UserUseCase {
     @Transactional(readOnly = true)
     public User loadUser(UUID userId) {
         return repository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
     }
 
     /// 소셜로그인 중복 로그인 조횐
@@ -184,7 +180,7 @@ public class UserService implements UserUseCase {
 
     protected User loadUserWithFacilityType(UUID userId) {
         return repository.findWithFacilityTypesById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
 
 
     }
