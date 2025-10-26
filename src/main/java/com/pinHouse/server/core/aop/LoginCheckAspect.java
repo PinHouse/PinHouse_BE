@@ -2,7 +2,6 @@ package com.pinHouse.server.core.aop;
 
 import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,8 +10,6 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.NoSuchElementException;
 
 @Aspect
 @Component

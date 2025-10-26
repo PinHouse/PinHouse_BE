@@ -87,8 +87,7 @@ public class ComplexService implements ComplexUseCase {
         UnitType unitType = complex.getUnitTypes().stream()
                 .filter(info -> info.getTypeCode().equalsIgnoreCase(type))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 유형(" + type + ")의 공급 정보가 없습니다."));
-
+                .orElseThrow(() -> new CustomException(ComplexErrorCode.BAD_REQUEST_DEPOSIT));
         long contract = unitType.getDeposit().getContract(); // 계약금
         long balance  = unitType.getDeposit().getBalance();  // 잔금
         long monthRent = unitType.getMonthlyRent();          // 월임대료

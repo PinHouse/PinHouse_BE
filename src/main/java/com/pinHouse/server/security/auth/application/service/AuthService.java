@@ -2,13 +2,11 @@ package com.pinHouse.server.security.auth.application.service;
 
 import com.pinHouse.server.core.exception.code.SecurityErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
-import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.jwt.application.util.JwtProvider;
 import com.pinHouse.server.security.jwt.application.util.JwtValidator;
 import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
