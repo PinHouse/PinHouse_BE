@@ -30,4 +30,12 @@ public interface AuthApiSpec {
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
     );
+
+
+    /// 액세 토큰 여부 체크
+    @Operation(
+            summary = "액세스토큰 여부 체크 API",
+            description = "액세스 토큰이 존재하는지 체크하는 API"
+    )
+    ApiResponse<Boolean> checkAccessToken(HttpServletRequest httpServletRequest);
 }

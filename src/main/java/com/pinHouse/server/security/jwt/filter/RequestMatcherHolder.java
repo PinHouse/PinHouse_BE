@@ -34,6 +34,7 @@ public class RequestMatcherHolder {
             // auth
             new RequestInfo(DELETE, "/v1/auth", Role.USER),     /// 로그아웃
             new RequestInfo(PUT, "/v1/auth", null),     /// 재발급
+            new RequestInfo(GET, "/v1/auth", null),     /// 토큰 여부 체크
 
             // users
             new RequestInfo(DELETE, "/v1/users", Role.USER),     /// 회원탈퇴

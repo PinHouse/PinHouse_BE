@@ -54,6 +54,24 @@ public class AuthService implements AuthUseCase {
         jwtValidator.removeRefreshToken(user.getId(), refreshToken.get());
     }
 
+    /// 토큰 여부 및 검증성 체크
+    @Override
+    public boolean checkToken(Optional<String> optionalAccessToken) {
+
+        /// 토큰이 없으면 false 반환
+        if (optionalAccessToken.isEmpty()) {
+            return false;
+        }
+
+        // 토큰이 있다면 검증 시도
+        String jwtToken = optionalAccessToken.get();
+        jwtValidator.validateAccessToken(jwtToken);
+
+        /// 검증 성공 시 true 반환
+        return true;
+    }
+
+
     /// 토큰 재발급
     @Override
     @Transactional

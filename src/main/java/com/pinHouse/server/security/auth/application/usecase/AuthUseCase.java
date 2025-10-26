@@ -13,4 +13,7 @@ public interface AuthUseCase {
     /// 로그아웃 진행하기
     void logout(UUID userId, Optional<String> refreshToken);
 
+    /// 토큰 여부 판단하기
+    boolean checkToken(Optional<String> accessToken);
+
 }
