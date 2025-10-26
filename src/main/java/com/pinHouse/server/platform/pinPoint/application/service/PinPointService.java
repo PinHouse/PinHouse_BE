@@ -2,7 +2,6 @@ package com.pinHouse.server.platform.pinPoint.application.service;
 
 import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
