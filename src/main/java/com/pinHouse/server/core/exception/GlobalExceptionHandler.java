@@ -1,5 +1,6 @@
 package com.pinHouse.server.core.exception;
 
+import com.mongodb.MongoCommandException;
 import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.CustomException;
@@ -12,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,6 +101,23 @@ public class GlobalExceptionHandler {
 
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.INTERNAL_REDIS_SERVER_ERROR;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+
+    /// 몽고디비 에러 처리 핸들러
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler({UncategorizedMongoDbException.class, MongoCommandException.class})
+    public ApiResponse<?> handleMongoException(UncategorizedMongoDbException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_MONGO_SERVER_ERROR;
         CustomException exception = new CustomException(errorCode);
 
         /// 응답
