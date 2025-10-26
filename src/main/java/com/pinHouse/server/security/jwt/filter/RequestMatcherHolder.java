@@ -47,7 +47,16 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/api/v1/oauth2/**", null),
 
             // notice
+            new RequestInfo(GET, "/v1/notices/likes", Role.USER),
             new RequestInfo(GET, "/v1/notices/**", null),
+
+            // complex
+            new RequestInfo(GET, "/v1/complexes/likes", Role.USER),
+            new RequestInfo(GET, "/v1/complexes/**", null),
+
+            // like
+            new RequestInfo(POST, "/v1/likes/**", Role.USER),
+            new RequestInfo(DELETE, "/v1/likes/**", Role.USER),
 
             // infra
             new RequestInfo(GET, "/v1/complexes/infra/**", null),

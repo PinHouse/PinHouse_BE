@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UnitType {
 
+    @Field("typeId")
+    private String typeId;
+
     @Field("typeCode")
     private String typeCode;
 
@@ -28,6 +31,7 @@ public class UnitType {
     /// 빌더 생성자
     @Builder
     public UnitType(String typeId, String typeCode, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota) {
+        this.typeId = typeId;
         this.typeCode = typeCode;
         this.exclusiveAreaM2 = exclusiveAreaM2;
         this.monthlyRent = monthlyRent;

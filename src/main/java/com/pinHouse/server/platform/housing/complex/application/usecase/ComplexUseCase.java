@@ -5,11 +5,12 @@ import com.pinHouse.server.platform.housing.complex.application.dto.response.Dis
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
-import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
+import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
 
 public interface ComplexUseCase {
 
@@ -29,7 +30,9 @@ public interface ComplexUseCase {
     /// 거리 시뮬레이터 전부 조회
     PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
 
-    /// 비교 기능
+    /// 나의 좋아요 방 목록 조회
+    List<UnityTypeLikeResponse> getComplexesLikes(UUID userId);
+
 
     // =================
     //  외부 로직
@@ -43,9 +46,6 @@ public interface ComplexUseCase {
 
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
-
-    /// 한번에 조회하기
-    List<UnitType> loadRooms(List<String> roomIds);
 
     /// 필터링
     List<ComplexDocument> filterComplexes(FastSearchRequest request);
