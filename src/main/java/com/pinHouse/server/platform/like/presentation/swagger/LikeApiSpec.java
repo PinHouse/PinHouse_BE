@@ -55,7 +55,7 @@ public interface LikeApiSpec {
     /// 방 좋아요 예시
     String COMPLEX_EXAMPLE = """
             {
-              "targetId": "18442#221A",
+              "targetId": "68f65b276cd8c3eaf57c4658",
               "type": "ROOM"
             }
             """;

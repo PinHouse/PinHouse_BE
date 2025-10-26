@@ -44,7 +44,7 @@ public class LikeCommandService implements LikeCommandUseCase {
         /// 대상 존재 검증
         switch (request.type()) {
             case NOTICE -> noticeService.loadNotice(request.targetId());
-            case ROOM -> complexService.loadComplex(request.targetId());
+            case ROOM -> complexService.loadComplexByUnitTypeId(request.targetId());
             default -> throw new CustomException(LikeErrorCode.BAD_REQUEST_LIKE);
 
         }

@@ -239,6 +239,20 @@ public class ComplexService implements ComplexUseCase {
                 .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexDocument loadComplexByUnitTypeId(String typeId) {
+
+        List<ComplexDocument> results = loadRooms(List.of(typeId));
+
+        if (results.isEmpty()) {
+            throw new CustomException(ComplexErrorCode.NOT_FOUND_UNITTYPE);
+        }
+
+        return results.getFirst(); // 또는 results.get(0)
+    }
+
+
     /// 목록 조회
     @Override
     @Transactional

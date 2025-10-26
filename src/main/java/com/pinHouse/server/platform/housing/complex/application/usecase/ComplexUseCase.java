@@ -41,6 +41,8 @@ public interface ComplexUseCase {
     /// 상세 조회
     ComplexDocument loadComplex(String id);
 
+    ComplexDocument loadComplexByUnitTypeId(String typeId);
+
     /// 전체 목록 조회
     List<ComplexDocument> loadComplexes();
 

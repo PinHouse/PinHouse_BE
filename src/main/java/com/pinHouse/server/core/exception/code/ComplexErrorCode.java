@@ -25,7 +25,8 @@ public enum ComplexErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
-    NOT_FOUND_COMPLEX(404_009, HttpStatus.NOT_FOUND, "해당 임대주택을 찾을 수 없습니다"),
+    NOT_FOUND_COMPLEX(404_001, HttpStatus.NOT_FOUND, "해당 임대주택을 찾을 수 없습니다"),
+    NOT_FOUND_UNITTYPE(404_002, HttpStatus.NOT_FOUND, "해당 방을 찾을 수 없습니다"),
 
     // ========================
     // 500 Server Error
