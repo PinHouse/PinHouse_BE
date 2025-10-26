@@ -13,6 +13,7 @@ public enum ComplexErrorCode implements ErrorCode {
     // 400 Bad Request
     // ========================
     BAD_REQUEST_DISTANCE(400_000, HttpStatus.BAD_REQUEST, "입력 좌표에서 인코딩 문제가 생겼습니다"),
+    BAD_REQUEST_DEPOSIT(400_001, HttpStatus.BAD_REQUEST, "입력 유형의 공급 정보가 없습니다."),
 
     // ========================
     // 401 Unauthorized
