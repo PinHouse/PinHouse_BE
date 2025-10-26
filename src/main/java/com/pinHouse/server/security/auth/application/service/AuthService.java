@@ -89,9 +89,14 @@ public class AuthService implements AuthUseCase {
         /// 인증된 유저에게 JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);
 
-        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        /// 기존 리프레쉬 토큰 무효화하기 (RDB)
+        jwtValidator.removeRefreshToken(user.getId(), token.getRefreshToken());
 
-        return JwtTokenResponse.of(newAccessToken, null);
+        /// 새로운 액세스토큰/리프레쉬 토큰 발급
+        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        String newRefreshToken = jwtProvider.createRefreshToken(jwtRequest);
+
+        return JwtTokenResponse.of(newAccessToken, newRefreshToken);
     }
 
 }
