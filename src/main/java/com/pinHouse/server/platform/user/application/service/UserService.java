@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.user.application.service;
 import com.pinHouse.server.core.exception.code.UserErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointJpaRepository;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
@@ -37,6 +38,9 @@ public class UserService implements UserUseCase {
     /// 레디스
     private final RedisTemplate<String, Object> redisTemplate;
     private final JwtProvider jwtProvider;
+
+    /// 삭제할 때
+    private final PinPointJpaRepository pinPointRepository;
 
     // =================
     //  퍼블릭 로직
@@ -110,6 +114,9 @@ public class UserService implements UserUseCase {
     @Override
     @Transactional
     public void deleteUser(UUID userId) {
+
+        /// 핀포인트 DB에서 삭제
+        pinPointRepository.deleteByUser_Id(userId);
 
         /// DB에서 삭제
         repository.deleteById(userId);

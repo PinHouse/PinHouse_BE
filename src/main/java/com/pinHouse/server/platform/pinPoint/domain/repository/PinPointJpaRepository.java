@@ -19,4 +19,5 @@ public interface PinPointJpaRepository extends JpaRepository<PinPoint, Long> {
     /// 아이디와 유저ID에 따른 존재 여부 조회
     boolean existsByIdAndUser(Long id, User user);
 
+    void deleteByUser_Id(UUID userId);
 }
