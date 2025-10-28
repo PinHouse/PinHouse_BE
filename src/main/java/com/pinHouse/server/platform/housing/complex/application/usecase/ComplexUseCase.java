@@ -53,7 +53,8 @@ public interface ComplexUseCase {
     List<ComplexDocument> loadComplexes(String noticeId);
 
     /// 필터링
-    List<ComplexDocument> filterComplexes(FastSearchRequest request);
+    List<ComplexDocument> filterComplexes(List<ComplexDocument> filter, FastSearchRequest request);
+
 
 
 }

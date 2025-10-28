@@ -11,11 +11,14 @@ public record FastSearchResponse(
         @Schema(description = "임대주택 아이디", example = "2023년 가을 분양")
         String complexId,
 
-        @Schema(description = "공고 ID", example = "N20231011-001")
-        String noticeId,
-
         @Schema(description = "임대주택 이름", example = "서울힐스테이트")
         String complexName,
+
+        @Schema(description = "임대주택 형", example = "26A")
+        String typeCode,
+
+        @Schema(description = "모집호수", example = "3")
+        Integer quota,
 
         @Schema(description = "전용면적", example = "84.2")
         double exclusiveAreaM2,
@@ -33,10 +36,8 @@ public record FastSearchResponse(
         /// 정적 팩토리 메서드
         public static FastSearchResponse from(ComplexDocument complex, double avgAreaM2, long avgDeposit, int avgMonth, double averageTime) {
 
-
-                return com.pinHouse.server.platform.search.application.dto.FastSearchResponse.builder()
+                return FastSearchResponse.builder()
                         .complexId(complex.getComplexKey())
-                        .noticeId(complex.getNoticeId())
                         .complexName(complex.getName())
                         .exclusiveAreaM2(avgAreaM2)
                         .deposit(avgDeposit)
