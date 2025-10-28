@@ -260,6 +260,12 @@ public class ComplexService implements ComplexUseCase {
         return repository.findAll();
     }
 
+    /// 목록 조회
+    @Override
+    public List<ComplexDocument> loadComplexes(List<String> ids) {
+        return repository.findByComplexKeyIsIn(ids);
+    }
+
     /// 공고 기반 목록 조회
     @Override
     @Transactional

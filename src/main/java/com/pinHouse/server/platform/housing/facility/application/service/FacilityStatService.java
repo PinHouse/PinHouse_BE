@@ -10,13 +10,14 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -31,6 +32,18 @@ public class FacilityStatService {
     private static final double RADIUS_M  = RADIUS_KM * 1000.0;
     private static final Duration TTL = Duration.ofDays(7);
 
+    /// 특정 인프라가 존재하는 내용 가져오기
+    public List<FacilityStatDocument> findByAllTypesOver(Collection<FacilityType> types, int min) {
+        List<Criteria> ands = types.stream()
+                .map(t -> Criteria.where("counts." + t.name()).gte(min))
+                .toList();
+
+        Query q = new Query(new Criteria().andOperator(ands.toArray(new Criteria[0])));
+        return mongoTemplate.find(q, FacilityStatDocument.class);
+    }
+
+
+    /// 계산하기
     public Map<FacilityType, Integer> getCountsOrRecompute(String complexId, double lng, double lat) {
         FacilityStatDocument existing = countsRepo.findById(complexId)
                 .orElse(null);

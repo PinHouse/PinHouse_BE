@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.facility.application.service;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import lombok.RequiredArgsConstructor;
@@ -47,20 +48,17 @@ public class FacilityService implements FacilityUseCase {
     /// 특정 인프라가 많은 곳 조회
     @Override
     public List<ComplexDocument> getComplexes(List<FacilityType> facilityTypes) {
-//        List<ComplexDocument> documents = complexService.loadComplexes();
-//
-//        return documents.stream()
-//                .filter(doc -> {
-//                    double lng = doc.getLocation().getLongitude();
-//                    double lat = doc.getLocation().getLatitude();
-//
-//                    return facilityTypes.stream().allMatch(type -> {
-//                        long count = registry.get(type).countByLocation(lng, lat, RADIUS_IN_RAD);
-//                        return count >= 1;
-//                    });
-//                })
-//                .toList();
-        return null;
+
+        /// 도메인 조회
+        List<FacilityStatDocument> types = statsService.findByAllTypesOver(facilityTypes, 3);
+
+        /// 임대주택 아이디 모음
+        List<String> complexIds = types.stream()
+                .map(FacilityStatDocument::getId)
+                .toList();
+
+        /// 임대주택 체크
+        return complexService.loadComplexes(complexIds);
     }
 
     // =================

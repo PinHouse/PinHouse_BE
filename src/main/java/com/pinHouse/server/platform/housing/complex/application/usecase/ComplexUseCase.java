@@ -46,6 +46,9 @@ public interface ComplexUseCase {
     /// 전체 목록 조회
     List<ComplexDocument> loadComplexes();
 
+    /// 아이디 기반 조회
+    List<ComplexDocument> loadComplexes(List<String> ids);
+
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
 
