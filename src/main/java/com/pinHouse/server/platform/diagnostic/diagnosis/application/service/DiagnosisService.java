@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.application.service;
 
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
@@ -14,7 +13,6 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
