@@ -13,6 +13,7 @@ import com.pinHouse.server.platform.housing.complex.application.util.DistanceUti
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.util.TransitResponseMapper;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.entity.Deposit;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
@@ -259,6 +260,12 @@ public class ComplexService implements ComplexUseCase {
         return repository.findAll();
     }
 
+    /// 목록 조회
+    @Override
+    public List<ComplexDocument> loadComplexes(List<String> ids) {
+        return repository.findByComplexKeyIsIn(ids);
+    }
+
     /// 공고 기반 목록 조회
     @Override
     @Transactional
@@ -267,21 +274,32 @@ public class ComplexService implements ComplexUseCase {
     }
 
 
-
-
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<ComplexDocument> filterComplexes(FastSearchRequest request) {
-        /// 모든 단지 로드
-        final List<ComplexDocument> all = repository.findAll();
+    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request) {
+        double minSize = request.minSize();
+        double maxSize = request.maxSize();
+        long   minDep  = request.minPrice();
+        long   maxDep  = request.maxPrice();
 
-        /// 각 단지의 unitTypes를 필터링 → 남는 unitType이 있으면 그 단지를 결과에 포함
-        return all.stream()
-                .map(complex -> filterUnitTypesByRequest(complex, request))
-                .filter(Objects::nonNull)
+        if (minSize > maxSize) { double t = minSize; minSize = maxSize; maxSize = t; }
+        if (minDep  > maxDep ) { long   t = minDep;  minDep  = maxDep;  maxDep  = t; }
+
+        // 여기가 핵심 (람다 안에서 쓸 final 변수)
+        final double fMinSize = minSize;
+        final double fMaxSize = maxSize;
+        final long   fMinDep  = minDep;
+        final long   fMaxDep  = maxDep;
+
+        return filter.stream()
+                .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
+                .flatMap(c -> c.getUnitTypes().stream())
+                .filter(u -> matchesUnitType(u, fMinSize, fMaxSize, fMinDep, fMaxDep))
                 .toList();
     }
+
+
 
     // =================
     //  내부 로직
@@ -350,6 +368,22 @@ public class ComplexService implements ComplexUseCase {
 
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
         return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
+    }
+
+    /// UnitType이 요청 범위를 만족하는지
+    private boolean matchesUnitType(UnitType u, double minSize, double maxSize, long minDeposit, long maxDeposit) {
+        if (u == null) return false;
+
+        // 면적
+        double area = u.getExclusiveAreaM2();
+        if (Double.isNaN(area)) return false;
+        if (area < minSize || area > maxSize) return false;
+
+        // 보증금(Deposit.total 기준, null 안전)
+        Deposit d = u.getDeposit();
+        if (d == null) return false;
+        long total = d.getTotal();
+        return total >= minDeposit && total <= maxDeposit;
     }
 
 }

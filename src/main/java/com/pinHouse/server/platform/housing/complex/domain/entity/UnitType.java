@@ -22,6 +22,9 @@ public class UnitType {
     @Field("monthlyRent")
     private int monthlyRent;
 
+    @Field("complexKey")
+    private String complexId;
+
     @Field("deposit")
     private Deposit deposit;
 
@@ -30,9 +33,10 @@ public class UnitType {
 
     /// 빌더 생성자
     @Builder
-    public UnitType(String typeId, String typeCode, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota) {
+    public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota) {
         this.typeId = typeId;
         this.typeCode = typeCode;
+        this.complexId = complexId;
         this.exclusiveAreaM2 = exclusiveAreaM2;
         this.monthlyRent = monthlyRent;
         this.deposit = deposit;

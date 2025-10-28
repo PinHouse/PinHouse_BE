@@ -5,6 +5,7 @@ import com.pinHouse.server.platform.housing.complex.application.dto.response.Dis
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
@@ -46,11 +47,14 @@ public interface ComplexUseCase {
     /// 전체 목록 조회
     List<ComplexDocument> loadComplexes();
 
+    /// 아이디 기반 조회
+    List<ComplexDocument> loadComplexes(List<String> ids);
+
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
 
     /// 필터링
-    List<ComplexDocument> filterComplexes(FastSearchRequest request);
+    List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request);
 
 
 }

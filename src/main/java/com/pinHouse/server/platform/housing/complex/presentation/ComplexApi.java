@@ -55,7 +55,7 @@ public class ComplexApi implements ComplexApiSpec {
     }
 
     /// 예산 시뮬레이터
-    @GetMapping("/{complexId}/deposit")
+    @GetMapping("/deposit/{complexId}")
     public ApiResponse<DepositResponse> deposit(
             @PathVariable String complexId,
             @RequestParam String housingType,
@@ -69,7 +69,7 @@ public class ComplexApi implements ComplexApiSpec {
     }
 
     /// 간편 대중교통 시뮬레이터
-    @GetMapping("/{complexId}/transit/easy")
+    @GetMapping("/transit/easy/{complexId}")
     public ApiResponse<DistanceResponse> distanceEasy(
             @PathVariable String complexId,
             @RequestParam Long pinPointId) throws UnsupportedEncodingException {
@@ -82,7 +82,7 @@ public class ComplexApi implements ComplexApiSpec {
     }
 
     /// 대중교통 시뮬레이터
-    @GetMapping("/{complexId}/transit/full")
+    @GetMapping("/transit/full/{complexId}")
     public ApiResponse<PathResult> distance(
             @PathVariable String complexId,
             @RequestParam Long pinPointId) throws UnsupportedEncodingException {

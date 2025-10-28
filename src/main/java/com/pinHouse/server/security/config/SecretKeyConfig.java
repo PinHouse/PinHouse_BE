@@ -19,7 +19,11 @@ public class SecretKeyConfig {
      */
     @Bean
     public SecretKey jwtSigningKey() {
+
+        ///  Base64로 인코딩되어있는 문자열을 디코딩
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
+
+        /// 디코딩한 바이트 코드들을 시크릿 키로 변환
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

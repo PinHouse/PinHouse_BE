@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.search.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
-import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,7 +29,7 @@ public interface FastSearchApiSpec {
                     )
             )
     )
-    ApiResponse<List<FastSearchResponse>> search(
+    ApiResponse<List<UnitType>> search(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody FastSearchRequest request);
 

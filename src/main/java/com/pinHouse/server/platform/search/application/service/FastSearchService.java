@@ -9,6 +9,7 @@ import com.pinHouse.server.platform.housing.complex.application.util.DistanceUti
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
+import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
@@ -39,6 +40,7 @@ public class FastSearchService implements FastSearchUseCase {
     private final ComplexUseCase complexService;
     private final UserUseCase userService;
     private final PinPointUseCase pinPointService;
+    private final FacilityUseCase facilityService;
 
     /// 외부 API 의존성
     private final DistanceUtil distanceUtil;
@@ -49,7 +51,7 @@ public class FastSearchService implements FastSearchUseCase {
 
     /// 검색
     @Override
-    public List<FastSearchResponse> search(UUID userId, FastSearchRequest request) {
+    public List<UnitType> search(UUID userId, FastSearchRequest request) {
 
         /// 유저/핀포인트 검증
         User user = userService.loadUser(userId);
@@ -61,17 +63,18 @@ public class FastSearchService implements FastSearchUseCase {
         /// 핀포인트 조회
         var pinPoint = pinPointService.loadPinPoint(request.pinPointId());
 
-        /// 단지 필터링 (없으면 바로 빈 리스트)
-        List<ComplexDocument> complexes = complexService.filterComplexes(request);
+        /// 인프라가 존재하는 친구로 조회
+        List<ComplexDocument> facilityDocuments = facilityService.getComplexes(request.facilityTypes());
 
-        if (complexes == null || complexes.isEmpty()) {
+        /// 단지 필터링
+        List<UnitType> unitTypes = complexService.filterUnitTypesOnly(facilityDocuments, request);
+
+        if (unitTypes == null || unitTypes.isEmpty()) {
             return List.of();
         }
 
         /// 변환 파이프라인
-        return complexes.stream()
-                .map(complex -> toFastSearchResponse(complex, pinPoint))
-                .toList();
+        return unitTypes;
     }
 
     /* =========================

@@ -62,10 +62,10 @@ public class PinPoint extends BaseTimeEntity {
     /// 비즈니스 로직
     public void updateName(String newName) {
 
-        if( newName != null || !newName.isEmpty()){
-            /// 값이 있을 때만 변경 가능
+        if (newName != null && !newName.isEmpty()) {
             this.name = newName;
         }
+
 
     }
 }

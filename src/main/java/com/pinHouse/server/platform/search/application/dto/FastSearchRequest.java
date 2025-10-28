@@ -22,10 +22,10 @@ public record FastSearchRequest(
         int count,
 
         @Schema(description = "방 최소 크기 (제곱미터)", example = "30.00")
-        float minSize,
+        double minSize,
 
         @Schema(description = "방 최대 크기 (제곱미터)", example = "84.6")
-        float maxSize,
+        double maxSize,
 
         @Schema(description = "보증금 최소값", example = "100000")
         int minPrice,
