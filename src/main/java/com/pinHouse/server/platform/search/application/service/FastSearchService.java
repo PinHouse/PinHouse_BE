@@ -51,7 +51,7 @@ public class FastSearchService implements FastSearchUseCase {
 
     /// 검색
     @Override
-    public List<FastSearchResponse> search(UUID userId, FastSearchRequest request) {
+    public List<UnitType> search(UUID userId, FastSearchRequest request) {
 
         /// 유저/핀포인트 검증
         User user = userService.loadUser(userId);
@@ -67,16 +67,14 @@ public class FastSearchService implements FastSearchUseCase {
         List<ComplexDocument> facilityDocuments = facilityService.getComplexes(request.facilityTypes());
 
         /// 단지 필터링
-        List<ComplexDocument> complexes = complexService.filterComplexes(facilityDocuments, request);
+        List<UnitType> unitTypes = complexService.filterUnitTypesOnly(facilityDocuments, request);
 
-        if (complexes == null || complexes.isEmpty()) {
+        if (unitTypes == null || unitTypes.isEmpty()) {
             return List.of();
         }
 
         /// 변환 파이프라인
-        return complexes.stream()
-                .map(complex -> toFastSearchResponse(complex, pinPoint))
-                .toList();
+        return unitTypes;
     }
 
     /* =========================

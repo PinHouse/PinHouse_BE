@@ -278,9 +278,7 @@ public class ComplexService implements ComplexUseCase {
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<ComplexDocument> filterComplexes(List<ComplexDocument> filter, FastSearchRequest request) {
-
-        /// 파라미터 정규화
+    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request) {
         double minSize = request.minSize();
         double maxSize = request.maxSize();
         long   minDep  = request.minPrice();
@@ -289,45 +287,20 @@ public class ComplexService implements ComplexUseCase {
         if (minSize > maxSize) { double t = minSize; minSize = maxSize; maxSize = t; }
         if (minDep  > maxDep ) { long   t = minDep;  minDep  = maxDep;  maxDep  = t; }
 
+        // 여기가 핵심 (람다 안에서 쓸 final 변수)
         final double fMinSize = minSize;
         final double fMaxSize = maxSize;
         final long   fMinDep  = minDep;
         final long   fMaxDep  = maxDep;
 
         return filter.stream()
-                .map(complex -> {
-                    List<UnitType> src = complex.getUnitTypes();
-                    if (src == null || src.isEmpty()) return null;
-
-                    List<UnitType> kept = src.stream()
-                            .filter(u -> matchesUnitType(u, fMinSize, fMaxSize, fMinDep, fMaxDep))
-                            .toList();
-
-                    if (kept.isEmpty()) return null;
-
-                    // 기존 필드 유지 + 필터된 unitTypes만 세팅
-                    return ComplexDocument.builder()
-                            .id(complex.getId())
-                            .noticeId(complex.getNoticeId())
-                            .houseSn(complex.getHouseSn())
-                            .complexKey(complex.getComplexKey())
-                            .name(complex.getName())
-                            .address(complex.getAddress())
-                            .pnu(complex.getPnu())
-                            .city(complex.getCity())
-                            .county(complex.getCounty())
-                            .heating(complex.getHeating())
-                            .totalHouseholds(complex.getTotalHouseholds())
-                            .totalSupplyInNotice(complex.getTotalSupplyInNotice())
-                            .applyStart(complex.getApplyStart())
-                            .applyEnd(complex.getApplyEnd())
-                            .location(complex.getLocation())
-                            .unitTypes(kept)
-                            .build();
-                })
-                .filter(Objects::nonNull)
+                .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
+                .flatMap(c -> c.getUnitTypes().stream())
+                .filter(u -> matchesUnitType(u, fMinSize, fMaxSize, fMinDep, fMaxDep))
                 .toList();
     }
+
+
 
     // =================
     //  내부 로직

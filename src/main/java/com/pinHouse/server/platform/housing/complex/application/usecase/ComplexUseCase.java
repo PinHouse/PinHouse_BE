@@ -5,6 +5,7 @@ import com.pinHouse.server.platform.housing.complex.application.dto.response.Dis
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
@@ -53,8 +54,7 @@ public interface ComplexUseCase {
     List<ComplexDocument> loadComplexes(String noticeId);
 
     /// 필터링
-    List<ComplexDocument> filterComplexes(List<ComplexDocument> filter, FastSearchRequest request);
-
+    List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request);
 
 
 }
