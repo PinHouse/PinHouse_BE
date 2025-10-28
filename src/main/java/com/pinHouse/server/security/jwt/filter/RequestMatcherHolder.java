@@ -3,6 +3,7 @@ package com.pinHouse.server.security.jwt.filter;
 import com.pinHouse.server.platform.user.domain.entity.Role;
 import io.micrometer.common.lang.Nullable;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -65,6 +66,8 @@ public class RequestMatcherHolder {
             // search
             new RequestInfo(GET, "/v1/search/fast", Role.USER),
 
+            // batch
+            new RequestInfo(POST, "/v1/facility/batch", null),
 
             // 진단 관련
             new RequestInfo(POST, "/api/v1/diagnosis/**", Role.USER),
