@@ -2,7 +2,6 @@ package com.pinHouse.server.security.jwt.application.util;
 
 import com.pinHouse.server.core.exception.code.SecurityErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
@@ -17,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.pinHouse.server.core.util.KeyUtil.ID_CLAIM;
@@ -98,7 +96,7 @@ public class JwtValidator {
 
             /// 유저 예외처리
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchElementException(SecurityErrorCode.REFRESH_TOKEN_NOT_USER.getMessage()));
+                    .orElseThrow(() -> new CustomException(SecurityErrorCode.REFRESH_TOKEN_NOT_USER));
 
             /// 리턴
             return repository.findByUserIdAndRefreshToken(user.getId(), refreshToken)
