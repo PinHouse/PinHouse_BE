@@ -2,7 +2,6 @@ package com.pinHouse.server.security.auth.application.service;
 
 import com.pinHouse.server.core.exception.code.SecurityErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service

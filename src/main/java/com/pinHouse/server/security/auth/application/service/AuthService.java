@@ -2,13 +2,11 @@ package com.pinHouse.server.security.auth.application.service;
 
 import com.pinHouse.server.core.exception.code.SecurityErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
-import com.pinHouse.server.security.jwt.application.exception.JwtAuthenticationException;
 import com.pinHouse.server.security.jwt.application.util.JwtProvider;
 import com.pinHouse.server.security.jwt.application.util.JwtValidator;
 import com.pinHouse.server.security.jwt.domain.entity.JwtRefreshToken;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,9 +89,14 @@ public class AuthService implements AuthUseCase {
         /// 인증된 유저에게 JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);
 
-        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        /// 기존 리프레쉬 토큰 무효화하기 (RDB)
+        jwtValidator.removeRefreshToken(user.getId(), token.getRefreshToken());
 
-        return JwtTokenResponse.of(newAccessToken, null);
+        /// 새로운 액세스토큰/리프레쉬 토큰 발급
+        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        String newRefreshToken = jwtProvider.createRefreshToken(jwtRequest);
+
+        return JwtTokenResponse.of(newAccessToken, newRefreshToken);
     }
 
 }
