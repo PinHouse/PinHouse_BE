@@ -1,13 +1,12 @@
 package com.pinHouse.server.platform.like.domain;
 
-import com.pinHouse.server.platform.user.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface LikeRepository extends JpaRepository<Like, Long> {
+public interface LikeJpaRepository extends JpaRepository<Like, Long> {
 
     /// 유저ID, 타입에 맞는 것이 있는지
     boolean existsByUserIdAndTargetIdAndType(UUID userId, String targetId, LikeType type);
@@ -19,4 +18,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     List<Like> findByUser_Id(UUID userId);
 
     List<Like> findByUser_IdAndType(UUID userId, LikeType type);
+
+    void deleteByUser_Id(UUID userId);
 }

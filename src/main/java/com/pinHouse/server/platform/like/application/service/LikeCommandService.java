@@ -2,13 +2,12 @@ package com.pinHouse.server.platform.like.application.service;
 
 import com.pinHouse.server.core.exception.code.LikeErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.like.application.dto.LikeRequest;
 import com.pinHouse.server.platform.like.application.usecase.LikeCommandUseCase;
 import com.pinHouse.server.platform.like.domain.Like;
-import com.pinHouse.server.platform.like.domain.LikeRepository;
+import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ import java.util.UUID;
 public class LikeCommandService implements LikeCommandUseCase {
 
     /// 레포지토리
-    private final LikeRepository repository;
+    private final LikeJpaRepository repository;
 
     /// 의존성
     private final UserUseCase userService;

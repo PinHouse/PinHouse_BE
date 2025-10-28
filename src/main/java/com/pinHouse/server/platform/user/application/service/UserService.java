@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.user.application.service;
 import com.pinHouse.server.core.exception.code.UserErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
 import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointJpaRepository;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
@@ -41,6 +42,7 @@ public class UserService implements UserUseCase {
 
     /// 삭제할 때
     private final PinPointJpaRepository pinPointRepository;
+    private final LikeJpaRepository likeRepository;
 
     // =================
     //  퍼블릭 로직
@@ -117,6 +119,9 @@ public class UserService implements UserUseCase {
 
         /// 핀포인트 DB에서 삭제
         pinPointRepository.deleteByUser_Id(userId);
+
+        /// 좋아요 삭제
+        likeRepository.deleteByUser_Id(userId);
 
         /// DB에서 삭제
         repository.deleteById(userId);

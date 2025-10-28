@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.like.application.service;
 
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.like.domain.Like;
-import com.pinHouse.server.platform.like.domain.LikeRepository;
+import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
 import com.pinHouse.server.platform.like.domain.LikeType;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.User;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LikeQueryService implements LikeQueryUseCase {
 
-    private final LikeRepository repository;
+    private final LikeJpaRepository repository;
     private final UserUseCase userService;
 
     /// 나의 좋아요 공고 목록 Id 조회
