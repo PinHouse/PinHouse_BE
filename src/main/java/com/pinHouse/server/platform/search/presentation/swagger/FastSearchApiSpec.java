@@ -46,7 +46,7 @@ public interface FastSearchApiSpec {
                 "maxSize": 84.2,
                 "minPrice": 300000,
                 "maxPrice": 5000000,
-                "pinPointId": 1,
+                "pinPointId": "4dff2ba3-3232-4674-bddd-803ca06429ff",
                 "transitTime": 120,
                 "facilities": [
                   "도서관"
