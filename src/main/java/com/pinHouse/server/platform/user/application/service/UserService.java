@@ -4,7 +4,7 @@ import com.pinHouse.server.core.exception.code.UserErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
-import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointJpaRepository;
+import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
@@ -41,7 +41,7 @@ public class UserService implements UserUseCase {
     private final JwtProvider jwtProvider;
 
     /// 삭제할 때
-    private final PinPointJpaRepository pinPointRepository;
+    private final PinPointMongoRepository pinPointRepository;
     private final LikeJpaRepository likeRepository;
 
     // =================
@@ -118,7 +118,7 @@ public class UserService implements UserUseCase {
     public void deleteUser(UUID userId) {
 
         /// 핀포인트 DB에서 삭제
-        pinPointRepository.deleteByUser_Id(userId);
+        pinPointRepository.deleteByUserId(userId.toString());
 
         /// 좋아요 삭제
         likeRepository.deleteByUser_Id(userId);

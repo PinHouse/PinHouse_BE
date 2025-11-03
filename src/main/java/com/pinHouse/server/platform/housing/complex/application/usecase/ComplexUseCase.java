@@ -26,10 +26,10 @@ public interface ComplexUseCase {
     DepositResponse getLeaseByPercent(String id, String type, double percentage);
 
     /// 거리 시뮬레이터 간편 조회
-    DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
+    DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
     /// 거리 시뮬레이터 전부 조회
-    PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException;
+    PathResult getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
     /// 나의 좋아요 방 목록 조회
     List<UnityTypeLikeResponse> getComplexesLikes(UUID userId);

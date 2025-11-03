@@ -72,7 +72,7 @@ public class ComplexApi implements ComplexApiSpec {
     @GetMapping("/transit/easy/{complexId}")
     public ApiResponse<DistanceResponse> distanceEasy(
             @PathVariable String complexId,
-            @RequestParam Long pinPointId) throws UnsupportedEncodingException {
+            @RequestParam String pinPointId) throws UnsupportedEncodingException {
 
         /// 서비스 호출
         var response = service.getEasyDistance(complexId, pinPointId);
@@ -85,7 +85,7 @@ public class ComplexApi implements ComplexApiSpec {
     @GetMapping("/transit/full/{complexId}")
     public ApiResponse<PathResult> distance(
             @PathVariable String complexId,
-            @RequestParam Long pinPointId) throws UnsupportedEncodingException {
+            @RequestParam String pinPointId) throws UnsupportedEncodingException {
 
         /// 서비스 호출
         var response = service.getDistance(complexId, pinPointId);

@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -168,7 +167,7 @@ public class ComplexService implements ComplexUseCase {
     /// 간편 대중교통 시뮬레이터
     @Override
     @Transactional(readOnly = true)
-    public DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -178,7 +177,8 @@ public class ComplexService implements ComplexUseCase {
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 
         /// 대중교통 목록 비교하기
-        PathResult pathResult = distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+        Location pointLocation = pinPoint.getLocation();
+        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
 
         /// 조건 바탕으로 가져오기
         RootResult rootResult = mapper.selectBest(pathResult);
@@ -194,7 +194,7 @@ public class ComplexService implements ComplexUseCase {
     /// 대중교통 시뮬레이터
     @Override
     @Transactional
-    public PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public PathResult getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -202,9 +202,9 @@ public class ComplexService implements ComplexUseCase {
 
         /// 핀포인트 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-
+        Location pointLocation = pinPoint.getLocation();
         /// 대중교통 목록 가져오기
-        return distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+        return distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
 
     }
 
@@ -301,6 +301,8 @@ public class ComplexService implements ComplexUseCase {
         long monthlyRent = u.getMonthlyRent();
         if (monthlyRent == 0) return false;
         if (monthlyRent > req.maxMonthPay()) return false;
+
+        /// 거리 체크
 
         return true;
     }

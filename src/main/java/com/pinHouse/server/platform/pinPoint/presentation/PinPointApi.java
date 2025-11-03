@@ -39,7 +39,7 @@ public class PinPointApi implements PinPointApiSpec {
     @CheckLogin
     @PatchMapping("{id}")
     public ApiResponse<Void> updatePinPoint(
-            @PathVariable Long id,
+            @PathVariable String id,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid UpdatePinPointRequest request) {
 
@@ -69,7 +69,7 @@ public class PinPointApi implements PinPointApiSpec {
     @DeleteMapping()
     @CheckLogin
     public ApiResponse<Void> deletePinPoint(
-            @RequestParam Long id,
+            @RequestParam String id,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
