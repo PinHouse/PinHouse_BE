@@ -1,7 +1,10 @@
 package com.pinHouse.server.platform.housing.notice.application.usecase;
 
+import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.SortType;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 
@@ -15,7 +18,7 @@ public interface NoticeUseCase {
     // =================
 
     /// 공고 목록 전체 조회
-    List<NoticeListResponse> getNotices();
+    SliceResponse<NoticeListResponse> getNotices(SortType sortType, SliceRequest sliceRequest);
 
     /// 공고 상세 조회
     NoticeDetailResponse getNotice(String noticeId);
