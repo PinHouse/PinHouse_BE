@@ -47,15 +47,15 @@ public interface FastSearchApiSpec {
                 "minPrice": 300000,
                 "maxPrice": 5000000,
                 "pinPointId": 1,
-                "transitTime": 30,
-                "facilityTypes": [
+                "transitTime": 120,
+                "facilities": [
                   "도서관"
                 ],
                 "supplyTypes": [
-                  "일반"
+                  "청년"
                 ],
                 "rentalTypes": [
-                  "통합공공임대"
+                  "공공임대"
                 ]
               }
             """;

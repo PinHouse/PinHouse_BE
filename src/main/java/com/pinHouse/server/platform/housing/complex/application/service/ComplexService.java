@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.Location;
@@ -264,9 +265,37 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
+    /// 거리 계산 필터링
+    @Override
+    public List<ComplexDocument> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req) {
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(req.pinPointId());
+        Location pointLocation = pinPoint.getLocation();
+
+        /// 핀 포인트와 거리 계산하기
+        if (req.transitTime() <= 0) {
+            throw new CustomException(CommonErrorCode.BAD_PARAMETER);
+        }
+
+        // 평균 속도 (15.0)
+        double avgSpeedKmh = 15.0;
+
+        // 대중교통 소요시간 (분)
+        double transitTimeMin = req.transitTime();
+
+        // km 단위 거리 계산
+        double distanceKm = (avgSpeedKmh * transitTimeMin) / 60.0;
+
+        // 지구 반지름(km)으로 나눔
+        double radiusInRadians = distanceKm / 6378.1;
+
+        return repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
+    }
+
     /// 필터링
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest req) {
 
         /// 필터 체크

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.ErrorCode;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
@@ -18,30 +17,31 @@ import java.util.List;
 @Schema(name = "[요청][검색] 빠른 검색 요청", description = "빠른 검색 조건을 위한 요청 DTO입니다.")
 public record FastSearchRequest(
 
-        @Schema(description = "같이 살 인원", example = "3")
-        int count,
-
-        @Schema(description = "방 최소 크기 (제곱미터)", example = "30.00")
-        double minSize,
-
-        @Schema(description = "방 최대 크기 (제곱미터)", example = "84.6")
-        double maxSize,
-
-        @Schema(description = "보증금 최소값", example = "100000")
-        int minPrice,
-
-        @Schema(description = "보증금 최대값", example = "10000000")
-        int maxPrice,
 
         @Schema(description = "나의 핀 포인트 아이디", example = "1")
-        long pinPointId,
+        String pinPointId,
 
         @Schema(description = "대중교통 소요 시간(분)", example = "120")
         int transitTime,
 
+        @Schema(description = "같이 살 인원", example = "3")
+        int count,
+
+        @Schema(description = "방 최소 크기 (평)", example = "5.3")
+        double minSize,
+
+        @Schema(description = "방 최대 크기 (평)", example = "10")
+        double maxSize,
+
+        @Schema(description = "보증금 최대값", example = "50000000")
+        int maxDeposit,
+
+        @Schema(description = "월 임대료 최대값", example = "300000")
+        int maxMonthPay,
+
         @Schema(description = "원하는 인프라, 최대 3개까지 가능")
         @Size(max = 3)
-        List<FacilityType> facilityTypes,
+        List<FacilityType> facilities,
 
         @Schema(description = "모집 대상")
         List<SupplyType> supplyTypes,
@@ -50,18 +50,28 @@ public record FastSearchRequest(
         List<RentalType> rentalTypes
 ) {
 
+    /// 조건
     @RequiredArgsConstructor
     enum SupplyType {
 
-        GENERAL("일반"),
+        /// 청년층
         YOUTH_SPECIAL("청년"),
         STUDENT_SPECIAL("대학생"),
+
+        /// 가족형
         COUPLE_SPECIAL("신혼부부"),
-        ELDER_SPECIAL("고령자"),
         MULTI_CHILD_SPECIAL("다자녀"),
-        BASIC_SPECIAL("기초수급자"),
-        WEAK_SPECIAL("취약계층"),
-        NO_OWN_SPECIAL("무주택자");
+
+        /// 주거약자
+        ELDER_SPECIAL("고령자"),
+        DISABLED_SPECIAL("장애인"),
+        SINGLE_PARENT_SPECIAL("한부모"),
+        VETERAN_SPECIAL("국가유공자"),
+        LOW_INCOME_SPECIAL("저소득층"),
+
+        /// 주택보유상태
+        NO_OWN_SPECIAL("무주택자"),
+        OWN_SPECIAL("유주택자");
 
         private final String value;
 
@@ -84,14 +94,14 @@ public record FastSearchRequest(
         }
     }
 
+    /// 임대 유형
     @RequiredArgsConstructor
     enum RentalType {
 
-        PUBLIC_INTEGRATED("통합공공임대"),
         PUBLIC_RENTAL("공공임대"),
-        NATIONAL_RENTAL("국민임대"),
+        PRIVATE_RENTAL("민간임대"),
         HAPPY_HOUSING("행복주택"),
-        PRIVATE_RENTAL("민간임대");
+        JEONSE_RENTAL("전세형 임대");
 
         private final String value;
 

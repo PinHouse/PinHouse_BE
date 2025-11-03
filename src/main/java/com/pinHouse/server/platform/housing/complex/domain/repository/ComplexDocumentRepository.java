@@ -20,4 +20,8 @@ public interface ComplexDocumentRepository extends MongoRepository<ComplexDocume
 
     /// 존재하는 모음
     List<ComplexDocument> findByComplexKeyIsIn(List<String> complexKeys);
+
+    @Query("{ 'location' : { $geoWithin : { $centerSphere: [ [?0, ?1], ?2 ] } } }")
+    List<ComplexDocument> findByLocation(double lng, double lat, double radiusInRadians);
+
 }

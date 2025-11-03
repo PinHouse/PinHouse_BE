@@ -50,6 +50,9 @@ public interface ComplexUseCase {
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
 
+    /// 거리 계산 필터링
+    List<ComplexDocument> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req);
+
     /// 필터링
     List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request);
 
