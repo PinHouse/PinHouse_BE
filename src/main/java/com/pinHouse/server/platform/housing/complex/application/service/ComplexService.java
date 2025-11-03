@@ -298,11 +298,19 @@ public class ComplexService implements ComplexUseCase {
     @Transactional
     public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest req) {
 
+        /// 평을 면적으로
+        final double minM2 = toM2(req.minSize());
+        final double maxM2 = toM2(req.maxSize());
+
+        /// 금액
+        final long   maxDeposit    = req.maxDeposit();
+        final long   maxMonthlyPay = req.maxMonthPay();
+
         /// 필터 체크
         return filter.stream()
                 .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
                 .flatMap(c -> c.getUnitTypes().stream())
-                .filter(u -> matchesUnitType(u, req))
+                .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
                 .toList();
     }
 
@@ -310,28 +318,38 @@ public class ComplexService implements ComplexUseCase {
     // =================
     //  내부 로직
     // =================
-    /// 전용면적/보증금/월임대료 필터 함수
-    private boolean matchesUnitType(UnitType u, FastSearchRequest req) {
+    private static final double PYEONG_TO_M2 = 3.305785;
+
+    /** 평 → m² 변환 */
+    private double toM2(double pyeong) {
+        if (Double.isNaN(pyeong) || pyeong <= 0) return 0d;
+        return pyeong * PYEONG_TO_M2;
+    }
+
+    /** 전용면적(m²)/보증금/월임대료 필터 함수 */
+    private boolean matchesUnitType(UnitType u,
+                                    double minM2,
+                                    double maxM2,
+                                    long maxDeposit,
+                                    long maxMonthlyPay) {
         if (u == null) return false;
 
-        /// 면적 체크
-        double area = u.getExclusiveAreaM2();
-        if (Double.isNaN(area)) return false;
-        if (area < req.minSize() || area > req.maxSize()) return false;
+        // 전용면적(m²) 체크
+        double areaM2 = u.getExclusiveAreaM2();
+        if (Double.isNaN(areaM2)) return false;
+        if (areaM2 < minM2 || areaM2 > maxM2) return false;
 
-        /// 보증금 체크
+        // 보증금 체크
         Deposit d = u.getDeposit();
         if (d == null) return false;
-        long total = d.getTotal();
-        if (total == 0) return false;
-        if (total > req.maxDeposit()) return false;
+        long depositTotal = d.getTotal();
+        if (depositTotal <= 0) return false;
+        if (depositTotal > maxDeposit) return false;
 
-        /// 월 임대료 체크
+        // 월 임대료 체크
         long monthlyRent = u.getMonthlyRent();
-        if (monthlyRent == 0) return false;
-        if (monthlyRent > req.maxMonthPay()) return false;
-
-        /// 거리 체크
+        if (monthlyRent <= 0) return false;
+        if (monthlyRent > maxMonthlyPay) return false;
 
         return true;
     }

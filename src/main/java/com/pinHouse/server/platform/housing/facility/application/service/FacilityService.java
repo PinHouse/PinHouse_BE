@@ -6,6 +6,7 @@ import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacil
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,33 @@ public class FacilityService implements FacilityUseCase {
     }
 
     // =================
-    //  내부 함수
+    //  외부 함수
     // =================
+    /// 특정 인프라가 많은 곳 조회
+    @Override
+    public List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments, List<FacilityType> facilityTypes) {
+
+        /// 공고 ID 추출
+        List<String> noticeIds = noticeDocuments.stream()
+                .map(NoticeDocument::getNoticeId)
+                .toList();
+
+        /// 시설 통계 조회 (예: 주변 3개 이상)
+        List<FacilityStatDocument> types = statsService.findByAllTypesOver(facilityTypes, 3);
+
+        /// 시설 통계 → 단지 ID 리스트 추출
+        List<String> complexIds = types.stream()
+                .map(FacilityStatDocument::getId)
+                .toList();
+
+        /// 단지 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(complexIds);
+
+        /// noticeId가 일치하는 단지만 필터링
+        return complexes.stream()
+                .filter(c -> noticeIds.contains(c.getNoticeId()))
+                .toList();
+    }
+
 
 }

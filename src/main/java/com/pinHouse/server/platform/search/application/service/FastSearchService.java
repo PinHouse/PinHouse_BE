@@ -6,6 +6,8 @@ import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexU
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
+import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.application.usecase.FastSearchUseCase;
@@ -33,6 +35,7 @@ public class FastSearchService implements FastSearchUseCase {
     private final UserUseCase userService;
     private final PinPointUseCase pinPointService;
     private final FacilityUseCase facilityService;
+    private final NoticeUseCase noticeService;
 
     // =================
     //  퍼블릭 로직
@@ -51,19 +54,24 @@ public class FastSearchService implements FastSearchUseCase {
             throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
         }
 
+        /// 공고 타입부터 분류하기
+        List<NoticeDocument> notices = noticeService.filterNotices(request);
+
         /// 해당하는 인프라가 존재하는 친구로 조회
-        List<ComplexDocument> facilityDocuments = facilityService.getComplexes(request.facilities());
+        List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, request.facilities());
 
         /// 거리 필터링
         List<ComplexDocument> documents = complexService.filterDistanceOnly(facilityDocuments, request);
 
-        log.info(documents.getFirst().getComplexKey());
-
         /// 전용면적/보증금/월임대료 필터링
         List<UnitType> unitTypes = complexService.filterUnitTypesOnly(documents, request);
 
+        unitTypes.forEach(unitType -> {
+            log.info(unitType.getComplexId());
+        });
+
         /// 없다면 빈 리스트 제공
-        if (unitTypes == null || unitTypes.isEmpty()) {
+        if (unitTypes.isEmpty()) {
             return List.of();
         }
 

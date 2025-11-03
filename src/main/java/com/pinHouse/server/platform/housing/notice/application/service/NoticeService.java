@@ -23,7 +23,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -111,15 +113,22 @@ public class NoticeService implements NoticeUseCase {
                 .orElseThrow(() -> new CustomException(NoticeErrorCode.NOT_FOUND_NOTICE));
     }
 
-    @Override
-    @Transactional
-    public List<NoticeDocument> loadAllNotices() {
-        return repository.findAll();
-    }
-
+    /// 타입에 따라서 필터링 하기
     @Override
     public List<NoticeDocument> filterNotices(FastSearchRequest request) {
-        return List.of();
+
+        /// 공급 유형 가져오기
+        List<FastSearchRequest.SupplyType> supplyTypes = request.supplyTypes();
+
+        /// 선택된 모든 포함유형 문자열 리스트로 변환
+        Set<String> includedSubTypes = supplyTypes.stream()
+                .flatMap(rt -> rt.getIncludedTypes().stream())
+                .collect(Collectors.toSet());
+
+        return repository.findAll().stream()
+                .filter(n -> n.getHouseType() != null)
+                .filter(n -> includedSubTypes.contains(n.getSupplyType()))
+                .collect(Collectors.toList());
     }
 
     // =================

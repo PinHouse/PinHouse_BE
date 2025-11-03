@@ -33,9 +33,6 @@ public interface NoticeUseCase {
     /// 상세 조회
     NoticeDocument loadNotice(String id);
 
-    /// 모든 공고 가져오기
-    List<NoticeDocument> loadAllNotices();
-
     /// 필터링을 위한 함수
     List<NoticeDocument> filterNotices(FastSearchRequest request);
 
