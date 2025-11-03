@@ -2,8 +2,6 @@ package com.pinHouse.server.platform.housing.complex.application.service;
 
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.pageable.SliceRequest;
-import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -239,28 +236,22 @@ public class ComplexService implements ComplexUseCase {
                 .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
 
+    /// 방 아이디로 조회하기
     @Override
     @Transactional(readOnly = true)
     public ComplexDocument loadComplexByUnitTypeId(String typeId) {
 
+        /// ID 목록으로 방 조회하기
         List<ComplexDocument> results = loadRooms(List.of(typeId));
 
         if (results.isEmpty()) {
             throw new CustomException(ComplexErrorCode.NOT_FOUND_UNITTYPE);
         }
 
-        return results.getFirst(); // 또는 results.get(0)
+        return results.getFirst();
     }
 
-
-    /// 목록 조회
-    @Override
-    @Transactional
-    public List<ComplexDocument> loadComplexes() {
-        return repository.findAll();
-    }
-
-    /// 목록 조회
+    /// 아이디 목록 기반 조회
     @Override
     public List<ComplexDocument> loadComplexes(List<String> ids) {
         return repository.findByComplexKeyIsIn(ids);
@@ -273,88 +264,45 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
-
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request) {
-        double minSize = request.minSize();
-        double maxSize = request.maxSize();
-        long   minDep  = request.minPrice();
-        long   maxDep  = request.maxPrice();
+    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest req) {
 
-        if (minSize > maxSize) { double t = minSize; minSize = maxSize; maxSize = t; }
-        if (minDep  > maxDep ) { long   t = minDep;  minDep  = maxDep;  maxDep  = t; }
-
-        // 여기가 핵심 (람다 안에서 쓸 final 변수)
-        final double fMinSize = minSize;
-        final double fMaxSize = maxSize;
-        final long   fMinDep  = minDep;
-        final long   fMaxDep  = maxDep;
-
+        /// 필터 체크
         return filter.stream()
                 .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
                 .flatMap(c -> c.getUnitTypes().stream())
-                .filter(u -> matchesUnitType(u, fMinSize, fMaxSize, fMinDep, fMaxDep))
+                .filter(u -> matchesUnitType(u, req))
                 .toList();
     }
-
 
 
     // =================
     //  내부 로직
     // =================
-    /// 필터링하는 로직
-    private ComplexDocument filterUnitTypesByRequest(ComplexDocument complex, FastSearchRequest req) {
-        if (complex.getUnitTypes() == null || complex.getUnitTypes().isEmpty()) {
-            return null;
-        }
+    /// 전용면적/보증금/월임대료 필터 함수
+    private boolean matchesUnitType(UnitType u, FastSearchRequest req) {
+        if (u == null) return false;
 
-        final double minSize = req.minSize();   /// 사이즈
-        final double maxSize = req.maxSize();   /// 사이즈
-        final long minDeposit = req.minPrice(); /// “보증금 최소값”
-        final long maxDeposit = req.maxPrice(); /// “보증금 최대값”
+        /// 면적 체크
+        double area = u.getExclusiveAreaM2();
+        if (Double.isNaN(area)) return false;
+        if (area < req.minSize() || area > req.maxSize()) return false;
 
-        // unit 단위 필터
-        List<UnitType> matchedUnits = complex.getUnitTypes().stream()
-                .filter(ut -> {
-                    // 면적 체크
-                    double area = ut.getExclusiveAreaM2();
-                    if (Double.isNaN(area)) return false;
-                    if (area < minSize || area > maxSize) return false;
+        /// 보증금 체크
+        Deposit d = u.getDeposit();
+        if (d == null) return false;
+        long total = d.getTotal();
+        if (total == 0) return false;
+        if (total > req.maxDeposit()) return false;
 
-                    // 보증금 체크 (Deposit.total 기준)
-                    if (ut.getDeposit() == null) return false;
-                    long total = ut.getDeposit().getTotal();
-                    if (total < minDeposit || total > maxDeposit) return false;
+        /// 월 임대료 체크
+        long monthlyRent = u.getMonthlyRent();
+        if (monthlyRent == 0) return false;
+        if (monthlyRent > req.maxMonthPay()) return false;
 
-                    return true;
-                })
-                .collect(Collectors.toList());
-
-        if (matchedUnits.isEmpty()) {
-            return null; // 이 단지는 조건에 맞는 타입이 없음
-        }
-
-        // 조건을 만족하는 unitTypes만 유지한 Complex로 재구성
-        return ComplexDocument.builder()
-                .id(complex.getId())
-                .noticeId(complex.getNoticeId())
-                .houseSn(complex.getHouseSn())
-                .complexKey(complex.getComplexKey())
-                .name(complex.getName())
-                .address(complex.getAddress())
-                .pnu(complex.getPnu())
-                .city(complex.getCity())
-                .county(complex.getCounty())
-                .heating(complex.getHeating())
-                .totalHouseholds(complex.getTotalHouseholds())
-                .totalSupplyInNotice(complex.getTotalSupplyInNotice())
-                .applyStart(complex.getApplyStart())
-                .applyEnd(complex.getApplyEnd())
-                .location(complex.getLocation())
-                .unitTypes(matchedUnits)
-                .build();
+        return true;
     }
 
     /// 유닛 해당하는 임대주택 목록 조회
@@ -370,20 +318,5 @@ public class ComplexService implements ComplexUseCase {
         return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
     }
 
-    /// UnitType이 요청 범위를 만족하는지
-    private boolean matchesUnitType(UnitType u, double minSize, double maxSize, long minDeposit, long maxDeposit) {
-        if (u == null) return false;
-
-        // 면적
-        double area = u.getExclusiveAreaM2();
-        if (Double.isNaN(area)) return false;
-        if (area < minSize || area > maxSize) return false;
-
-        // 보증금(Deposit.total 기준, null 안전)
-        Deposit d = u.getDeposit();
-        if (d == null) return false;
-        long total = d.getTotal();
-        return total >= minDeposit && total <= maxDeposit;
-    }
 
 }

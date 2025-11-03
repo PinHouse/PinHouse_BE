@@ -1,15 +1,12 @@
 package com.pinHouse.server.platform.housing.facility.application.service;
 
-import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
-import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -17,13 +14,13 @@ import java.util.Map;
 public class FacilityBatch {
 
     private final FacilityStatService statService;
-    private final ComplexUseCase complexService;
+    private final ComplexDocumentRepository complexRepository;
 
     /// 다 저장하는 함수
     public void getFacilities() {
 
         /// 모든 아이디 가져오기
-        List<ComplexDocument> documents = complexService.loadComplexes();
+        List<ComplexDocument> documents = complexRepository.findAll();
 
         documents.forEach(document -> {
 
