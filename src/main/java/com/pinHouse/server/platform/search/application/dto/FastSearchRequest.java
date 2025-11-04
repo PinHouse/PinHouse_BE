@@ -48,7 +48,10 @@ public record FastSearchRequest(
         List<RentalType> rentalTypes,
 
         @Schema(description = "공급 유형", example = "[\"공공임대\"]")
-        List<SupplyType> supplyTypes
+        List<SupplyType> supplyTypes,
+
+        @Schema(description = "주택 유형", example = "[\"아파트\"]")
+        List<HouseType> houseTypes
 ) {
 
     /// 조건
@@ -123,4 +126,35 @@ public record FastSearchRequest(
 
         }
     }
+
+
+    @RequiredArgsConstructor
+    @Getter
+    public enum HouseType {
+
+        APARTMENT("아파트"),
+        OFFICE("오피스텔"),
+        DORMITORY("기숙사"),
+        MULTI_FAMILY("다세대주택"),
+        ROW_HOUSE("연립주택"),
+        DETACHED_HOUSE("단독주택");
+
+        private final String value;
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static HouseType fromValue(String value) {
+            for (HouseType type : values()) {
+                if (type.value.equals(value)) {
+                    return type;
+                }
+            }
+            throw new CustomException(CommonErrorCode.BAD_PARAMETER);
+        }
+    }
+
 }

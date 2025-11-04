@@ -125,9 +125,18 @@ public class NoticeService implements NoticeUseCase {
                 .flatMap(rt -> rt.getIncludedTypes().stream())
                 .collect(Collectors.toSet());
 
+        /// 주택 유형 가져오기
+        List<FastSearchRequest.HouseType> houseTypes = request.houseTypes();
+
+        /// 선택된 모든 포함유형 문자열 리스트로 변환
+        Set<String> houseTypeIds = houseTypes.stream()
+                .map(FastSearchRequest.HouseType::getValue)
+                .collect(Collectors.toSet());
+
         return repository.findAll().stream()
                 .filter(n -> n.getHouseType() != null)
                 .filter(n -> includedSubTypes.contains(n.getSupplyType()))
+                .filter(n -> houseTypeIds.contains(n.getHouseType()))
                 .collect(Collectors.toList());
     }
 

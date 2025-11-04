@@ -54,7 +54,7 @@ public class FastSearchService implements FastSearchUseCase {
             throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
         }
 
-        /// 공고 타입부터 분류하기
+        /// 공고 타입 & 주택 유형 분류하기
         List<NoticeDocument> notices = noticeService.filterNotices(request);
 
         /// 해당하는 인프라가 존재하는 친구로 조회
@@ -65,10 +65,6 @@ public class FastSearchService implements FastSearchUseCase {
 
         /// 전용면적/보증금/월임대료 필터링
         List<UnitType> unitTypes = complexService.filterUnitTypesOnly(documents, request);
-
-        unitTypes.forEach(unitType -> {
-            log.info(unitType.getComplexId());
-        });
 
         /// 없다면 빈 리스트 제공
         if (unitTypes.isEmpty()) {
