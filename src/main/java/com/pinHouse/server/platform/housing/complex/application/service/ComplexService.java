@@ -303,22 +303,25 @@ public class ComplexService implements ComplexUseCase {
 
     /// 필터링
     @Override
-    @Transactional
-    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest req) {
+    @Transactional(readOnly = true)
+    public List<ComplexDocument> filterUnitTypesOnly(List<ComplexDocument> complexes, FastSearchRequest req) {
 
-        /// 평을 면적으로
+        // 평 → m²
         final double minM2 = toM2(req.minSize());
         final double maxM2 = toM2(req.maxSize());
 
-        /// 금액
-        final long   maxDeposit    = req.maxDeposit();
-        final long   maxMonthlyPay = req.maxMonthPay();
+        // 금액
+        final long maxDeposit    = req.maxDeposit();
+        final long maxMonthlyPay = req.maxMonthPay();
 
-        /// 필터 체크
-        return filter.stream()
-                .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
-                .flatMap(c -> c.getUnitTypes().stream())
-                .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
+        return complexes.stream()
+                .filter(c -> c != null && c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
+                // 단지 -> (조건에 맞는) 유닛들로 평탄화
+                .flatMap(c -> c.getUnitTypes().stream()
+                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
+                        // 유닛 하나만 담긴 새 ComplexDocument 생성
+                        .map(u -> new ComplexDocument(c, List.of(u)))
+                )
                 .toList();
     }
 

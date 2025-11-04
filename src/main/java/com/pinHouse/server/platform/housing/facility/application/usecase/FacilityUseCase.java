@@ -13,11 +13,16 @@ import java.util.List;
 public interface FacilityUseCase {
 
     /// 주변의 인프라 목록 조회
-    NoticeFacilityListResponse getFacilities(String complexId);
+    NoticeFacilityListResponse getNearFacilities(String complexId);
 
     /// 원하는 인프라가 많은 임대주택 목록 조회
     List<ComplexDocument> getComplexes(List<FacilityType> facilityTypes);
 
     /// 외부 필터링 함수
     List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments, List<FacilityType> facilityTypes);
+
+    /// 주변의 인프라 목록 조회
+    List<FacilityType> getFacilities(String complexId);
+
+
 }

@@ -24,7 +24,7 @@ public class FacilityApi implements FacilityApiSpec {
             @PathVariable String complexId) {
 
         /// 서비스 계층
-        var response = service.getFacilities(complexId);
+        var response = service.getNearFacilities(complexId);
 
         /// 리턴
         return ApiResponse.ok(response);

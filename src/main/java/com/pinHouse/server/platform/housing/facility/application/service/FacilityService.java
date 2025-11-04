@@ -31,7 +31,7 @@ public class FacilityService implements FacilityUseCase {
     // =================
 
     /// 주변의 인프라 목록 조회
-    public NoticeFacilityListResponse getFacilities(String complexId) {
+    public NoticeFacilityListResponse getNearFacilities(String complexId) {
 
         /// 임대주택 예외처리
         ComplexDocument notice = complexService.loadComplex(complexId);
@@ -88,6 +88,25 @@ public class FacilityService implements FacilityUseCase {
         /// noticeId가 일치하는 단지만 필터링
         return complexes.stream()
                 .filter(c -> noticeIds.contains(c.getNoticeId()))
+                .toList();
+    }
+
+
+    @Override
+    public List<FacilityType> getFacilities(String complexId) {
+        /// 임대주택 예외처리
+        ComplexDocument notice = complexService.loadComplex(complexId);
+
+        double lng = notice.getLocation().getLongitude();
+        double lat = notice.getLocation().getLatitude();
+
+        /// 인프라 개수 가져오기
+        Map<FacilityType, Integer> response = statsService.getCountsOrRecompute(complexId, lng, lat);
+
+        /// 3개 이상인 FacilityType
+        return response.entrySet().stream()
+                .filter(entry -> entry.getValue() != null && entry.getValue() >= 3)
+                .map(Map.Entry::getKey)
                 .toList();
     }
 

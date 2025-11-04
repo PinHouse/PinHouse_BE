@@ -67,26 +67,26 @@ public class ComplexDocument {
 
     /// 빌더 생성자
     @Builder
-    public ComplexDocument(String id, String noticeId, int houseSn, String complexKey, String name,
-                           Address address, String pnu, String city, String county, String heating,
-                           String totalHouseholds, int totalSupplyInNotice, String applyStart,
-                           String applyEnd, Location location, List<UnitType> unitTypes) {
-        this.id = id;
-        this.noticeId = noticeId;
-        this.houseSn = houseSn;
-        this.complexKey = complexKey;
-        this.name = name;
-        this.address = address;
-        this.pnu = pnu;
-        this.city = city;
-        this.county = county;
-        this.heating = heating;
-        this.totalHouseholds = totalHouseholds;
-        this.totalSupplyInNotice = totalSupplyInNotice;
-        this.applyStart = applyStart;
-        this.applyEnd = applyEnd;
-        this.location = location;
+    public ComplexDocument(ComplexDocument src, List<UnitType> unitTypes) {
+        this.id = src.getId();
+        this.noticeId = src.getNoticeId();
+        this.houseSn = src.getHouseSn();
+        this.complexKey = src.getComplexKey();
+        this.name = src.getName();
+        this.address = src.getAddress();
+        this.pnu = src.getPnu();
+        this.city = src.getCity();
+        this.county = src.getCounty();
+        this.heating = src.getHeating();
+        this.totalHouseholds = src.getTotalHouseholds();
+        this.totalSupplyInNotice = src.getTotalSupplyInNotice();
+        this.applyStart = src.getApplyStart();
+        this.applyEnd = src.getApplyEnd();
+        this.location = src.getLocation();
+
+        // 필터링된 리스트만 교체
         this.unitTypes = unitTypes;
     }
+
 
 }

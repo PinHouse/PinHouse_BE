@@ -1,18 +1,13 @@
 package com.pinHouse.server.platform.search.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
 
 @Tag(name = "빠른 검색 API", description = "빠른 검색을 지원하는 API 입니다.")
 public interface FastSearchApiSpec {
@@ -21,7 +16,7 @@ public interface FastSearchApiSpec {
             summary = "빠른 검색 API",
             description = "빠른 검색 API 입니다."
     )
-    ApiResponse<List<UnitType>> search(
+    ApiResponse<FastSearchResponse> search(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody FastSearchRequest request);
 

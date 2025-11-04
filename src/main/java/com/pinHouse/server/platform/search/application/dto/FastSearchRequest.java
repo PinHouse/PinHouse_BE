@@ -25,9 +25,6 @@ public record FastSearchRequest(
         @Schema(description = "대중교통 소요 시간(분)", example = "120")
         int transitTime,
 
-        @Schema(description = "같이 살 인원", example = "3")
-        int count,
-
         @Schema(description = "방 최소 크기 (평)", example = "5.3")
         double minSize,
 

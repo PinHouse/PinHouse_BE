@@ -4,12 +4,13 @@ import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.FastUnitTypeResponse;
 import com.pinHouse.server.platform.search.application.usecase.FastSearchUseCase;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.User;
@@ -43,7 +44,7 @@ public class FastSearchService implements FastSearchUseCase {
 
     /// 검색
     @Override
-    public List<UnitType> search(UUID userId, FastSearchRequest request) {
+    public FastSearchResponse search(UUID userId, FastSearchRequest request) {
 
         /// 유저/핀포인트 검증
         User user = userService.loadUser(userId);
@@ -64,15 +65,21 @@ public class FastSearchService implements FastSearchUseCase {
         List<ComplexDocument> documents = complexService.filterDistanceOnly(facilityDocuments, request);
 
         /// 전용면적/보증금/월임대료 필터링
-        List<UnitType> unitTypes = complexService.filterUnitTypesOnly(documents, request);
+        List<ComplexDocument> filtered = complexService.filterUnitTypesOnly(documents, request);
 
         /// 없다면 빈 리스트 제공
-        if (unitTypes.isEmpty()) {
-            return List.of();
+        if (filtered.isEmpty()) {
+            return null;
         }
 
+        /// DTO 변환
+        List<FastUnitTypeResponse> responses = filtered.stream()
+                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.getComplexKey()), 0))
+                .toList();
+
+
         /// DTO 변환 리턴
-        return unitTypes;
+        return FastSearchResponse.from(responses);
     }
 
     // =================

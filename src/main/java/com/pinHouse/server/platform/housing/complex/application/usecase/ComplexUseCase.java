@@ -54,7 +54,7 @@ public interface ComplexUseCase {
     List<ComplexDocument> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req);
 
     /// 필터링
-    List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request);
+    List<ComplexDocument> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request);
 
 
 }
