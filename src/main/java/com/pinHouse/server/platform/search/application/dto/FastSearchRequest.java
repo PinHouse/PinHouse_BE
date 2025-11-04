@@ -31,7 +31,7 @@ public record FastSearchRequest(
         @Schema(description = "방 최소 크기 (평)", example = "5.3")
         double minSize,
 
-        @Schema(description = "방 최대 크기 (평)", example = "10")
+        @Schema(description = "방 최대 크기 (평)", example = "30")
         double maxSize,
 
         @Schema(description = "보증금 최대값", example = "50000000")

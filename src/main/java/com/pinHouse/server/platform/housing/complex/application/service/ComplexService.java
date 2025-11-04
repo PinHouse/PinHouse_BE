@@ -290,7 +290,15 @@ public class ComplexService implements ComplexUseCase {
         // 지구 반지름(km)으로 나눔
         double radiusInRadians = distanceKm / 6378.1;
 
-        return repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
+        List<ComplexDocument> complexDocumentList = repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
+        List<String> complexIds = complexDocumentList.stream()
+                .map(ComplexDocument::getId)
+                .toList();
+
+        /// 기존에 있던 것과 필터링
+        return complexDocuments.stream()
+                .filter(c -> complexIds.contains(c.getId()))
+                .toList();
     }
 
     /// 필터링

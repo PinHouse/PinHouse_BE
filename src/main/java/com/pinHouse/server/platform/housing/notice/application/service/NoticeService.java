@@ -15,6 +15,7 @@ import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocum
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +24,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeService implements NoticeUseCase {
@@ -117,28 +120,28 @@ public class NoticeService implements NoticeUseCase {
     @Override
     public List<NoticeDocument> filterNotices(FastSearchRequest request) {
 
-        /// 공급 유형 가져오기
-        List<FastSearchRequest.SupplyType> supplyTypes = request.supplyTypes();
-
-        /// 선택된 모든 포함유형 문자열 리스트로 변환
-        Set<String> includedSubTypes = supplyTypes.stream()
+        // 공급 유형 집합 (한글 기준)
+        Set<String> includedSubTypes = request.supplyTypes().stream()
                 .flatMap(rt -> rt.getIncludedTypes().stream())
                 .collect(Collectors.toSet());
 
-        /// 주택 유형 가져오기
-        List<FastSearchRequest.HouseType> houseTypes = request.houseTypes();
-
-        /// 선택된 모든 포함유형 문자열 리스트로 변환
-        Set<String> houseTypeIds = houseTypes.stream()
-                .map(FastSearchRequest.HouseType::getValue)
+        // 주택 유형 집합 (한글 기준)
+        Set<String> houseTypeValues = request.houseTypes().stream()
+                .map(FastSearchRequest.HouseType::getValue)  // ex: "오피스텔"
                 .collect(Collectors.toSet());
 
         return repository.findAll().stream()
-                .filter(n -> n.getHouseType() != null)
-                .filter(n -> includedSubTypes.contains(n.getSupplyType()))
-                .filter(n -> houseTypeIds.contains(n.getHouseType()))
-                .collect(Collectors.toList());
+                .filter(n -> {
+                    String ht = Optional.ofNullable(n.getHouseType()).orElse("").trim();
+                    return houseTypeValues.contains(ht);
+                })
+                .filter(n -> {
+                    String st = Optional.ofNullable(n.getSupplyType()).orElse("").trim();
+                    return includedSubTypes.contains(st);
+                })
+                .toList();
     }
+
 
     // =================
     //  내부 로직
