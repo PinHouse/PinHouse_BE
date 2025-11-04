@@ -20,6 +20,7 @@ import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
+import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -267,63 +269,77 @@ public class ComplexService implements ComplexUseCase {
 
     /// 거리 계산 필터링
     @Override
-    public List<ComplexDocument> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req) {
+    @Transactional(readOnly = true)
+    public List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req) {
 
-        /// 핀포인트 조회
+        /// 기준 핀포인트 로드
         PinPoint pinPoint = pinPointService.loadPinPoint(req.pinPointId());
         Location pointLocation = pinPoint.getLocation();
 
-        /// 핀 포인트와 거리 계산하기
         if (req.transitTime() <= 0) {
             throw new CustomException(CommonErrorCode.BAD_PARAMETER);
         }
 
-        // 평균 속도 (15.0)
-        double avgSpeedKmh = 15.0;
-
-        // 대중교통 소요시간 (분)
+        /// 반경 계산
+        double avgSpeedKmh = 15.0; // 평균 속도 (15km/h)
         double transitTimeMin = req.transitTime();
-
-        // km 단위 거리 계산
         double distanceKm = (avgSpeedKmh * transitTimeMin) / 60.0;
-
-        // 지구 반지름(km)으로 나눔
         double radiusInRadians = distanceKm / 6378.1;
 
-        List<ComplexDocument> complexDocumentList = repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
-        List<String> complexIds = complexDocumentList.stream()
-                .map(ComplexDocument::getId)
-                .toList();
+        /// 반경 내 단지 목록
+        List<ComplexDocument> nearbyDocs =
+                repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
 
-        /// 기존에 있던 것과 필터링
+        /// 기존 목록과 교집합 + 거리/시간 계산
         return complexDocuments.stream()
-                .filter(c -> complexIds.contains(c.getId()))
+                .filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
+                .map(c -> {
+                    double km = calcDistanceKm(pointLocation, c.getLocation());
+                    int minutes = (int) Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
+                    return new ComplexDistanceResponse(c, km, minutes);
+                })
+                .sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
                 .toList();
     }
+
+    /** 두 지점 간 거리(km) 계산 (Haversine) */
+    private double calcDistanceKm(Location a, Location b) {
+        final double R = 6371.0;
+        double dLat = Math.toRadians(b.getLatitude() - a.getLatitude());
+        double dLon = Math.toRadians(b.getLongitude() - a.getLongitude());
+        double lat1 = Math.toRadians(a.getLatitude());
+        double lat2 = Math.toRadians(b.getLatitude());
+
+        double h = Math.pow(Math.sin(dLat / 2), 2)
+                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
 
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<ComplexDocument> filterUnitTypesOnly(List<ComplexDocument> complexes, FastSearchRequest req) {
+    public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes, FastSearchRequest req) {
 
-        // 평 → m²
         final double minM2 = toM2(req.minSize());
         final double maxM2 = toM2(req.maxSize());
-
-        // 금액
-        final long maxDeposit    = req.maxDeposit();
-        final long maxMonthlyPay = req.maxMonthPay();
+        final long   maxDeposit    = req.maxDeposit();
+        final long   maxMonthlyPay = req.maxMonthPay();
 
         return complexes.stream()
-                .filter(c -> c != null && c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
-                // 단지 -> (조건에 맞는) 유닛들로 평탄화
-                .flatMap(c -> c.getUnitTypes().stream()
+                .filter(cd -> cd != null && cd.complex() != null
+                        && cd.complex().getUnitTypes() != null
+                        && !cd.complex().getUnitTypes().isEmpty())
+                .flatMap(cd -> cd.complex().getUnitTypes().stream()
                         .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
-                        // 유닛 하나만 담긴 새 ComplexDocument 생성
-                        .map(u -> new ComplexDocument(c, List.of(u)))
+                        .map(u -> {
+                            ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
+                            return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
+                        })
                 )
                 .toList();
     }
+
 
 
     // =================
@@ -377,6 +393,4 @@ public class ComplexService implements ComplexUseCase {
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
         return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
     }
-
-
 }

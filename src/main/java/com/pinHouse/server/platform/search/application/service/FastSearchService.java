@@ -8,6 +8,7 @@ import com.pinHouse.server.platform.housing.facility.application.usecase.Facilit
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
+import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.application.dto.FastSearchResponse;
 import com.pinHouse.server.platform.search.application.dto.FastUnitTypeResponse;
@@ -62,10 +63,10 @@ public class FastSearchService implements FastSearchUseCase {
         List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, request.facilities());
 
         /// 거리 필터링
-        List<ComplexDocument> documents = complexService.filterDistanceOnly(facilityDocuments, request);
+        List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, request);
 
         /// 전용면적/보증금/월임대료 필터링
-        List<ComplexDocument> filtered = complexService.filterUnitTypesOnly(documents, request);
+        List<ComplexDistanceResponse> filtered = complexService.filterUnitTypesOnly(documents, request);
 
         /// 없다면 빈 리스트 제공
         if (filtered.isEmpty()) {
@@ -74,7 +75,7 @@ public class FastSearchService implements FastSearchUseCase {
 
         /// DTO 변환
         List<FastUnitTypeResponse> responses = filtered.stream()
-                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.getComplexKey()), 0))
+                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.complex().getComplexKey())))
                 .toList();
 
 

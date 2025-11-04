@@ -24,11 +24,17 @@ public record FastUnitTypeResponse(
         @Schema(description = "평균 시간 (단위: 분)", example = "35.5")
         double averageTime,
 
+        @Schema(description = "KM", example = "15.6")
+        double km,
+
         List<String> infra            // 인프라 종류
 ) {
 
 
-    public static FastUnitTypeResponse from(ComplexDocument complexDocument, List<FacilityType> facilityTypes, long averageTime) {
+    public static FastUnitTypeResponse from(ComplexDistanceResponse complexDistanceResponse, List<FacilityType> facilityTypes) {
+
+        /// 아파트
+        ComplexDocument complexDocument = complexDistanceResponse.complex();
 
         /// 1개씩만 있기에
         UnitType unitType = complexDocument.getUnitTypes().getFirst();
@@ -43,7 +49,8 @@ public record FastUnitTypeResponse(
                 .size(unitType.getExclusiveAreaM2())
                 .totalSupplyInNotice(unitType.getQuota().getTotal())
                 .complexId(complexDocument.getComplexKey())
-                .averageTime(averageTime)
+                .averageTime(complexDistanceResponse.estimatedMinutes())
+                .km(complexDistanceResponse.distanceKm())
                 .infra(facilityTypes.stream()
                         .map(FacilityType::getValue)
                         .toList())
