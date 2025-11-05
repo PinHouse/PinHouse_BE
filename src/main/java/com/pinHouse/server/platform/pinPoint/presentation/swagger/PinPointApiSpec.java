@@ -54,7 +54,7 @@ public interface PinPointApiSpec {
             description = "나의 핀포인트를 수정하는 API 입니다."
     )
     ApiResponse<Void> updatePinPoint(
-            @PathVariable Long id,
+            @PathVariable String id,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid UpdatePinPointRequest request);
 
@@ -65,7 +65,7 @@ public interface PinPointApiSpec {
             description = "나의 핀포인트를 삭제하는 API 입니다."
     )
     ApiResponse<Void> deletePinPoint(
-            @RequestParam Long id,
+            @RequestParam String id,
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 

@@ -23,6 +23,9 @@ public record NoticeDetailResponse(
         @Schema(description = "공급유형", example = "영구임대")
         String type,
 
+        @Schema(description = "주택유형", example = "아파트")
+        String housingType,
+
         @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
         String period,
 
@@ -43,6 +46,7 @@ public record NoticeDetailResponse(
                 .supplier(notice.getAgency())
                 .period(period)
                 .type(notice.getSupplyType())
+                .housingType(notice.getHouseType())
                 .complexes(complexesResponse)
                 .build();
     }

@@ -9,7 +9,7 @@ import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointReque
 import com.pinHouse.server.platform.pinPoint.util.LocationUtil;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
-import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointJpaRepository;
+import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class PinPointService implements PinPointUseCase {
 
     /// 핀포인트 JPA 의존성
-    private final PinPointJpaRepository repository;
+    private final PinPointMongoRepository repository;
 
     /// 외부 의존성
     private final UserUseCase userService;
@@ -47,7 +47,7 @@ public class PinPointService implements PinPointUseCase {
         Location location = locationTool.getLocation(request.address());
 
         /// 도메인 생성
-        var entity = PinPoint.of(user, request.address(), request.name(), location.getLatitude(), location.getLongitude(), request.first());
+        var entity = PinPoint.of(user.getId().toString(), request.address(), request.name(), location.getLatitude(), location.getLongitude(), request.first());
 
         /// 저장하기
         repository.save(entity);
@@ -62,7 +62,7 @@ public class PinPointService implements PinPointUseCase {
         User user = userService.loadUser(userId);
 
         /// 유저가 존재하는 핀포인트 목록 조회
-        List<PinPoint> pinPoints = repository.findByUser(user);
+        List<PinPoint> pinPoints = repository.findByUserId(user.getId().toString());
 
         /// Stream 돌면서 DTO 변경
         return PinPointResponse.from(pinPoints);
@@ -70,7 +70,7 @@ public class PinPointService implements PinPointUseCase {
 
     @Override
     @Transactional
-    public void update(Long id, UUID userId, UpdatePinPointRequest request) {
+    public void update(String id, UUID userId, UpdatePinPointRequest request) {
 
         /// 영속성 컨테이너 조횐
         PinPoint pinPoint = loadPinPoint(id);
@@ -83,7 +83,7 @@ public class PinPointService implements PinPointUseCase {
     /// 삭제하기
     @Override
     @Transactional
-    public void deletePinPoint(UUID userId, Long pinPointId) {
+    public void deletePinPoint(UUID userId, String pinPointId) {
 
         /// 조회
         Optional<PinPoint> pinPoint = loadPinPoint(pinPointId, userId);
@@ -104,19 +104,19 @@ public class PinPointService implements PinPointUseCase {
 
     /// 핀포인트가 나의 저장영역이 맞는지 조회
     @Override
-    public boolean checkPinPoint(Long pinPointId, UUID userId) {
+    public boolean checkPinPoint(String pinPointId, UUID userId) {
 
         /// 유저 검증
         User user = userService.loadUser(userId);
 
         /// 존재여부가 중요한 것이 아니니 DB조회 1번으로 마무리하기
-        return repository.existsByIdAndUser(pinPointId, user);
+        return repository.existsByIdAndUserId(pinPointId, user.getId().toString());
     }
 
     /// 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public PinPoint loadPinPoint(Long pinPointId) {
+    public PinPoint loadPinPoint(String pinPointId) {
 
         return repository.findById(pinPointId)
                 .orElseThrow(() -> new CustomException(PinPointErrorCode.NOT_FOUND_PINPOINT));
@@ -124,9 +124,9 @@ public class PinPointService implements PinPointUseCase {
 
     /// 유저와 함께 상세 조회
     @Transactional(readOnly = true)
-    protected Optional<PinPoint> loadPinPoint(Long pinPointId, UUID userId) {
+    protected Optional<PinPoint> loadPinPoint(String pinPointId, UUID userId) {
 
-        return repository.findByIdAndUser_Id(pinPointId, userId);
+        return repository.findByIdAndUserId(pinPointId, userId.toString());
     }
 
 }

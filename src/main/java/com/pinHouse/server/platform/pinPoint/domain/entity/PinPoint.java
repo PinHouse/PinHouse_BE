@@ -1,22 +1,24 @@
 package com.pinHouse.server.platform.pinPoint.domain.entity;
 
 import com.pinHouse.server.platform.BaseTimeEntity;
-import com.pinHouse.server.platform.user.domain.entity.User;
+import com.pinHouse.server.platform.Location;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
+import java.util.UUID;
+
+@Document(collection = "pinpoint")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PinPoint extends BaseTimeEntity {
+public class PinPoint {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false)
+    private String userId;
 
     /// 주소
     @Column(nullable = false)
@@ -27,30 +29,27 @@ public class PinPoint extends BaseTimeEntity {
     private String name;
 
     /// 좌표
-    @Column(nullable = false)
-    private double latitude;
-
-    @Column(nullable = false)
-    private double longitude;
+    @Field("location")
+    private Location location;
 
     @Column(nullable = false)
     private boolean isFirst;
 
     /// 빌더 생성자
     @Builder
-    public PinPoint(User user, String address, String name, double latitude, double longitude, boolean isFirst) {
-        this.user = user;
+    public PinPoint(String userId, String address, String name, double latitude, double longitude, boolean isFirst) {
+        this.id = UUID.randomUUID().toString(); /// 랜덤
+        this.userId = userId;
         this.address = address;
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.location = Location.of(longitude, latitude);
         this.isFirst = isFirst;
     }
 
     /// 생성자
-    public static PinPoint of (User user, String address, String name, double latitude, double longitude, boolean isFirst) {
+    public static PinPoint of (String userId, String address, String name, double latitude, double longitude, boolean isFirst) {
         return PinPoint.builder()
-                .user(user)
+                .userId(userId)
                 .address(address)
                 .name(name)
                 .latitude(latitude)

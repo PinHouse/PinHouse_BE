@@ -1,9 +1,8 @@
 package com.pinHouse.server.platform.housing.complex.application.service;
 
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.core.response.response.pageable.SliceRequest;
-import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -21,6 +20,7 @@ import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
+import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -171,7 +170,7 @@ public class ComplexService implements ComplexUseCase {
     /// 간편 대중교통 시뮬레이터
     @Override
     @Transactional(readOnly = true)
-    public DistanceResponse getEasyDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -181,7 +180,8 @@ public class ComplexService implements ComplexUseCase {
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 
         /// 대중교통 목록 비교하기
-        PathResult pathResult = distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+        Location pointLocation = pinPoint.getLocation();
+        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
 
         /// 조건 바탕으로 가져오기
         RootResult rootResult = mapper.selectBest(pathResult);
@@ -197,7 +197,7 @@ public class ComplexService implements ComplexUseCase {
     /// 대중교통 시뮬레이터
     @Override
     @Transactional
-    public PathResult getDistance(String id, Long pinPointId) throws UnsupportedEncodingException {
+    public PathResult getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -205,9 +205,9 @@ public class ComplexService implements ComplexUseCase {
 
         /// 핀포인트 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-
+        Location pointLocation = pinPoint.getLocation();
         /// 대중교통 목록 가져오기
-        return distanceUtil.findPathResult(pinPoint.getLatitude(), pinPoint.getLongitude(), location.getLatitude(), location.getLongitude());
+        return distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
 
     }
 
@@ -239,28 +239,22 @@ public class ComplexService implements ComplexUseCase {
                 .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
 
+    /// 방 아이디로 조회하기
     @Override
     @Transactional(readOnly = true)
     public ComplexDocument loadComplexByUnitTypeId(String typeId) {
 
+        /// ID 목록으로 방 조회하기
         List<ComplexDocument> results = loadRooms(List.of(typeId));
 
         if (results.isEmpty()) {
             throw new CustomException(ComplexErrorCode.NOT_FOUND_UNITTYPE);
         }
 
-        return results.getFirst(); // 또는 results.get(0)
+        return results.getFirst();
     }
 
-
-    /// 목록 조회
-    @Override
-    @Transactional
-    public List<ComplexDocument> loadComplexes() {
-        return repository.findAll();
-    }
-
-    /// 목록 조회
+    /// 아이디 목록 기반 조회
     @Override
     public List<ComplexDocument> loadComplexes(List<String> ids) {
         return repository.findByComplexKeyIsIn(ids);
@@ -273,29 +267,76 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
+    /// 거리 계산 필터링
+    @Override
+    @Transactional(readOnly = true)
+    public List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req) {
+
+        /// 기준 핀포인트 로드
+        PinPoint pinPoint = pinPointService.loadPinPoint(req.pinPointId());
+        Location pointLocation = pinPoint.getLocation();
+
+        if (req.transitTime() <= 0) {
+            throw new CustomException(CommonErrorCode.BAD_PARAMETER);
+        }
+
+        /// 반경 계산
+        double avgSpeedKmh = 15.0; // 평균 속도 (15km/h)
+        double transitTimeMin = req.transitTime();
+        double distanceKm = (avgSpeedKmh * transitTimeMin) / 60.0;
+        double radiusInRadians = distanceKm / 6378.1;
+
+        /// 반경 내 단지 목록
+        List<ComplexDocument> nearbyDocs =
+                repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
+
+        /// 기존 목록과 교집합 + 거리/시간 계산
+        return complexDocuments.stream()
+                .filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
+                .map(c -> {
+                    double km = calcDistanceKm(pointLocation, c.getLocation());
+                    int minutes = (int) Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
+                    return new ComplexDistanceResponse(c, km, minutes);
+                })
+                .sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
+                .toList();
+    }
+
+    /** 두 지점 간 거리(km) 계산 (Haversine) */
+    private double calcDistanceKm(Location a, Location b) {
+        final double R = 6371.0;
+        double dLat = Math.toRadians(b.getLatitude() - a.getLatitude());
+        double dLon = Math.toRadians(b.getLongitude() - a.getLongitude());
+        double lat1 = Math.toRadians(a.getLatitude());
+        double lat2 = Math.toRadians(b.getLatitude());
+
+        double h = Math.pow(Math.sin(dLat / 2), 2)
+                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
 
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<UnitType> filterUnitTypesOnly(List<ComplexDocument> filter, FastSearchRequest request) {
-        double minSize = request.minSize();
-        double maxSize = request.maxSize();
-        long   minDep  = request.minPrice();
-        long   maxDep  = request.maxPrice();
+    public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes, FastSearchRequest req) {
 
-        if (minSize > maxSize) { double t = minSize; minSize = maxSize; maxSize = t; }
-        if (minDep  > maxDep ) { long   t = minDep;  minDep  = maxDep;  maxDep  = t; }
+        final double minM2 = toM2(req.minSize());
+        final double maxM2 = toM2(req.maxSize());
+        final long   maxDeposit    = req.maxDeposit();
+        final long   maxMonthlyPay = req.maxMonthPay();
 
-        // 여기가 핵심 (람다 안에서 쓸 final 변수)
-        final double fMinSize = minSize;
-        final double fMaxSize = maxSize;
-        final long   fMinDep  = minDep;
-        final long   fMaxDep  = maxDep;
-
-        return filter.stream()
-                .filter(c -> c.getUnitTypes() != null && !c.getUnitTypes().isEmpty())
-                .flatMap(c -> c.getUnitTypes().stream())
-                .filter(u -> matchesUnitType(u, fMinSize, fMaxSize, fMinDep, fMaxDep))
+        return complexes.stream()
+                .filter(cd -> cd != null && cd.complex() != null
+                        && cd.complex().getUnitTypes() != null
+                        && !cd.complex().getUnitTypes().isEmpty())
+                .flatMap(cd -> cd.complex().getUnitTypes().stream()
+                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
+                        .map(u -> {
+                            ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
+                            return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
+                        })
+                )
                 .toList();
     }
 
@@ -304,57 +345,40 @@ public class ComplexService implements ComplexUseCase {
     // =================
     //  내부 로직
     // =================
-    /// 필터링하는 로직
-    private ComplexDocument filterUnitTypesByRequest(ComplexDocument complex, FastSearchRequest req) {
-        if (complex.getUnitTypes() == null || complex.getUnitTypes().isEmpty()) {
-            return null;
-        }
+    private static final double PYEONG_TO_M2 = 3.305785;
 
-        final double minSize = req.minSize();   /// 사이즈
-        final double maxSize = req.maxSize();   /// 사이즈
-        final long minDeposit = req.minPrice(); /// “보증금 최소값”
-        final long maxDeposit = req.maxPrice(); /// “보증금 최대값”
+    /** 평 → m² 변환 */
+    private double toM2(double pyeong) {
+        if (Double.isNaN(pyeong) || pyeong <= 0) return 0d;
+        return pyeong * PYEONG_TO_M2;
+    }
 
-        // unit 단위 필터
-        List<UnitType> matchedUnits = complex.getUnitTypes().stream()
-                .filter(ut -> {
-                    // 면적 체크
-                    double area = ut.getExclusiveAreaM2();
-                    if (Double.isNaN(area)) return false;
-                    if (area < minSize || area > maxSize) return false;
+    /** 전용면적(m²)/보증금/월임대료 필터 함수 */
+    private boolean matchesUnitType(UnitType u,
+                                    double minM2,
+                                    double maxM2,
+                                    long maxDeposit,
+                                    long maxMonthlyPay) {
+        if (u == null) return false;
 
-                    // 보증금 체크 (Deposit.total 기준)
-                    if (ut.getDeposit() == null) return false;
-                    long total = ut.getDeposit().getTotal();
-                    if (total < minDeposit || total > maxDeposit) return false;
+        // 전용면적(m²) 체크
+        double areaM2 = u.getExclusiveAreaM2();
+        if (Double.isNaN(areaM2)) return false;
+        if (areaM2 < minM2 || areaM2 > maxM2) return false;
 
-                    return true;
-                })
-                .collect(Collectors.toList());
+        // 보증금 체크
+        Deposit d = u.getDeposit();
+        if (d == null) return false;
+        long depositTotal = d.getTotal();
+        if (depositTotal <= 0) return false;
+        if (depositTotal > maxDeposit) return false;
 
-        if (matchedUnits.isEmpty()) {
-            return null; // 이 단지는 조건에 맞는 타입이 없음
-        }
+        // 월 임대료 체크
+        long monthlyRent = u.getMonthlyRent();
+        if (monthlyRent <= 0) return false;
+        if (monthlyRent > maxMonthlyPay) return false;
 
-        // 조건을 만족하는 unitTypes만 유지한 Complex로 재구성
-        return ComplexDocument.builder()
-                .id(complex.getId())
-                .noticeId(complex.getNoticeId())
-                .houseSn(complex.getHouseSn())
-                .complexKey(complex.getComplexKey())
-                .name(complex.getName())
-                .address(complex.getAddress())
-                .pnu(complex.getPnu())
-                .city(complex.getCity())
-                .county(complex.getCounty())
-                .heating(complex.getHeating())
-                .totalHouseholds(complex.getTotalHouseholds())
-                .totalSupplyInNotice(complex.getTotalSupplyInNotice())
-                .applyStart(complex.getApplyStart())
-                .applyEnd(complex.getApplyEnd())
-                .location(complex.getLocation())
-                .unitTypes(matchedUnits)
-                .build();
+        return true;
     }
 
     /// 유닛 해당하는 임대주택 목록 조회
@@ -369,21 +393,4 @@ public class ComplexService implements ComplexUseCase {
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
         return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
     }
-
-    /// UnitType이 요청 범위를 만족하는지
-    private boolean matchesUnitType(UnitType u, double minSize, double maxSize, long minDeposit, long maxDeposit) {
-        if (u == null) return false;
-
-        // 면적
-        double area = u.getExclusiveAreaM2();
-        if (Double.isNaN(area)) return false;
-        if (area < minSize || area > maxSize) return false;
-
-        // 보증금(Deposit.total 기준, null 안전)
-        Deposit d = u.getDeposit();
-        if (d == null) return false;
-        long total = d.getTotal();
-        return total >= minDeposit && total <= maxDeposit;
-    }
-
 }

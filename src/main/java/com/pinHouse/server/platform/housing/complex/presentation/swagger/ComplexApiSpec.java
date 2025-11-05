@@ -64,7 +64,7 @@ public interface ComplexApiSpec {
             @PathVariable String complexId,
 
             @Parameter(example = "1", description = "핀포인트 ID")
-            @RequestParam Long pinPointId) throws UnsupportedEncodingException;
+            @RequestParam String pinPointId) throws UnsupportedEncodingException;
 
     /// 거리 시뮬레이터
     @Operation(
@@ -73,7 +73,7 @@ public interface ComplexApiSpec {
     ApiResponse<PathResult> distance(
             @Parameter(example = "18407#1", description = "시도 간 조회")
             @PathVariable String complexId,
-            @Parameter(example = "1", description = "핀포인트 ID")
-            @RequestParam Long pinPointId) throws UnsupportedEncodingException;
+            @Parameter(example = "asdjkalsd-asdjalksdiw", description = "핀포인트 ID")
+            @RequestParam String pinPointId) throws UnsupportedEncodingException;
 
 }

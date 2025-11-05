@@ -29,8 +29,12 @@ public record NoticeListResponse(
         @Schema(description = "공급유형", example = "영구임대")
         String type,
 
-        @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
-        String period,
+        @Schema(description = "주택유형", example = "아파트")
+        String housingType,
+
+
+        @Schema(description = "모집 일정", example = "2025년 10월 ~ 11월")
+        String applyPeriod,
 
         @Schema(description = "좋아요 여부", example = "false")
         boolean liked
@@ -41,15 +45,16 @@ public record NoticeListResponse(
     public static NoticeListResponse from(NoticeDocument notice, boolean liked) {
 
         /// 날짜
-        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
+        String period = DateUtil.formatDate(notice.getApplyStart(), notice.getApplyEnd());
 
         return NoticeListResponse.builder()
                 .id(notice.getNoticeId())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
-                .period(period)
+                .applyPeriod(period)
                 .type(notice.getSupplyType())
+                .housingType(notice.getHouseType())
                 .liked(liked)
                 .build();
     }
@@ -58,15 +63,16 @@ public record NoticeListResponse(
     public static NoticeListResponse from(NoticeDocument notice) {
 
         /// 날짜
-        String period = notice.getApplyStart() + "~" + notice.getApplyEnd();
+        String applyPeriod = notice.getApplyStart() + "~" + notice.getApplyEnd();
 
         return NoticeListResponse.builder()
                 .id(notice.getNoticeId())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
-                .period(period)
+                .applyPeriod(applyPeriod)
                 .type(notice.getSupplyType())
+                .housingType(notice.getHouseType())
                 .liked(true)
                 .build();
     }
