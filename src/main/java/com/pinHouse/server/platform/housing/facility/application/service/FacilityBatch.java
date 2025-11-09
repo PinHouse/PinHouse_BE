@@ -29,7 +29,7 @@ public class FacilityBatch {
             Double latitude = document.getLocation().getLatitude();
 
             /// 인프라 개수 가져오기
-            statService.getCountsOrRecompute(document.getComplexKey(), longitude, latitude);
+            statService.getCountsOrRecompute(document.getId(), longitude, latitude);
         });
     }
 

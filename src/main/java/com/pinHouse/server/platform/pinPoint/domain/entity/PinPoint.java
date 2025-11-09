@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.pinPoint.domain.entity;
 
-import com.pinHouse.server.platform.BaseTimeEntity;
 import com.pinHouse.server.platform.Location;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +36,7 @@ public class PinPoint {
 
     /// 빌더 생성자
     @Builder
-    public PinPoint(String userId, String address, String name, double latitude, double longitude, boolean isFirst) {
+    protected PinPoint(String userId, String address, String name, double latitude, double longitude, boolean isFirst) {
         this.id = UUID.randomUUID().toString(); /// 랜덤
         this.userId = userId;
         this.address = address;

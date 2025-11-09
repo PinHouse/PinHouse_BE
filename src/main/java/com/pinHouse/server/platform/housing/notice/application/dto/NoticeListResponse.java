@@ -32,8 +32,10 @@ public record NoticeListResponse(
         @Schema(description = "주택유형", example = "아파트")
         String housingType,
 
+        @Schema(description = "모집 공고일", example = "2025년 10월 5일")
+        String announcePeriod,
 
-        @Schema(description = "모집 일정", example = "2025년 10월 ~ 11월")
+        @Schema(description = "모집 일정", example = "2025년 10월 3일 ~ 11월 3일")
         String applyPeriod,
 
         @Schema(description = "좋아요 여부", example = "false")
@@ -48,10 +50,11 @@ public record NoticeListResponse(
         String period = DateUtil.formatDate(notice.getApplyStart(), notice.getApplyEnd());
 
         return NoticeListResponse.builder()
-                .id(notice.getNoticeId())
+                .id(notice.getId())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
+                .announcePeriod(notice.getAnnounceDate().toString())
                 .applyPeriod(period)
                 .type(notice.getSupplyType())
                 .housingType(notice.getHouseType())
@@ -66,14 +69,15 @@ public record NoticeListResponse(
         String applyPeriod = notice.getApplyStart() + "~" + notice.getApplyEnd();
 
         return NoticeListResponse.builder()
-                .id(notice.getNoticeId())
+                .id(notice.getId())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
                 .applyPeriod(applyPeriod)
+                .announcePeriod(notice.getAnnounceDate().toString())
                 .type(notice.getSupplyType())
                 .housingType(notice.getHouseType())
-                .liked(true)
+                .liked(false)
                 .build();
     }
 

@@ -38,15 +38,6 @@ public class SwaggerConfig {
                 .version("1.0.0");
     }
 
-    @Bean
-    public OpenApiCustomizer removeGenericSchemas() {
-        return openApi -> {
-            openApi.getComponents().getSchemas().keySet().removeIf(name ->
-                    name.contains("PageRequest") || name.contains("PageResponse") || name.contains("FieldErrorResponse") || name.contains("ApiResponse") || name.contains("SliceResponse") || name.contains("SliceRequest")
-            );
-        };
-    }
-
     /// 스키마 이름 기준 오름차순
     @Bean
     public OpenApiCustomizer sortSchemasAlphabetically() {

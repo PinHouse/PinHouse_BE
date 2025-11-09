@@ -6,14 +6,17 @@ import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.SortType;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.domain.entity.HouseType;
+import com.pinHouse.server.platform.search.domain.entity.RentalType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoticeService implements NoticeUseCase {
 
@@ -44,45 +48,43 @@ public class NoticeService implements NoticeUseCase {
     // =================
     //  퍼블릭 로직
     // =================
-
-    /// 공고 목록 조회
     @Override
-    @Transactional(readOnly = true)
-    public SliceResponse<NoticeListResponse> getNotices(SortType sortType, SliceRequest req) {
+    public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest) {
 
-        // 오늘(한국) 기준 Instant
+        /// 오늘(한국) 기준 Instant
         Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
 
-        // 안정적 정렬: 정렬필드 + _id
-        Sort sort = (sortType == SortType.END)
-                ? Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("_id"))
-                : Sort.by(Sort.Order.desc("applyStart"), Sort.Order.desc("_id"));
+        /// 정렬 조건 및 pageable 설정 (동적 쿼리에 포함)
+        Sort sort = (request.sortType() == NoticeListRequest.ListSortType.END)
+                ? Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"))
+                : Sort.by(Sort.Order.desc("announceDate"), Sort.Order.desc("noticeId"));
+        Pageable pageable = PageRequest.of(sliceRequest.page() - 1, sliceRequest.offSet(), sort);
 
-        Pageable pageable = PageRequest.of(req.page() - 1, req.offSet(), sort);
-
-        Page<NoticeDocument> page = (sortType == SortType.END)
-                ? repository.findByApplyEndGreaterThanEqual(now, pageable)       // 마감 임박: 오늘 이후만
-                : repository.findByAnnounceDateLessThanEqual(now, pageable);     // 최신: 오늘까지 공개된 것만
+        /// DB 레벨 필터링을 위한 커스텀 Repository 호출
+        Page<NoticeDocument> page = repository.findNoticesByFilters(request, pageable, now);
 
         List<NoticeListResponse> content = page.getContent().stream()
                 .map(NoticeListResponse::from)
                 .toList();
 
-        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()));
+        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
     }
 
+    @Override
+    public Long countNotices(NoticeListRequest request) {
+        return 0L;
+    }
 
     /// 공고 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public NoticeDetailResponse getNotice(String noticeId) {
+    public NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
 
         /// 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
-
 
         /// 리턴
         return NoticeDetailResponse.from(notice, complexes);
@@ -112,7 +114,7 @@ public class NoticeService implements NoticeUseCase {
     @Override
     @Transactional
     public NoticeDocument loadNotice(String id) {
-        return repository.findByNoticeId(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new CustomException(NoticeErrorCode.NOT_FOUND_NOTICE));
     }
 
@@ -125,9 +127,14 @@ public class NoticeService implements NoticeUseCase {
                 .flatMap(rt -> rt.getIncludedTypes().stream())
                 .collect(Collectors.toSet());
 
+        // 타겟 유형 집합
+        Set<String> rentalValues = request.rentalTypes().stream()
+                .map(RentalType::getValue)
+                .collect(Collectors.toSet());
+
         // 주택 유형 집합 (한글 기준)
         Set<String> houseTypeValues = request.houseTypes().stream()
-                .map(FastSearchRequest.HouseType::getValue)  // ex: "오피스텔"
+                .map(HouseType::getValue)
                 .collect(Collectors.toSet());
 
         return repository.findAll().stream()
@@ -139,6 +146,10 @@ public class NoticeService implements NoticeUseCase {
                     String st = Optional.ofNullable(n.getSupplyType()).orElse("").trim();
                     return includedSubTypes.contains(st);
                 })
+                .filter(n -> {
+                    List<String> tgList = Optional.ofNullable(n.getTargetGroups()).orElse(List.of());
+                    return tgList.stream().anyMatch(rentalValues::contains);
+                })
                 .toList();
     }
 
@@ -148,6 +159,6 @@ public class NoticeService implements NoticeUseCase {
     // =================
     /// 아이디 목록에 따른 한번에 엔티티 가져오기
     protected List<NoticeDocument> loadNotices(List<String> noticeIds) {
-        return repository.findByNoticeIdIn(noticeIds);
+        return repository.findByIdIn(noticeIds);
     }
 }

@@ -26,7 +26,7 @@ public record UnityTypeLikeResponse(
 
         return UnityTypeLikeResponse.builder()
                 .id(unitType.getTypeId())
-                .complexId(document.getComplexKey())
+                .complexId(document.getId())
                 .typeCode(unitType.getTypeCode())
                 .quota(unitType.getQuota().getTotal())
                 .exclusiveAreaM2(unitType.getExclusiveAreaM2())

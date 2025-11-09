@@ -14,6 +14,12 @@ public record FastSearchResponse(
 
         /// 정적 팩토리 메서드
         public static FastSearchResponse from(List<FastUnitTypeResponse> units) {
+
+                /// 없다면 응답
+                if (units == null || units.isEmpty()) {
+                        return new FastSearchResponse(0, List.of());
+                }
+
                 return new FastSearchResponse(units.size(), units);
         }
 

@@ -4,9 +4,10 @@ import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.SortType;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -28,14 +29,14 @@ public class NoticeApi implements NoticeApiSpec {
     private final NoticeUseCase service;
 
     /// 공고 목록 조회
-    @GetMapping
+    @PostMapping
     public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
-            @RequestParam SortType sort,
+            @RequestBody NoticeListRequest request,
             SliceRequest sliceRequest
     ) {
 
         /// 서비스 계층
-        var response = service.getNotices(sort, sliceRequest);
+        var response = service.getNotices(request, sliceRequest);
 
         /// 리턴
         return ApiResponse.ok(response);
@@ -56,11 +57,13 @@ public class NoticeApi implements NoticeApiSpec {
     }
 
     /// 공고 상세 조회
-    @GetMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailResponse> getNotice(@PathVariable String noticeId) {
+    @PostMapping("/{noticeId}")
+    public ApiResponse<NoticeDetailResponse> getNotice(
+            @PathVariable String noticeId,
+            @RequestBody NoticeDetailFilterRequest request) {
 
         /// 서비스 계층
-        var response = service.getNotice(noticeId);
+        var response = service.getNotice(noticeId, request);
 
         /// 리턴
         return ApiResponse.ok(response);
