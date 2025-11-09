@@ -71,7 +71,7 @@ public class FacilityService implements FacilityUseCase {
 
         /// 공고 ID 추출
         List<String> noticeIds = noticeDocuments.stream()
-                .map(NoticeDocument::getNoticeId)
+                .map(NoticeDocument::getId)
                 .toList();
 
         /// 시설 통계 조회 (예: 주변 3개 이상)
