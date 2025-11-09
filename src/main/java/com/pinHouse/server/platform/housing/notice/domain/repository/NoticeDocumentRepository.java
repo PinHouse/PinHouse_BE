@@ -4,12 +4,16 @@ import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.time.Instant;
 import java.util.*;
 
 public interface NoticeDocumentRepository extends MongoRepository<NoticeDocument, String> {
-    Optional<NoticeDocument> findByNoticeId(String noticeId);
+
+    // 아이디 조회
+    @Query("{ 'noticeId' : ?0}")
+    Optional<NoticeDocument> findById(String id);
 
     // 마감 임박: 오늘 이후만
     Page<NoticeDocument> findByApplyEndGreaterThanEqual(Instant now, Pageable pageable);
@@ -18,5 +22,5 @@ public interface NoticeDocumentRepository extends MongoRepository<NoticeDocument
     Page<NoticeDocument> findByAnnounceDateLessThanEqual(Instant now, Pageable pageable);
 
     /// 아이디 목록 조회
-    List<NoticeDocument> findByNoticeIdIn(List<String> noticeIds);
+    List<NoticeDocument> findByIdIn(List<String> noticeIds);
 }
