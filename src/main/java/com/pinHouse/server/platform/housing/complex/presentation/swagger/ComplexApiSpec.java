@@ -4,7 +4,6 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,7 +69,7 @@ public interface ComplexApiSpec {
     @Operation(
             summary = "거리 시뮬레이터 API",
             description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
-    ApiResponse<PathResult> distance(
+    ApiResponse<List<DistanceResponse>> distance(
             @Parameter(example = "19207#1", description = "시도 간 조회")
             @PathVariable String complexId,
             @Parameter(example = "4dff2ba3-3232-4674-bddd-803ca06429ff", description = "핀포인트 ID")

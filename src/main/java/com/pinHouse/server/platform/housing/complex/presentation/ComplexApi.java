@@ -3,7 +3,6 @@ package com.pinHouse.server.platform.housing.complex.presentation;
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
@@ -83,7 +82,7 @@ public class ComplexApi implements ComplexApiSpec {
 
     /// 대중교통 시뮬레이터
     @GetMapping("/transit/full/{complexId}")
-    public ApiResponse<PathResult> distance(
+    public ApiResponse<List<DistanceResponse>> distance(
             @PathVariable String complexId,
             @RequestParam String pinPointId) throws UnsupportedEncodingException {
 

@@ -35,6 +35,23 @@ public class TransitResponseMapper {
                 .orElse(null);
     }
 
+    /// 적절한 1개 선택
+    public List<RootResult> selectTop3(PathResult pathResult) {
+
+        /// 없으면 null
+        if (pathResult == null || pathResult.routes() == null) {
+            return List.of();
+        }
+
+        /// 1순위 최소 운행 시간, 2순위 금액 기준으로 표기
+        return pathResult.routes().stream()
+                .sorted(Comparator.comparingInt(RootResult::totalTime)
+                        .thenComparingInt(RootResult::totalPayment)) // 시간 → 요금 순 정렬
+                .limit(3) // 상위 3개만 선택
+                .toList();
+    }
+
+
 
     /// 출력을 위한 매퍼
     public List<DistanceResponse.TransitResponse> from(RootResult route) {

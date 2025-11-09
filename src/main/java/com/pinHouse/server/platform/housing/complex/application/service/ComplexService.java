@@ -203,7 +203,7 @@ public class ComplexService implements ComplexUseCase {
     /// 대중교통 시뮬레이터
     @Override
     @Transactional
-    public PathResult getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
+    public List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -212,8 +212,23 @@ public class ComplexService implements ComplexUseCase {
         /// 핀포인트 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
         Location pointLocation = pinPoint.getLocation();
+
         /// 대중교통 목록 가져오기
-        return distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
+        PathResult rootResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
+
+        /// 빠른 순서 3개 가져오기
+        List<RootResult> rootResults = mapper.selectTop3(rootResult);
+
+        /// 간편조건 탐색 DTO
+        return rootResults.stream()
+                .map(route -> {
+                    // 각 경로의 세부 구간을 TransitResponse 리스트로 매핑
+                    List<DistanceResponse.TransitResponse> segments = mapper.from(route);
+
+                    // DistanceResponse 하나 생성
+                    return DistanceResponse.from(route, segments);
+                })
+                .toList();
 
     }
 
