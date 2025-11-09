@@ -64,9 +64,21 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
+        /// 리턴
+        return ComplexDetailResponse.from(complex, nearFacilities);
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UnitTypeResponse> getComplexUnitTypes(String id) {
+
+        /// 조회
+        ComplexDocument complex = loadComplex(id);
+
         /// 최대 /최소 보증금
         List<UnitType> unitTypes = complex.getUnitTypes();
-        List<UnitTypeResponse> unitTypeResponses = unitTypes.stream()
+        return unitTypes.stream()
                 .map(unitType -> {
                     String typeCode = unitType.getTypeCode();
 
@@ -80,10 +92,6 @@ public class ComplexService implements ComplexUseCase {
                     return UnitTypeResponse.from(unitType, depositOptions);
                 })
                 .toList();
-
-        /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities, unitTypeResponses);
-
     }
 
     /// 간편 대중교통 시뮬레이터
@@ -187,12 +195,6 @@ public class ComplexService implements ComplexUseCase {
         }
 
         return results.getFirst();
-    }
-
-    /// 아이디 목록 기반 조회
-    @Override
-    public List<ComplexDocument> loadComplexes(List<String> ids) {
-        return repository.findByIdIsIn(ids);
     }
 
     /// 공고 기반 목록 조회

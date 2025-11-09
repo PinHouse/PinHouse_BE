@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record UnitTypeResponse(
+        String typeId,
         String typeCode,        // 공급유형 (예: 26A)
         String thumbnail,
         Integer quota,          // 모집호수 정보
@@ -20,6 +21,7 @@ public record UnitTypeResponse(
         Quota typeQuota = unitType.getQuota();
 
         return UnitTypeResponse.builder()
+                .typeId(unitType.getTypeId())
                 .typeCode(unitType.getTypeCode())
                 .thumbnail(null)
                 .exclusiveAreaM2(unitType.getExclusiveAreaM2())

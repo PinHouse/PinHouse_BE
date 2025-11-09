@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import lombok.Builder;
@@ -20,11 +21,11 @@ public record ComplexDetailResponse(
         Integer totalSupplyInNotice,        // 공급호수합계
         List<FacilityType> infra,           // 1KM 이내 주요 생활편의 시설
         Integer unitCount,
-        List<UnitTypeResponse> unitTypes    // 평형 목록
+        List<String> unitTypes
 ) {
 
     /// 정적 팩토리 메서드
-    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, List<UnitTypeResponse> unitTypeResponses) {
+    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities) {
 
         return ComplexDetailResponse.builder()
                 .id(document.getId())
@@ -39,7 +40,9 @@ public record ComplexDetailResponse(
                 .totalSupplyInNotice(document.getTotalSupplyInNotice())
                 .infra(facilities.infra())
                 .unitCount(document.getUnitTypes().size())
-                .unitTypes(unitTypeResponses)
+                .unitTypes(document.getUnitTypes().stream()
+                        .map(UnitType::getTypeCode)
+                        .toList())
                 .build();
     }
 

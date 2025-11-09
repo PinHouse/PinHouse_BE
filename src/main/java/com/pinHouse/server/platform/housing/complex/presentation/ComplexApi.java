@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.complex.presentation;
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.presentation.swagger.ComplexApiSpec;
@@ -47,6 +48,19 @@ public class ComplexApi implements ComplexApiSpec {
 
         /// 서비스 호출
         var response = service.getComplex(complexId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /// 방 타입 목록 조회
+    @GetMapping("/unit/{complexId}")
+    public ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
+            @PathVariable String complexId
+    ) {
+
+        /// 서비스 호출
+        var response = service.getComplexUnitTypes(complexId);
 
         /// 리턴
         return ApiResponse.ok(response);

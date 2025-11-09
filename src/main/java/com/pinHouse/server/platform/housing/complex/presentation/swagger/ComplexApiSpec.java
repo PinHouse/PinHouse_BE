@@ -4,6 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,15 @@ public interface ComplexApiSpec {
             description = "임대주택 ID로 상세 조회하는 API 입니다."
     )
     ApiResponse<ComplexDetailResponse> getComplex(
+            @Parameter(example = "19231#37", description = "임대주택 ID")
+            @PathVariable String complexId
+    );
+
+    @Operation(
+            summary = "임대주택 방 타입 상세 조회 API",
+            description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다."
+    )
+    ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
             @Parameter(example = "19231#37", description = "임대주택 ID")
             @PathVariable String complexId
     );

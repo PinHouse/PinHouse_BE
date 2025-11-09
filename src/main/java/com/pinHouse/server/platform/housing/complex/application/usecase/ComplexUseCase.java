@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.application.usecase;
 
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
@@ -20,6 +21,9 @@ public interface ComplexUseCase {
     /// 상세 조회
     ComplexDetailResponse getComplex(String id);
 
+    /// 상세 조회
+    List<UnitTypeResponse> getComplexUnitTypes(String id);
+
     /// 거리 시뮬레이터 간편 조회
     DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
@@ -37,9 +41,6 @@ public interface ComplexUseCase {
     ComplexDocument loadComplex(String id);
 
     ComplexDocument loadComplexByUnitTypeId(String typeId);
-
-    /// 아이디 기반 조회
-    List<ComplexDocument> loadComplexes(List<String> ids);
 
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
