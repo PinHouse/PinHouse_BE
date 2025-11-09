@@ -43,11 +43,11 @@ public class ComplexApi implements ComplexApiSpec {
     /// 상세 조회
     @GetMapping("/{complexId}")
     public ApiResponse<ComplexDetailResponse> getComplex(
-            @PathVariable String complexId
-    ) {
+            @PathVariable String complexId,
+            @RequestParam String pinPointId) throws UnsupportedEncodingException {
 
         /// 서비스 호출
-        var response = service.getComplex(complexId);
+        var response = service.getComplex(complexId, pinPointId);
 
         /// 리턴
         return ApiResponse.ok(response);
@@ -66,21 +66,8 @@ public class ComplexApi implements ComplexApiSpec {
         return ApiResponse.ok(response);
     }
 
-    /// 간편 대중교통 시뮬레이터
-    @GetMapping("/transit/easy/{complexId}")
-    public ApiResponse<DistanceResponse> distanceEasy(
-            @PathVariable String complexId,
-            @RequestParam String pinPointId) throws UnsupportedEncodingException {
-
-        /// 서비스 호출
-        var response = service.getEasyDistance(complexId, pinPointId);
-
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
-
     /// 대중교통 시뮬레이터
-    @GetMapping("/transit/full/{complexId}")
+    @GetMapping("/transit/{complexId}")
     public ApiResponse<List<DistanceResponse>> distance(
             @PathVariable String complexId,
             @RequestParam String pinPointId) throws UnsupportedEncodingException {

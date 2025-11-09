@@ -27,8 +27,11 @@ public interface ComplexApiSpec {
     )
     ApiResponse<ComplexDetailResponse> getComplex(
             @Parameter(example = "19231#37", description = "임대주택 ID")
-            @PathVariable String complexId
-    );
+            @PathVariable String complexId,
+
+            @Parameter(example = "4dff2ba3-3232-4674-bddd-803ca06429ff", description = "핀포인트 ID")
+            @RequestParam String pinPointId) throws UnsupportedEncodingException;
+
 
     @Operation(
             summary = "임대주택 방 타입 상세 조회 API",
@@ -47,17 +50,6 @@ public interface ComplexApiSpec {
     ApiResponse<List<UnityTypeLikeResponse>> getLikeComplexes(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
-
-    /// 간편 거리 시뮬레이터
-    @Operation(
-            summary = "간편 거리 시뮬레이터 API",
-            description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
-    ApiResponse<DistanceResponse> distanceEasy(
-            @Parameter(example = "19231#37", description = "시도 내 조회")
-            @PathVariable String complexId,
-
-            @Parameter(example = "4dff2ba3-3232-4674-bddd-803ca06429ff", description = "핀포인트 ID")
-            @RequestParam String pinPointId) throws UnsupportedEncodingException;
 
     /// 거리 시뮬레이터
     @Operation(

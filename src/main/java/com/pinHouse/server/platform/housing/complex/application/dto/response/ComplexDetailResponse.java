@@ -21,11 +21,12 @@ public record ComplexDetailResponse(
         Integer totalSupplyInNotice,        // 공급호수합계
         List<FacilityType> infra,           // 1KM 이내 주요 생활편의 시설
         Integer unitCount,
-        List<String> unitTypes
+        List<String> unitTypes,
+        DistanceResponse distance
 ) {
 
     /// 정적 팩토리 메서드
-    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities) {
+    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, DistanceResponse distance) {
 
         return ComplexDetailResponse.builder()
                 .id(document.getId())
@@ -43,6 +44,7 @@ public record ComplexDetailResponse(
                 .unitTypes(document.getUnitTypes().stream()
                         .map(UnitType::getTypeCode)
                         .toList())
+                .distance(distance)
                 .build();
     }
 
@@ -66,6 +68,7 @@ public record ComplexDetailResponse(
                             .infra(facilities.infra())
                             .unitCount(document.getUnitTypes().size())
                             .unitTypes(null)
+                            .distance(null)
                             .build();
                 })
                 .toList();

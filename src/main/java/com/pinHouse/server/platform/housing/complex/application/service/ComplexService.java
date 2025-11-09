@@ -56,7 +56,7 @@ public class ComplexService implements ComplexUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public ComplexDetailResponse getComplex(String id) {
+    public ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException {
 
         /// 조회
         ComplexDocument complex = loadComplex(id);
@@ -64,8 +64,11 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
+        /// 거리 계산
+        DistanceResponse distance = getEasyDistance(id, pinPointId);
+
         /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities);
+        return ComplexDetailResponse.from(complex, nearFacilities, distance);
 
     }
 
@@ -94,32 +97,7 @@ public class ComplexService implements ComplexUseCase {
                 .toList();
     }
 
-    /// 간편 대중교통 시뮬레이터
-    @Override
-    @Transactional(readOnly = true)
-    public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
-        /// 임대주택 예외처리
-        ComplexDocument complex = loadComplex(id);
-        Location location = complex.getLocation();
-
-        /// 핀포인트 조회
-        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-
-        /// 대중교통 목록 비교하기
-        Location pointLocation = pinPoint.getLocation();
-        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
-
-        /// 조건 바탕으로 가져오기
-        RootResult rootResult = mapper.selectBest(pathResult);
-
-        /// 간편 조건 탐색 DTO
-        List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
-
-        /// 리턴
-        return DistanceResponse.from(rootResult, routes);
-
-    }
 
     /// 대중교통 시뮬레이터
     @Override
@@ -442,5 +420,31 @@ public class ComplexService implements ComplexUseCase {
                 normalOption,
                 maxOption
         );
+    }
+
+    /// 간편 대중교통 시뮬레이터
+    @Transactional(readOnly = true)
+    protected DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
+
+        /// 임대주택 예외처리
+        ComplexDocument complex = loadComplex(id);
+        Location location = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+
+        /// 대중교통 목록 비교하기
+        Location pointLocation = pinPoint.getLocation();
+        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
+
+        /// 조건 바탕으로 가져오기
+        RootResult rootResult = mapper.selectBest(pathResult);
+
+        /// 간편 조건 탐색 DTO
+        List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
+
+        /// 리턴
+        return DistanceResponse.from(rootResult, routes);
+
     }
 }

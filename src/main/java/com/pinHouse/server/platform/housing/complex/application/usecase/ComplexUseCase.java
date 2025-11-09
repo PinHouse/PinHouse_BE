@@ -19,13 +19,10 @@ public interface ComplexUseCase {
     // =================
 
     /// 상세 조회
-    ComplexDetailResponse getComplex(String id);
+    ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException;;
 
     /// 상세 조회
     List<UnitTypeResponse> getComplexUnitTypes(String id);
-
-    /// 거리 시뮬레이터 간편 조회
-    DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
     /// 거리 시뮬레이터 전부 조회
     List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
