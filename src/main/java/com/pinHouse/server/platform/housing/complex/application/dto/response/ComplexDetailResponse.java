@@ -24,7 +24,7 @@ public record ComplexDetailResponse(
 ) {
 
     /// 정적 팩토리 메서드
-    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities) {
+    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, List<UnitTypeResponse> unitTypeResponses) {
 
         return ComplexDetailResponse.builder()
                 .id(document.getId())
@@ -39,7 +39,7 @@ public record ComplexDetailResponse(
                 .totalSupplyInNotice(document.getTotalSupplyInNotice())
                 .infra(facilities.infra())
                 .unitCount(document.getUnitTypes().size())
-                .unitTypes(UnitTypeResponse.from(document.getUnitTypes()))
+                .unitTypes(unitTypeResponses)
                 .build();
     }
 
@@ -62,7 +62,7 @@ public record ComplexDetailResponse(
                             .totalSupplyInNotice(null)
                             .infra(facilities.infra())
                             .unitCount(document.getUnitTypes().size())
-                            .unitTypes(null)   // ✅ 목록 조회에서는 unitTypes 제외
+                            .unitTypes(null)
                             .build();
                 })
                 .toList();

@@ -5,7 +5,6 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.presentation.swagger.ComplexApiSpec;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -48,20 +47,6 @@ public class ComplexApi implements ComplexApiSpec {
 
         /// 서비스 호출
         var response = service.getComplex(complexId);
-
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
-
-    /// 예산 시뮬레이터
-    @GetMapping("/deposit/{complexId}")
-    public ApiResponse<DepositResponse> deposit(
-            @PathVariable String complexId,
-            @RequestParam String housingType,
-            @RequestParam double percentage) {
-
-        /// 서비스 호출
-        var response = service.getLeaseByPercent(complexId, housingType, percentage);
 
         /// 리턴
         return ApiResponse.ok(response);

@@ -38,22 +38,6 @@ public interface ComplexApiSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
-    /// 임대주택 시뮬레이터
-    @Operation(
-            summary = "임대주택 예산 시뮬레이터 API",
-            description = "임대주택 ID로, 예산의 변동을 조회하는 API 입니다."
-    )
-    ApiResponse<DepositResponse> deposit(
-
-            @Parameter(example = "19231#37", description = "임대주택 ID")
-            @PathVariable String complexId,
-
-            @Parameter(example = "46A", description = "주거 타입")
-            @RequestParam String housingType,
-
-            @Parameter(example = "0.001", description = "변환율")
-            @RequestParam double percentage);
-
     /// 간편 거리 시뮬레이터
     @Operation(
             summary = "간편 거리 시뮬레이터 API",

@@ -4,18 +4,16 @@ import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.Location;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.*;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.util.TransitResponseMapper;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.Deposit;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
@@ -66,111 +64,26 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
+        /// 최대 /최소 보증금
+        List<UnitType> unitTypes = complex.getUnitTypes();
+        List<UnitTypeResponse> unitTypeResponses = unitTypes.stream()
+                .map(unitType -> {
+                    String typeCode = unitType.getTypeCode();
+
+                    // 2. 해당 타입에 대한 최소/최대 보증금 옵션 계산
+                    DepositResponse depositOptions = getLeaseMinMax(id, typeCode);
+
+                    // 3. 좋아요 상태 (예시로 false 설정, 실제로는 likeService를 사용해야 함)
+                    boolean isLiked = false;
+
+                    // 4. UnitTypeResponse 생성 및 옵션 주입
+                    return UnitTypeResponse.from(unitType, depositOptions);
+                })
+                .toList();
+
         /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities);
+        return ComplexDetailResponse.from(complex, nearFacilities, unitTypeResponses);
 
-    }
-
-    /**
-     * 임대보증금과 월임대료 전환 옵션 계산 메서드
-     *
-     * @param complexId  공고 ID
-     * @param type       공급 유형(예: '전세', '월세')
-     * @param percentage 전환 비율(0.0~1.0, 예: 0.5는 50% 전환)
-     *
-     * <전환 규칙>
-     * - 임대보증금 100만원 단위로만 전환 가능
-     * - 임대보증금 → 월임대료: 연 3.5% 적용 (월이율 = 3.5%/12)
-     * - 월임대료 → 임대보증금: 연 7% 적용 (월이율 = 7%/12)
-     * - 전환 이율 변동 시, 변경된 이율로 재산정
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public DepositResponse getLeaseByPercent(String complexId, String type, double percentage) {
-
-        // 1) 단지/타입 로드
-        ComplexDocument complex = loadComplex(complexId);
-        UnitType unitType = complex.getUnitTypes().stream()
-                .filter(info -> info.getTypeCode().equalsIgnoreCase(type))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(ComplexErrorCode.BAD_REQUEST_DEPOSIT));
-        long contract = unitType.getDeposit().getContract(); // 계약금
-        long balance  = unitType.getDeposit().getBalance();  // 잔금
-        long monthRent = unitType.getMonthlyRent();          // 월임대료
-        long totalDeposit = Math.max(0, contract + balance); // 보증금 총액 안전화
-
-        // 2) 법정 전환율 계산
-        //    - 연 전환율 = min(0.10, 기준금리 + 0.02)
-        //    - 기준금리는 외부에서 주입/설정으로 가져오는 것을 권장(아래는 예시 상수)
-        double baseRate = 0.025; // 2.5% (예: 2025-05-29 당시 기준금리 2.50%)  ← 환경설정/프로바이더로 교체 권장
-        double legalAnnualRate = Math.min(0.10, baseRate + 0.02); // 법정 연 전환율
-        double monthlyRate = legalAnnualRate / 12.0;
-
-        // 3) 사용자 입력 비율 클램핑(-1.0 ~ 1.0)
-        double p = Math.max(-1.0, Math.min(1.0, percentage));
-
-        // 4) 전환 한도 정의
-        //    - 보증금→월세: 최대 전환 가능 보증금 = 현재 총보증금
-        //    - 월세→보증금: 최대 전환 가능 월세 = 현재 월세
-        //    - 전환 크기는 |p| 비율로 설정
-        long targetDepositChange; // (+면 보증금 증가, -면 감소)
-        long targetRentChange;    // (+면 월세 증가,   -면 감소)
-
-        if (p > 0) {
-            // 보증금 → 월세 (보증금 감소, 월세 증가)
-            long depositReduce = Math.round(totalDeposit * p);
-
-            // 10만원 단위 반올림
-            depositReduce = Math.round(depositReduce / 100_000.0) * 100_000;
-
-            // 한도: 보증금이 음수로 내려가면 안 됨
-            depositReduce = Math.min(depositReduce, totalDeposit);
-
-            long rentIncrease = Math.round(depositReduce * monthlyRate);
-
-            // 1천원 단위 반올림
-            rentIncrease = Math.round(rentIncrease / 1_000.0) * 1_000;
-
-            targetDepositChange = -depositReduce;
-            targetRentChange = +rentIncrease;
-
-        } else if (p < 0) {
-            // 월세 → 보증금 (월세 감소, 보증금 증가)
-            long rentReduce = Math.round(monthRent * (-p));
-
-            // 1천원 단위 반올림 및 한도
-            rentReduce = Math.round(rentReduce / 1_000.0) * 1_000;
-            rentReduce = Math.min(rentReduce, monthRent);
-
-            // 법정 전환식: 증가보증금 = 감소월세 × (12 / 연전환율)
-            long depositIncrease = Math.round(rentReduce * (12.0 / legalAnnualRate));
-
-            // 10만원 단위 반올림
-            depositIncrease = Math.round(depositIncrease / 100_000.0) * 100_000;
-
-            targetDepositChange = +depositIncrease;
-            targetRentChange = -rentReduce;
-
-        } else {
-            // p == 0 : 변동 없음
-            targetDepositChange = 0;
-            targetRentChange = 0;
-        }
-
-        // 5) 결과 적용 (balance는 유지, contract로 총액 맞추기)
-        long newTotalDeposit = Math.max(0, totalDeposit + targetDepositChange);
-        long newMonthRent    = Math.max(0, monthRent + targetRentChange);
-
-        long newBalance  = balance; // 정책상 그대로 유지
-        long newContract = Math.max(0, newTotalDeposit - newBalance);
-
-        return DepositResponse.from(
-                complex.getId(),
-                type,
-                newContract,
-                newBalance,
-                newMonthRent
-        );
     }
 
     /// 간편 대중교통 시뮬레이터
@@ -414,5 +327,117 @@ public class ComplexService implements ComplexUseCase {
 
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
         return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
+    }
+
+    /**
+     * 임대보증금과 월임대료 전환 옵션 계산 메서드
+     *
+     * @param complexId  공고 ID
+     * @param type       공급 유형(예: '전세', '월세')
+     *
+     * <전환 규칙>
+     * - 임대보증금 100만원 단위로만 전환 가능
+     * - 임대보증금 → 월임대료: 연 3.5% 적용 (월이율 = 3.5%/12)
+     * - 월임대료 → 임대보증금: 연 7% 적용 (월이율 = 7%/12)
+     * - 전환 이율 변동 시, 변경된 이율로 재산정
+     */
+    @Transactional(readOnly = true)
+    public DepositResponse getLeaseMinMax(String complexId, String type) {
+
+        ComplexDocument complex = loadComplex(complexId);
+        UnitType unitType = complex.getUnitTypes().stream()
+                .filter(info -> info.getTypeCode().equalsIgnoreCase(type))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ComplexErrorCode.BAD_REQUEST_DEPOSIT));
+
+        // 기본 보증금 정보
+        long balanceBase      = unitType.getDeposit().getBalance(); // 잔금 (정책상 변동 없음)
+        long contractBase     = unitType.getDeposit().getContract(); // 기본 계약금
+        long monthRentBase    = unitType.getMonthlyRent();          // 기본 월임대료
+        long totalDepositBase = Math.max(0, contractBase + balanceBase); // 기본 보증금 총액
+
+        // ===================================
+        // 1) 기본 (NORMAL OPTION)
+        // ===================================
+
+        DepositMinMaxResponse normalOption = new DepositMinMaxResponse(
+                totalDepositBase,
+                contractBase,
+                balanceBase,
+                monthRentBase
+        );
+
+        // 2) 전환 이율 정의
+        final double DEPOSIT_TO_RENT_ANNUAL_RATE = 0.035; // 보증금 감소 이율
+        final double RENT_TO_DEPOSIT_ANNUAL_RATE = 0.07;  // 보증금 증가 이율
+
+        // ===================================
+        // 3) 최소 보증금 / 최대 월세 계산 (MIN OPTION)
+        // ===================================
+
+        // 3-1. 최소 보증금: 보통 총 보증금의 50% (100만원 단위 반올림 적용)
+        long minRequiredDeposit = (long) Math.round(totalDepositBase * 0.5 / 1_000_000.0) * 1_000_000;
+
+        // 3-2. 최종 전환될 보증금 감소액: (총 보증금 - 최소 보증금)
+        long actualDepositReduce = Math.max(0, totalDepositBase - minRequiredDeposit);
+
+        // 100만원 단위로 반올림 (이미 minRequiredDeposit 계산 시 100만원 단위로 맞췄으므로 큰 차이는 없으나, 안전을 위해 최종 금액을 다시 맞춤)
+        actualDepositReduce = Math.round(actualDepositReduce / 1_000_000.0) * 1_000_000;
+
+        // 3-3. 증가하는 월세 계산: (감소 보증금) × (연 3.5% / 12)
+        long rentIncrease = Math.round(actualDepositReduce * (DEPOSIT_TO_RENT_ANNUAL_RATE / 12.0));
+
+        // 1천원 단위로 반올림
+        long actualRentIncrease = Math.round(rentIncrease / 1_000.0) * 1_000;
+
+        // 최종 결과 (최소 보증금 옵션)
+        long minDepositTotal = totalDepositBase - actualDepositReduce;
+        long maxMonthRent  = monthRentBase + actualRentIncrease;
+        long minDepositContract = Math.max(0, minDepositTotal - balanceBase);
+
+        DepositMinMaxResponse minOption = new DepositMinMaxResponse(
+                minDepositTotal,
+                minDepositContract,
+                balanceBase,
+                maxMonthRent
+        );
+
+        // ===================================
+        // 4) 최대 보증금 / 최소 월세 계산 (MAX OPTION)
+        // ===================================
+
+        // 4-1. 최소 월세: 보통 기본 월세의 40% (1천원 단위 반올림 적용)
+        long minRequiredRent = Math.max(0, (long) Math.round(monthRentBase * 0.4 / 1_000.0) * 1_000);
+
+        // 4-2. 최종 전환될 월세 감소액: (기본 월세 - 최소 월세)
+        long actualRentReduce = Math.max(0, monthRentBase - minRequiredRent);
+
+        // 1천원 단위로 반올림
+        actualRentReduce = Math.round(actualRentReduce / 1_000.0) * 1_000;
+
+        // 4-3. 증가하는 보증금 계산: (감소 월세) × (12 / 연 7%)
+        long depositIncrease = Math.round(actualRentReduce * (12.0 / RENT_TO_DEPOSIT_ANNUAL_RATE));
+
+        // 100만원 단위로 반올림
+        long actualDepositIncrease = Math.round(depositIncrease / 1_000_000.0) * 1_000_000;
+
+        // 최종 결과 (최대 보증금 옵션)
+        long maxDepositTotal = totalDepositBase + actualDepositIncrease;
+        long minMonthRent  = monthRentBase - actualRentReduce;
+        long maxDepositContract = Math.max(0, maxDepositTotal - balanceBase);
+
+        DepositMinMaxResponse maxOption = new DepositMinMaxResponse(
+                maxDepositTotal,
+                maxDepositContract,
+                balanceBase,
+                minMonthRent
+        );
+
+        // 5) 최종 응답 DTO 구성
+        return DepositResponse.from(
+                minOption,
+                normalOption,
+                maxOption
+        );
     }
 }

@@ -3,7 +3,6 @@ package com.pinHouse.server.platform.housing.complex.application.usecase;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
@@ -21,9 +20,6 @@ public interface ComplexUseCase {
     /// 상세 조회
     ComplexDetailResponse getComplex(String id);
 
-    /// 예산 시뮬레이터
-    DepositResponse getLeaseByPercent(String id, String type, double percentage);
-
     /// 거리 시뮬레이터 간편 조회
     DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
@@ -37,7 +33,6 @@ public interface ComplexUseCase {
     // =================
     //  외부 로직
     // =================
-
     /// 상세 조회
     ComplexDocument loadComplex(String id);
 
