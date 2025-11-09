@@ -224,9 +224,10 @@ public class ComplexService implements ComplexUseCase {
                 .map(route -> {
                     // 각 경로의 세부 구간을 TransitResponse 리스트로 매핑
                     List<DistanceResponse.TransitResponse> segments = mapper.from(route);
+                    List<DistanceResponse.TransferPointResponse> stops = mapper.extractStops(route);
 
                     // DistanceResponse 하나 생성
-                    return DistanceResponse.from(route, segments);
+                    return DistanceResponse.from(route, segments, stops);
                 })
                 .toList();
 
