@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ComplexDetailResponse(
         String id,                          // 복합키 (noticeId#houseSn)
         String name,                        // 단지명
@@ -48,12 +50,20 @@ public record ComplexDetailResponse(
     ) {
         return documents.stream()
                 .map(document -> {
-                    // 단지 ID로 시설 응답 찾아오기
                     NoticeFacilityListResponse facilities =
                             facilityListResponseMap.getOrDefault(document.getId(), NoticeFacilityListResponse.empty());
 
-                    // 기존 from() 메서드 재사용
-                    return ComplexDetailResponse.from(document, facilities);
+                    return ComplexDetailResponse.builder()
+                            .id(document.getId())
+                            .name(document.getName())
+                            .address(document.getAddress().getFull())
+                            .heating(document.getHeating())
+                            .totalHouseholds(null)
+                            .totalSupplyInNotice(null)
+                            .infra(facilities.infra())
+                            .unitCount(document.getUnitTypes().size())
+                            .unitTypes(null)   // ✅ 목록 조회에서는 unitTypes 제외
+                            .build();
                 })
                 .toList();
     }
