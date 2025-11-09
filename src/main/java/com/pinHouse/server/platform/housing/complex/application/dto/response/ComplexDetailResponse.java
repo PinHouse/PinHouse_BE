@@ -26,7 +26,7 @@ public record ComplexDetailResponse(
         Location documentLocation = document.getLocation();
 
         return ComplexDetailResponse.builder()
-                .id(document.getComplexKey())
+                .id(document.getId())
                 .name(document.getName())
                 .address(document.getAddress().getFull())
                 .heating(document.getHeating())

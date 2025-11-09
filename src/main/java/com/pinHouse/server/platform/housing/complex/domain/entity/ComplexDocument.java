@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ComplexDocument {
 
-    @Id
+    @Field("complexId")
     private String id;
 
     @Field("noticeId")
@@ -24,9 +24,6 @@ public class ComplexDocument {
 
     @Field("houseSn")
     private int houseSn;
-
-    @Field("complexKey")
-    private String complexKey;
 
     @Field("name")
     private String name;
@@ -71,7 +68,6 @@ public class ComplexDocument {
         this.id = src.getId();
         this.noticeId = src.getNoticeId();
         this.houseSn = src.getHouseSn();
-        this.complexKey = src.getComplexKey();
         this.name = src.getName();
         this.address = src.getAddress();
         this.pnu = src.getPnu();

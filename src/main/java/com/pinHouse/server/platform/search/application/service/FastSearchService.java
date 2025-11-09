@@ -75,7 +75,7 @@ public class FastSearchService implements FastSearchUseCase {
 
         /// DTO 변환
         List<FastUnitTypeResponse> responses = filtered.stream()
-                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.complex().getComplexKey())))
+                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.complex().getId())))
                 .toList();
 
 

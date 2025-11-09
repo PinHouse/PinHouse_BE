@@ -48,7 +48,7 @@ public record FastUnitTypeResponse(
                 .monthPayment(unitType.getMonthlyRent())
                 .size(unitType.getExclusiveAreaM2())
                 .totalSupplyInNotice(unitType.getQuota().getTotal())
-                .complexId(complexDocument.getComplexKey())
+                .complexId(complexDocument.getId())
                 .averageTime(complexDistanceResponse.estimatedMinutes())
                 .km(complexDistanceResponse.distanceKm())
                 .infra(facilityTypes.stream()

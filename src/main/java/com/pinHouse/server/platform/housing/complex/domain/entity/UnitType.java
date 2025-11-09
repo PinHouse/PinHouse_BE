@@ -22,7 +22,7 @@ public class UnitType {
     @Field("monthlyRent")
     private int monthlyRent;
 
-    @Field("complexKey")
+    @Field("complexId")
     private String complexId;
 
     @Field("deposit")

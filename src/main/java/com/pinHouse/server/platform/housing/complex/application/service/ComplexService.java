@@ -159,7 +159,7 @@ public class ComplexService implements ComplexUseCase {
         long newContract = Math.max(0, newTotalDeposit - newBalance);
 
         return DepositResponse.from(
-                complex.getComplexKey(),
+                complex.getId(),
                 type,
                 newContract,
                 newBalance,
@@ -235,7 +235,7 @@ public class ComplexService implements ComplexUseCase {
     @Override
     @Transactional
     public ComplexDocument loadComplex(String id) {
-        return repository.findByComplexKey(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
     }
 
@@ -257,7 +257,7 @@ public class ComplexService implements ComplexUseCase {
     /// 아이디 목록 기반 조회
     @Override
     public List<ComplexDocument> loadComplexes(List<String> ids) {
-        return repository.findByComplexKeyIsIn(ids);
+        return repository.findByIdIsIn(ids);
     }
 
     /// 공고 기반 목록 조회
