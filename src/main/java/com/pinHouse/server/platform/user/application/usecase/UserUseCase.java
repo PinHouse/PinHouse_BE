@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.user.application.usecase;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
 import com.pinHouse.server.platform.user.domain.entity.User;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public interface UserUseCase {
     // =================
 
     /// 회원가입
-    void saveUser(String tempUserKey, UserRequest request);
+    JwtTokenResponse saveUser(String tempUserKey, UserRequest request);
 
     /// 개인정보 조회하기
     MyPageResponse getMyPage(UUID userId);

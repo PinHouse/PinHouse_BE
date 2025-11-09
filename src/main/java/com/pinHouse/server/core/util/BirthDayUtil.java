@@ -1,5 +1,8 @@
 package com.pinHouse.server.core.util;
 
+import com.pinHouse.server.core.exception.code.UserErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -7,12 +10,13 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Slf4j
 @Component
 public class BirthDayUtil {
 
     public static String formatString(LocalDate birthday) {
         if (birthday == null) {
-            return "생년월일 정보 없음";
+            return "정보 없음";
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
@@ -29,7 +33,7 @@ public class BirthDayUtil {
             String fullDate = year + "-" + monthDay;
             return LocalDate.parse(fullDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 생년월일 형식입니다. year=" + year + ", monthDay=" + monthDay);
+            return null;
         }
     }
 
@@ -39,8 +43,9 @@ public class BirthDayUtil {
      */
     public static int calculateAge(LocalDate birthday) {
         if (birthday == null) {
-            throw new IllegalArgumentException("생년월일이 null일 수 없습니다.");
+            throw new CustomException(UserErrorCode.BAD_REQUEST_BIRTHDAY);
         }
+
         LocalDate today = LocalDate.now();
         return Period.between(birthday, today).getYears();
     }

@@ -2,6 +2,8 @@ package com.pinHouse.server.platform.diagnostic.explanation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.core.exception.code.DiagnosisErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +28,7 @@ public enum DiagnosisType {
                 return diagnosisType;
             }
         }
-        throw new IllegalArgumentException(ErrorCode.INVALID_INPUT_ENUM.getMessage());
+        throw new CustomException(DiagnosisErrorCode.BAD_REQUEST_TYPE);
     }
 
 }

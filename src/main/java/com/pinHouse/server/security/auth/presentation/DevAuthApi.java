@@ -4,7 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.security.auth.application.service.DevAuthService;
 import com.pinHouse.server.security.auth.presentation.swagger.DevAuthApiSpec;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -30,7 +30,7 @@ public class DevAuthApi implements DevAuthApiSpec {
         /// 서비스
         JwtTokenResponse jwtTokenResponse = service.devCreate();
 
-        /// 쿠키에 저장하기
+        /// 토큰 발급하기
         httpUtil.addDevAccessTokenCookie(httpServletResponse, jwtTokenResponse.accessToken());
         httpUtil.addRefreshTokenCookie(httpServletResponse, jwtTokenResponse.refreshToken());
 

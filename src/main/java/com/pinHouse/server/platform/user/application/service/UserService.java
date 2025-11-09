@@ -1,16 +1,27 @@
 package com.pinHouse.server.platform.user.application.service;
 
-import com.pinHouse.server.core.response.response.ErrorCode;
+import com.pinHouse.server.core.exception.code.UserErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
+import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.domain.entity.Gender;
 import com.pinHouse.server.platform.user.domain.entity.User;
 import com.pinHouse.server.platform.user.domain.repository.UserJpaRepository;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.domain.entity.Provider;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenRequest;
+import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
+import com.pinHouse.server.security.jwt.application.util.JwtProvider;
+import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +29,7 @@ import java.util.*;
 
 import static com.pinHouse.server.core.util.BirthDayUtil.parseBirthday;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
@@ -26,6 +38,11 @@ public class UserService implements UserUseCase {
 
     /// 레디스
     private final RedisTemplate<String, Object> redisTemplate;
+    private final JwtProvider jwtProvider;
+
+    /// 삭제할 때
+    private final PinPointMongoRepository pinPointRepository;
+    private final LikeJpaRepository likeRepository;
 
     // =================
     //  퍼블릭 로직
@@ -34,7 +51,7 @@ public class UserService implements UserUseCase {
     /// 온보딩을 통한 유저 회원가입
     @Override
     @Transactional
-    public void saveUser(String tempUserKey, UserRequest request) {
+    public JwtTokenResponse saveUser(String tempUserKey, UserRequest request) {
 
         /// 값 가져오기
         Object raw = redisTemplate.opsForValue().get(tempUserKey);
@@ -42,8 +59,23 @@ public class UserService implements UserUseCase {
         if (raw instanceof TempUserInfo info) {
 
             /// 관심 목록과 함께, 값 저장하기
-            repository.save(createUser(info, request.facilityTypes()));
+            User user = repository.save(createUser(info, request.facilityTypes()));
+
+            /// 인증필터에 적용
+            PrincipalDetails principalDetails = PrincipalDetails.of(user);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            /// 토큰 발급
+            var tokenRequest = JwtTokenRequest.from(user);
+            String accessToken = jwtProvider.createAccessToken(tokenRequest);
+            String refreshToken = jwtProvider.createRefreshToken(tokenRequest);
+
+            return JwtTokenResponse.of(accessToken, refreshToken);
         }
+
+        /// 에러 발생
+        throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
     }
 
     /// 레디스에 존재하는 데이터 조회
@@ -56,18 +88,14 @@ public class UserService implements UserUseCase {
 
         /// 없다면 예외 처리
         if (raw == null){
-            throw new IllegalStateException("TempUserInfo 복원 실패");
+            throw new CustomException(UserErrorCode.NOT_TEMP_USER_KEY);
         }
 
-        try {
-            if (raw instanceof TempUserInfo info) {
-                /// 리턴
-                return TempUserResponse.from(info);
-            }
-
-            throw new IllegalStateException("지원하지 않는 Redis 값 타입: " + raw.getClass());
-        } catch (Exception e) {
-            throw new IllegalStateException("TempUserInfo 복원 실패", e);
+        if (raw instanceof TempUserInfo info) {
+            /// 리턴
+            return TempUserResponse.from(info);
+        } else {
+            throw new CustomException(UserErrorCode.BAD_REQUEST_REDIS);
         }
     }
 
@@ -88,6 +116,12 @@ public class UserService implements UserUseCase {
     @Override
     @Transactional
     public void deleteUser(UUID userId) {
+
+        /// 핀포인트 DB에서 삭제
+        pinPointRepository.deleteByUserId(userId.toString());
+
+        /// 좋아요 삭제
+        likeRepository.deleteByUser_Id(userId);
 
         /// DB에서 삭제
         repository.deleteById(userId);
@@ -127,7 +161,7 @@ public class UserService implements UserUseCase {
     @Transactional(readOnly = true)
     public User loadUser(UUID userId) {
         return repository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
     }
 
     /// 소셜로그인 중복 로그인 조횐
@@ -158,7 +192,7 @@ public class UserService implements UserUseCase {
 
     protected User loadUserWithFacilityType(UUID userId) {
         return repository.findWithFacilityTypesById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
 
 
     }

@@ -4,16 +4,13 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.security.auth.application.usecase.AuthUseCase;
 import com.pinHouse.server.security.auth.presentation.swagger.AuthApiSpec;
 import com.pinHouse.server.security.jwt.application.dto.JwtTokenResponse;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -69,11 +66,27 @@ public class AuthApi implements AuthApiSpec {
         /// 서비스 로직 실행
         JwtTokenResponse response = service.reissue(refreshToken);
 
-        /// 액세스 쿠키로 전송하기
+        /// 토큰 재발급하기 (액세스/리프레쉬)
         httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());
 
         /// 리턴
         return ApiResponse.updated();
+    }
+
+    /**
+     * 토큰 여부 판단
+     */
+    @GetMapping()
+    public ApiResponse<Boolean> checkAccessToken(HttpServletRequest httpServletRequest) {
+
+        /// 토큰 있는지 체크
+        Optional<String> accessToken = httpUtil.getAccessToken(httpServletRequest);
+
+        /// 서비스
+        var response = service.checkToken(accessToken);
+
+        /// 리턴
+        return ApiResponse.ok(response);
     }
 
 }

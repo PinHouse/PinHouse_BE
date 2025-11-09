@@ -1,4 +1,4 @@
-package com.pinHouse.server.security.jwt.application.util;
+package com.pinHouse.server.core.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,10 +8,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import static com.pinHouse.server.core.util.RedisKeyUtil.ACCESS_TOKEN;
-import static com.pinHouse.server.core.util.RedisKeyUtil.REFRESH_TOKEN;
+import static com.pinHouse.server.core.util.KeyUtil.ACCESS_TOKEN;
+import static com.pinHouse.server.core.util.KeyUtil.REFRESH_TOKEN;
 
 @Component
 public class HttpUtil {
@@ -78,6 +80,29 @@ public class HttpUtil {
         deleteCookie(httpServletResponse, REFRESH_TOKEN);
     }
 
+    /// 요청자의 정보를 헤더에서 조회하기 위한 함수
+    public HeaderInfo getClientInfo(HttpServletRequest request) {
+
+        /// IP
+        String ip = getClientIp(request);
+
+        /// 메서드
+        String httpMethod = request.getMethod();
+
+        /// 요청 주소
+        String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+
+        /// 요청자
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "익명";
+
+        return new HeaderInfo(ip, httpMethod, uri, username);
+    }
+
+    /// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
+    public record HeaderInfo(String ip, String httpMethod, String uri, String userName) {
+
+    }
+
 
     // =================
     //  내부 공통 함수
@@ -128,5 +153,23 @@ public class HttpUtil {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    /// 요청자의 실제 IP를 조회하기 위한 함수
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        /// X-Forwarded-For이 있다면
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // 여러 개라면 첫 번째 값이 클라이언트 IP
+            return ip.split(",")[0].trim();
+        }
+
+        /// X-Forwarded-For이 없다면
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
     }
 }

@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.pinPoint.application.dto;
 
+import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import java.util.List;
 public record PinPointResponse(
 
         @Schema(description = "아이디", example = "1")
-        Long id,
+        String id,
 
         @Schema(description = "저장한 이름", example = "회사 본사")
         String name,
@@ -30,12 +31,16 @@ public record PinPointResponse(
 
     /// 정적 팩토리 메서드
     public static PinPointResponse from(PinPoint pinPoint) {
+
+        /// 좌표값
+        Location location = pinPoint.getLocation();
+
         return PinPointResponse.builder()
                 .id(pinPoint.getId())
                 .name(pinPoint.getName())
                 .address(pinPoint.getAddress())
-                .longitude(pinPoint.getLongitude())
-                .latitude(pinPoint.getLatitude())
+                .longitude(location.getLongitude())
+                .latitude(location.getLatitude())
                 .isFirst(pinPoint.isFirst())
                 .build();
     }

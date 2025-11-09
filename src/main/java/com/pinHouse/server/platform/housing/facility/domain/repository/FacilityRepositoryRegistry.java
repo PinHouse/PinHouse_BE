@@ -1,5 +1,7 @@
 package com.pinHouse.server.platform.housing.facility.domain.repository;
 
+import com.pinHouse.server.core.exception.code.FacilityErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.facility.domain.entity.Facility;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import jakarta.annotation.PostConstruct;
@@ -25,7 +27,12 @@ public class FacilityRepositoryRegistry {
 
     public GeoFacilityRepository<? extends Facility> get(FacilityType type) {
         GeoFacilityRepository<? extends Facility> repo = map.get(type);
-        if (repo == null) throw new IllegalArgumentException("Unsupported type: " + type);
+
+        /// 타입
+        if (repo == null) {
+            throw new CustomException(FacilityErrorCode.BAD_REQUEST_FACILITY);
+        }
+
         return repo;
     }
 

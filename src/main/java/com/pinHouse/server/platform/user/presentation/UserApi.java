@@ -5,7 +5,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.user.application.dto.*;
 import com.pinHouse.server.platform.user.application.usecase.UserUseCase;
 import com.pinHouse.server.platform.user.presentation.swagger.UserApiSpec;
-import com.pinHouse.server.security.jwt.application.util.HttpUtil;
+import com.pinHouse.server.core.util.HttpUtil;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -35,12 +35,18 @@ public class UserApi implements UserApiSpec {
 
     /// 회원가입
     @PostMapping()
-    public ApiResponse<Void> signUp(@RequestParam String tempKey,
+    public ApiResponse<Void> signUp(HttpServletResponse httpServletResponse ,
+                                    @RequestParam String tempKey,
                                     @RequestBody @Valid UserRequest request) {
 
         /// 서비스
-        service.saveUser(tempKey, request);
+        var tokenResponse = service.saveUser(tempKey, request);
 
+        /// 토큰 발급
+        httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
+        httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
+
+        /// 리턴
         return ApiResponse.created();
     }
 

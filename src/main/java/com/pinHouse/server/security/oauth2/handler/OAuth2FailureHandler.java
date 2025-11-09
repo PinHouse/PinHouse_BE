@@ -1,6 +1,6 @@
 package com.pinHouse.server.security.oauth2.handler;
 
-import com.pinHouse.server.core.util.RedisKeyUtil;
+import com.pinHouse.server.core.util.KeyUtil;
 import com.pinHouse.server.security.oauth2.domain.TempUserInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 
     /// 레디스 의존성 도입
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisKeyUtil redisKeyUtil;
+    private final KeyUtil keyUtil;
 
     @Value("${cors.front.local}")
     public String REDIRECT_PATH;
@@ -38,7 +38,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
         if (exception instanceof SignupRequiredException) {
 
             /// 레디스로 회원가입 키 생성
-            String tempUserKey = redisKeyUtil.generateOAuth2TempUserKey();
+            String tempUserKey = keyUtil.generateOAuth2TempUserKey();
 
             /// 임시 유저 처리
             TempUserInfo userInfo = ((SignupRequiredException) exception).getUserInfo();
@@ -46,7 +46,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
             /// 레디스에 값 추가( 유효시간 5분 )
             redisTemplate.opsForValue().set(tempUserKey, userInfo, Duration.ofMinutes(5));
 
-            String extraInfoUrl = REDIRECT_PATH + "/extra?tempKey=" + tempUserKey;
+            String extraInfoUrl = REDIRECT_PATH + "/signup?state=" + tempUserKey;
 
             /// 응답을 리다이렉트
             response.sendRedirect(extraInfoUrl);

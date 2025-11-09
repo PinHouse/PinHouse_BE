@@ -17,4 +17,6 @@ public interface NoticeDocumentRepository extends MongoRepository<NoticeDocument
     // 최신 공고: 오늘까지 공개된 것만
     Page<NoticeDocument> findByAnnounceDateLessThanEqual(Instant now, Pageable pageable);
 
+    /// 아이디 목록 조회
+    List<NoticeDocument> findByNoticeIdIn(List<String> noticeIds);
 }

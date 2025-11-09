@@ -21,20 +21,20 @@ public interface PinPointUseCase {
     List<PinPointResponse> loadPinPoints(UUID userId);
 
     /// 수정
-    void update(Long id, UUID userId, UpdatePinPointRequest request);
+    void update(String id, UUID userId, UpdatePinPointRequest request);
 
     /// 삭제
-    void deletePinPoint(UUID userId, Long pinPointId);
+    void deletePinPoint(UUID userId, String pinPointId);
 
     // =================
     //  외부 로직
     // =================
 
     /// 나의 핀포인트가 맞는지 체크
-    boolean checkPinPoint(Long pinPointId, UUID userId);
+    boolean checkPinPoint(String pinPointId, UUID userId);
 
     /// 상세 조회
-    PinPoint loadPinPoint(Long pinPointId);
+    PinPoint loadPinPoint(String pinPointId);
 
 
 }

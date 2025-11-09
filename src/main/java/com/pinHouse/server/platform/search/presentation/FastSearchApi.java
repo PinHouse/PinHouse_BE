@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/search/fast")
@@ -29,15 +27,15 @@ public class FastSearchApi implements FastSearchApiSpec {
      * @param request 요청 DTO
      */
     @PostMapping
-    public ApiResponse<List<FastSearchResponse>> search(
+    public ApiResponse<FastSearchResponse> search(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid FastSearchRequest request) {
 
         /// 서비스
-        List<FastSearchResponse> search = service.search(principalDetails.getId(), request);
+        var response = service.search(principalDetails.getId(), request);
 
         /// 응답
-        return ApiResponse.ok(search);
+        return ApiResponse.ok(response);
     }
 
 
