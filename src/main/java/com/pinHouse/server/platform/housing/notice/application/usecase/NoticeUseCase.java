@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.housing.notice.application.usecase;
 
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
@@ -25,7 +25,7 @@ public interface NoticeUseCase {
     Long countNotices(NoticeListRequest request);
 
     /// 공고 상세 조회
-    NoticeDetailResponse getNotice(String noticeId, NoticeDetailRequest request);
+    NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request);
 
     /// 나의 좋아요 공고 목록 조회
     List<NoticeListResponse> getNoticesLike(UUID userId);

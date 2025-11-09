@@ -1,43 +1,42 @@
 package com.pinHouse.server.platform.housing.notice.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
-public class SortType {
+public record NoticeDetailFilterRequest(
 
-    // =================
-    //  ListSortType 퍼블릭 로직
-    // =================
+        DetailSortType sortType,
 
-    /// 목록 조회를 위한 정렬 파라미터
-    @RequiredArgsConstructor
-    public enum ListSortType {
+        String pinPointId,
 
-        LATEST("최신공고순"),
-        END("마감임박순");
+        int transitTime,
 
-        private final String label;
+        List<String> region,
 
-        @JsonValue
-        public String getLabel() {
-            return label;
-        }
+        @Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
+        List<NoticeListRequest.TargetType> targetType,
 
-        public static ListSortType from(String source) {
-            if (source == null) return null;
-            String s = normalize(source);
+        @Schema(description = "보증금 최대값", example = "50000000")
+        int minDeposit,
 
-            /// Enum.name() 매칭 허용 (LATEST, DEADLINE_ASC ...)
-            for (ListSortType t : values()) {
-                if (t.name().equalsIgnoreCase(s)) return t;
-            }
-            /// 한글 라벨 매칭 허용
-            for (ListSortType t : values()) {
-                if (normalize(t.label).equalsIgnoreCase(s)) return t;
-            }
-            throw new IllegalArgumentException("Invalid ListSortType: " + source);
-        }
-    }
+        @Schema(description = "보증금 최대값", example = "50000000")
+        int maxDeposit,
+
+        @Schema(description = "월 임대료 최대값", example = "300000")
+        int maxMonthPay,
+
+        List<String> typeCode,
+
+        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"도서관\"]")
+        @Size(max = 3)
+        List<FacilityType> facilities
+
+) {
+
 
     // =================
     //  DetailSortType 퍼블릭 로직
@@ -81,6 +80,5 @@ public class SortType {
     private static String normalize(String x) {
         return x.trim().replaceAll("\\s+", "");
     }
-
 
 }

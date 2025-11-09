@@ -6,7 +6,7 @@ import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
@@ -16,6 +16,7 @@ import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocum
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.domain.entity.HouseType;
+import com.pinHouse.server.platform.search.domain.entity.RentalType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -77,7 +78,7 @@ public class NoticeService implements NoticeUseCase {
     /// 공고 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public NoticeDetailResponse getNotice(String noticeId, NoticeDetailRequest request) {
+    public NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
@@ -126,6 +127,11 @@ public class NoticeService implements NoticeUseCase {
                 .flatMap(rt -> rt.getIncludedTypes().stream())
                 .collect(Collectors.toSet());
 
+        // 타겟 유형 집합
+        Set<String> rentalValues = request.rentalTypes().stream()
+                .map(RentalType::getValue)
+                .collect(Collectors.toSet());
+
         // 주택 유형 집합 (한글 기준)
         Set<String> houseTypeValues = request.houseTypes().stream()
                 .map(HouseType::getValue)
@@ -139,6 +145,10 @@ public class NoticeService implements NoticeUseCase {
                 .filter(n -> {
                     String st = Optional.ofNullable(n.getSupplyType()).orElse("").trim();
                     return includedSubTypes.contains(st);
+                })
+                .filter(n -> {
+                    List<String> tgList = Optional.ofNullable(n.getTargetGroups()).orElse(List.of());
+                    return tgList.stream().anyMatch(rentalValues::contains);
                 })
                 .toList();
     }

@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.housing.notice.presentation.swagger;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
@@ -46,6 +46,6 @@ public interface NoticeApiSpec {
     ApiResponse<NoticeDetailResponse> getNotice(
             @Parameter(example = "18442")
             @PathVariable String noticeId,
-            @RequestBody NoticeDetailRequest request);
+            @RequestBody NoticeDetailFilterRequest request);
 
 }

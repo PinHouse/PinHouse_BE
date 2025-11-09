@@ -4,7 +4,7 @@ import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
@@ -60,7 +60,7 @@ public class NoticeApi implements NoticeApiSpec {
     @PostMapping("/{noticeId}")
     public ApiResponse<NoticeDetailResponse> getNotice(
             @PathVariable String noticeId,
-            @RequestBody NoticeDetailRequest request) {
+            @RequestBody NoticeDetailFilterRequest request) {
 
         /// 서비스 계층
         var response = service.getNotice(noticeId, request);
