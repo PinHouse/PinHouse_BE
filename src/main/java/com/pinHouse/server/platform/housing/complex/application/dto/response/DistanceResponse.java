@@ -1,28 +1,43 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.List;
 
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record DistanceResponse(
 
         @Schema(description = "총 소요 시간(분)", example = "45")
         int totalTime,
 
         @Schema(description = "총 거리 (KM)", example = "17")
-        int totalDistance,
+        double totalDistance,
 
-        List<TransitResponse> routes
+        List<TransitResponse> routes,
+
+        List<TransferPointResponse> stops
 ) {
 
     /// 정적 팩토리 메서드
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes) {
         return DistanceResponse.builder()
                 .totalTime(rootResult.totalTime())
-                .totalDistance(0)
+                .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
+                .stops(null)
+                .build();
+    }
+
+    /// 정적 팩토리 메서드
+    public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes, List<TransferPointResponse> stops) {
+        return DistanceResponse.builder()
+                .totalTime(rootResult.totalTime())
+                .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
+                .routes(routes)
+                .stops(stops)
                 .build();
     }
 
@@ -55,6 +70,20 @@ public record DistanceResponse(
                     .bgColorHex(bgColorHex)
                     .build();
 
+        }
+    }
+
+    @Builder
+    public record TransferPointResponse(
+            TransferRole role,     // START, TRANSFER, ARRIVAL
+            ChipType type,         // BUS, SUBWAY, TRAIN ...
+            String stopName,       // 정류장/역 이름
+            String lineText        // 버스번호/호선명 등
+    ) {
+        public enum TransferRole {
+            START,     // 승차 지점
+            TRANSFER,  // 환승 지점
+            ARRIVAL    // 도착 지점
         }
     }
 }

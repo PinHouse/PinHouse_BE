@@ -14,21 +14,28 @@ import java.util.stream.Collectors;
  */
 @Builder
 public record NoticeFacilityListResponse(
-
-        @Schema(description = "타입별 인프라 개수",
-                example = "{\"LIBRARY\":3,\"PARK\":5,\"HOSPITAL\":2}")
-        Map<String, Integer> counts
-
+        List<FacilityType> infra
 ) {
     /// 정적 팩토리 메서드
     public static NoticeFacilityListResponse from(Map<FacilityType, Integer> src) {
+        if (src == null || src.isEmpty()) {
+            return NoticeFacilityListResponse.empty();
+        }
 
-        /// 입력 받은 내용 파싱하기
-        Map<String, Integer> converted = src.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
+        List<FacilityType> infraList = src.entrySet().stream()
+                .filter(e -> e.getValue() != null && e.getValue() >= 3)
+                .map(Map.Entry::getKey)
+                .toList();
 
         return NoticeFacilityListResponse.builder()
-                .counts(converted)
+                .infra(infraList)
+                .build();
+    }
+
+    /// 빈 응답용
+    public static NoticeFacilityListResponse empty() {
+        return NoticeFacilityListResponse.builder()
+                .infra(List.of())
                 .build();
     }
 }

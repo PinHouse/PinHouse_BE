@@ -15,13 +15,16 @@ public record NoticeListRequest(
         List<Region> regionType,
 
         @Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
-        List<TargetType> targetType,
+        List<TargetType> rentalTypes,
 
         @Schema(description = "임대 유형 목록", example = "[\"국민임대\", \"행복주택\"]")
-        List<LeaseType> leaseType,
+        List<LeaseType> supplyTypes,
 
         @Schema(description = "주택 유형 목록", example = "[\"아파트\", \"오피스텔\"]")
         List<HouseType> houseTypes,
+
+        @Schema(description = "공고 마감 여부", example = "모집중")
+        NoticeStatus status,
 
         @Schema(description = "정렬 유형", example = "최신공고순")
         ListSortType sortType
@@ -232,6 +235,39 @@ public record NoticeListRequest(
                 if (normalize(t.label).equalsIgnoreCase(s)) return t;
             }
             throw new IllegalArgumentException("Invalid ListSortType: " + source);
+        }
+    }
+
+
+    // =================
+    //  모집대상 로직
+    // =================
+
+    /// 상세 조회를 위한 정렬 파라미터
+    @RequiredArgsConstructor
+    public enum NoticeStatus {
+
+        ALL("전체"),
+        RECRUITING("모집중");
+
+        private final String label;
+
+        @JsonValue
+        public String getLabel() {
+            return label;
+        }
+
+        @JsonCreator
+        public static NoticeStatus fromLabel(String label) {
+            if (label == null) {
+                return null;
+            }
+            for (NoticeStatus status : values()) {
+                if (status.label.equals(label)) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Unknown NoticeStatus label: " + label);
         }
     }
 

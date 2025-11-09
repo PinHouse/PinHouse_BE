@@ -1,7 +1,10 @@
 package com.pinHouse.server.platform.housing.facility.application.service;
 
+import com.pinHouse.server.core.exception.code.ComplexErrorCode;
+import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
@@ -20,7 +23,7 @@ import java.util.Map;
 public class FacilityService implements FacilityUseCase {
 
     /// 공고 의존성
-    private final ComplexUseCase complexService;
+    private final ComplexDocumentRepository complexRepository;
 
     /// 인프라 의존성
     private final FacilityStatService statsService;
@@ -34,7 +37,7 @@ public class FacilityService implements FacilityUseCase {
     public NoticeFacilityListResponse getNearFacilities(String complexId) {
 
         /// 임대주택 예외처리
-        ComplexDocument notice = complexService.loadComplex(complexId);
+        ComplexDocument notice = loadComplex(complexId);
 
         double lng = notice.getLocation().getLongitude();
         double lat = notice.getLocation().getLatitude();
@@ -59,7 +62,7 @@ public class FacilityService implements FacilityUseCase {
                 .toList();
 
         /// 임대주택 체크
-        return complexService.loadComplexes(complexIds);
+        return loadComplexes(complexIds);
     }
 
     // =================
@@ -83,7 +86,7 @@ public class FacilityService implements FacilityUseCase {
                 .toList();
 
         /// 단지 조회
-        List<ComplexDocument> complexes = complexService.loadComplexes(complexIds);
+        List<ComplexDocument> complexes = loadComplexes(complexIds);
 
         /// noticeId가 일치하는 단지만 필터링
         return complexes.stream()
@@ -95,7 +98,7 @@ public class FacilityService implements FacilityUseCase {
     @Override
     public List<FacilityType> getFacilities(String complexId) {
         /// 임대주택 예외처리
-        ComplexDocument notice = complexService.loadComplex(complexId);
+        ComplexDocument notice = loadComplex(complexId);
 
         double lng = notice.getLocation().getLongitude();
         double lat = notice.getLocation().getLatitude();
@@ -109,6 +112,17 @@ public class FacilityService implements FacilityUseCase {
                 .map(Map.Entry::getKey)
                 .toList();
     }
+
+
+    private List<ComplexDocument> loadComplexes(List<String> ids) {
+        return complexRepository.findByIdIsIn(ids);
+    }
+
+    private ComplexDocument loadComplex(String id) {
+        return complexRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
+    }
+
 
 
 }

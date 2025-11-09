@@ -23,6 +23,9 @@ public record InterCityResult(
         @Schema(description = "탐색된 혼합(환승) 경로 개수", example = "1")
         int mixedCount,
 
+        @Schema(description = "거리", example = "1")
+        double distance,
+
         @Schema(description = "도시 간 경로 리스트")
         List<RootResult> routes
 

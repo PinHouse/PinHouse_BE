@@ -17,37 +17,52 @@ public class InterCityResultParser {
     // =================
 
     /// 도시간 길찾기
+    /// 도시간 길찾기
     public static InterCityResult parse(JsonNode root) {
         JsonNode result = root.path("result");
 
-        /// 값 추출
-        int searchType = result.path("searchType").asInt(1); // 1-도시간
+        int searchType = result.path("searchType").asInt(1);
         int busCount   = result.path("busCount").asInt(0);
         int trainCount = result.path("trainCount").asInt(0);
         int airCount   = result.path("airCount").asInt(0);
         int mixedCount = result.path("mixedCount").asInt(0);
 
         List<RootResult> routes = new ArrayList<>();
+
+        double minDistance = Double.MAX_VALUE; // ✅ 대표 거리(최단 거리) 계산용
+
         JsonNode paths = result.path("path");
         if (paths.isArray()) {
             for (JsonNode path : paths) {
                 JsonNode info = path.path("info");
 
-                int totalTime    = info.path("totalTime").asInt(0);
-                int totalPayment = info.path("totalPayment").asInt(0);
+                int totalTime = info.path("totalTime").asInt(0);
+
+                // ✅ 도시간 응답은 totalPayment 사용
+                int totalPayment = info.path("totalPayment")
+                        .asInt(info.path("payment").asInt(0));
+
+                // ✅ 이 경로의 총 이동 거리(없으면 trafficDistance로 fallback)
+                double totalDistance = info.path("totalDistance")
+                        .asDouble(info.path("trafficDistance").asDouble(0d));
+
+                if (totalDistance > 0 && totalDistance < minDistance) {
+                    minDistance = totalDistance;
+                }
 
                 List<RootResult.DistanceStep> steps = new ArrayList<>();
                 JsonNode subPaths = path.path("subPath");
                 if (subPaths.isArray()) {
                     for (JsonNode sub : subPaths) {
-                        int trafficType = sub.path("trafficType").asInt(); // 4=train, 5=고속, 6=시외, 7=항공
+                        int trafficType = sub.path("trafficType").asInt();
                         RootResult.TransportType t = mapTransportType(trafficType);
 
                         String lineInfo = null;
                         if (t == RootResult.TransportType.TRAIN) {
                             int trainType = sub.path("trainType").asInt(-1);
-                            lineInfo = mapTrainType(trainType); // KTX/SRT/무궁화/ITX 등
+                            lineInfo = mapTrainType(trainType);
                         } else if (t == RootResult.TransportType.BUS) {
+                            // 5: 고속, 6: 시외
                             lineInfo = (trafficType == 5) ? "고속버스" : "시외버스";
                         } else if (t == RootResult.TransportType.AIR) {
                             lineInfo = "항공";
@@ -63,13 +78,18 @@ public class InterCityResultParser {
                     }
                 }
 
-
                 routes.add(RootResult.builder()
                         .totalTime(totalTime)
                         .totalPayment(totalPayment)
-                        .steps(steps)
+                        .totalDistance(totalDistance)
+                        .steps(List.copyOf(steps))
                         .build());
             }
+        }
+
+        // path가 하나도 없으면 0으로 처리
+        if (minDistance == Double.MAX_VALUE) {
+            minDistance = 0d;
         }
 
         return InterCityResult.builder()
@@ -78,9 +98,12 @@ public class InterCityResultParser {
                 .trainCount(trainCount)
                 .airCount(airCount)
                 .mixedCount(mixedCount)
+                .distance(minDistance)
                 .routes(List.copyOf(routes))
                 .build();
     }
+
+
 
     // =================
     //  내부 로직

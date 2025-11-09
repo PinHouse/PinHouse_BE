@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
-import com.pinHouse.server.platform.housing.complex.application.dto.result.InterCityResult;
-import com.pinHouse.server.platform.housing.complex.application.dto.result.IntraCityResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.util.DistanceUtil;
 import com.pinHouse.server.platform.housing.complex.application.util.InterCityResultParser;

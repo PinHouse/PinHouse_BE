@@ -6,6 +6,10 @@ import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
+import com.pinHouse.server.platform.housing.facility.application.service.FacilityStatService;
+import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
+import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
@@ -26,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,7 +44,7 @@ public class NoticeService implements NoticeUseCase {
 
     /// 좋아요 목록 조회
     private final LikeQueryUseCase likeService;
-
+    private final FacilityUseCase facilityService;
 
     // =================
     //  퍼블릭 로직
@@ -86,8 +87,16 @@ public class NoticeService implements NoticeUseCase {
         /// 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
 
+        /// 아파트에 인프라 체크
+        Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
+                .map(ComplexDocument::getId)
+                .collect(Collectors.toMap(
+                        id -> id,
+                        facilityService::getNearFacilities
+                ));
+
         /// 리턴
-        return NoticeDetailResponse.from(notice, complexes);
+        return NoticeDetailResponse.from(notice, complexes, facilityMap);
     }
 
     /// 좋아요 누른 공고 목록

@@ -20,6 +20,9 @@ public record RootResult(
         @Schema(description = "총 요금(원)", example = "1350")
         int totalPayment,
 
+        @Schema(description = "총 이동 거리(m)", example = "28598")
+        double totalDistance,
+
         @Schema(description = "구간별 이동 단계 리스트")
         List<DistanceStep> steps
 ) {
@@ -62,9 +65,14 @@ public record RootResult(
                             .build());
                 }
 
+                /// ODsay info.totalDistance 사용
+                int totalDistance = info.path("totalDistance").asInt(0);
+
+
                 RootResult response = RootResult.builder()
                         .totalTime(info.path("totalTime").asInt())
                         .totalPayment(info.path("payment").asInt())
+                        .totalDistance(totalDistance)
                         .steps(steps)
                         .build();
 

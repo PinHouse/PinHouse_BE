@@ -35,6 +35,73 @@ public class TransitResponseMapper {
                 .orElse(null);
     }
 
+    /// 적절한 1개 선택
+    public List<RootResult> selectTop3(PathResult pathResult) {
+
+        /// 없으면 null
+        if (pathResult == null || pathResult.routes() == null) {
+            return List.of();
+        }
+
+        /// 1순위 최소 운행 시간, 2순위 금액 기준으로 표기
+        return pathResult.routes().stream()
+                .sorted(Comparator.comparingInt(RootResult::totalTime)
+                        .thenComparingInt(RootResult::totalPayment)) // 시간 → 요금 순 정렬
+                .limit(3) // 상위 3개만 선택
+                .toList();
+    }
+
+    public List<DistanceResponse.TransferPointResponse> extractStops(RootResult route) {
+
+        List<DistanceResponse.TransferPointResponse> result = new ArrayList<>();
+
+        if (route == null || route.steps() == null || route.steps().isEmpty()) {
+            return result;
+        }
+
+        // WALK 빼고 “실제 탑승하는 구간”만 추출
+        List<RootResult.DistanceStep> moveSteps = route.steps().stream()
+                .filter(s -> s.type() != RootResult.TransportType.WALK)
+                .toList();
+
+        if (moveSteps.isEmpty()) {
+            return result;
+        }
+
+        // 1) 첫 승차 지점
+        RootResult.DistanceStep first = moveSteps.get(0);
+        result.add(DistanceResponse.TransferPointResponse.builder()
+                .role(DistanceResponse.TransferPointResponse.TransferRole.START)
+                .type(mapType(first.type()))                 // 기존 mapType 재사용
+                .stopName(first.startName())                // 승차 지점
+                .lineText(first.lineInfo())                 // 버스번호/호선명
+                .build());
+
+        // 2) 중간 환승 지점들 (두 번째 탑승부터는 전부 환승으로 간주)
+        for (int i = 1; i < moveSteps.size(); i++) {
+            RootResult.DistanceStep step = moveSteps.get(i);
+
+            result.add(DistanceResponse.TransferPointResponse.builder()
+                    .role(DistanceResponse.TransferPointResponse.TransferRole.TRANSFER)
+                    .type(mapType(step.type()))
+                    .stopName(step.startName())            // 환승 지점 이름
+                    .lineText(step.lineInfo())             // 환승 후 타는 노선
+                    .build());
+        }
+
+        // 3) 마지막 도착 지점
+        RootResult.DistanceStep last = moveSteps.get(moveSteps.size() - 1);
+        result.add(DistanceResponse.TransferPointResponse.builder()
+                .role(DistanceResponse.TransferPointResponse.TransferRole.ARRIVAL)
+                .type(mapType(last.type()))
+                .stopName(last.endName())                  // 최종 도착 지점
+                .lineText(null)                            // 필요 없으면 null
+                .build());
+
+        return result;
+    }
+
+
 
     /// 출력을 위한 매퍼
     public List<DistanceResponse.TransitResponse> from(RootResult route) {

@@ -4,7 +4,5 @@ import java.util.List;
 
 public interface PathResult {
 
-    int searchType();
-
     List<RootResult> routes();
 }
