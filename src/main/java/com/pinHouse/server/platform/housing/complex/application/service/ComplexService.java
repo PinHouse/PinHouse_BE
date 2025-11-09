@@ -16,6 +16,8 @@ import com.pinHouse.server.platform.housing.complex.domain.entity.Deposit;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
+import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
@@ -48,6 +50,7 @@ public class ComplexService implements ComplexUseCase {
 
     /// 좋아요 목록 조회
     private final LikeQueryUseCase likeService;
+    private final FacilityUseCase facilityService;
 
     // =================
     //  퍼블릭 로직
@@ -60,8 +63,11 @@ public class ComplexService implements ComplexUseCase {
         /// 조회
         ComplexDocument complex = loadComplex(id);
 
+        /// 주변 인프라 조회
+        NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
+
         /// 리턴
-        return ComplexDetailResponse.from(complex);
+        return ComplexDetailResponse.from(complex, nearFacilities);
 
     }
 

@@ -27,7 +27,7 @@ public class FacilityStatService {
     private final FacilityStatDocumentRepository countsRepo;
 
     // === 상수 ===
-    private static final double RADIUS_KM = 3;
+    private static final double RADIUS_KM = 1;
     private static final double RADIUS_M  = RADIUS_KM * 1000.0;
     private static final Duration TTL = Duration.ofDays(7);
 

@@ -3,11 +3,13 @@ package com.pinHouse.server.platform.housing.notice.application.dto;
 import com.pinHouse.server.core.util.DateUtil;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 public record NoticeDetailResponse(
@@ -36,10 +38,10 @@ public record NoticeDetailResponse(
 ) {
 
     /// 정적 팩토리 메서드
-    public static NoticeDetailResponse from(NoticeDocument notice, List<ComplexDocument> complexes) {
+    public static NoticeDetailResponse from(NoticeDocument notice, List<ComplexDocument> complexes, Map<String, NoticeFacilityListResponse> facilityListResponseMap) {
 
         /// 공고에 해당하는 임대주택 목록
-        var complexesResponse = ComplexDetailResponse.from(complexes);
+        var complexesResponse = ComplexDetailResponse.from(complexes,facilityListResponseMap);
 
         String period = DateUtil.formatDate(notice.getApplyStart(), notice.getApplyEnd());
 
