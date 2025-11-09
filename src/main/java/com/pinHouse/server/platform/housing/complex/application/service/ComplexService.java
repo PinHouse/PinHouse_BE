@@ -227,6 +227,7 @@ public class ComplexService implements ComplexUseCase {
         List<ComplexDocument> nearbyDocs =
                 repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
 
+
         /// 기존 목록과 교집합 + 거리/시간 계산
         return complexDocuments.stream()
                 .filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))

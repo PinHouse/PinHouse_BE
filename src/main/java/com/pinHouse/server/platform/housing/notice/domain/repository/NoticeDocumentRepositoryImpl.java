@@ -47,16 +47,16 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         }
 
         /// 모집 대상 필터링
-        if (request.targetType() != null && !request.targetType().isEmpty()) {
-            List<String> targetDisplayNames = request.targetType().stream()
+        if (request.rentalTypes() != null && !request.rentalTypes().isEmpty()) {
+            List<String> targetDisplayNames = request.rentalTypes().stream()
                     .map(NoticeListRequest.TargetType::getDisplayName)
                     .toList();
             criteria.and("targetGroup").in(targetDisplayNames);
         }
 
         /// 임대 유형 필터링
-        if (request.leaseType() != null && !request.leaseType().isEmpty()) {
-            List<String> leaseTypes = request.leaseType().stream()
+        if (request.supplyTypes() != null && !request.supplyTypes().isEmpty()) {
+            List<String> leaseTypes = request.supplyTypes().stream()
                     .map(NoticeListRequest.LeaseType::getDisplayName)
                     .toList();
             criteria.and("supplyType").in(leaseTypes);

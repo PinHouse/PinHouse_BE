@@ -15,10 +15,10 @@ public record NoticeListRequest(
         List<Region> regionType,
 
         @Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
-        List<TargetType> targetType,
+        List<TargetType> rentalTypes,
 
         @Schema(description = "임대 유형 목록", example = "[\"국민임대\", \"행복주택\"]")
-        List<LeaseType> leaseType,
+        List<LeaseType> supplyTypes,
 
         @Schema(description = "주택 유형 목록", example = "[\"아파트\", \"오피스텔\"]")
         List<HouseType> houseTypes,

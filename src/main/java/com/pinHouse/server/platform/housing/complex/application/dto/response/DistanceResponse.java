@@ -14,18 +14,18 @@ public record DistanceResponse(
         int totalTime,
 
         @Schema(description = "총 거리 (KM)", example = "17")
-        int totalDistance,
+        double totalDistance,
 
         List<TransitResponse> routes,
 
-        List<TransferPointResponse> stops      // 새로 추가: 승차/환승/도착 지점
+        List<TransferPointResponse> stops
 ) {
 
     /// 정적 팩토리 메서드
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes) {
         return DistanceResponse.builder()
                 .totalTime(rootResult.totalTime())
-                .totalDistance(0)
+                .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
                 .stops(null)
                 .build();
@@ -35,7 +35,7 @@ public record DistanceResponse(
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes, List<TransferPointResponse> stops) {
         return DistanceResponse.builder()
                 .totalTime(rootResult.totalTime())
-                .totalDistance(0)
+                .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
                 .stops(stops)
                 .build();

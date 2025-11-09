@@ -42,6 +42,10 @@ public class IntraCityResultParser {
                 int totalTime          = info.path("totalTime").asInt(0);
                 int totalPayment       = info.path("payment").asInt(0);
 
+                /// 거리
+                double totalDistance = info.path("totalDistance")
+                        .asDouble(info.path("trafficDistance").asDouble(0d));
+
                 List<RootResult.DistanceStep> steps = new ArrayList<>();
                 JsonNode subPaths = pathNode.path("subPath");
 
@@ -83,6 +87,7 @@ public class IntraCityResultParser {
                 routes.add(RootResult.builder()
                         .totalTime(totalTime)
                         .totalPayment(totalPayment)
+                        .totalDistance(totalDistance)
                         .steps(List.copyOf(steps))
                         .build());
             }
@@ -93,7 +98,7 @@ public class IntraCityResultParser {
                 .busCount(busCount)
                 .subwayCount(subwayCount)
                 .subwayBusCount(subwayBusCount)
-                .pointDistance(pointDistance)
+                .distance(pointDistance)
                 .routes(List.copyOf(routes))
                 .build();
     }

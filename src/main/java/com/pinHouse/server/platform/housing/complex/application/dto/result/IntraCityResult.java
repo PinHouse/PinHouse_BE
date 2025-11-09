@@ -21,7 +21,7 @@ public record IntraCityResult(
         int subwayBusCount,
 
         @Schema(description = "출발-도착 직선거리(m)", example = "1245.6")
-        double pointDistance,
+        double distance,
 
         @Schema(description = "도시내 경로 리스트")
         List<RootResult> routes
