@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Document(collection = "notices")
 @Getter
@@ -62,12 +63,16 @@ public class NoticeDocument {
     @Field("meta")
     private Meta meta;
 
+    @Field("targetGroup")
+    private List<String> targetGroups;
+
     /// 빌더 생성자
     @Builder
     public NoticeDocument(String id, String status, String title, String agency,
                           String houseType, String supplyType, String prevNoticeId, LocalDate announceDate,
                           LocalDate winnerDate, LocalDate applyStart, LocalDate applyEnd,
-                          String contact, Urls urls, String city, String county, Meta meta) {
+                          String contact, Urls urls, String city, String county, Meta meta, List<String> targetGroups) {
+
         this.id = id;
         this.status = status;
         this.title = title;
@@ -84,9 +89,6 @@ public class NoticeDocument {
         this.city = city;
         this.county = county;
         this.meta = meta;
+        this.targetGroups = targetGroups;
     }
-
-
-
-
 }

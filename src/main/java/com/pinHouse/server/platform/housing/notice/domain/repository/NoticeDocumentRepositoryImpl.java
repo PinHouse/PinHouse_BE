@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCustom{
+public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
 
@@ -35,6 +35,14 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
             criteria.and("city").in(cities);
         }
 
+        /// 타입 유형 필터링
+        if (request.targetType() != null && !request.targetType().isEmpty()) {
+            List<String> targetDisplayNames = request.targetType().stream()
+                    .map(NoticeListRequest.TargetType::getDisplayName)
+                    .toList();
+
+            criteria.and("targetGroup").in(targetDisplayNames);
+        }
         /// 임대 유형 필터링
         if (request.leaseType() != null && !request.leaseType().isEmpty()) {
             List<String> leaseTypes = request.leaseType().stream().map(NoticeListRequest.LeaseType::getDisplayName).toList();

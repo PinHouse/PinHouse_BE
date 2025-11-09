@@ -77,7 +77,7 @@ public record NoticeListResponse(
                 .announcePeriod(notice.getAnnounceDate().toString())
                 .type(notice.getSupplyType())
                 .housingType(notice.getHouseType())
-                .liked(true)
+                .liked(false)
                 .build();
     }
 
