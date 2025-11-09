@@ -40,7 +40,7 @@ public record FastSearchRequest(
         @Size(max = 3)
         List<FacilityType> facilities,
 
-        @Schema(description = "모집 대상", example = "[\"청년\"]")
+        @Schema(description = "모집 대상", example = "[\"신혼부부\"]")
         List<RentalType> rentalTypes,
 
         @Schema(description = "공급 유형", example = "[\"공공임대\"]")
