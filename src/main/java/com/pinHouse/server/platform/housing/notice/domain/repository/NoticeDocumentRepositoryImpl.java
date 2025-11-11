@@ -23,17 +23,24 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         Criteria criteria = new Criteria();
 
         /// 모집 상태 필터링 (현재 날짜 기준)
+        boolean applyEndFiltered = false;
+
+        /// 모집 상태 필터링 (현재 날짜 기준)
         if (request.status() != null) {
             if (request.status() == NoticeListRequest.NoticeStatus.RECRUITING) {
-                // 모집 중: applyEnd가 현재 이후
                 criteria.and("applyEnd").gte(now);
+                applyEndFiltered = true;
             }
-            // 전체(ALL)는 조건 추가하지 않음
+            // ALL이면 아무 조건 X
         }
 
         /// 시간 기준 정렬 (최신/마감임박)
         if (request.sortType() == NoticeListRequest.ListSortType.END) {
-            criteria.and("applyEnd").gte(now);
+            // 이미 applyEnd 조건이 있다면 다시 넣지 않음
+            if (!applyEndFiltered) {
+                criteria.and("applyEnd").gte(now);
+                applyEndFiltered = true;
+            }
         } else {
             criteria.and("announceDate").lte(now);
         }
