@@ -15,26 +15,26 @@ import java.util.List;
 @Schema(name = "[요청][검색] 빠른 검색 요청", description = "빠른 검색 조건을 위한 요청 DTO입니다.")
 public record FastSearchRequest(
 
-        @Schema(description = "나의 기록 아이디", example = "")
+        @Schema(description = "나의 기록 아이디", example = "null")
         String historyId,
 
         @Schema(description = "나의 핀 포인트 아이디", example = "4dff2ba3-3232-4674-bddd-803ca06429ff")
         String pinPointId,
 
         @Schema(description = "대중교통 소요 시간(분)", example = "120")
-        int transitTime,
+        Integer transitTime,
 
         @Schema(description = "방 최소 크기 (평)", example = "5.3")
-        double minSize,
+        Double minSize,
 
         @Schema(description = "방 최대 크기 (평)", example = "30")
-        double maxSize,
+        Double maxSize,
 
         @Schema(description = "보증금 최대값", example = "50000000")
-        int maxDeposit,
+        Integer maxDeposit,
 
         @Schema(description = "월 임대료 최대값", example = "300000")
-        int maxMonthPay,
+        Integer maxMonthPay,
 
         @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"도서관\"]")
         @Size(max = 3)
@@ -48,4 +48,4 @@ public record FastSearchRequest(
 
         @Schema(description = "주택 유형", example = "[\"아파트\"]")
         List<HouseType> houseTypes
-) { }
+) {}

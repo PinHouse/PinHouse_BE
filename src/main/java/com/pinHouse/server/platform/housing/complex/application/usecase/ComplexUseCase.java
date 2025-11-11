@@ -7,6 +7,7 @@ import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocumen
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -43,10 +44,10 @@ public interface ComplexUseCase {
     List<ComplexDocument> loadComplexes(String noticeId);
 
     /// 거리 계산 필터링
-    List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req);
+    List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, SearchHistory req);
 
     /// 필터링
-    List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> filter, FastSearchRequest request);
+    List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> filter, SearchHistory request);
 
 
 }

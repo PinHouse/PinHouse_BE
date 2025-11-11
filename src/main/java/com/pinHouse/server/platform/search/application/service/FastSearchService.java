@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.search.application.service;
 
+import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
@@ -71,27 +72,35 @@ public class FastSearchService implements FastSearchUseCase {
         /// 유저/핀포인트 검증
         User user = userService.loadUser(userId);
 
+        SearchHistory searchHistory;
+
+        /// 만약 기록으로 들어왔다면,
+        if (request.historyId() == null){
+            /// 기록 저장하기
+            var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(), request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(), request.rentalTypes(), request.supplyTypes(), request.houseTypes());
+            searchHistory = repository.save(reqHistory);
+        } else {
+            searchHistory = repository.findById(request.historyId())
+                    .orElseThrow(() -> new CustomException(CommonErrorCode.NOT_FOUND));
+        }
+
         /// 핀포인트 조회 및 예외처리
-        var pinPoint = pinPointService.loadPinPoint(request.pinPointId());
+        var pinPoint = pinPointService.loadPinPoint(searchHistory.getPinPointId());
         if (!pinPointService.checkPinPoint(pinPoint.getId(), user.getId())) {
             throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
         }
 
-        /// 기록 저장하기
-        var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(), request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(), request.rentalTypes(), request.supplyTypes(), request.houseTypes());
-        repository.save(reqHistory);
-
         /// 공고 타입 & 주택 유형 분류하기
-        List<NoticeDocument> notices = noticeService.filterNotices(request);
+        List<NoticeDocument> notices = noticeService.filterNotices(searchHistory);
 
         /// 해당하는 인프라가 존재하는 친구로 조회
-        List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, request.facilities());
+        List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, searchHistory.getFacilities());
 
         /// 거리 필터링
-        List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, request);
+        List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, searchHistory);
 
         /// 전용면적/보증금/월임대료 필터링
-        List<ComplexDistanceResponse> filtered = complexService.filterUnitTypesOnly(documents, request);
+        List<ComplexDistanceResponse> filtered = complexService.filterUnitTypesOnly(documents, searchHistory);
 
         /// 없다면 빈 리스트 제공
         if (filtered.isEmpty()) {
