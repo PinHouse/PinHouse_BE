@@ -8,6 +8,7 @@ import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRes
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,6 @@ public interface NoticeUseCase {
     NoticeDocument loadNotice(String id);
 
     /// 필터링을 위한 함수
-    List<NoticeDocument> filterNotices(FastSearchRequest request);
+    List<NoticeDocument> filterNotices(SearchHistory request);
 
 }

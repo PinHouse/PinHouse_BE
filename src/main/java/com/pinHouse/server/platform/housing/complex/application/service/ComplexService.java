@@ -22,6 +22,7 @@ import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.ComplexDistanceResponse;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
+import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -185,19 +186,19 @@ public class ComplexService implements ComplexUseCase {
     /// 거리 계산 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, FastSearchRequest req) {
+    public List<ComplexDistanceResponse> filterDistanceOnly(List<ComplexDocument> complexDocuments, SearchHistory req) {
 
         /// 기준 핀포인트 로드
-        PinPoint pinPoint = pinPointService.loadPinPoint(req.pinPointId());
+        PinPoint pinPoint = pinPointService.loadPinPoint(req.getPinPointId());
         Location pointLocation = pinPoint.getLocation();
 
-        if (req.transitTime() <= 0) {
+        if (req.getTransitTime() <= 0) {
             throw new CustomException(CommonErrorCode.BAD_PARAMETER);
         }
 
         /// 반경 계산
         double avgSpeedKmh = 15.0; // 평균 속도 (15km/h)
-        double transitTimeMin = req.transitTime();
+        double transitTimeMin = req.getTransitTime();
         double distanceKm = (avgSpeedKmh * transitTimeMin) / 60.0;
         double radiusInRadians = distanceKm / 6378.1;
 
@@ -235,12 +236,12 @@ public class ComplexService implements ComplexUseCase {
     /// 필터링
     @Override
     @Transactional(readOnly = true)
-    public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes, FastSearchRequest req) {
+    public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes, SearchHistory req) {
 
-        final double minM2 = toM2(req.minSize());
-        final double maxM2 = toM2(req.maxSize());
-        final long   maxDeposit    = req.maxDeposit();
-        final long   maxMonthlyPay = req.maxMonthPay();
+        final double minM2 = toM2(req.getMinSize());
+        final double maxM2 = toM2(req.getMaxSize());
+        final long   maxDeposit    = req.getMaxDeposit();
+        final long   maxMonthlyPay = req.getMaxMonthPay();
 
         return complexes.stream()
                 .filter(cd -> cd != null && cd.complex() != null

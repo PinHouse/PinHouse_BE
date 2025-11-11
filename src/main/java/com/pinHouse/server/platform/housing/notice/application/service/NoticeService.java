@@ -21,6 +21,7 @@ import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.domain.entity.HouseType;
 import com.pinHouse.server.platform.search.domain.entity.RentalType;
+import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -129,20 +130,20 @@ public class NoticeService implements NoticeUseCase {
 
     /// 타입에 따라서 필터링 하기
     @Override
-    public List<NoticeDocument> filterNotices(FastSearchRequest request) {
+    public List<NoticeDocument> filterNotices(SearchHistory request) {
 
         // 공급 유형 집합 (한글 기준)
-        Set<String> includedSubTypes = request.supplyTypes().stream()
+        Set<String> includedSubTypes = request.getSupplyTypes().stream()
                 .flatMap(rt -> rt.getIncludedTypes().stream())
                 .collect(Collectors.toSet());
 
         // 타겟 유형 집합
-        Set<String> rentalValues = request.rentalTypes().stream()
+        Set<String> rentalValues = request.getRentalTypes().stream()
                 .map(RentalType::getValue)
                 .collect(Collectors.toSet());
 
         // 주택 유형 집합 (한글 기준)
-        Set<String> houseTypeValues = request.houseTypes().stream()
+        Set<String> houseTypeValues = request.getHouseType().stream()
                 .map(HouseType::getValue)
                 .collect(Collectors.toSet());
 
