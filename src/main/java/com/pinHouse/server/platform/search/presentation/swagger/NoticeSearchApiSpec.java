@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.search.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
 import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
@@ -30,11 +31,7 @@ public interface NoticeSearchApiSpec {
             @Parameter(description = "검색 키워드", example = "행복주택", required = true)
             @RequestParam String q,
 
-            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-
-            @Parameter(description = "페이지 크기 (최대 100)", example = "20")
-            @RequestParam(defaultValue = "20") int size,
+            PageRequest pageRequest,
 
             @Parameter(description = "정렬 방식 (LATEST: 최신순, DEADLINE: 마감임박순)", example = "LATEST")
             @RequestParam(defaultValue = "LATEST") String sort,

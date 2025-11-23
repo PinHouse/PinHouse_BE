@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.search.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.core.response.response.pageable.PageRequest;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
 import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
@@ -36,8 +37,7 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
     @GetMapping("/notices")
     public ApiResponse<NoticeSearchResponse> searchNotices(
             @RequestParam String q,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            PageRequest pageRequest,
             @RequestParam(defaultValue = "LATEST") String sort,
             @RequestParam(defaultValue = "ALL") String filter,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -46,7 +46,7 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
         UUID userId = (principalDetails != null) ? principalDetails.getId() : null;
 
         // 검색 실행
-        NoticeSearchResponse response = noticeSearchService.searchNotices(q, page, size, sort, filter, userId);
+        NoticeSearchResponse response = noticeSearchService.searchNotices(q, pageRequest.getPage() - 1, pageRequest.getSize(), sort, filter, userId);
 
         return ApiResponse.ok(response);
     }
