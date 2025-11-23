@@ -11,4 +11,16 @@ public interface NoticeDocumentRepositoryCustom {
 
     Page<NoticeDocument> findNoticesByFilters(NoticeListRequest request, Pageable pageable, Instant now);
 
+    /**
+     * 텍스트 검색을 통한 공고 검색
+     * MongoDB의 text index를 사용하여 제목 기반 검색
+     *
+     * @param keyword 검색 키워드
+     * @param pageable 페이징 정보
+     * @param filterOpen true면 모집중만, false면 전체
+     * @param now 현재 시각
+     * @return 검색 결과
+     */
+    Page<NoticeDocument> searchByTitle(String keyword, Pageable pageable, boolean filterOpen, Instant now);
+
 }
