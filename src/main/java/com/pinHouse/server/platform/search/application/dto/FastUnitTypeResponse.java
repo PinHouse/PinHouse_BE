@@ -27,11 +27,14 @@ public record FastUnitTypeResponse(
         @Schema(description = "KM", example = "15.6")
         double km,
 
-        List<String> infra            // 인프라 종류
+        List<String> infra,            // 인프라 종류
+
+        @Schema(description = "좋아요 여부", example = "true")
+        boolean liked                  // 좋아요 여부
 ) {
 
 
-    public static FastUnitTypeResponse from(ComplexDistanceResponse complexDistanceResponse, List<FacilityType> facilityTypes) {
+    public static FastUnitTypeResponse from(ComplexDistanceResponse complexDistanceResponse, List<FacilityType> facilityTypes, boolean liked) {
 
         /// 아파트
         ComplexDocument complexDocument = complexDistanceResponse.complex();
@@ -54,8 +57,14 @@ public record FastUnitTypeResponse(
                 .infra(facilityTypes.stream()
                         .map(FacilityType::getValue)
                         .toList())
+                .liked(liked)
                 .build();
 
+    }
+
+    /// 정적 팩토리 메서드 (오버로드 - 좋아요 정보 없을 때)
+    public static FastUnitTypeResponse from(ComplexDistanceResponse complexDistanceResponse, List<FacilityType> facilityTypes) {
+        return from(complexDistanceResponse, facilityTypes, false);
     }
 
 }

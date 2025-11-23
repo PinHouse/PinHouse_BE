@@ -174,8 +174,6 @@ public class ComplexService implements ComplexUseCase {
         /// ID 목록으로 방 조회하기
         List<ComplexDocument> results = loadRooms(List.of(typeId));
 
-        log.info(typeId);
-
         if (results.isEmpty()) {
             throw new CustomException(ComplexErrorCode.NOT_FOUND_UNITTYPE);
         }
@@ -310,8 +308,8 @@ public class ComplexService implements ComplexUseCase {
     protected List<ComplexDocument> loadRooms(List<String> roomIds) {
 
         /// ObjectId 리스트로 변환
-        List<ObjectId> typeIdsAsObjectId = roomIds.stream()
-                .map(ObjectId::new)
+        List<String> typeIdsAsObjectId = roomIds.stream()
+                .map(String::new)
                 .toList();
 
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)

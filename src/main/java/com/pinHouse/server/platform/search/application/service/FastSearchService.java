@@ -5,6 +5,7 @@ import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
@@ -40,6 +41,7 @@ public class FastSearchService implements FastSearchUseCase {
     private final PinPointUseCase pinPointService;
     private final FacilityUseCase facilityService;
     private final NoticeUseCase noticeService;
+    private final com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase likeService;
 
     // =================
     //  퍼블릭 로직
@@ -107,9 +109,17 @@ public class FastSearchService implements FastSearchUseCase {
             FastSearchResponse.from(List.of());
         }
 
+        /// 좋아요 상태 조회
+        List<String> likedTypeIds = likeService.getLikeUnitTypeIds(userId);
+
         /// DTO 변환
         List<FastUnitTypeResponse> responses = filtered.stream()
-                .map(c -> FastUnitTypeResponse.from(c, facilityService.getFacilities(c.complex().getId())))
+                .map(c -> {
+                    ComplexDocument complex = c.complex();
+                    UnitType unitType = complex.getUnitTypes().getFirst();
+                    boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
+                    return FastUnitTypeResponse.from(c, facilityService.getFacilities(complex.getId()), isLiked);
+                })
                 .toList();
 
         /// DTO 변환 리턴

@@ -13,7 +13,7 @@ public interface ComplexDocumentRepository extends MongoRepository<ComplexDocume
 
     @Query(value = "{ 'unitTypes.typeId': { $in: ?0 } }",
             fields = "{ 'complexId': 1, 'name': 1, 'unitTypes.$': 1 }")
-    List<ComplexDocument> findFirstMatchingUnitType(List<ObjectId> typeIds);
+    List<ComplexDocument> findFirstMatchingUnitType(List<String> typeIds);
 
     /// 존재하는 모음
     List<ComplexDocument> findByIdIsIn(List<String> complexIds);
