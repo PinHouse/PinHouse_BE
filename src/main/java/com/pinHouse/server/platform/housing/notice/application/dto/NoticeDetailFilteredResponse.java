@@ -3,14 +3,12 @@ package com.pinHouse.server.platform.housing.notice.application.dto;
 import com.pinHouse.server.core.util.DateUtil;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
-import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
-import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import com.pinHouse.server.platform.housing.notice.application.service.ComplexFilterService;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,136 +31,31 @@ public record NoticeDetailFilteredResponse(
 ) {
 
     /**
-     * 정적 팩토리 메서드 - 필터링 로직 포함
+     * 정적 팩토리 메서드 - ComplexFilterService 위임
      */
     public static NoticeDetailFilteredResponse from(
             NoticeDocument notice,
             List<ComplexDocument> complexes,
             Map<String, NoticeFacilityListResponse> facilityMap,
-            NoticeDetailFilterRequest request
+            NoticeDetailFilterRequest request,
+            ComplexFilterService filterService
     ) {
         // 1. 기본 정보 생성
         NoticeBasicInfo basicInfo = NoticeBasicInfo.from(notice);
 
-        // 2. 필터링 로직 적용
-        List<ComplexDocument> filteredComplexes = new ArrayList<>();
-        List<ComplexDocument> nonFilteredComplexes = new ArrayList<>();
-
-        for (ComplexDocument complex : complexes) {
-            // Complex 레벨 필터 체크
-            NoticeFacilityListResponse facilities = facilityMap.get(complex.getId());
-            boolean complexPassesFilter = passesComplexLevelFilters(complex, facilities, request);
-
-            if (!complexPassesFilter) {
-                // Complex 자체가 필터를 통과하지 못하면 nonFiltered에 추가
-                nonFilteredComplexes.add(complex);
-                continue;
-            }
-
-            // UnitType 레벨 필터 적용
-            List<UnitType> allUnitTypes = complex.getUnitTypes();
-            List<UnitType> filteredUnits = new ArrayList<>();
-            List<UnitType> nonFilteredUnits = new ArrayList<>();
-
-            for (UnitType unit : allUnitTypes) {
-                if (passesUnitTypeFilters(unit, request)) {
-                    filteredUnits.add(unit);
-                } else {
-                    nonFilteredUnits.add(unit);
-                }
-            }
-
-            // 필터를 통과한 UnitType이 있으면 filtered에, 아니면 nonFiltered에
-            if (!filteredUnits.isEmpty()) {
-                ComplexDocument filteredComplex = ComplexDocument.builder()
-                        .src(complex)
-                        .unitTypes(filteredUnits)
-                        .build();
-                filteredComplexes.add(filteredComplex);
-            }
-
-            if (!nonFilteredUnits.isEmpty()) {
-                ComplexDocument nonFilteredComplex = ComplexDocument.builder()
-                        .src(complex)
-                        .unitTypes(nonFilteredUnits)
-                        .build();
-                nonFilteredComplexes.add(nonFilteredComplex);
-            }
-        }
+        // 2. ComplexFilterService를 통한 종합 필터링 (거리, 지역, 비용, 면적, 시설)
+        ComplexFilterService.FilterResult filterResult =
+                filterService.filterComplexes(complexes, facilityMap, request);
 
         // 3. 응답 데이터 생성
-        NoticeDetailData filtered = NoticeDetailData.from(filteredComplexes, facilityMap);
-        NoticeDetailData nonFiltered = NoticeDetailData.from(nonFilteredComplexes, facilityMap);
+        NoticeDetailData filtered = NoticeDetailData.from(filterResult.filtered(), facilityMap);
+        NoticeDetailData nonFiltered = NoticeDetailData.from(filterResult.nonFiltered(), facilityMap);
 
         return NoticeDetailFilteredResponse.builder()
                 .basicInfo(basicInfo)
                 .filtered(filtered)
                 .nonFiltered(nonFiltered)
                 .build();
-    }
-
-    /**
-     * Complex 레벨 필터 체크 (지역, 인프라 등)
-     */
-    private static boolean passesComplexLevelFilters(
-            ComplexDocument complex,
-            NoticeFacilityListResponse facilities,
-            NoticeDetailFilterRequest request
-    ) {
-        // 지역 필터 (county 사용: "성남시 분당구" 형식)
-        if (request.region() != null && !request.region().isEmpty()) {
-            String complexRegion = complex.getCounty() != null ? complex.getCounty() : "";
-            if (!request.region().contains(complexRegion)) {
-                return false;
-            }
-        }
-
-        // 인프라 필터 (요청한 facilities가 모두 있어야 함)
-        if (request.facilities() != null && !request.facilities().isEmpty()) {
-            List<FacilityType> availableFacilities = facilities != null ? facilities.infra() : List.of();
-
-            for (FacilityType requiredFacility : request.facilities()) {
-                if (!availableFacilities.contains(requiredFacility)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * UnitType 레벨 필터 체크 (보증금, 월세, 타입코드 등)
-     */
-    private static boolean passesUnitTypeFilters(UnitType unit, NoticeDetailFilterRequest request) {
-        // 보증금 필터
-        if (request.minDeposit() > 0 || request.maxDeposit() > 0) {
-            long depositTotal = unit.getDeposit() != null ? unit.getDeposit().getTotal() : 0;
-
-            if (request.minDeposit() > 0 && depositTotal < request.minDeposit()) {
-                return false;
-            }
-            if (request.maxDeposit() > 0 && depositTotal > request.maxDeposit()) {
-                return false;
-            }
-        }
-
-        // 월세 필터
-        if (request.maxMonthPay() > 0) {
-            if (unit.getMonthlyRent() > request.maxMonthPay()) {
-                return false;
-            }
-        }
-
-        // 타입코드 필터
-        if (request.typeCode() != null && !request.typeCode().isEmpty()) {
-            String unitTypeCode = unit.getTypeCode() != null ? unit.getTypeCode() : "";
-            if (!request.typeCode().contains(unitTypeCode)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**

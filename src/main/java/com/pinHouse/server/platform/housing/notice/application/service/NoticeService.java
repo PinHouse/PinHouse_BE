@@ -40,6 +40,7 @@ public class NoticeService implements NoticeUseCase {
 
     private final NoticeDocumentRepository repository;
     private final ComplexUseCase complexService;
+    private final ComplexFilterService complexFilterService;
 
     /// 좋아요 목록 조회
     private final LikeQueryUseCase likeService;
@@ -107,7 +108,8 @@ public class NoticeService implements NoticeUseCase {
                 notice,
                 complexes,
                 facilityMap,
-                request
+                request,
+                complexFilterService
         );
     }
 
