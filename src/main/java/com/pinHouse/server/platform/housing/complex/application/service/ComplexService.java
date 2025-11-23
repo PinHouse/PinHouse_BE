@@ -75,10 +75,15 @@ public class ComplexService implements ComplexUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UnitTypeResponse> getComplexUnitTypes(String id) {
+    public List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId) {
 
         /// 조회
         ComplexDocument complex = loadComplex(id);
+
+        /// 좋아요 상태 조회 (userId가 null이면 빈 목록)
+        List<String> likedTypeIds = (userId != null)
+                ? likeService.getLikeUnitTypeIds(userId)
+                : List.of();
 
         /// 최대 /최소 보증금
         List<UnitType> unitTypes = complex.getUnitTypes();
@@ -89,11 +94,11 @@ public class ComplexService implements ComplexUseCase {
                     // 2. 해당 타입에 대한 최소/최대 보증금 옵션 계산
                     DepositResponse depositOptions = getLeaseMinMax(id, typeCode);
 
-                    // 3. 좋아요 상태 (예시로 false 설정, 실제로는 likeService를 사용해야 함)
-                    boolean isLiked = false;
+                    // 3. 좋아요 상태 확인
+                    boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
 
                     // 4. UnitTypeResponse 생성 및 옵션 주입
-                    return UnitTypeResponse.from(unitType, depositOptions);
+                    return UnitTypeResponse.from(unitType, depositOptions, isLiked);
                 })
                 .toList();
     }
@@ -303,8 +308,8 @@ public class ComplexService implements ComplexUseCase {
     protected List<ComplexDocument> loadRooms(List<String> roomIds) {
 
         /// ObjectId 리스트로 변환
-        List<ObjectId> typeIdsAsObjectId = roomIds.stream()
-                .map(ObjectId::new)
+        List<String> typeIdsAsObjectId = roomIds.stream()
+                .map(String::new)
                 .toList();
 
         /// 조회 (각 Document는 매칭된 UnitType 1개만 포함)

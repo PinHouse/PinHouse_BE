@@ -56,11 +56,13 @@ public class ComplexApi implements ComplexApiSpec {
     /// 방 타입 목록 조회
     @GetMapping("/unit/{complexId}")
     public ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
-            @PathVariable String complexId
+            @PathVariable String complexId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
-        /// 서비스 호출
-        var response = service.getComplexUnitTypes(complexId);
+        /// 서비스 호출 (로그인하지 않은 경우 userId는 null)
+        var userId = (principalDetails != null) ? principalDetails.getId() : null;
+        var response = service.getComplexUnitTypes(complexId, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

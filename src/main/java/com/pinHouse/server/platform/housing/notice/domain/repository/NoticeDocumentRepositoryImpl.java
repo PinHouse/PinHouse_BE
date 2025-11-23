@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.data.mongodb.core.query.TextQuery;
 
 import java.time.Instant;
 import java.util.List;
@@ -78,6 +80,27 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         }
 
         Query query = new Query(criteria).with(pageable);
+
+        /// 실행 및 Page 응답 구성
+        List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);
+        long count = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), NoticeDocument.class);
+
+        return new PageImpl<>(notices, pageable, count);
+    }
+
+    @Override
+    public Page<NoticeDocument> searchByTitle(String keyword, Pageable pageable, boolean filterOpen, Instant now) {
+        // MongoDB text search를 사용한 검색
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage()
+                .matchingAny(keyword);
+
+        Query query = TextQuery.queryText(textCriteria)
+                .with(pageable);
+
+        // 모집중 필터 적용
+        if (filterOpen) {
+            query.addCriteria(Criteria.where("applyEnd").gte(now));
+        }
 
         /// 실행 및 Page 응답 구성
         List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);

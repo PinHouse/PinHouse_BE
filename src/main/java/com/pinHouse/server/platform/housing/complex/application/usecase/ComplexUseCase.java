@@ -23,7 +23,7 @@ public interface ComplexUseCase {
     ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException;;
 
     /// 상세 조회
-    List<UnitTypeResponse> getComplexUnitTypes(String id);
+    List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
 
     /// 거리 시뮬레이터 전부 조회
     List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;

@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housing.notice.domain.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
@@ -23,6 +22,9 @@ public class NoticeDocument {
 
     @Field("title")
     private String title;
+
+    @Field("thumbnail")
+    private String thumbnail;
 
     @Field("agency")
     private String agency;
@@ -65,30 +67,4 @@ public class NoticeDocument {
 
     @Field("targetGroup")
     private List<String> targetGroups;
-
-    /// 빌더 생성자
-    @Builder
-    public NoticeDocument(String id, String status, String title, String agency,
-                          String houseType, String supplyType, String prevNoticeId, LocalDate announceDate,
-                          LocalDate winnerDate, LocalDate applyStart, LocalDate applyEnd,
-                          String contact, Urls urls, String city, String county, Meta meta, List<String> targetGroups) {
-
-        this.id = id;
-        this.status = status;
-        this.title = title;
-        this.agency = agency;
-        this.houseType = houseType;
-        this.supplyType = supplyType;
-        this.prevNoticeId = prevNoticeId;
-        this.announceDate = announceDate;
-        this.winnerDate = winnerDate;
-        this.applyStart = applyStart;
-        this.applyEnd = applyEnd;
-        this.contact = contact;
-        this.urls = urls;
-        this.city = city;
-        this.county = county;
-        this.meta = meta;
-        this.targetGroups = targetGroups;
-    }
 }

@@ -51,6 +51,7 @@ public record NoticeListResponse(
 
         return NoticeListResponse.builder()
                 .id(notice.getId())
+                .thumbnailUrl(notice.getThumbnail())
                 .name(notice.getTitle())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
@@ -71,6 +72,7 @@ public record NoticeListResponse(
         return NoticeListResponse.builder()
                 .id(notice.getId())
                 .name(notice.getTitle())
+                .thumbnailUrl(notice.getThumbnail())
                 .supplier(notice.getAgency())
                 .complexes(notice.getMeta().getTotalComplexCount())
                 .applyPeriod(applyPeriod)

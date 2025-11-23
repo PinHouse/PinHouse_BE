@@ -7,18 +7,16 @@ import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
-import com.pinHouse.server.platform.housing.facility.application.service.FacilityStatService;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
-import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
+import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
-import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.domain.entity.HouseType;
 import com.pinHouse.server.platform.search.domain.entity.RentalType;
 import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
@@ -42,6 +40,7 @@ public class NoticeService implements NoticeUseCase {
 
     private final NoticeDocumentRepository repository;
     private final ComplexUseCase complexService;
+    private final ComplexFilterService complexFilterService;
 
     /// 좋아요 목록 조회
     private final LikeQueryUseCase likeService;
@@ -51,7 +50,7 @@ public class NoticeService implements NoticeUseCase {
     //  퍼블릭 로직
     // =================
     @Override
-    public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest) {
+    public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId) {
 
         /// 오늘(한국) 기준 Instant
         Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
@@ -65,8 +64,16 @@ public class NoticeService implements NoticeUseCase {
         /// DB 레벨 필터링을 위한 커스텀 Repository 호출
         Page<NoticeDocument> page = repository.findNoticesByFilters(request, pageable, now);
 
+        /// 좋아요 상태 조회 (userId가 null이면 빈 목록)
+        List<String> likedNoticeIds = (userId != null)
+                ? likeService.getLikeNoticeIds(userId)
+                : List.of();
+
         List<NoticeListResponse> content = page.getContent().stream()
-                .map(NoticeListResponse::from)
+                .map(notice -> {
+                    boolean isLiked = likedNoticeIds.contains(notice.getId());
+                    return NoticeListResponse.from(notice, isLiked);
+                })
                 .toList();
 
         return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
@@ -80,15 +87,15 @@ public class NoticeService implements NoticeUseCase {
     /// 공고 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
+    public NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
 
-        /// 조회
+        /// 단지 목록 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
 
-        /// 아파트에 인프라 체크
+        /// 단지별 인프라 정보 조회
         Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
                 .map(ComplexDocument::getId)
                 .collect(Collectors.toMap(
@@ -96,8 +103,29 @@ public class NoticeService implements NoticeUseCase {
                         facilityService::getNearFacilities
                 ));
 
-        /// 리턴
-        return NoticeDetailResponse.from(notice, complexes, facilityMap);
+        /// DTO 정적 팩토리 메서드로 필터링 및 응답 생성
+        return NoticeDetailFilteredResponse.from(
+                notice,
+                complexes,
+                facilityMap,
+                request,
+                complexFilterService
+        );
+    }
+
+    /// 공고의 단지 필터링 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexFilterResponse getComplexFilters(String noticeId) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// DTO 정적 팩토리 메서드로 필터 정보 생성
+        return ComplexFilterResponse.from(complexes);
     }
 
     /// 좋아요 누른 공고 목록
