@@ -51,7 +51,7 @@ public class NoticeService implements NoticeUseCase {
     //  퍼블릭 로직
     // =================
     @Override
-    public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest) {
+    public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId) {
 
         /// 오늘(한국) 기준 Instant
         Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
@@ -65,8 +65,16 @@ public class NoticeService implements NoticeUseCase {
         /// DB 레벨 필터링을 위한 커스텀 Repository 호출
         Page<NoticeDocument> page = repository.findNoticesByFilters(request, pageable, now);
 
+        /// 좋아요 상태 조회 (userId가 null이면 빈 목록)
+        List<String> likedNoticeIds = (userId != null)
+                ? likeService.getLikeNoticeIds(userId)
+                : List.of();
+
         List<NoticeListResponse> content = page.getContent().stream()
-                .map(NoticeListResponse::from)
+                .map(notice -> {
+                    boolean isLiked = likedNoticeIds.contains(notice.getId());
+                    return NoticeListResponse.from(notice, isLiked);
+                })
                 .toList();
 
         return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());

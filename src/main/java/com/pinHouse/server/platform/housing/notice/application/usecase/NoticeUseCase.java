@@ -20,7 +20,7 @@ public interface NoticeUseCase {
     // =================
 
     /// 공고 목록 조회 (필터링과 함께)
-    SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest);
+    SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId);
 
     /// 개수 파악하기
     Long countNotices(NoticeListRequest request);

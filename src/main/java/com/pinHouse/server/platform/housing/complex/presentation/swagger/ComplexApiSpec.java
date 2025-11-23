@@ -35,11 +35,12 @@ public interface ComplexApiSpec {
 
     @Operation(
             summary = "임대주택 방 타입 상세 조회 API",
-            description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다."
+            description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
     )
     ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
             @Parameter(example = "19231#37", description = "임대주택 ID")
-            @PathVariable String complexId
+            @PathVariable String complexId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
 

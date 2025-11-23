@@ -32,11 +32,13 @@ public class NoticeApi implements NoticeApiSpec {
     @PostMapping
     public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
             @RequestBody NoticeListRequest request,
-            SliceRequest sliceRequest
+            SliceRequest sliceRequest,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
-        /// 서비스 계층
-        var response = service.getNotices(request, sliceRequest);
+        /// 서비스 계층 (로그인하지 않은 경우 userId는 null)
+        var userId = (principalDetails != null) ? principalDetails.getId() : null;
+        var response = service.getNotices(request, sliceRequest, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

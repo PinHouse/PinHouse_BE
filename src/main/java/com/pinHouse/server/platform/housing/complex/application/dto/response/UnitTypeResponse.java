@@ -16,7 +16,7 @@ public record UnitTypeResponse(
 ) {
 
     /// 정적 팩토리 메서드
-    public static UnitTypeResponse from(UnitType unitType, DepositResponse deposit) {
+    public static UnitTypeResponse from(UnitType unitType, DepositResponse deposit, boolean liked) {
 
         Quota typeQuota = unitType.getQuota();
 
@@ -27,8 +27,13 @@ public record UnitTypeResponse(
                 .exclusiveAreaM2(unitType.getExclusiveAreaM2())
                 .deposit(deposit)
                 .quota(typeQuota.getTotal())
-                .liked(false)
+                .liked(liked)
                 .build();
 
+    }
+
+    /// 정적 팩토리 메서드 (오버로드 - 좋아요 정보 없을 때)
+    public static UnitTypeResponse from(UnitType unitType, DepositResponse deposit) {
+        return from(unitType, deposit, false);
     }
 }

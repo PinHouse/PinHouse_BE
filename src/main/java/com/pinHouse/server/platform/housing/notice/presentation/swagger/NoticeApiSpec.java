@@ -30,11 +30,12 @@ public interface NoticeApiSpec {
 
     @Operation(
             summary = "공고 목록 조회 API",
-            description = "최신 날짜 기준으로, 공고 목록을 조회하는 API 입니다."
+            description = "최신 날짜 기준으로, 공고 목록을 조회하는 API 입니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
     )
     ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
             @RequestBody NoticeListRequest request,
-            SliceRequest sliceRequest
+            SliceRequest sliceRequest,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
 
