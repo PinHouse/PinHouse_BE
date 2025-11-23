@@ -4,7 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -41,11 +41,11 @@ public interface NoticeApiSpec {
 
     /// 상세 조회
     @Operation(
-            summary = "공고 상세 조회 API",
-            description = "공고 ID를 기준으로, 공고 상세 정보를 조회하는 API 입니다."
+            summary = "공고 상세 조회 API (필터 적용)",
+            description = "공고 ID를 기준으로 공고 상세 정보를 조회하며, 필터 조건에 따라 filtered와 nonFiltered 데이터를 분리하여 반환합니다."
     )
-    ApiResponse<NoticeDetailResponse> getNotice(
-            @Parameter(example = "18442")
+    ApiResponse<NoticeDetailFilteredResponse> getNotice(
+            @Parameter(example = "19362")
             @PathVariable String noticeId,
             @RequestBody NoticeDetailFilterRequest request);
 

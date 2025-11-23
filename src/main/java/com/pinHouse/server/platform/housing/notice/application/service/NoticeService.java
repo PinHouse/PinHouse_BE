@@ -7,18 +7,14 @@ import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
-import com.pinHouse.server.platform.housing.facility.application.service.FacilityStatService;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
-import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityStatDocument;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
-import com.pinHouse.server.platform.search.application.dto.FastSearchRequest;
 import com.pinHouse.server.platform.search.domain.entity.HouseType;
 import com.pinHouse.server.platform.search.domain.entity.RentalType;
 import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
@@ -88,15 +84,15 @@ public class NoticeService implements NoticeUseCase {
     /// 공고 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
+    public com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
 
-        /// 조회
+        /// 단지 목록 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
 
-        /// 아파트에 인프라 체크
+        /// 단지별 인프라 정보 조회
         Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
                 .map(ComplexDocument::getId)
                 .collect(Collectors.toMap(
@@ -104,8 +100,13 @@ public class NoticeService implements NoticeUseCase {
                         facilityService::getNearFacilities
                 ));
 
-        /// 리턴
-        return NoticeDetailResponse.from(notice, complexes, facilityMap);
+        /// DTO 정적 팩토리 메서드로 필터링 및 응답 생성
+        return com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse.from(
+                notice,
+                complexes,
+                facilityMap,
+                request
+        );
     }
 
     /// 좋아요 누른 공고 목록

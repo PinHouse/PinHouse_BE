@@ -25,8 +25,8 @@ public interface NoticeUseCase {
     /// 개수 파악하기
     Long countNotices(NoticeListRequest request);
 
-    /// 공고 상세 조회
-    NoticeDetailResponse getNotice(String noticeId, NoticeDetailFilterRequest request);
+    /// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
+    com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request);
 
     /// 나의 좋아요 공고 목록 조회
     List<NoticeListResponse> getNoticesLike(UUID userId);

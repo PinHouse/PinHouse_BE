@@ -5,7 +5,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
@@ -58,9 +58,9 @@ public class NoticeApi implements NoticeApiSpec {
         return ApiResponse.ok(response);
     }
 
-    /// 공고 상세 조회
+    /// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
     @PostMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailResponse> getNotice(
+    public ApiResponse<NoticeDetailFilteredResponse> getNotice(
             @PathVariable String noticeId,
             @RequestBody NoticeDetailFilterRequest request) {
 
