@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.notice.presentation.swagger;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
@@ -48,5 +49,15 @@ public interface NoticeApiSpec {
             @Parameter(example = "19362")
             @PathVariable String noticeId,
             @RequestBody NoticeDetailFilterRequest request);
+
+    /// 필터 정보 조회
+    @Operation(
+            summary = "공고의 단지 필터링 정보 조회 API",
+            description = "공고에 포함된 단지들의 지역, 가격, 면적 필터링 정보를 제공합니다. 프론트엔드 필터 UI 구성에 사용됩니다."
+    )
+    ApiResponse<ComplexFilterResponse> getComplexFilters(
+            @Parameter(description = "공고 ID", example = "19362")
+            @PathVariable String noticeId
+    );
 
 }

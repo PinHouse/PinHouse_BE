@@ -4,6 +4,7 @@ import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
@@ -66,6 +67,18 @@ public class NoticeApi implements NoticeApiSpec {
 
         /// 서비스 계층
         var response = service.getNotice(noticeId, request);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /// 공고의 단지 필터링 정보 조회
+    @GetMapping("/{noticeId}/filter")
+    public ApiResponse<ComplexFilterResponse> getComplexFilters(
+            @PathVariable String noticeId) {
+
+        /// 서비스 계층
+        var response = service.getComplexFilters(noticeId);
 
         /// 리턴
         return ApiResponse.ok(response);

@@ -109,9 +109,9 @@ public record NoticeDetailFilteredResponse(
             NoticeFacilityListResponse facilities,
             NoticeDetailFilterRequest request
     ) {
-        // 지역 필터
+        // 지역 필터 (county 사용: "성남시 분당구" 형식)
         if (request.region() != null && !request.region().isEmpty()) {
-            String complexRegion = complex.getCity() != null ? complex.getCity() : "";
+            String complexRegion = complex.getCounty() != null ? complex.getCounty() : "";
             if (!request.region().contains(complexRegion)) {
                 return false;
             }

@@ -8,9 +8,11 @@ import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexU
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.application.usecase.FacilityUseCase;
+import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
+import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
@@ -84,7 +86,7 @@ public class NoticeService implements NoticeUseCase {
     /// 공고 상세 조회
     @Override
     @Transactional(readOnly = true)
-    public com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
+    public NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request) {
 
         /// 공고 조회
         NoticeDocument notice = loadNotice(noticeId);
@@ -101,12 +103,27 @@ public class NoticeService implements NoticeUseCase {
                 ));
 
         /// DTO 정적 팩토리 메서드로 필터링 및 응답 생성
-        return com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse.from(
+        return NoticeDetailFilteredResponse.from(
                 notice,
                 complexes,
                 facilityMap,
                 request
         );
+    }
+
+    /// 공고의 단지 필터링 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexFilterResponse getComplexFilters(String noticeId) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// DTO 정적 팩토리 메서드로 필터 정보 생성
+        return ComplexFilterResponse.from(complexes);
     }
 
     /// 좋아요 누른 공고 목록

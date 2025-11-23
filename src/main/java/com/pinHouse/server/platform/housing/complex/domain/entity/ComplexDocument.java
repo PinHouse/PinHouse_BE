@@ -31,13 +31,13 @@ public class ComplexDocument {
     @Field("address")
     private Address address;
 
-    @Field("pnu")
+    @Field("address.pnu")
     private String pnu;
 
-    @Field("city")
+    @Field("address.city")
     private String city;
 
-    @Field("county")
+    @Field("address.county")
     private String county;
 
     @Field("heating")
