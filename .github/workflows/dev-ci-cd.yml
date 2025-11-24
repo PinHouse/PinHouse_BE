@@ -123,7 +123,6 @@ jobs:
           push: true
           tags: ${{secrets.DOCKER_USERNAME}}/server:latest
 
-
   CD:
     needs: CI
     runs-on: ubuntu-22.04
@@ -165,3 +164,40 @@ jobs:
             docker compose pull spring
             docker compose up -d spring
 
+  notify-discord:
+    needs:
+      - CD
+    runs-on: ubuntu-latest
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v2
+
+      - name: 최신 커밋 추출하기
+        id: commit-info
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          COMMIT_HASH=$(git log -1 --pretty=format:'%h')
+
+          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+          echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+
+      - name: 디스코드 알림 전송하기
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{secrets.DISCORD_WEBHOOK_URL}}
+          title: "✅ 개발서버 배포"
+          description: |
+            **✅ 공지**: 개발 환경에 새로운 변경사항이 배포되었습니다.
+
+            **배포 정보**:
+            - 커밋: `${{ github.sha }}`
+            - 배포자: ${{ github.actor }}
+            - 시간: ${{ github.event.head_commit.timestamp }}
+
+
+            [커밋 보기](${{ github.event.head_commit.url }})
+          color: 0x4287f5
+          username: 핀하우스 GitHub Dev Bot
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
