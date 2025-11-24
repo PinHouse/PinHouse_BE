@@ -4,7 +4,6 @@ import com.pinHouse.server.core.util.DateUtil;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
-import com.pinHouse.server.platform.housing.notice.application.service.ComplexFilterService;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -31,25 +30,20 @@ public record NoticeDetailFilteredResponse(
 ) {
 
     /**
-     * 정적 팩토리 메서드 - ComplexFilterService 위임
+     * 정적 팩토리 메서드 - 이미 필터링된 데이터를 받아서 응답 생성
      */
     public static NoticeDetailFilteredResponse from(
             NoticeDocument notice,
-            List<ComplexDocument> complexes,
-            Map<String, NoticeFacilityListResponse> facilityMap,
-            NoticeDetailFilterRequest request,
-            ComplexFilterService filterService
+            List<ComplexDocument> filteredComplexes,
+            List<ComplexDocument> nonFilteredComplexes,
+            Map<String, NoticeFacilityListResponse> facilityMap
     ) {
         // 1. 기본 정보 생성
         NoticeBasicInfo basicInfo = NoticeBasicInfo.from(notice);
 
-        // 2. ComplexFilterService를 통한 종합 필터링 (거리, 지역, 비용, 면적, 시설)
-        ComplexFilterService.FilterResult filterResult =
-                filterService.filterComplexes(complexes, facilityMap, request);
-
-        // 3. 응답 데이터 생성
-        NoticeDetailData filtered = NoticeDetailData.from(filterResult.filtered(), facilityMap);
-        NoticeDetailData nonFiltered = NoticeDetailData.from(filterResult.nonFiltered(), facilityMap);
+        // 2. 필터링된 데이터로 응답 생성
+        NoticeDetailData filtered = NoticeDetailData.from(filteredComplexes, facilityMap);
+        NoticeDetailData nonFiltered = NoticeDetailData.from(nonFilteredComplexes, facilityMap);
 
         return NoticeDetailFilteredResponse.builder()
                 .basicInfo(basicInfo)
