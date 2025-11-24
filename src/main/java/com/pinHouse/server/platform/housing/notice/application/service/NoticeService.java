@@ -103,13 +103,16 @@ public class NoticeService implements NoticeUseCase {
                         facilityService::getNearFacilities
                 ));
 
-        /// DTO 정적 팩토리 메서드로 필터링 및 응답 생성
+        /// 서비스 레이어에서 필터링 수행
+        ComplexFilterService.FilterResult filterResult =
+                complexFilterService.filterComplexes(complexes, facilityMap, request);
+
+        /// DTO 정적 팩토리 메서드로 응답 생성 (이미 필터링된 데이터 전달)
         return NoticeDetailFilteredResponse.from(
                 notice,
-                complexes,
-                facilityMap,
-                request,
-                complexFilterService
+                filterResult.filtered(),
+                filterResult.nonFiltered(),
+                facilityMap
         );
     }
 
@@ -124,8 +127,8 @@ public class NoticeService implements NoticeUseCase {
         /// 단지 목록 조회
         List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
 
-        /// DTO 정적 팩토리 메서드로 필터 정보 생성
-        return ComplexFilterResponse.from(complexes);
+        /// 서비스 레이어에서 필터 정보 계산
+        return complexFilterService.buildFilterResponse(complexes);
     }
 
     /// 좋아요 누른 공고 목록
