@@ -130,6 +130,7 @@ public class TransitResponseMapper {
                     .type(type)
                     .minutesText(minutes)
                     .lineText(line)
+                    .lineType(step.lineType())
                     .bgColorHex(type.defaultBg)
                     .build());
         });

@@ -60,8 +60,13 @@ public class IntraCityResultParser {
                         };
 
                         String lineInfo = null;
+                        String lineType = null;
                         JsonNode lane = sub.path("lane");
+
                         if (lane.isArray() && !lane.isEmpty()) {
+                            // 첫 번째 lane 객체 (JsonNode)를 가져옵니다.
+                            JsonNode firstLane = lane.get(0);
+
                             if (type == RootResult.TransportType.SUBWAY) {
                                 lineInfo = joinField(lane, "name");
                                 if (lineInfo != null
@@ -69,8 +74,15 @@ public class IntraCityResultParser {
                                         && lineInfo.chars().allMatch(ch -> Character.isDigit(ch) || ch == ',' || ch == ' ')) {
                                     lineInfo = addSuffixForEachNumber(lineInfo, "호선");
                                 }
+
+                                // 지하철: 'subwayCode'를 lineType으로 설정
+                                lineType = safeText(firstLane, "subwayCode");
+
                             } else if (type == RootResult.TransportType.BUS) {
                                 lineInfo = joinField(lane, "busNo");
+
+                                // 버스: 'type' (버스 종류 코드)을 lineType으로 설정
+                                lineType = safeText(firstLane, "type");
                             }
                         }
 
@@ -80,6 +92,7 @@ public class IntraCityResultParser {
                                 .startName(safeText(sub, "startName"))
                                 .endName(safeText(sub, "endName"))
                                 .lineInfo(lineInfo)
+                                .lineType(lineType) // lineType을 빌더에 추가
                                 .build());
                     }
                 }

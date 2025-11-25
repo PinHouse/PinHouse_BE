@@ -6,10 +6,12 @@ import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Builder
 @Schema(name = "[응답][거리] 거리 및 이동 정보 응답", description = "총 소요 시간, 총 요금, 환승 횟수 등을 포함한 거리 응답 DTO입니다.")
 public record RootResult(
@@ -48,12 +50,14 @@ public record RootResult(
                     };
 
                     String lineInfo = null;
+                    String lineType = null;
                     if (type == TransportType.BUS && sub.has("lane")) {
                         lineInfo = sub.path("lane").get(0).path("busNo").asText();
+                        lineType = sub.path("lane").get(0).path("type").asText();
                     } else if (type == TransportType.SUBWAY && sub.has("lane")) {
                         lineInfo = sub.path("lane").get(0).path("name").asText();
+                        lineType = sub.path("lane").get(0).path("subwayCode").asText();
                     }
-
 
                     steps.add(DistanceStep.builder()
                             .type(type)
@@ -62,6 +66,7 @@ public record RootResult(
                             .startName(sub.path("startName").asText(null))
                             .endName(sub.path("endName").asText(null))
                             .lineInfo(lineInfo)
+                            .lineType(lineType)
                             .build());
                 }
 
@@ -105,7 +110,10 @@ public record RootResult(
             String endName,
 
             @Schema(description = "버스 번호, 지하철 노선명 등", example = "100번, 2호선")
-            String lineInfo
+            String lineInfo,
+
+            @Schema(description = "버스 종류, 지하철 종류", example = "시내버스")
+            String lineType
 
     ) {
     }

@@ -74,6 +74,7 @@ public class InterCityResultParser {
                                 .startName(sub.path("startName").asText(null))
                                 .endName(sub.path("endName").asText(null))
                                 .lineInfo(lineInfo)
+                                .lineType(sub.path("lineType").asText(null))
                                 .build());
                     }
                 }

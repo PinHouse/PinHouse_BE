@@ -58,27 +58,19 @@ public record DistanceResponse(
             @Schema(description = "노선 정보(버스번호/지하철 호선 등), 없는 경우 null", example = "9401, G8110")
             String lineText,
 
+            String lineType,
+
             @Schema(description = "세그먼트 배경 컬러(Hex 코드)", example = "#FF5722")
             String bgColorHex)
-    {
-        /// 생성자
-        public static TransitResponse from(ChipType type, String minutesText, String lineText, String bgColorHex, String iconName) {
-            return TransitResponse.builder()
-                    .type(type)
-                    .minutesText(minutesText)
-                    .lineText(lineText)
-                    .bgColorHex(bgColorHex)
-                    .build();
-
-        }
-    }
+    { }
 
     @Builder
     public record TransferPointResponse(
             TransferRole role,     // START, TRANSFER, ARRIVAL
             ChipType type,         // BUS, SUBWAY, TRAIN ...
             String stopName,       // 정류장/역 이름
-            String lineText        // 버스번호/호선명 등
+            String lineText,        // 버스번호/호선명 등
+            String lineType
     ) {
         public enum TransferRole {
             START,     // 승차 지점
