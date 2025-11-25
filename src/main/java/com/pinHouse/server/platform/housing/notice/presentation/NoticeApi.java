@@ -9,6 +9,8 @@ import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailF
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeCompareResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeSortType;
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -79,6 +81,37 @@ public class NoticeApi implements NoticeApiSpec {
 
         /// 서비스 계층
         var response = service.getComplexFilters(noticeId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /// 공고의 필터 조건에 맞는 단지 개수 조회
+    @PostMapping("/{noticeId}/filter/count")
+    public ApiResponse<Integer> countFilteredComplexes(
+            @PathVariable String noticeId,
+            @RequestBody NoticeDetailFilterRequest request) {
+
+        /// 서비스 계층
+        int count = service.countFilteredComplexes(noticeId, request);
+
+        /// 리턴
+        return ApiResponse.ok(count);
+    }
+
+    /// 유닛타입(방) 비교
+    @GetMapping("/{noticeId}/compare")
+    public ApiResponse<UnitTypeCompareResponse> compareUnitTypes(
+            @PathVariable String noticeId,
+            @RequestParam(required = false) String pinPointId,
+            @RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 로그인하지 않은 경우 userId는 null
+        var userId = (principalDetails != null) ? principalDetails.getId() : null;
+
+        /// 서비스 계층
+        var response = service.compareUnitTypes(noticeId, pinPointId, sortType, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

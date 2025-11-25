@@ -75,25 +75,4 @@ public class SearchKeywordService implements SearchKeywordUseCase {
         List<SearchKeyword> keywords = repository.findAllByOrderByCountDescLastSearchedAtDesc(pageable);
         return PopularKeywordResponse.from(keywords);
     }
-
-    /**
-     * 검색어 자동완성 제안
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public SearchSuggestionResponse getSuggestions(String prefix, int limit) {
-        if (prefix == null || prefix.trim().isEmpty()) {
-            return SearchSuggestionResponse.builder()
-                    .suggestions(List.of())
-                    .build();
-        }
-
-        String normalizedPrefix = SearchKeyword.normalizeKeyword(prefix);
-        Pageable pageable = PageRequest.of(0, limit);
-
-        List<SearchKeyword> keywords = repository
-                .findByKeywordStartingWithOrderByCountDescLastSearchedAtDesc(normalizedPrefix, pageable);
-
-        return SearchSuggestionResponse.from(keywords);
-    }
 }

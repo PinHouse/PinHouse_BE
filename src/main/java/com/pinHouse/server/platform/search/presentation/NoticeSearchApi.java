@@ -2,7 +2,9 @@ package com.pinHouse.server.platform.search.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
 import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
@@ -38,8 +40,8 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
     public ApiResponse<NoticeSearchResponse> searchNotices(
             @RequestParam String q,
             PageRequest pageRequest,
-            @RequestParam(defaultValue = "LATEST") String sort,
-            @RequestParam(defaultValue = "ALL") String filter,
+            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sort,
+            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType filter,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         // 로그인하지 않은 경우 userId는 null
@@ -61,20 +63,6 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
             @RequestParam(defaultValue = "10") int limit
     ) {
         List<PopularKeywordResponse> response = searchKeywordService.getPopularKeywords(limit);
-        return ApiResponse.ok(response);
-    }
-
-    /**
-     * 검색어 자동완성
-     * GET /v1/search/suggest?q=행복&limit=5
-     */
-    @Override
-    @GetMapping("/suggest")
-    public ApiResponse<SearchSuggestionResponse> getSuggestions(
-            @RequestParam String q,
-            @RequestParam(defaultValue = "5") int limit
-    ) {
-        SearchSuggestionResponse response = searchKeywordService.getSuggestions(q, limit);
         return ApiResponse.ok(response);
     }
 }

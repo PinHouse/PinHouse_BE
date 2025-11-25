@@ -7,6 +7,8 @@ import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailF
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilteredResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeCompareResponse;
+import com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeSortType;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.search.domain.entity.SearchHistory;
 
@@ -30,6 +32,12 @@ public interface NoticeUseCase {
 
     /// 공고의 단지 필터링 정보 조회 (지역, 가격, 면적)
     ComplexFilterResponse getComplexFilters(String noticeId);
+
+    /// 공고의 필터 조건에 맞는 단지 개수 조회
+    int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request);
+
+    /// 유닛타입(방) 비교
+    UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType, UUID userId);
 
     /// 나의 좋아요 공고 목록 조회
     List<NoticeListResponse> getNoticesLike(UUID userId);

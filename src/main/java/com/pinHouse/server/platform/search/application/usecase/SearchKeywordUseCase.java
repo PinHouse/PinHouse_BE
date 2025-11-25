@@ -22,12 +22,4 @@ public interface SearchKeywordUseCase {
      * @return 인기 검색어 목록
      */
     List<PopularKeywordResponse> getPopularKeywords(int limit);
-
-    /**
-     * 검색어 자동완성 제안
-     * @param prefix 검색어 접두어
-     * @param limit 제안할 검색어 개수
-     * @return 자동완성 제안 목록
-     */
-    SearchSuggestionResponse getSuggestions(String prefix, int limit);
 }

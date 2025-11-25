@@ -11,17 +11,17 @@ public record NoticeDetailFilterRequest(
 
         DetailSortType sortType,
 
+        @Schema(example = "4dff2ba3-3232-4674-bddd-803ca06429ff")
         String pinPointId,
 
+        @Schema(example = "100")
         int transitTime,
 
+        @Schema(example = "[\"양주시\"]")
         List<String> region,
 
         @Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
         List<NoticeListRequest.TargetType> targetType,
-
-        @Schema(description = "보증금 최대값", example = "50000000")
-        int minDeposit,
 
         @Schema(description = "보증금 최대값", example = "50000000")
         int maxDeposit,
@@ -29,9 +29,10 @@ public record NoticeDetailFilterRequest(
         @Schema(description = "월 임대료 최대값", example = "300000")
         int maxMonthPay,
 
+        @Schema(example = "[\"26A\"]")
         List<String> typeCode,
 
-        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"도서관\"]")
+        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"공원\"]")
         @Size(max = 3)
         List<FacilityType> facilities
 

@@ -2,7 +2,9 @@ package com.pinHouse.server.platform.search.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.PageRequest;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
 import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -33,11 +35,11 @@ public interface NoticeSearchApiSpec {
 
             PageRequest pageRequest,
 
-            @Parameter(description = "정렬 방식 (LATEST: 최신순, DEADLINE: 마감임박순)", example = "LATEST")
-            @RequestParam(defaultValue = "LATEST") String sort,
+            @Parameter(description = "정렬 방식 (LATEST/최신순, DEADLINE/마감임박순)", example = "LATEST")
+            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sort,
 
-            @Parameter(description = "필터 (OPEN: 모집중만, ALL: 전체)", example = "ALL")
-            @RequestParam(defaultValue = "ALL") String filter,
+            @Parameter(description = "필터 (ALL/전체, OPEN/모집중)", example = "ALL")
+            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType filter,
 
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
@@ -54,18 +56,4 @@ public interface NoticeSearchApiSpec {
             @RequestParam(defaultValue = "10") int limit
     );
 
-    /**
-     * 검색어 자동완성
-     */
-    @Operation(
-            summary = "검색어 자동완성 API",
-            description = "입력한 접두어로 시작하는 인기 검색어를 제안합니다."
-    )
-    ApiResponse<SearchSuggestionResponse> getSuggestions(
-            @Parameter(description = "검색어 접두어", example = "행복", required = true)
-            @RequestParam String q,
-
-            @Parameter(description = "제안할 검색어 개수", example = "5")
-            @RequestParam(defaultValue = "5") int limit
-    );
 }
