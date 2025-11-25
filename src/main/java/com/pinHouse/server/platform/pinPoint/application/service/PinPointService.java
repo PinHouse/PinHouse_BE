@@ -24,7 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PinPointService implements PinPointUseCase {
 
-    /// 핀포인트 JPA 의존성
+    /// 핀포인트 Mongo 의존성
     private final PinPointMongoRepository repository;
 
     /// 외부 의존성
@@ -78,6 +78,7 @@ public class PinPointService implements PinPointUseCase {
         /// 수정 (더티체킹)
         pinPoint.updateName(request.name());
 
+        repository.save(pinPoint);
     }
 
     /// 삭제하기
