@@ -34,7 +34,7 @@ public interface NoticeUseCase {
     ComplexFilterResponse getComplexFilters(String noticeId);
 
     /// 유닛타입(방) 비교
-    UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType);
+    UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType, UUID userId);
 
     /// 나의 좋아요 공고 목록 조회
     List<NoticeListResponse> getNoticesLike(UUID userId);

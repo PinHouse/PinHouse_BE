@@ -141,7 +141,7 @@ public class NoticeService implements NoticeUseCase {
     /// 유닛타입(방) 비교
     @Override
     @Transactional(readOnly = true)
-    public UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType) {
+    public UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType, UUID userId) {
 
         /// 공고 존재 확인
         loadNotice(noticeId);
@@ -159,6 +159,11 @@ public class NoticeService implements NoticeUseCase {
                 log.warn("Failed to load PinPoint: {}", pinPointId, e);
             }
         }
+
+        /// 좋아요 상태 조회 (userId가 null이면 빈 목록)
+        List<String> likedUnitTypeIds = (userId != null)
+                ? likeService.getLikeUnitTypeIds(userId)
+                : List.of();
 
         /// 각 단지의 시설 정보 조회
         Map<String, List<FacilityType>> facilityMap = complexes.stream()
@@ -192,9 +197,12 @@ public class NoticeService implements NoticeUseCase {
                     String distance = finalDistanceMap.getOrDefault(complexId, null);
 
                     return complex.getUnitTypes().stream()
-                            .map(unitType -> UnitTypeCompareResponse.UnitTypeComparisonItem.from(
-                                    complex, unitType, facilities, distance
-                            ));
+                            .map(unitType -> {
+                                boolean isLiked = likedUnitTypeIds.contains(unitType.getTypeId());
+                                return UnitTypeCompareResponse.UnitTypeComparisonItem.from(
+                                        complex, unitType, facilities, distance, isLiked
+                                );
+                            });
                 })
                 .collect(Collectors.toList());
 

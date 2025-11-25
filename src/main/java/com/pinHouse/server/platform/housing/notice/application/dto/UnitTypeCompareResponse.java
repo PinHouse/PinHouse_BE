@@ -53,7 +53,10 @@ public record UnitTypeCompareResponse(
             List<FacilityType> nearbyFacilities,
 
             @Schema(description = "핀포인트 기준 거리", example = "3.5km")
-            String distanceFromPinPoint
+            String distanceFromPinPoint,
+
+            @Schema(description = "좋아요 여부", example = "true")
+            boolean isLiked
     ) {
         /**
          * 정적 팩토리 메서드
@@ -62,7 +65,8 @@ public record UnitTypeCompareResponse(
                 ComplexDocument complex,
                 UnitType unitType,
                 List<FacilityType> facilities,
-                String distance
+                String distance,
+                boolean isLiked
         ) {
             return UnitTypeComparisonItem.builder()
                     .typeId(unitType.getTypeId())
@@ -72,6 +76,7 @@ public record UnitTypeCompareResponse(
                     .cost(CostInfo.from(unitType))
                     .nearbyFacilities(facilities != null ? facilities : List.of())
                     .distanceFromPinPoint(distance)
+                    .isLiked(isLiked)
                     .build();
         }
     }

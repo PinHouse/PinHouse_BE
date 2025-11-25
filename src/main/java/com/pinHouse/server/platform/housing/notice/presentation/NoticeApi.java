@@ -91,10 +91,14 @@ public class NoticeApi implements NoticeApiSpec {
     public ApiResponse<UnitTypeCompareResponse> compareUnitTypes(
             @PathVariable String noticeId,
             @RequestParam(required = false) String pinPointId,
-            @RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType) {
+            @RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 로그인하지 않은 경우 userId는 null
+        var userId = (principalDetails != null) ? principalDetails.getId() : null;
 
         /// 서비스 계층
-        var response = service.compareUnitTypes(noticeId, pinPointId, sortType);
+        var response = service.compareUnitTypes(noticeId, pinPointId, sortType, userId);
 
         /// 리턴
         return ApiResponse.ok(response);
