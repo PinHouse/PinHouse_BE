@@ -138,6 +138,29 @@ public class NoticeService implements NoticeUseCase {
         return complexFilterService.buildFilterResponse(complexes);
     }
 
+    /// 공고의 필터 조건에 맞는 단지 개수 조회
+    @Override
+    @Transactional(readOnly = true)
+    public int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// 단지별 인프라 정보 조회
+        Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
+                .map(ComplexDocument::getId)
+                .collect(Collectors.toMap(
+                        id -> id,
+                        facilityService::getNearFacilities
+                ));
+
+        /// 필터 조건에 맞는 단지 개수 반환
+        return complexFilterService.countMatchingComplexes(complexes, facilityMap, request);
+    }
+
     /// 유닛타입(방) 비교
     @Override
     @Transactional(readOnly = true)

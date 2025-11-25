@@ -86,6 +86,19 @@ public class NoticeApi implements NoticeApiSpec {
         return ApiResponse.ok(response);
     }
 
+    /// 공고의 필터 조건에 맞는 단지 개수 조회
+    @PostMapping("/{noticeId}/filter/count")
+    public ApiResponse<Integer> countFilteredComplexes(
+            @PathVariable String noticeId,
+            @RequestBody NoticeDetailFilterRequest request) {
+
+        /// 서비스 계층
+        int count = service.countFilteredComplexes(noticeId, request);
+
+        /// 리턴
+        return ApiResponse.ok(count);
+    }
+
     /// 유닛타입(방) 비교
     @GetMapping("/{noticeId}/compare")
     public ApiResponse<UnitTypeCompareResponse> compareUnitTypes(

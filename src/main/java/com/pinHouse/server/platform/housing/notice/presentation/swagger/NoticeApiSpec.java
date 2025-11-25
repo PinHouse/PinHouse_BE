@@ -63,6 +63,21 @@ public interface NoticeApiSpec {
             @PathVariable String noticeId
     );
 
+    /// 필터 조건에 맞는 단지 개수 조회
+    @Operation(
+            summary = "공고의 필터 조건에 맞는 단지 개수 조회 API",
+            description = "필터 조건(거리, 지역, 비용, 면적, 인프라)에 맞는 단지가 몇 개 있는지 반환합니다. " +
+                    "거리는 시간(분) 기반으로 평균 속도 15km/h로 계산됩니다. " +
+                    "지역은 county(시/구) 기반으로 필터링됩니다. " +
+                    "면적은 typeCode가 존재하는 단지를 필터링합니다."
+    )
+    ApiResponse<Integer> countFilteredComplexes(
+            @Parameter(description = "공고 ID", example = "18214")
+            @PathVariable String noticeId,
+
+            @RequestBody NoticeDetailFilterRequest request
+    );
+
     /// 유닛타입 비교
     @Operation(
             summary = "공고의 모든 유닛타입(방) 비교 API",

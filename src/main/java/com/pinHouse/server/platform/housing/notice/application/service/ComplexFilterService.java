@@ -41,7 +41,13 @@ public class ComplexFilterService {
 
         // PinPoint 기반 거리 필터링을 위한 위치 정보 조회
         Location userLocation = getUserLocation(request.pinPointId());
-        double maxDistanceKm = request.transitTime() > 0 ? request.transitTime() : Double.MAX_VALUE;
+
+        // transitTime (분)을 거리(km)로 변환 (평균 속도 15km/h 기준)
+        double maxDistanceKm = Double.MAX_VALUE;
+        if (request.transitTime() > 0) {
+            final double AVG_SPEED_KMH = 15.0; // 평균 이동 속도 (도보 + 대중교통)
+            maxDistanceKm = (AVG_SPEED_KMH * request.transitTime()) / 60.0;
+        }
 
         for (ComplexDocument complex : complexes) {
             // 1. 거리 필터 체크 (최우선)
@@ -92,8 +98,9 @@ public class ComplexFilterService {
     }
 
     /**
-     * 거리 필터 체크 (MongoDB Geospatial 기반)
-     * pinPointId로부터 transitTime(km) 이내의 단지만 통과
+     * 거리 필터 체크
+     * pinPointId로부터 transitTime(분) 이내에 도달 가능한 단지만 통과
+     * 평균 속도 15km/h 기준으로 시간을 거리로 변환
      */
     private boolean passesDistanceFilter(
             ComplexDocument complex,
@@ -162,13 +169,10 @@ public class ComplexFilterService {
      */
     private boolean passesUnitTypeFilters(UnitType unit, NoticeDetailFilterRequest request) {
         // 1. 보증금 필터
-        if (request.minDeposit() > 0 || request.maxDeposit() > 0) {
+        if (request.maxDeposit() > 0) {
             long depositTotal = unit.getDeposit() != null ? unit.getDeposit().getTotal() : 0;
 
-            if (request.minDeposit() > 0 && depositTotal < request.minDeposit()) {
-                return false;
-            }
-            if (request.maxDeposit() > 0 && depositTotal > request.maxDeposit()) {
+            if (depositTotal > request.maxDeposit()) {
                 return false;
             }
         }
@@ -367,6 +371,50 @@ public class ComplexFilterService {
         return ComplexFilterResponse.AreaFilter.builder()
                 .typeCodes(uniqueTypeCodes)
                 .build();
+    }
+
+    /**
+     * 필터 조건에 맞는 단지 개수를 반환
+     */
+    public int countMatchingComplexes(
+            List<ComplexDocument> complexes,
+            Map<String, NoticeFacilityListResponse> facilityMap,
+            NoticeDetailFilterRequest request
+    ) {
+        // PinPoint 기반 거리 필터링을 위한 위치 정보 조회
+        Location userLocation = getUserLocation(request.pinPointId());
+
+        // transitTime (분)을 거리(km)로 변환 (평균 속도 15km/h 기준)
+        double maxDistanceKm = Double.MAX_VALUE;
+        if (request.transitTime() > 0) {
+            final double AVG_SPEED_KMH = 15.0;
+            maxDistanceKm = (AVG_SPEED_KMH * request.transitTime()) / 60.0;
+        }
+
+        int count = 0;
+
+        for (ComplexDocument complex : complexes) {
+            // 1. 거리 필터 체크
+            if (!passesDistanceFilter(complex, userLocation, maxDistanceKm)) {
+                continue;
+            }
+
+            // 2. Complex 레벨 필터 체크 (지역, 인프라)
+            NoticeFacilityListResponse facilities = facilityMap.get(complex.getId());
+            if (!passesComplexLevelFilters(complex, facilities, request)) {
+                continue;
+            }
+
+            // 3. UnitType 레벨 필터 체크 - 하나라도 통과하면 카운트
+            boolean hasMatchingUnit = complex.getUnitTypes().stream()
+                    .anyMatch(unit -> passesUnitTypeFilters(unit, request));
+
+            if (hasMatchingUnit) {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     /**
