@@ -18,7 +18,7 @@ public record FastSearchRequest(
         @Schema(description = "나의 기록 아이디", example = "null")
         String historyId,
 
-        @Schema(description = "나의 핀 포인트 아이디", example = "4dff2ba3-3232-4674-bddd-803ca06429ff")
+        @Schema(description = "나의 핀 포인트 아이디", example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
         String pinPointId,
 
         @Schema(description = "대중교통 소요 시간(분)", example = "120")

@@ -11,7 +11,7 @@ public record NoticeDetailFilterRequest(
 
         DetailSortType sortType,
 
-        @Schema(example = "4dff2ba3-3232-4674-bddd-803ca06429ff")
+        @Schema(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
         String pinPointId,
 
         @Schema(example = "100")
