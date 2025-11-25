@@ -63,18 +63,4 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
         List<PopularKeywordResponse> response = searchKeywordService.getPopularKeywords(limit);
         return ApiResponse.ok(response);
     }
-
-    /**
-     * 검색어 자동완성
-     * GET /v1/search/suggest?q=행복&limit=5
-     */
-    @Override
-    @GetMapping("/suggest")
-    public ApiResponse<SearchSuggestionResponse> getSuggestions(
-            @RequestParam String q,
-            @RequestParam(defaultValue = "5") int limit
-    ) {
-        SearchSuggestionResponse response = searchKeywordService.getSuggestions(q, limit);
-        return ApiResponse.ok(response);
-    }
 }

@@ -54,18 +54,4 @@ public interface NoticeSearchApiSpec {
             @RequestParam(defaultValue = "10") int limit
     );
 
-    /**
-     * 검색어 자동완성
-     */
-    @Operation(
-            summary = "검색어 자동완성 API",
-            description = "입력한 접두어로 시작하는 인기 검색어를 제안합니다."
-    )
-    ApiResponse<SearchSuggestionResponse> getSuggestions(
-            @Parameter(description = "검색어 접두어", example = "행복", required = true)
-            @RequestParam String q,
-
-            @Parameter(description = "제안할 검색어 개수", example = "5")
-            @RequestParam(defaultValue = "5") int limit
-    );
 }
