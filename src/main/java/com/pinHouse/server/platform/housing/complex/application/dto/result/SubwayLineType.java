@@ -99,4 +99,16 @@ public enum SubwayLineType {
             return UNKNOWN;
         }
     }
+
+    /**
+     * SubwayLineType을 LineInfo로 변환
+     * @return LineInfo 객체
+     */
+    public LineInfo toLineInfo() {
+        return LineInfo.builder()
+                .code(this.code)
+                .label(this.name)
+                .bgColorHex(this.colorHex)
+                .build();
+    }
 }

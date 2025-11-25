@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.InterCityResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.TrainType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.LineInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -72,12 +73,19 @@ public class InterCityResultParser {
                             lineInfo = "항공";
                         }
 
+                        // LineInfo 생성
+                        LineInfo line = null;
+                        if (trainTypeEnum != null) {
+                            line = trainTypeEnum.toLineInfo();
+                        }
+
                         steps.add(RootResult.DistanceStep.builder()
                                 .type(t)
                                 .time(sub.path("sectionTime").asInt(0))
                                 .startName(sub.path("startName").asText(null))
                                 .endName(sub.path("endName").asText(null))
                                 .lineInfo(lineInfo)
+                                .line(line)
                                 .subwayLine(null)
                                 .busRouteType(null)
                                 .trainType(trainTypeEnum)

@@ -59,6 +59,14 @@ public record RootResult(
                         subwayLine = SubwayLineType.from(subwayCodeStr);
                     }
 
+                    // LineInfo 생성
+                    LineInfo line = null;
+                    if (subwayLine != null) {
+                        line = subwayLine.toLineInfo();
+                    } else if (busRouteType != null) {
+                        line = busRouteType.toLineInfo();
+                    }
+
                     steps.add(DistanceStep.builder()
                             .type(type)
                             .time(sub.path("sectionTime").asInt())
@@ -66,6 +74,7 @@ public record RootResult(
                             .startName(sub.path("startName").asText(null))
                             .endName(sub.path("endName").asText(null))
                             .lineInfo(lineInfo)
+                            .line(line)
                             .subwayLine(subwayLine)
                             .busRouteType(busRouteType)
                             .trainType(null)
@@ -115,16 +124,23 @@ public record RootResult(
             @Schema(description = "버스 번호, 지하철 노선명 등", example = "100번, 2호선")
             String lineInfo,
 
-            @Schema(description = "지하철 노선 타입 (지하철인 경우)")
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             SubwayLineType subwayLine,
 
-            @Schema(description = "버스 노선 타입 (버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             BusRouteType busRouteType,
 
-            @Schema(description = "열차 타입 (열차인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             TrainType trainType,
 
-            @Schema(description = "고속/시외버스 좌석 등급 (고속/시외버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             ExpressBusType expressBusType
 
     ) {

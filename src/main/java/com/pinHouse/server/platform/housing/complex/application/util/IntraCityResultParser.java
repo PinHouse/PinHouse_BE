@@ -5,6 +5,7 @@ import com.pinHouse.server.platform.housing.complex.application.dto.result.RootR
 import com.pinHouse.server.platform.housing.complex.application.dto.result.IntraCityResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.LineInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -88,12 +89,21 @@ public class IntraCityResultParser {
                             }
                         }
 
+                        // LineInfo 생성
+                        LineInfo line = null;
+                        if (subwayLine != null) {
+                            line = subwayLine.toLineInfo();
+                        } else if (busRouteType != null) {
+                            line = busRouteType.toLineInfo();
+                        }
+
                         steps.add(RootResult.DistanceStep.builder()
                                 .type(type)
                                 .time(sub.path("sectionTime").asInt(0))
                                 .startName(safeText(sub, "startName"))
                                 .endName(safeText(sub, "endName"))
                                 .lineInfo(lineInfo)
+                                .line(line)
                                 .subwayLine(subwayLine)
                                 .busRouteType(busRouteType)
                                 .trainType(null)

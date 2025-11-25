@@ -6,6 +6,7 @@ import com.pinHouse.server.platform.housing.complex.application.dto.result.Subwa
 import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.TrainType;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.ExpressBusType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.LineInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.List;
@@ -62,16 +63,23 @@ public record DistanceResponse(
             @Schema(description = "노선 정보(버스번호/지하철 호선 등), 없는 경우 null", example = "9401, G8110")
             String lineText,
 
-            @Schema(description = "지하철 노선 타입 (지하철인 경우)")
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             SubwayLineType subwayLine,
 
-            @Schema(description = "버스 노선 타입 (버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             BusRouteType busRouteType,
 
-            @Schema(description = "열차 타입 (열차인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             TrainType trainType,
 
-            @Schema(description = "고속/시외버스 좌석 등급 (고속/시외버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             ExpressBusType expressBusType,
 
             @Schema(description = "세그먼트 배경 컬러(Hex 코드)", example = "#FF5722")
@@ -92,16 +100,23 @@ public record DistanceResponse(
             @Schema(description = "노선 정보(버스번호/지하철 호선 등)")
             String lineText,
 
-            @Schema(description = "지하철 노선 타입 (지하철인 경우)")
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             SubwayLineType subwayLine,
 
-            @Schema(description = "버스 노선 타입 (버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             BusRouteType busRouteType,
 
-            @Schema(description = "열차 타입 (열차인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             TrainType trainType,
 
-            @Schema(description = "고속/시외버스 좌석 등급 (고속/시외버스인 경우)")
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
             ExpressBusType expressBusType,
 
             @Schema(description = "배경 컬러(Hex 코드)")

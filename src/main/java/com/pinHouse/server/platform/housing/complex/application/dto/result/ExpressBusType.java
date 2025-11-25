@@ -43,4 +43,16 @@ public enum ExpressBusType {
         }
         return UNKNOWN;
     }
+
+    /**
+     * ExpressBusType을 LineInfo로 변환
+     * @return LineInfo 객체
+     */
+    public LineInfo toLineInfo() {
+        return LineInfo.builder()
+                .code(this.code)
+                .label(this.label)
+                .bgColorHex(this.colorHex)
+                .build();
+    }
 }
