@@ -188,6 +188,13 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
+    /// 유닛타입 ID 목록으로 단지 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<ComplexDocument> findComplexesByUnitTypeIds(List<String> typeIds) {
+        return repository.findComplexesByUnitTypeIds(typeIds);
+    }
+
     /// 거리 계산 필터링
     @Override
     @Transactional(readOnly = true)

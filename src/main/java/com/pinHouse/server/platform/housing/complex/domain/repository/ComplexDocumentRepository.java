@@ -15,6 +15,10 @@ public interface ComplexDocumentRepository extends MongoRepository<ComplexDocume
             fields = "{ 'complexId': 1, 'name': 1, 'unitTypes.$': 1 }")
     List<ComplexDocument> findFirstMatchingUnitType(List<String> typeIds);
 
+    /// 유닛타입 ID 목록으로 단지 조회 (전체 유닛타입 포함)
+    @Query("{ 'unitTypes.typeId': { $in: ?0 } }")
+    List<ComplexDocument> findComplexesByUnitTypeIds(List<String> typeIds);
+
     /// 존재하는 모음
     List<ComplexDocument> findByIdIsIn(List<String> complexIds);
 
