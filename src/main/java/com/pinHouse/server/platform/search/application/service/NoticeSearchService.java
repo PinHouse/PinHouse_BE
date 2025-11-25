@@ -3,8 +3,10 @@ package com.pinHouse.server.platform.search.application.service;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
 import com.pinHouse.server.platform.search.application.usecase.SearchKeywordUseCase;
 import lombok.RequiredArgsConstructor;
@@ -36,17 +38,26 @@ public class NoticeSearchService implements NoticeSearchUseCase {
      */
     @Override
     @Transactional(readOnly = true)
-    public NoticeSearchResponse searchNotices(String keyword, int page, int size, String sort, String filter, UUID userId) {
+    public NoticeSearchResponse searchNotices(String keyword, int page, int size, NoticeSearchSortType sort, NoticeSearchFilterType filter, UUID userId) {
         // 검색 키워드 기록 (비동기로 처리 가능)
         if (keyword != null && !keyword.trim().isEmpty()) {
             searchKeywordService.recordSearch(keyword);
         }
 
-        // 필터 설정
-        boolean filterOpen = "OPEN".equalsIgnoreCase(filter);
+        // 정렬 기준 설정 (null이면 기본값)
+        NoticeSearchSortType finalSort = sort != null ? sort : NoticeSearchSortType.LATEST;
+
+        // 필터 설정: 마감임박순인 경우 자동으로 모집중만 표시
+        NoticeSearchFilterType finalFilter;
+        if (finalSort == NoticeSearchSortType.DEADLINE) {
+            finalFilter = NoticeSearchFilterType.OPEN; // 마감임박순은 항상 모집중만
+        } else {
+            finalFilter = filter != null ? filter : NoticeSearchFilterType.ALL;
+        }
+        boolean filterOpen = (finalFilter == NoticeSearchFilterType.OPEN);
 
         // 페이징 및 정렬 설정
-        Pageable pageable = createPageable(page, size, sort);
+        Pageable pageable = createPageable(page, size, finalSort);
 
         // MongoDB text search 실행
         Page<NoticeDocument> noticePage = noticeRepository.searchByTitle(
@@ -73,23 +84,20 @@ public class NoticeSearchService implements NoticeSearchUseCase {
     /**
      * Pageable 객체 생성
      */
-    private Pageable createPageable(int page, int size, String sort) {
+    private Pageable createPageable(int page, int size, NoticeSearchSortType sort) {
         // 기본값 설정
         int validPage = Math.max(0, page);
         int validSize = Math.min(Math.max(1, size), 100); // 최대 100개
 
         // 정렬 방식 결정
-        Sort sortOrder;
-        if ("DEADLINE".equalsIgnoreCase(sort)) {
-            // 마감임박순: applyEnd 오름차순
-            sortOrder = Sort.by(Sort.Direction.ASC, "applyEnd");
-        } else if ("LATEST".equalsIgnoreCase(sort)) {
-            // 최신순: announceDate 내림차순
-            sortOrder = Sort.by(Sort.Direction.DESC, "announceDate");
-        } else {
-            // 기본값: 최신순
-            sortOrder = Sort.by(Sort.Direction.DESC, "announceDate");
-        }
+        Sort sortOrder = switch (sort) {
+            case DEADLINE ->
+                    // 마감임박순: applyEnd 오름차순
+                    Sort.by(Sort.Direction.ASC, "applyEnd");
+            case LATEST ->
+                    // 최신순: announceDate 내림차순
+                    Sort.by(Sort.Direction.DESC, "announceDate");
+        };
 
         return PageRequest.of(validPage, validSize, sortOrder);
     }
