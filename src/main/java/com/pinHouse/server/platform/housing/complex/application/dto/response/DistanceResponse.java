@@ -2,6 +2,10 @@ package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.TrainType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.ExpressBusType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.List;
@@ -58,7 +62,17 @@ public record DistanceResponse(
             @Schema(description = "노선 정보(버스번호/지하철 호선 등), 없는 경우 null", example = "9401, G8110")
             String lineText,
 
-            String lineType,
+            @Schema(description = "지하철 노선 타입 (지하철인 경우)")
+            SubwayLineType subwayLine,
+
+            @Schema(description = "버스 노선 타입 (버스인 경우)")
+            BusRouteType busRouteType,
+
+            @Schema(description = "열차 타입 (열차인 경우)")
+            TrainType trainType,
+
+            @Schema(description = "고속/시외버스 좌석 등급 (고속/시외버스인 경우)")
+            ExpressBusType expressBusType,
 
             @Schema(description = "세그먼트 배경 컬러(Hex 코드)", example = "#FF5722")
             String bgColorHex)
@@ -66,11 +80,32 @@ public record DistanceResponse(
 
     @Builder
     public record TransferPointResponse(
-            TransferRole role,     // START, TRANSFER, ARRIVAL
-            ChipType type,         // BUS, SUBWAY, TRAIN ...
-            String stopName,       // 정류장/역 이름
-            String lineText,        // 버스번호/호선명 등
-            String lineType
+            @Schema(description = "환승 역할 (START, TRANSFER, ARRIVAL)")
+            TransferRole role,
+
+            @Schema(description = "교통 타입 (WALK, BUS, SUBWAY, TRAIN, AIR)")
+            ChipType type,
+
+            @Schema(description = "정류장/역 이름")
+            String stopName,
+
+            @Schema(description = "노선 정보(버스번호/지하철 호선 등)")
+            String lineText,
+
+            @Schema(description = "지하철 노선 타입 (지하철인 경우)")
+            SubwayLineType subwayLine,
+
+            @Schema(description = "버스 노선 타입 (버스인 경우)")
+            BusRouteType busRouteType,
+
+            @Schema(description = "열차 타입 (열차인 경우)")
+            TrainType trainType,
+
+            @Schema(description = "고속/시외버스 좌석 등급 (고속/시외버스인 경우)")
+            ExpressBusType expressBusType,
+
+            @Schema(description = "배경 컬러(Hex 코드)")
+            String bgColorHex
     ) {
         public enum TransferRole {
             START,     // 승차 지점

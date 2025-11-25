@@ -3,6 +3,8 @@ package com.pinHouse.server.platform.housing.complex.application.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.IntraCityResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -53,14 +55,12 @@ public class IntraCityResultParser {
                 if (subPaths.isArray()) {
                     for (JsonNode sub : subPaths) {
                         int tt = sub.path("trafficType").asInt(); // 1-지하철, 2-버스, 3-도보
-                        RootResult.TransportType type = switch (tt) {
-                            case 1 -> RootResult.TransportType.SUBWAY;
-                            case 2 -> RootResult.TransportType.BUS;
-                            default -> RootResult.TransportType.WALK;
-                        };
+                        RootResult.TransportType type = RootResult.TransportType.fromTrafficType(tt);
 
                         String lineInfo = null;
-                        String lineType = null;
+                        SubwayLineType subwayLine = null;
+                        BusRouteType busRouteType = null;
+
                         JsonNode lane = sub.path("lane");
 
                         if (lane.isArray() && !lane.isEmpty()) {
@@ -75,14 +75,16 @@ public class IntraCityResultParser {
                                     lineInfo = addSuffixForEachNumber(lineInfo, "호선");
                                 }
 
-                                // 지하철: 'subwayCode'를 lineType으로 설정
-                                lineType = safeText(firstLane, "subwayCode");
+                                // 지하철: 'subwayCode'를 SubwayLineType으로 변환
+                                String subwayCodeStr = safeText(firstLane, "subwayCode");
+                                subwayLine = SubwayLineType.from(subwayCodeStr);
 
                             } else if (type == RootResult.TransportType.BUS) {
                                 lineInfo = joinField(lane, "busNo");
 
-                                // 버스: 'type' (버스 종류 코드)을 lineType으로 설정
-                                lineType = safeText(firstLane, "type");
+                                // 버스: 'type' (버스 종류 코드)을 BusRouteType으로 변환
+                                String busTypeStr = safeText(firstLane, "type");
+                                busRouteType = BusRouteType.from(busTypeStr);
                             }
                         }
 
@@ -92,7 +94,10 @@ public class IntraCityResultParser {
                                 .startName(safeText(sub, "startName"))
                                 .endName(safeText(sub, "endName"))
                                 .lineInfo(lineInfo)
-                                .lineType(lineType) // lineType을 빌더에 추가
+                                .subwayLine(subwayLine)
+                                .busRouteType(busRouteType)
+                                .trainType(null)
+                                .expressBusType(null)
                                 .build());
                     }
                 }
