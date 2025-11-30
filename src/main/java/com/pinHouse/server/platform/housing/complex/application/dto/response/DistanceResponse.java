@@ -2,6 +2,11 @@ package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.TrainType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.ExpressBusType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.LineInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.List;
@@ -58,27 +63,64 @@ public record DistanceResponse(
             @Schema(description = "노선 정보(버스번호/지하철 호선 등), 없는 경우 null", example = "9401, G8110")
             String lineText,
 
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            SubwayLineType subwayLine,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            BusRouteType busRouteType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            TrainType trainType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            ExpressBusType expressBusType,
+
             @Schema(description = "세그먼트 배경 컬러(Hex 코드)", example = "#FF5722")
             String bgColorHex)
-    {
-        /// 생성자
-        public static TransitResponse from(ChipType type, String minutesText, String lineText, String bgColorHex, String iconName) {
-            return TransitResponse.builder()
-                    .type(type)
-                    .minutesText(minutesText)
-                    .lineText(lineText)
-                    .bgColorHex(bgColorHex)
-                    .build();
-
-        }
-    }
+    { }
 
     @Builder
     public record TransferPointResponse(
-            TransferRole role,     // START, TRANSFER, ARRIVAL
-            ChipType type,         // BUS, SUBWAY, TRAIN ...
-            String stopName,       // 정류장/역 이름
-            String lineText        // 버스번호/호선명 등
+            @Schema(description = "환승 역할 (START, TRANSFER, ARRIVAL)")
+            TransferRole role,
+
+            @Schema(description = "교통 타입 (WALK, BUS, SUBWAY, TRAIN, AIR)")
+            ChipType type,
+
+            @Schema(description = "정류장/역 이름")
+            String stopName,
+
+            @Schema(description = "노선 정보(버스번호/지하철 호선 등)")
+            String lineText,
+
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            SubwayLineType subwayLine,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            BusRouteType busRouteType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            TrainType trainType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            ExpressBusType expressBusType,
+
+            @Schema(description = "배경 컬러(Hex 코드)")
+            String bgColorHex
     ) {
         public enum TransferRole {
             START,     // 승차 지점

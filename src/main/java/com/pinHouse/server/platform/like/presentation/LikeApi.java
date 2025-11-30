@@ -32,12 +32,13 @@ public class LikeApi implements LikeApiSpec {
     }
 
     /// 좋아요 취소
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> disLike(@PathVariable Long id,
-                                     @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @DeleteMapping
+    public ApiResponse<Void> disLike(
+            @RequestBody @Valid LikeRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스 호출
-        service.deleteLike(id, principalDetails.getId());
+        service.deleteLike(principalDetails.getId(), request);
 
         /// 리턴
         return ApiResponse.deleted();

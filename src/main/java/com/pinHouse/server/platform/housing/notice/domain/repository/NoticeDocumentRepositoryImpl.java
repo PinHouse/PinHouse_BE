@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,13 +26,19 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
     public Page<NoticeDocument> findNoticesByFilters(NoticeListRequest request, Pageable pageable, Instant now) {
         Criteria criteria = new Criteria();
 
+        /// 모집중 필터링을 위한 오늘의 시작 시각 계산 (오늘까지 포함되도록)
+        Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
+                .toLocalDate()
+                .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                .toInstant();
+
         /// 모집 상태 필터링 (현재 날짜 기준)
         boolean applyEndFiltered = false;
 
         /// 모집 상태 필터링 (현재 날짜 기준)
         if (request.status() != null) {
             if (request.status() == NoticeListRequest.NoticeStatus.RECRUITING) {
-                criteria.and("applyEnd").gte(now);
+                criteria.and("applyEnd").gte(todayStart);
                 applyEndFiltered = true;
             }
             // ALL이면 아무 조건 X
@@ -40,7 +48,7 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         if (request.sortType() == NoticeListRequest.ListSortType.END) {
             // 이미 applyEnd 조건이 있다면 다시 넣지 않음
             if (!applyEndFiltered) {
-                criteria.and("applyEnd").gte(now);
+                criteria.and("applyEnd").gte(todayStart);
                 applyEndFiltered = true;
             }
         } else {
@@ -97,9 +105,13 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         Query query = TextQuery.queryText(textCriteria)
                 .with(pageable);
 
-        // 모집중 필터 적용
+        // 모집중 필터 적용 (오늘까지 포함되도록)
         if (filterOpen) {
-            query.addCriteria(Criteria.where("applyEnd").gte(now));
+            Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
+                    .toLocalDate()
+                    .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                    .toInstant();
+            query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
         }
 
         /// 실행 및 Page 응답 구성

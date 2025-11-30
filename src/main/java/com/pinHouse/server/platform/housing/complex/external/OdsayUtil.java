@@ -59,6 +59,8 @@ public class OdsayUtil implements DistanceUtil {
 
             /// 자동 판별
             JsonNode root = OM.readTree(response);
+            log.info(root.toString());
+
             int searchType = detectSearchType(root);
 
             /// 분기 처리

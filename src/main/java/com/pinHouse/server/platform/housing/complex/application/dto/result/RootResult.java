@@ -6,10 +6,12 @@ import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Builder
 @Schema(name = "[응답][거리] 거리 및 이동 정보 응답", description = "총 소요 시간, 총 요금, 환승 횟수 등을 포함한 거리 응답 DTO입니다.")
 public record RootResult(
@@ -41,19 +43,29 @@ public record RootResult(
                 List<DistanceStep> steps = new ArrayList<>();
                 for (JsonNode sub : pathNode.path("subPath")) {
                     int trafficType = sub.path("trafficType").asInt();
-                    TransportType type = switch (trafficType) {
-                        case 1 -> TransportType.SUBWAY;
-                        case 2 -> TransportType.BUS;
-                        default -> TransportType.WALK;
-                    };
+                    TransportType type = TransportType.fromTrafficType(trafficType);
 
                     String lineInfo = null;
+                    SubwayLineType subwayLine = null;
+                    BusRouteType busRouteType = null;
+
                     if (type == TransportType.BUS && sub.has("lane")) {
                         lineInfo = sub.path("lane").get(0).path("busNo").asText();
+                        String busTypeStr = sub.path("lane").get(0).path("type").asText(null);
+                        busRouteType = BusRouteType.from(busTypeStr);
                     } else if (type == TransportType.SUBWAY && sub.has("lane")) {
                         lineInfo = sub.path("lane").get(0).path("name").asText();
+                        String subwayCodeStr = sub.path("lane").get(0).path("subwayCode").asText(null);
+                        subwayLine = SubwayLineType.from(subwayCodeStr);
                     }
 
+                    // LineInfo 생성
+                    LineInfo line = null;
+                    if (subwayLine != null) {
+                        line = subwayLine.toLineInfo();
+                    } else if (busRouteType != null) {
+                        line = busRouteType.toLineInfo();
+                    }
 
                     steps.add(DistanceStep.builder()
                             .type(type)
@@ -62,6 +74,11 @@ public record RootResult(
                             .startName(sub.path("startName").asText(null))
                             .endName(sub.path("endName").asText(null))
                             .lineInfo(lineInfo)
+                            .line(line)
+                            .subwayLine(subwayLine)
+                            .busRouteType(busRouteType)
+                            .trainType(null)
+                            .expressBusType(null)
                             .build());
                 }
 
@@ -89,7 +106,7 @@ public record RootResult(
     @Schema(name = "[응답][거리 단계] 거리 단계 정보 응답", description = "거리 단계 정보를 나타내는 DTO입니다.")
     public record DistanceStep(
 
-            @Schema(description = "타입", example = "15")
+            @Schema(description = "타입", example = "SUBWAY")
             TransportType type,
 
             @Schema(description = "소요 시간(분)", example = "15")
@@ -105,14 +122,50 @@ public record RootResult(
             String endName,
 
             @Schema(description = "버스 번호, 지하철 노선명 등", example = "100번, 2호선")
-            String lineInfo
+            String lineInfo,
+
+            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            LineInfo line,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            SubwayLineType subwayLine,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            BusRouteType busRouteType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            TrainType trainType,
+
+            @Schema(hidden = true)
+            @com.fasterxml.jackson.annotation.JsonIgnore
+            ExpressBusType expressBusType
 
     ) {
     }
 
 
     public enum TransportType {
-        WALK, BUS, SUBWAY, TRAIN, AIR
+        WALK, BUS, SUBWAY, TRAIN, AIR, UNKNOWN;
+
+        /**
+         * trafficType 코드로부터 TransportType을 조회
+         * @param trafficType 교통 수단 코드 (1:지하철, 2:버스, 3:도보, 4:열차, 5:고속버스, 6:시외버스, 7:항공)
+         * @return 매칭되는 TransportType
+         */
+        public static TransportType fromTrafficType(int trafficType) {
+            return switch (trafficType) {
+                case 1 -> SUBWAY;
+                case 2 -> BUS;
+                case 3 -> WALK;
+                case 4 -> TRAIN;
+                case 5, 6 -> BUS; // 고속버스, 시외버스 -> BUS로 통합
+                case 7 -> AIR;
+                default -> UNKNOWN;
+            };
+        }
     }
 }
 

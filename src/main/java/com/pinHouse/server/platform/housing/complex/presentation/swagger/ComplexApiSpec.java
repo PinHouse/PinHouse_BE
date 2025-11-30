@@ -29,7 +29,7 @@ public interface ComplexApiSpec {
             @Parameter(example = "19231#37", description = "임대주택 ID")
             @PathVariable String complexId,
 
-            @Parameter(example = "4dff2ba3-3232-4674-bddd-803ca06429ff", description = "핀포인트 ID")
+            @Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
             @RequestParam String pinPointId) throws UnsupportedEncodingException;
 
 
@@ -59,7 +59,7 @@ public interface ComplexApiSpec {
     ApiResponse<List<DistanceResponse>> distance(
             @Parameter(example = "19207#1", description = "시도 간 조회")
             @PathVariable String complexId,
-            @Parameter(example = "4dff2ba3-3232-4674-bddd-803ca06429ff", description = "핀포인트 ID")
+            @Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
             @RequestParam String pinPointId) throws UnsupportedEncodingException;
 
 }

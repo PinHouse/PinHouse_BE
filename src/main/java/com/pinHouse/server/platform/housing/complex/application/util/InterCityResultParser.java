@@ -3,6 +3,8 @@ package com.pinHouse.server.platform.housing.complex.application.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.InterCityResult;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.TrainType;
+import com.pinHouse.server.platform.housing.complex.application.dto.result.LineInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -55,17 +57,26 @@ public class InterCityResultParser {
                 if (subPaths.isArray()) {
                     for (JsonNode sub : subPaths) {
                         int trafficType = sub.path("trafficType").asInt();
-                        RootResult.TransportType t = mapTransportType(trafficType);
+                        RootResult.TransportType t = RootResult.TransportType.fromTrafficType(trafficType);
 
                         String lineInfo = null;
+                        TrainType trainTypeEnum = null;
+
                         if (t == RootResult.TransportType.TRAIN) {
-                            int trainType = sub.path("trainType").asInt(-1);
-                            lineInfo = mapTrainType(trainType);
+                            int trainTypeCode = sub.path("trainType").asInt(-1);
+                            trainTypeEnum = TrainType.from(trainTypeCode);
+                            lineInfo = trainTypeEnum.getLabel();
                         } else if (t == RootResult.TransportType.BUS) {
                             // 5: 고속, 6: 시외
                             lineInfo = (trafficType == 5) ? "고속버스" : "시외버스";
                         } else if (t == RootResult.TransportType.AIR) {
                             lineInfo = "항공";
+                        }
+
+                        // LineInfo 생성
+                        LineInfo line = null;
+                        if (trainTypeEnum != null) {
+                            line = trainTypeEnum.toLineInfo();
                         }
 
                         steps.add(RootResult.DistanceStep.builder()
@@ -74,6 +85,11 @@ public class InterCityResultParser {
                                 .startName(sub.path("startName").asText(null))
                                 .endName(sub.path("endName").asText(null))
                                 .lineInfo(lineInfo)
+                                .line(line)
+                                .subwayLine(null)
+                                .busRouteType(null)
+                                .trainType(trainTypeEnum)
+                                .expressBusType(null) // TODO: 필요 시 고속/시외버스 좌석 등급 파싱 추가
                                 .build());
                     }
                 }
@@ -108,28 +124,6 @@ public class InterCityResultParser {
     // =================
     //  내부 로직
     // =================
-
-    private static RootResult.TransportType mapTransportType(int trafficType) {
-        return switch (trafficType) {
-            case 4 -> RootResult.TransportType.TRAIN;
-            case 5, 6 -> RootResult.TransportType.BUS;
-            case 7 -> RootResult.TransportType.AIR;
-            default -> RootResult.TransportType.WALK; // 방어값
-        };
-    }
-
-    /** 공급자 문서 기준 매핑 (필요 시 확장/보정) */
-    private static String mapTrainType(int trainType) {
-        return switch (trainType) {
-            case 1 -> "KTX";
-            case 2 -> "새마을";
-            case 3 -> "무궁화";
-            case 4 -> "누리로";
-            case 5 -> "통근";
-            case 6 -> "ITX";
-            case 7 -> "ITX-청춘";
-            case 8 -> "SRT";
-            default -> "TRAIN(" + trainType + ")";
-        };
-    }
+    // 이전의 mapTransportType과 mapTrainType 메서드는 제거됨
+    // TransportType.fromTrafficType()과 TrainType.from()을 직접 사용
 }

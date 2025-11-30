@@ -38,10 +38,20 @@ public interface LikeApiSpec {
     /// 좋아요 취소
     @Operation(
             summary = "좋아요 취소",
-            description = "좋아요를 취소하는 API 입니다."
+            description = "좋아요를 취소하는 API 입니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(name = "공고 좋아요 취소 예시", value = NOTICE_EXAMPLE),
+                                    @ExampleObject(name = "임대주택 좋아요 취소 예시", value = COMPLEX_EXAMPLE),
+                            }
+                    )
+            )
     )
-    ApiResponse<Void> disLike(@PathVariable Long id,
-                              @AuthenticationPrincipal PrincipalDetails principalDetails);
+    ApiResponse<Void> disLike(
+            @RequestBody @Valid LikeRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
 
     /// 공고 좋아요 예시
     String NOTICE_EXAMPLE = """

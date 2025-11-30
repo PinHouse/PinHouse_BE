@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.user.application.service;
 
 import com.pinHouse.server.core.exception.code.UserErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
+import com.pinHouse.server.platform.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.like.domain.LikeJpaRepository;
 import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
@@ -43,6 +44,7 @@ public class UserService implements UserUseCase {
     /// 삭제할 때
     private final PinPointMongoRepository pinPointRepository;
     private final LikeJpaRepository likeRepository;
+    private final DiagnosisJpaRepository diagnosisRepository;
 
     // =================
     //  퍼블릭 로직
@@ -122,6 +124,9 @@ public class UserService implements UserUseCase {
 
         /// 좋아요 삭제
         likeRepository.deleteByUser_Id(userId);
+
+        /// 진단 삭제
+        diagnosisRepository.deleteByUser_Id(userId);
 
         /// DB에서 삭제
         repository.deleteById(userId);

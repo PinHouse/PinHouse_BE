@@ -90,7 +90,7 @@ public interface NoticeApiSpec {
             @Parameter(description = "공고 ID", example = "18214")
             @PathVariable String noticeId,
 
-            @Parameter(description = "핀포인트 ID", example = "4dff2ba3-3232-4674-bddd-803ca06429ff")
+            @Parameter(description = "핀포인트 ID", example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
             @RequestParam(required = false) String pinPointId,
 
             @Parameter(description = "정렬 기준 (DEPOSIT_ASC: 보증금 낮은 순, AREA_DESC: 평수 넓은 순)",
