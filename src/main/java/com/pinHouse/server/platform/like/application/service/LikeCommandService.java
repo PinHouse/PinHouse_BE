@@ -63,12 +63,13 @@ public class LikeCommandService implements LikeCommandUseCase {
     /// 좋아요 취소
     @Override
     @Transactional
-    public void deleteLike(Long id, UUID userId) {
+    public void deleteLike(UUID userId, LikeRequest request) {
 
-        /// 유저 예외처리
+        /// 유저 검증
+        userService.loadUser(userId);
 
         /// 존재 여부 체크 (영속성 컨테이너)
-        Like like = repository.findByIdAndUser_Id(id, userId)
+        Like like = repository.findByUser_IdAndTargetIdAndType(userId, request.targetId(), request.type())
                 .orElseThrow(() -> new CustomException(LikeErrorCode.NOT_FOUND_LIKE));
 
         /// DB에서 삭제

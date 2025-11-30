@@ -14,6 +14,9 @@ public interface LikeJpaRepository extends JpaRepository<Like, Long> {
     /// 유저 ID와 ID를 바탕으로 한번에 조회
     Optional<Like> findByIdAndUser_Id(Long id, UUID userId);
 
+    /// 유저 ID, targetId, type으로 조회
+    Optional<Like> findByUser_IdAndTargetIdAndType(UUID userId, String targetId, LikeType type);
+
     /// 유저 아이디 바탕으로 조회
     List<Like> findByUser_Id(UUID userId);
 

@@ -14,7 +14,7 @@ public interface LikeCommandUseCase {
     void saveLike(UUID userId, LikeRequest request);
 
     /// 좋아요 취소
-    void deleteLike(Long id, UUID userId);
+    void deleteLike(UUID userId, LikeRequest request);
 
     // =================
     //  외부 로직
