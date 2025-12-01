@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.TextCriteria;
-import org.springframework.data.mongodb.core.query.TextQuery;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -98,12 +96,10 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 
     @Override
     public Page<NoticeDocument> searchByTitle(String keyword, Pageable pageable, boolean filterOpen, Instant now) {
-        // MongoDB text search를 사용한 검색
-        TextCriteria textCriteria = TextCriteria.forDefaultLanguage()
-                .matchingAny(keyword);
+        // 부분 문자열 검색을 위한 regex 사용 (대소문자 무시)
+        Criteria criteria = Criteria.where("title").regex(keyword, "i");
 
-        Query query = TextQuery.queryText(textCriteria)
-                .with(pageable);
+        Query query = new Query(criteria).with(pageable);
 
         // 모집중 필터 적용 (오늘까지 포함되도록)
         if (filterOpen) {
