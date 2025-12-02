@@ -23,14 +23,14 @@ public class SchoolService implements SchoolUseCase {
 
 
     /**
-     * FulltextIndex 바탕으로 검색
+     * 학교 이름 부분 검색
      * @param schoolName    검색할 이름
      */
     @Override
     public List<SchoolResponse> searchSchool(String schoolName) {
 
         /// 목록
-        List<School> responses = schoolJpaRepository.searchBySchoolName(schoolName);
+        List<School> responses = schoolJpaRepository.findBySchoolNameContaining(schoolName);
 
         return SchoolResponse.from(responses);
 
@@ -59,14 +59,14 @@ public class SchoolService implements SchoolUseCase {
     }
 
     /**
-     * FulltextIndex 바탕으로 검색
+     * 대학교 이름 부분 검색
      * @param universityName    검색할 이름
      */
     @Override
     public List<SchoolResponse> searchUniversity(String universityName) {
 
         /// 목록
-        List<University> responses = universityRepository.searchBySchoolName(universityName);
+        List<University> responses = universityRepository.findBySchoolNameContaining(universityName);
 
         /// 응답
         return SchoolResponse.fromUniv(responses);
