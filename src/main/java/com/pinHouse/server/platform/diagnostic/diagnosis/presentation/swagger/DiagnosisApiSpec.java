@@ -23,6 +23,12 @@ public interface DiagnosisApiSpec {
                                              @RequestBody DiagnosisRequest requestDTO);
 
     @Operation(
+            summary = "최근 진단 결과 조회 API",
+            description = "사용자의 최근 진단 결과 1개를 상세하게 조회합니다."
+    )
+    ApiResponse<DiagnosisResponse> getLatestDiagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails);
+
+    @Operation(
             summary = "진단 히스토리 목록 조회 API",
             description = "사용자의 모든 진단 히스토리를 최신순으로 조회합니다."
     )

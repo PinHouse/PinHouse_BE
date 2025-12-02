@@ -39,6 +39,23 @@ public class DiagnosisApi implements DiagnosisApiSpec {
     }
 
     /**
+     * 최근 진단 결과 1개 조회
+     *
+     * @param principalDetails 로그인한 유저
+     * @return 최근 진단 결과
+     */
+    @GetMapping("/latest")
+    @CheckLogin
+    public ApiResponse<DiagnosisResponse> getLatestDiagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 서비스
+        DiagnosisResponse response = service.getDiagnose(principalDetails.getId());
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /**
      * 진단 히스토리 목록 조회
      *
      * @param principalDetails 로그인한 유저

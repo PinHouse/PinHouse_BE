@@ -60,18 +60,25 @@ public class DiagnosisService implements DiagnosisUseCase {
     }
 
     /**
-     * 나의 최근 청약진단 가져오기
+     * 나의 최근 청약진단 1개 가져오기
      * @param userId    유저ID
      * @return          청약진단 DTO
      */
     @Override
+    @Transactional(readOnly = true)
     public DiagnosisResponse getDiagnose(UUID userId) {
 
         /// 유저 예외 처리
         User user = userService.loadUser(userId);
 
-        /// DB에서 결과 조회하기, 영속성 컨텍스트에 저장
-        Diagnosis diagnosis = repository.findByUser(user);
+        /// DB에서 최근 진단 1개 조회
+        Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
+                .orElse(null);
+
+        /// 진단 기록이 없는 경우
+        if (diagnosis == null) {
+            return null;
+        }
 
         /// 작성한 내용을 바탕으로 진단 실행 (규칙에 따라서 바뀔 수 있기에 매번 실행하도록 수정)
         EvaluationContext context = ruleChain.evaluateAll(diagnosis);
