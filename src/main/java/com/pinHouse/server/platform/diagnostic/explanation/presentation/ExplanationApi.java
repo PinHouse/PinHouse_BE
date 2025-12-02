@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/diagnosis/info")
+@RequestMapping("/v1/diagnosis/info")
 @RequiredArgsConstructor
 public class ExplanationApi implements ExplanationApiSpec {
 

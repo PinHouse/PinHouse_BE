@@ -54,13 +54,15 @@ public class BaseEligibilityRule implements Rule {
             );
         }
 
-        /// 2차, 주택 소유 여부
-        boolean hasHousehold = diagnosis.isHouseholdHead();
-        if (hasHousehold) {
+        /// 2차, 주택 소유 여부 (본인이 주택을 소유하고 있는 경우 대부분의 임대주택 신청 불가)
+        boolean ownsHouse = diagnosis.getHousingStatus().equals(
+                com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.OWN_HOUSE);
+
+        if (ownsHouse) {
             return RuleResult.fail(
                     code(),
-                    "주택 소유는 임대주택 지원이 불가능",
-                    Map.of("household", hasHousehold)
+                    "주택 소유자는 임대주택 지원이 불가능",
+                    Map.of("housingStatus", diagnosis.getHousingStatus())
             );
         }
 
