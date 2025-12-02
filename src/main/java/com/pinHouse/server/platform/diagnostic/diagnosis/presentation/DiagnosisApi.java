@@ -1,6 +1,8 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.presentation;
 
+import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisHistoryResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.diagnostic.diagnosis.presentation.swagger.DiagnosisApiSpec;
@@ -9,6 +11,8 @@ import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/diagnosis")
@@ -29,6 +33,23 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 
         /// 서비스
         DiagnosisResponse response = service.diagnose(principalDetails.getId(), request);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /**
+     * 진단 히스토리 목록 조회
+     *
+     * @param principalDetails 로그인한 유저
+     * @return 진단 히스토리 목록
+     */
+    @GetMapping("/history")
+    @CheckLogin
+    public ApiResponse<List<DiagnosisHistoryResponse>> getDiagnosisHistory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 서비스
+        List<DiagnosisHistoryResponse> response = service.getDiagnosisHistory(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(response);

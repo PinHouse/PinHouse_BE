@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.diagnostic.diagnosis.application.service;
 
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisHistoryResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
@@ -13,6 +14,7 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -76,6 +78,25 @@ public class DiagnosisService implements DiagnosisUseCase {
 
         /// DTO 생성
         return DiagnosisResponse.from(context);
+    }
+
+    /**
+     * 나의 진단 히스토리 목록 조회하기
+     * @param userId    유저ID
+     * @return          진단 히스토리 목록
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiagnosisHistoryResponse> getDiagnosisHistory(UUID userId) {
+
+        /// 유저 예외 처리
+        User user = userService.loadUser(userId);
+
+        /// DB에서 모든 진단 히스토리 조회 (최신순)
+        List<Diagnosis> diagnoses = repository.findAllByUserOrderByCreatedAtDesc(user);
+
+        /// DTO 변환
+        return DiagnosisHistoryResponse.fromList(diagnoses);
     }
 
 }
