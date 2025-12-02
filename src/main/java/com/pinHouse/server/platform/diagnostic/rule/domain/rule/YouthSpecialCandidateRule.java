@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Map;
 
-/** 5) 미성년자 후보 탐색 규칙 */
+/**
+ * 미성년자 결혼 특별공급 후보 탐색 규칙
+ * - 19세 미만 결혼한 미성년자 대상
+ */
 @Order(12)
 @Component
 @RequiredArgsConstructor

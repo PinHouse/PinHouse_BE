@@ -30,6 +30,13 @@ public class NewlyMarriedCandidateRule implements Rule {
         /// 가능한 리스트 추출하기
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
+        /// 무주택 세대주 또는 예비 세대주 여부
+        boolean isHouseholdHead = diagnosis.isHouseholdHead();
+        boolean isNoHouse = diagnosis.getHousingStatus().equals(
+                com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.NO_ONE_OWNS_HOUSE) ||
+                diagnosis.getHousingStatus().equals(
+                com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
+
         /// 결혼했는지 체크
         boolean isMarried = diagnosis.isMaritalStatus();
 
@@ -40,11 +47,12 @@ public class NewlyMarriedCandidateRule implements Rule {
         /// 자녀가 6세 이하라면 true
         boolean withYouthAge = diagnosis.getUnbornChildrenCount() > 0 || diagnosis.getUnder6ChildrenCount() > 0;
 
-        /// 신혼부부 특별공급 요건이 안된다면,
+        /// 신혼부부 특별공급 요건:
+        /// - 무주택 세대주 또는 예비 세대주
         /// - 결혼했고 7년 이하, 또는
         /// - 결혼 7년 초과지만 자녀가 6세 이하인 경우
 
-        if (!(isMarried && (withinYears || withYouthAge))) {
+        if (!(isHouseholdHead && isNoHouse && isMarried && (withinYears || withYouthAge))) {
 
             /// 있다면 삭제
             candidates.removeIf(c ->
@@ -55,7 +63,11 @@ public class NewlyMarriedCandidateRule implements Rule {
 
             /// 실패 이유를 담아줌
             String failReason;
-            if (!isMarried) {
+            if (!isHouseholdHead) {
+                failReason = "세대주가 아님";
+            } else if (!isNoHouse) {
+                failReason = "무주택 요건 미충족";
+            } else if (!isMarried) {
                 failReason = "결혼하지 않음";
             } else if (!withinYears && !withYouthAge) {
                 failReason = "결혼 7년 초과 및 자녀 요건 미충족";

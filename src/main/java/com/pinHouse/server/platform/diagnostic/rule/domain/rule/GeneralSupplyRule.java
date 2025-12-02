@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.diagnostic.rule.domain.rule;
 
-
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Diagnosis;
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus;
 import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
@@ -15,15 +14,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * 생애 최초 특별 공급
+ * 일반공급 후보 탐색 규칙
+ * - 무주택 세대주
+ * - 청약통장 보유
  */
-
-@Order(5)
+@Order(14)
 @Component
 @RequiredArgsConstructor
-public class FirstSpecialRule implements Rule {
+public class GeneralSupplyRule implements Rule {
 
-    /// 임대주택 유형 검증기 도입
     private final PolicyUseCase policyUseCase;
 
     @Override
@@ -34,55 +33,59 @@ public class FirstSpecialRule implements Rule {
         /// 가능한 리스트 추출하기
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        /// 무주택 세대주 여부
-        boolean noOwnHome = diagnosis.getHousingStatus().equals(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE);
+        /// 세대주 여부
         boolean isHouseholdHead = diagnosis.isHouseholdHead();
 
-        /// 혼인 중이거나 자녀가 있는 경우
-        boolean isMarried = diagnosis.isMaritalStatus();
-        boolean hasChildren = (diagnosis.getUnbornChildrenCount() +
-                               diagnosis.getUnder6ChildrenCount() +
-                               diagnosis.getOver7MinorChildrenCount()) > 0;
+        /// 무주택 세대 여부
+        boolean isNoHouse = diagnosis.getHousingStatus().equals(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE);
 
-        /// 생애최초 요건: 무주택 세대주 + (결혼했거나 자녀가 있음)
-        boolean qualifies = noOwnHome && isHouseholdHead && (isMarried || hasChildren);
+        /// 청약통장 보유 여부
+        boolean hasAccount = diagnosis.isHasAccount();
+
+        /// 청약통장 가입기간 체크 (일반공급은 최소 6개월 이상 가입 필요)
+        boolean hasMinAccountPeriod = hasAccount &&
+            diagnosis.getAccountYears() != null &&
+            diagnosis.getAccountYears().getYears() >= 0.5;
+
+        /// 일반공급 요건: 무주택 세대주 + 청약통장 보유 + 가입기간 6개월 이상
+        boolean qualifies = isHouseholdHead && isNoHouse && hasAccount && hasMinAccountPeriod;
 
         if (!qualifies) {
 
-            /// 만약 있다면 삭제
-            candidates.removeIf(c ->
-                    c.supplyType() == SupplyType.FIRST_SPECIAL);
+            /// 일반공급 제거
+            candidates.removeIf(c -> c.supplyType() == SupplyType.GENERAL);
 
             /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
 
             // 실패 이유 분류
             String failReason;
-            if (!noOwnHome) {
-                failReason = "무주택 세대 요건 미충족";
-            } else if (!isHouseholdHead) {
+            if (!isHouseholdHead) {
                 failReason = "세대주가 아님";
+            } else if (!isNoHouse) {
+                failReason = "무주택 세대 요건 미충족";
+            } else if (!hasAccount) {
+                failReason = "청약통장 미보유";
             } else {
-                failReason = "혼인 또는 자녀 요건 미충족";
+                failReason = "청약통장 가입기간 부족 (최소 6개월 필요)";
             }
 
             return RuleResult.fail(code(),
-                    "생애최초 특별공급 해당 없음",
+                    "일반공급 해당 없음",
                     Map.of(
                             "candidate", candidates,
                             "failReason", failReason
                     ));
         }
 
+        /// 일반공급 후보
         return RuleResult.pass(code(),
-                "생애최초 특별공급 후보",
+                "일반공급 후보",
                 Map.of("candidate", candidates));
-
     }
-
 
     @Override
     public String code() {
-        return "FIRST_SPECIAL";
+        return "CANDIDATE_GENERAL";
     }
 }

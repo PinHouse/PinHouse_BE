@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.diagnostic.rule.domain.rule;
 
-
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.Diagnosis;
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus;
 import com.pinHouse.server.platform.diagnostic.rule.application.dto.RuleResult;
@@ -15,15 +14,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * 생애 최초 특별 공급
+ * 청년 특별공급 후보 탐색 규칙
+ * - 19~39세 무주택 청년
+ * - 세대주 또는 예비 세대주
  */
-
-@Order(5)
+@Order(13)
 @Component
 @RequiredArgsConstructor
-public class FirstSpecialRule implements Rule {
+public class YouthCandidateRule implements Rule {
 
-    /// 임대주택 유형 검증기 도입
     private final PolicyUseCase policyUseCase;
 
     @Override
@@ -34,55 +33,53 @@ public class FirstSpecialRule implements Rule {
         /// 가능한 리스트 추출하기
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        /// 무주택 세대주 여부
-        boolean noOwnHome = diagnosis.getHousingStatus().equals(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE);
+        /// 나이 체크 (19~39세)
+        int age = diagnosis.getAge();
+        int youthAgeMin = policyUseCase.youthAgeMin();
+        boolean ageOk = age >= youthAgeMin && age <= 39;
+
+        /// 무주택 세대주 또는 예비 세대주 여부
         boolean isHouseholdHead = diagnosis.isHouseholdHead();
+        boolean isNoHouse = diagnosis.getHousingStatus().equals(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE) ||
+                diagnosis.getHousingStatus().equals(HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
 
-        /// 혼인 중이거나 자녀가 있는 경우
-        boolean isMarried = diagnosis.isMaritalStatus();
-        boolean hasChildren = (diagnosis.getUnbornChildrenCount() +
-                               diagnosis.getUnder6ChildrenCount() +
-                               diagnosis.getOver7MinorChildrenCount()) > 0;
-
-        /// 생애최초 요건: 무주택 세대주 + (결혼했거나 자녀가 있음)
-        boolean qualifies = noOwnHome && isHouseholdHead && (isMarried || hasChildren);
+        /// 1인 가구 또는 세대주인 경우 청년 특별공급 가능
+        boolean qualifies = ageOk && (isHouseholdHead || diagnosis.isSingle()) && isNoHouse;
 
         if (!qualifies) {
 
-            /// 만약 있다면 삭제
-            candidates.removeIf(c ->
-                    c.supplyType() == SupplyType.FIRST_SPECIAL);
+            /// 청년 특별공급 제거
+            candidates.removeIf(c -> c.supplyType() == SupplyType.YOUTH_SPECIAL);
 
             /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
 
             // 실패 이유 분류
             String failReason;
-            if (!noOwnHome) {
-                failReason = "무주택 세대 요건 미충족";
-            } else if (!isHouseholdHead) {
-                failReason = "세대주가 아님";
+            if (!ageOk) {
+                failReason = "나이 기준 미충족 (19~39세)";
+            } else if (!isNoHouse) {
+                failReason = "무주택 요건 미충족";
             } else {
-                failReason = "혼인 또는 자녀 요건 미충족";
+                failReason = "세대주 또는 1인 가구 요건 미충족";
             }
 
             return RuleResult.fail(code(),
-                    "생애최초 특별공급 해당 없음",
+                    "청년 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,
                             "failReason", failReason
                     ));
         }
 
+        /// 청년 특별공급 후보
         return RuleResult.pass(code(),
-                "생애최초 특별공급 후보",
+                "청년 특별공급 후보",
                 Map.of("candidate", candidates));
-
     }
-
 
     @Override
     public String code() {
-        return "FIRST_SPECIAL";
+        return "CANDIDATE_YOUTH_SPECIAL";
     }
 }

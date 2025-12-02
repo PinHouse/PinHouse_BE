@@ -34,10 +34,9 @@ public class ElderSupportCandidateRule implements Rule {
         /// 부양한 노부모가 없다면 제거
         if (!diagnosis.getHasSpecialCategory().contains(SUPPORTING_ELDERLY)) {
 
-            /// 만약 있다면 삭제
+            /// 만약 있다면 삭제 (고령자 부양 특별공급만 제거)
             candidates.removeIf(c ->
-                    c.supplyType() == SupplyType.YOUTH_SPECIAL ||
-                            c.supplyType() == SupplyType.ELDER_SPECIAL);
+                    c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
 
             /// 결과 저장하기
             ctx.setCurrentCandidates(candidates);
