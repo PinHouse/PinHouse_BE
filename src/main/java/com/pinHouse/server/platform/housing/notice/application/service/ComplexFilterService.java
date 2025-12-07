@@ -34,24 +34,15 @@ public class ComplexFilterService {
     public FilterResult filterComplexes(
             List<ComplexDocument> complexes,
             Map<String, NoticeFacilityListResponse> facilityMap,
-            NoticeDetailFilterRequest request
+            NoticeDetailFilterRequest request,
+            Map<String, Integer> totalTimeMap
     ) {
         List<ComplexDocument> filteredComplexes = new ArrayList<>();
         List<ComplexDocument> nonFilteredComplexes = new ArrayList<>();
 
-        // PinPoint 기반 거리 필터링을 위한 위치 정보 조회
-        Location userLocation = getUserLocation(request.pinPointId());
-
-        // transitTime (분)을 거리(km)로 변환 (평균 속도 15km/h 기준)
-        double maxDistanceKm = Double.MAX_VALUE;
-        if (request.transitTime() > 0) {
-            final double AVG_SPEED_KMH = 15.0; // 평균 이동 속도 (도보 + 대중교통)
-            maxDistanceKm = (AVG_SPEED_KMH * request.transitTime()) / 60.0;
-        }
-
         for (ComplexDocument complex : complexes) {
-            // 1. 거리 필터 체크 (최우선)
-            if (!passesDistanceFilter(complex, userLocation, maxDistanceKm)) {
+            // 1. 거리 필터 체크 (최우선) - totalTimeMap의 totalTime 사용
+            if (!passesDistanceFilter(complex, request.transitTime(), totalTimeMap)) {
                 nonFilteredComplexes.add(complex);
                 continue;
             }
@@ -99,35 +90,34 @@ public class ComplexFilterService {
 
     /**
      * 거리 필터 체크
-     * pinPointId로부터 transitTime(분) 이내에 도달 가능한 단지만 통과
-     * 평균 속도 15km/h 기준으로 시간을 거리로 변환
+     * totalTimeMap의 totalTime을 사용하여 transitTime 이내의 단지만 통과
      */
     private boolean passesDistanceFilter(
             ComplexDocument complex,
-            Location userLocation,
-            double maxDistanceKm
+            int transitTime,
+            Map<String, Integer> totalTimeMap
     ) {
-        // PinPoint가 지정되지 않은 경우 모두 통과
-        if (userLocation == null || maxDistanceKm == Double.MAX_VALUE) {
+        // transitTime이 0이면 필터링 안함
+        if (transitTime <= 0) {
             return true;
         }
 
-        // Complex의 위치 정보 확인
-        Location complexLocation = complex.getLocation();
-        if (complexLocation == null) {
-            log.warn("Complex {} has no location data", complex.getId());
+        // totalTimeMap이 없거나 비어있으면 모두 통과
+        if (totalTimeMap == null || totalTimeMap.isEmpty()) {
+            return true;
+        }
+
+        // 해당 Complex의 거리 정보 조회
+        Integer totalTime = totalTimeMap.get(complex.getId());
+
+        // 거리 정보가 없으면 필터링에서 제외
+        if (totalTime == null) {
+            log.warn("Distance info not found for complex {}", complex.getId());
             return false;
         }
 
-        // 거리 계산 (Haversine formula)
-        double distanceKm = calculateDistance(
-                userLocation.getLatitude(),
-                userLocation.getLongitude(),
-                complexLocation.getLatitude(),
-                complexLocation.getLongitude()
-        );
-
-        return distanceKm <= maxDistanceKm;
+        // totalTime이 transitTime 이내인지 체크
+        return totalTime <= transitTime;
     }
 
     /**
@@ -379,23 +369,14 @@ public class ComplexFilterService {
     public int countMatchingComplexes(
             List<ComplexDocument> complexes,
             Map<String, NoticeFacilityListResponse> facilityMap,
-            NoticeDetailFilterRequest request
+            NoticeDetailFilterRequest request,
+            Map<String, Integer> totalTimeMap
     ) {
-        // PinPoint 기반 거리 필터링을 위한 위치 정보 조회
-        Location userLocation = getUserLocation(request.pinPointId());
-
-        // transitTime (분)을 거리(km)로 변환 (평균 속도 15km/h 기준)
-        double maxDistanceKm = Double.MAX_VALUE;
-        if (request.transitTime() > 0) {
-            final double AVG_SPEED_KMH = 15.0;
-            maxDistanceKm = (AVG_SPEED_KMH * request.transitTime()) / 60.0;
-        }
-
         int count = 0;
 
         for (ComplexDocument complex : complexes) {
-            // 1. 거리 필터 체크
-            if (!passesDistanceFilter(complex, userLocation, maxDistanceKm)) {
+            // 1. 거리 필터 체크 - totalTimeMap의 totalTime 사용
+            if (!passesDistanceFilter(complex, request.transitTime(), totalTimeMap)) {
                 continue;
             }
 

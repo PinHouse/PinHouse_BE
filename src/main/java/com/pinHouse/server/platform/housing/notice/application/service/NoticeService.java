@@ -53,6 +53,9 @@ public class NoticeService implements NoticeUseCase {
     private final FacilityUseCase facilityService;
     private final PinPointUseCase pinPointService;
 
+    /// 거리 캐싱
+    private final com.pinHouse.server.core.cache.DistanceCacheService distanceCacheService;
+
     // =================
     //  퍼블릭 로직
     // =================
@@ -110,17 +113,43 @@ public class NoticeService implements NoticeUseCase {
                         facilityService::getNearFacilities
                 ));
 
-        /// 서비스 레이어에서 필터링 수행
+        /// pinPointId가 있는 경우, 모든 Complex에 대해 거리 정보를 미리 계산하고 totalTime만 저장
+        Map<String, Integer> totalTimeMap = new HashMap<>();
+        if (request.pinPointId() != null && !request.pinPointId().isBlank()) {
+            log.debug("Pre-calculating distances for all complexes in notice={}, pinPoint={}", noticeId, request.pinPointId());
+            for (ComplexDocument complex : complexes) {
+                try {
+                    com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse distance =
+                            complexService.getEasyDistance(complex.getId(), request.pinPointId());
+                    totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
+                    log.debug("Calculated and cached totalTime for complex={}", complex.getId());
+                } catch (Exception e) {
+                    log.error("Failed to calculate distance for complex={}, pinPoint={}", complex.getId(), request.pinPointId(), e);
+                }
+            }
+        }
+
+        /// 서비스 레이어에서 필터링 수행 (totalTimeMap 전달)
         ComplexFilterService.FilterResult filterResult =
-                complexFilterService.filterComplexes(complexes, facilityMap, request);
+                complexFilterService.filterComplexes(complexes, facilityMap, request, totalTimeMap);
 
         /// DTO 정적 팩토리 메서드로 응답 생성 (이미 필터링된 데이터 전달)
-        return NoticeDetailFilteredResponse.from(
-                notice,
-                filterResult.filtered(),
-                filterResult.nonFiltered(),
-                facilityMap
-        );
+        if (!totalTimeMap.isEmpty()) {
+            return NoticeDetailFilteredResponse.from(
+                    notice,
+                    filterResult.filtered(),
+                    filterResult.nonFiltered(),
+                    facilityMap,
+                    totalTimeMap
+            );
+        } else {
+            return NoticeDetailFilteredResponse.from(
+                    notice,
+                    filterResult.filtered(),
+                    filterResult.nonFiltered(),
+                    facilityMap
+            );
+        }
     }
 
     /// 공고의 단지 필터링 정보 조회
@@ -157,8 +186,22 @@ public class NoticeService implements NoticeUseCase {
                         facilityService::getNearFacilities
                 ));
 
+        /// pinPointId가 있는 경우, 거리 정보 계산하고 totalTime만 저장
+        Map<String, Integer> totalTimeMap = new HashMap<>();
+        if (request.pinPointId() != null && !request.pinPointId().isBlank()) {
+            for (ComplexDocument complex : complexes) {
+                try {
+                    com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse distance =
+                            complexService.getEasyDistance(complex.getId(), request.pinPointId());
+                    totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
+                } catch (Exception e) {
+                    log.error("Failed to calculate distance for complex={}, pinPoint={}", complex.getId(), request.pinPointId(), e);
+                }
+            }
+        }
+
         /// 필터 조건에 맞는 단지 개수 반환
-        return complexFilterService.countMatchingComplexes(complexes, facilityMap, request);
+        return complexFilterService.countMatchingComplexes(complexes, facilityMap, request, totalTimeMap);
     }
 
     /// 유닛타입(방) 비교
