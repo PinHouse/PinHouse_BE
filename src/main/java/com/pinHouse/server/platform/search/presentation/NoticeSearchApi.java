@@ -1,12 +1,12 @@
 package com.pinHouse.server.platform.search.presentation;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.core.response.response.pageable.PageRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
-import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
-import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
 import com.pinHouse.server.platform.search.application.usecase.SearchKeywordUseCase;
 import com.pinHouse.server.platform.search.presentation.swagger.NoticeSearchApiSpec;
@@ -32,23 +32,30 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
     private final SearchKeywordUseCase searchKeywordService;
 
     /**
-     * 공고 검색
-     * GET /v1/search/notices?q=키워드&page=0&size=20&sort=LATEST&filter=ALL
+     * 공고 검색 (무한 스크롤)
+     * GET /v1/search/notices?q=키워드&page=1&offSet=20&sortType=LATEST&status=ALL
      */
     @Override
     @GetMapping("/notices")
-    public ApiResponse<NoticeSearchResponse> searchNotices(
+    public ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNotices(
             @RequestParam String q,
-            PageRequest pageRequest,
-            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sort,
-            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType filter,
+            SliceRequest sliceRequest,
+            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
+            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         // 로그인하지 않은 경우 userId는 null
         UUID userId = (principalDetails != null) ? principalDetails.getId() : null;
 
         // 검색 실행
-        NoticeSearchResponse response = noticeSearchService.searchNotices(q, pageRequest.getPage() - 1, pageRequest.getSize(), sort, filter, userId);
+        SliceResponse<NoticeSearchResultResponse> response = noticeSearchService.searchNotices(
+                q,
+                sliceRequest.page(),
+                sliceRequest.offSet(),
+                sortType,
+                status,
+                userId
+        );
 
         return ApiResponse.ok(response);
     }

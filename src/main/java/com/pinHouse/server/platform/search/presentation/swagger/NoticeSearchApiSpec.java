@@ -1,12 +1,12 @@
 package com.pinHouse.server.platform.search.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.core.response.response.pageable.PageRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceRequest;
+import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
-import com.pinHouse.server.platform.search.application.dto.NoticeSearchResponse;
+import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
-import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,23 +23,23 @@ import java.util.List;
 public interface NoticeSearchApiSpec {
 
     /**
-     * 공고 검색
+     * 공고 검색 (무한 스크롤)
      */
     @Operation(
-            summary = "공고 제목 검색 API",
-            description = "MongoDB text search를 사용하여 공고 제목으로 검색합니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
+            summary = "공고 제목 검색 API (무한 스크롤)",
+            description = "MongoDB regex를 사용하여 공고 제목으로 검색합니다. 무한 스크롤 방식으로 결과를 반환합니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
     )
-    ApiResponse<NoticeSearchResponse> searchNotices(
+    ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNotices(
             @Parameter(description = "검색 키워드", example = "행복주택", required = true)
             @RequestParam String q,
 
-            PageRequest pageRequest,
+            SliceRequest sliceRequest,
 
-            @Parameter(description = "정렬 방식 (LATEST/최신순, DEADLINE/마감임박순)", example = "LATEST")
-            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sort,
+            @Parameter(description = "정렬 방식 (LATEST/최신공고순, END/마감임박순)", example = "LATEST")
+            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
 
-            @Parameter(description = "필터 (ALL/전체, OPEN/모집중)", example = "ALL")
-            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType filter,
+            @Parameter(description = "공고 상태 (ALL/전체, RECRUITING/모집중)", example = "ALL")
+            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
 
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

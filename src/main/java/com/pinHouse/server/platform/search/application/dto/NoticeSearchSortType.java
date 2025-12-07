@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NoticeSearchSortType {
 
-    LATEST("최신순"),
-    DEADLINE("마감임박순");
+    LATEST("최신공고순"),
+    END("마감임박순");
 
     private final String label;
 
@@ -30,14 +30,14 @@ public enum NoticeSearchSortType {
 
         String normalized = normalize(source);
 
-        // Enum.name() 매칭 (LATEST, DEADLINE)
+        // Enum.name() 매칭 (LATEST, END)
         for (NoticeSearchSortType type : values()) {
             if (type.name().equalsIgnoreCase(normalized)) {
                 return type;
             }
         }
 
-        // 한글 라벨 매칭 (최신순, 마감임박순)
+        // 한글 라벨 매칭 (최신공고순, 마감임박순)
         for (NoticeSearchSortType type : values()) {
             if (normalize(type.label).equalsIgnoreCase(normalized)) {
                 return type;

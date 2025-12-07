@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 공고 검색 필터 타입
+ * 공고 검색 상태 필터
  */
 @RequiredArgsConstructor
 public enum NoticeSearchFilterType {
 
     ALL("전체"),
-    OPEN("모집중");
+    RECRUITING("모집중");
 
     private final String label;
 
@@ -30,7 +30,7 @@ public enum NoticeSearchFilterType {
 
         String normalized = normalize(source);
 
-        // Enum.name() 매칭 (ALL, OPEN)
+        // Enum.name() 매칭 (ALL, RECRUITING)
         for (NoticeSearchFilterType type : values()) {
             if (type.name().equalsIgnoreCase(normalized)) {
                 return type;
