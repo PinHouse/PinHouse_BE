@@ -15,8 +15,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record DistanceResponse(
 
-        @Schema(description = "총 소요 시간(분)", example = "45")
-        int totalTime,
+        @Schema(description = "총 소요 시간 (포맷팅)", example = "1시간 30분")
+        String totalTime,
+
+        @Schema(description = "총 소요 시간(분) - 내부 필터링용", example = "45", hidden = true)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        int totalTimeMinutes,
 
         @Schema(description = "총 거리 (KM)", example = "17")
         double totalDistance,
@@ -28,8 +32,10 @@ public record DistanceResponse(
 
     /// 정적 팩토리 메서드
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes) {
+        int minutes = rootResult.totalTime();
         return DistanceResponse.builder()
-                .totalTime(rootResult.totalTime())
+                .totalTime(formatTime(minutes))
+                .totalTimeMinutes(minutes)
                 .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
                 .stops(null)
@@ -38,12 +44,38 @@ public record DistanceResponse(
 
     /// 정적 팩토리 메서드
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes, List<TransferPointResponse> stops) {
+        int minutes = rootResult.totalTime();
         return DistanceResponse.builder()
-                .totalTime(rootResult.totalTime())
+                .totalTime(formatTime(minutes))
+                .totalTimeMinutes(minutes)
                 .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
                 .stops(stops)
                 .build();
+    }
+
+    /**
+     * 시간을 "##시 ##분" 형식으로 포맷팅
+     * @param totalMinutes 총 시간(분)
+     * @return 포맷팅된 시간 문자열 (예: "1시간 30분", "45분"), 0 이하면 null
+     */
+    private static String formatTime(int totalMinutes) {
+        if (totalMinutes <= 0) {
+            return null;
+        }
+
+        if (totalMinutes < 60) {
+            return totalMinutes + "분";
+        }
+
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+
+        if (minutes == 0) {
+            return hours + "시간";
+        }
+
+        return hours + "시간 " + minutes + "분";
     }
 
 

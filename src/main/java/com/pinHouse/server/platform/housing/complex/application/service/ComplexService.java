@@ -51,6 +51,9 @@ public class ComplexService implements ComplexUseCase {
     private final LikeQueryUseCase likeService;
     private final FacilityUseCase facilityService;
 
+    /// 거리 캐싱
+    private final com.pinHouse.server.core.cache.DistanceCacheService distanceCacheService;
+
     // =================
     //  퍼블릭 로직
     // =================
@@ -436,8 +439,16 @@ public class ComplexService implements ComplexUseCase {
     }
 
     /// 간편 대중교통 시뮬레이터
+    @Override
     @Transactional(readOnly = true)
-    protected DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
+    public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
+
+        /// Redis 캐시 먼저 확인
+        DistanceResponse cached = distanceCacheService.getDistance(id, pinPointId);
+        if (cached != null) {
+            log.debug("Using cached distance for complexId={}, pinPointId={}", id, pinPointId);
+            return cached;
+        }
 
         /// 임대주택 예외처리
         ComplexDocument complex = loadComplex(id);
@@ -456,8 +467,14 @@ public class ComplexService implements ComplexUseCase {
         /// 간편 조건 탐색 DTO
         List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
 
+        /// DistanceResponse 생성
+        DistanceResponse distance = DistanceResponse.from(rootResult, routes);
+
+        /// Redis에 캐싱
+        distanceCacheService.cacheDistance(id, pinPointId, distance);
+
         /// 리턴
-        return DistanceResponse.from(rootResult, routes);
+        return distance;
 
     }
 }

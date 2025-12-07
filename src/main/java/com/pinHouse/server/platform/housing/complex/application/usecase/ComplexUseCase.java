@@ -28,6 +28,9 @@ public interface ComplexUseCase {
     /// 거리 시뮬레이터 전부 조회
     List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
+    /// 간편 거리 시뮬레이터 (Redis 캐싱 포함)
+    DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;
+
     /// 나의 좋아요 방 목록 조회
     List<UnityTypeLikeResponse> getComplexesLikes(UUID userId);
 

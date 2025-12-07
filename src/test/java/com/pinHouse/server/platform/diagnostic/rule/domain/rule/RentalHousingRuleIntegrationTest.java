@@ -312,28 +312,25 @@ class RentalHousingRuleIntegrationTest {
     }
 
     /**
-     * 테스트 케이스 6: 일반공급 적격자
+     * 테스트 케이스 6: 임대주택 일반공급 적격자
      * - 나이: 42세
-     * - 무주택 세대주
-     * - 청약통장 2년 이상 가입
+     * - 무주택 세대구성원
+     * - 청약통장 불필요 (임대주택은 청약통장 없어도 신청 가능)
      *
      * 예측: 일반공급 후보로 선정
      * 실제: PASS
      */
     @Test
-    @DisplayName("케이스 6: 무주택 세대주, 청약통장 2년 가입 - 일반공급 적격")
+    @DisplayName("케이스 6: 무주택 세대구성원 - 임대주택 일반공급 적격")
     void testCase6_GeneralSupply_Qualified() {
-        // Given: 42세, 무주택 세대주, 청약통장 2년 이상
+        // Given: 42세, 무주택 세대구성원, 청약통장 없음
         Diagnosis diagnosis = createDiagnosisBuilder()
                 .age(42)
                 .gender(Gender.Male)
-                .isHouseholdHead(true)
+                .isHouseholdHead(false)  // 세대주가 아니어도 가능
                 .isSingle(false)
                 .housingStatus(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE)
-                .hasAccount(true)
-                .accountYears(SubscriptionPeriod.OVER_TWO_YEARS)
-                .account(SubscriptionAccount.UNDER_600)
-                .accountDeposit(SubscriptionCount.OVER_24)
+                .hasAccount(false)  // 청약통장 불필요
                 .adultCount(2)
                 .build();
 
@@ -352,35 +349,33 @@ class RentalHousingRuleIntegrationTest {
                 .extracting(SupplyRentalCandidate::supplyType)
                 .contains(SupplyType.GENERAL);
 
-        System.out.println("=== 케이스 6: 일반공급 적격자 ===");
-        System.out.println("나이: 42세 | 세대주: O | 주택: 무주택 | 청약통장: 2년 이상");
-        System.out.println("예측: 일반공급 적격");
+        System.out.println("=== 케이스 6: 임대주택 일반공급 적격자 ===");
+        System.out.println("나이: 42세 | 세대주: X | 주택: 무주택 | 청약통장: 없음");
+        System.out.println("예측: 일반공급 적격 (임대주택은 청약통장 불필요)");
         System.out.println("실제: " + (generalResult.pass() ? "PASS ✓" : "FAIL ✗"));
         System.out.println();
     }
 
     /**
-     * 테스트 케이스 7: 일반공급 부적격 (청약통장 가입기간 부족)
+     * 테스트 케이스 7: 임대주택 일반공급 부적격 (가구원 중 주택 소유자 있음)
      * - 나이: 35세
-     * - 무주택 세대주
-     * - 청약통장 3개월 가입
+     * - 가구원 중 주택 소유자 있음
      *
      * 예측: 일반공급 제외
      * 실제: FAIL
      */
     @Test
-    @DisplayName("케이스 7: 청약통장 가입 3개월 - 일반공급 부적격 (가입기간 부족)")
-    void testCase7_GeneralSupply_InsufficientAccountPeriod() {
-        // Given: 35세, 무주택 세대주, 청약통장 3개월
+    @DisplayName("케이스 7: 가구원 중 주택 소유자 있음 - 임대주택 일반공급 부적격")
+    void testCase7_GeneralSupply_HouseholdMemberOwnsHouse() {
+        // Given: 35세, 가구원 중 주택 소유자 있음
         Diagnosis diagnosis = createDiagnosisBuilder()
                 .age(35)
                 .gender(Gender.Female)
-                .isHouseholdHead(true)
-                .isSingle(true)
-                .housingStatus(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE)
-                .hasAccount(true)
-                .accountYears(SubscriptionPeriod.LESS_THAN_6_MONTHS)  // 6개월 미만
-                .adultCount(1)
+                .isHouseholdHead(false)
+                .isSingle(false)
+                .housingStatus(HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE)  // 가구원 중 주택 소유자 있음
+                .hasAccount(false)
+                .adultCount(2)
                 .build();
 
         EvaluationContext ctx = EvaluationContext.of(diagnosis);
@@ -395,11 +390,11 @@ class RentalHousingRuleIntegrationTest {
         assertThat(generalResult.pass()).isFalse();
         assertThat(generalResult.message()).isEqualTo("일반공급 해당 없음");
         assertThat(generalResult.details().get("failReason"))
-                .isEqualTo("청약통장 가입기간 부족 (최소 6개월 필요)");
+                .isEqualTo("무주택 세대 요건 미충족");
 
-        System.out.println("=== 케이스 7: 일반공급 부적격 (가입기간 부족) ===");
-        System.out.println("나이: 35세 | 세대주: O | 주택: 무주택 | 청약통장: 3개월");
-        System.out.println("예측: 일반공급 부적격 (가입기간 부족)");
+        System.out.println("=== 케이스 7: 임대주택 일반공급 부적격 ===");
+        System.out.println("나이: 35세 | 주택: 가구원 중 소유자 있음");
+        System.out.println("예측: 일반공급 부적격 (무주택 세대 요건 미충족)");
         System.out.println("실제: " + (generalResult.pass() ? "PASS ✓" : "FAIL ✗ - " + generalResult.details().get("failReason")));
         System.out.println();
     }

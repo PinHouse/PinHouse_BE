@@ -117,4 +117,55 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         return new PageImpl<>(notices, pageable, count);
     }
 
+    @Override
+    public org.springframework.data.domain.Slice<NoticeDocument> searchByTitleSlice(String keyword, Pageable pageable, boolean filterOpen, Instant now) {
+        // 부분 문자열 검색을 위한 regex 사용 (대소문자 무시)
+        Criteria criteria = Criteria.where("title").regex(keyword, "i");
+
+        Query query = new Query(criteria).with(pageable);
+
+        // 모집중 필터 적용 (오늘까지 포함되도록)
+        if (filterOpen) {
+            Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
+                    .toLocalDate()
+                    .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                    .toInstant();
+            query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
+        }
+
+        // 무한 스크롤을 위해 limit + 1 조회
+        int limit = pageable.getPageSize();
+        query.limit(limit + 1);
+
+        /// 실행
+        List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);
+
+        // hasNext 판별: limit+1개 조회했을 때, limit+1번째가 있으면 다음 페이지가 있음
+        boolean hasNext = notices.size() > limit;
+
+        // 실제 반환 데이터는 limit개만
+        List<NoticeDocument> content = hasNext ? notices.subList(0, limit) : notices;
+
+        return new org.springframework.data.domain.SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public long countByTitle(String keyword, boolean filterOpen, Instant now) {
+        // 부분 문자열 검색을 위한 regex 사용 (대소문자 무시)
+        Criteria criteria = Criteria.where("title").regex(keyword, "i");
+
+        Query query = new Query(criteria);
+
+        // 모집중 필터 적용 (오늘까지 포함되도록)
+        if (filterOpen) {
+            Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
+                    .toLocalDate()
+                    .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                    .toInstant();
+            query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
+        }
+
+        return mongoTemplate.count(query, NoticeDocument.class);
+    }
+
 }

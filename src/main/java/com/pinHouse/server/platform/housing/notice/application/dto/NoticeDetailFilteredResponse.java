@@ -53,6 +53,30 @@ public record NoticeDetailFilteredResponse(
     }
 
     /**
+     * 정적 팩토리 메서드 - 거리 정보 포함
+     */
+    public static NoticeDetailFilteredResponse from(
+            NoticeDocument notice,
+            List<ComplexDocument> filteredComplexes,
+            List<ComplexDocument> nonFilteredComplexes,
+            Map<String, NoticeFacilityListResponse> facilityMap,
+            Map<String, Integer> totalTimeMap
+    ) {
+        // 1. 기본 정보 생성
+        NoticeBasicInfo basicInfo = NoticeBasicInfo.from(notice);
+
+        // 2. 필터링된 데이터로 응답 생성 (거리 정보 포함)
+        NoticeDetailData filtered = NoticeDetailData.from(filteredComplexes, facilityMap, totalTimeMap);
+        NoticeDetailData nonFiltered = NoticeDetailData.from(nonFilteredComplexes, facilityMap, totalTimeMap);
+
+        return NoticeDetailFilteredResponse.builder()
+                .basicInfo(basicInfo)
+                .filtered(filtered)
+                .nonFiltered(nonFiltered)
+                .build();
+    }
+
+    /**
      * 공고 기본 정보 (필터와 무관한 정보)
      */
     @Builder
@@ -104,6 +128,18 @@ public record NoticeDetailFilteredResponse(
                 Map<String, NoticeFacilityListResponse> facilityMap
         ) {
             List<ComplexDetailResponse> responses = ComplexDetailResponse.from(complexes, facilityMap);
+            return NoticeDetailData.builder()
+                    .totalCount(responses.size())
+                    .complexes(responses)
+                    .build();
+        }
+
+        public static NoticeDetailData from(
+                List<ComplexDocument> complexes,
+                Map<String, NoticeFacilityListResponse> facilityMap,
+                Map<String, Integer> totalTimeMap
+        ) {
+            List<ComplexDetailResponse> responses = ComplexDetailResponse.from(complexes, facilityMap, totalTimeMap);
             return NoticeDetailData.builder()
                     .totalCount(responses.size())
                     .complexes(responses)
