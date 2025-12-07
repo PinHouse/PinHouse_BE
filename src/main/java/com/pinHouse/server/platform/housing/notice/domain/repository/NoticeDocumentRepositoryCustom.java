@@ -36,4 +36,15 @@ public interface NoticeDocumentRepositoryCustom {
      */
     Slice<NoticeDocument> searchByTitleSlice(String keyword, Pageable pageable, boolean filterOpen, Instant now);
 
+    /**
+     * 텍스트 검색 결과의 총 개수 조회
+     * MongoDB의 regex를 사용하여 제목 기반 검색
+     *
+     * @param keyword 검색 키워드
+     * @param filterOpen true면 모집중만, false면 전체
+     * @param now 현재 시각
+     * @return 검색 결과 총 개수
+     */
+    long countByTitle(String keyword, boolean filterOpen, Instant now);
+
 }

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -60,12 +61,21 @@ public class NoticeSearchService implements NoticeSearchUseCase {
         // 페이징 및 정렬 설정 (page는 1부터 시작하므로 -1)
         Pageable pageable = createPageable(page - 1, size, finalSortType);
 
+        Instant now = java.time.Instant.now();
+
         // MongoDB text search 실행 (Slice 방식)
         Slice<NoticeDocument> noticeSlice = noticeRepository.searchByTitleSlice(
                 keyword,
                 pageable,
                 filterRecruiting,
-                java.time.Instant.now()
+                now
+        );
+
+        // 검색 결과 총 개수 조회
+        long totalCount = noticeRepository.countByTitle(
+                keyword,
+                filterRecruiting,
+                now
         );
 
         // 좋아요 정보 조회 (userId가 있는 경우)
@@ -81,9 +91,9 @@ public class NoticeSearchService implements NoticeSearchUseCase {
                 })
                 .collect(Collectors.toList());
 
-        // SliceResponse 생성 (totalCount는 무한 스크롤에서는 정확한 값이 필요 없으므로 0으로 설정)
+        // SliceResponse 생성
         return SliceResponse.<NoticeSearchResultResponse>builder()
-                .totalCount(0L)
+                .totalCount(totalCount)
                 .content(content)
                 .hasNext(noticeSlice.hasNext())
                 .page(page)
