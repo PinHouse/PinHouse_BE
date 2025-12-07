@@ -14,6 +14,7 @@ import com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeSortT
 import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
 import com.pinHouse.server.platform.housing.notice.presentation.swagger.NoticeApiSpec;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -65,7 +66,7 @@ public class NoticeApi implements NoticeApiSpec {
     @PostMapping("/{noticeId}")
     public ApiResponse<NoticeDetailFilteredResponse> getNotice(
             @PathVariable String noticeId,
-            @RequestBody NoticeDetailFilterRequest request) {
+            @Valid @RequestBody NoticeDetailFilterRequest request) {
 
         /// 서비스 계층
         var response = service.getNotice(noticeId, request);

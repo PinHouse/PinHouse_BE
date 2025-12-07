@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.notice.application.dto;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -11,7 +12,8 @@ public record NoticeDetailFilterRequest(
 
         DetailSortType sortType,
 
-        @Schema(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
+        @NotBlank(message = "pinPointId는 필수 입력값입니다")
+        @Schema(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", required = true)
         String pinPointId,
 
         @Schema(example = "100")
