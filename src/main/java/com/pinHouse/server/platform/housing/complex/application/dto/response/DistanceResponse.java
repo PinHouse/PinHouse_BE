@@ -19,7 +19,6 @@ public record DistanceResponse(
         String totalTime,
 
         @Schema(description = "총 소요 시간(분) - 내부 필터링용", example = "45", hidden = true)
-        @com.fasterxml.jackson.annotation.JsonIgnore
         int totalTimeMinutes,
 
         @Schema(description = "총 거리 (KM)", example = "17")
