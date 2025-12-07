@@ -5,6 +5,7 @@ import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocumen
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.List;
@@ -13,17 +14,38 @@ import java.util.Map;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ComplexDetailResponse(
-        String id,                          // 복합키 (noticeId#houseSn)
-        String name,                        // 단지명
-        String address,                     // 주소 정보
-        String heating,                     // 난방방식
-        Integer totalHouseholds,            // 총세대수
-        Integer totalSupplyInNotice,        // 공급호수합계
-        List<FacilityType> infra,           // 1KM 이내 주요 생활편의 시설
+        @Schema(description = "임대주택 ID (복합키: noticeId#houseSn)", example = "notice123#house456")
+        String id,
+
+        @Schema(description = "단지명", example = "행복주택 1단지")
+        String name,
+
+        @Schema(description = "주소 (시/도 + 시/군/구)", example = "서울특별시 강남구")
+        String address,
+
+        @Schema(description = "난방방식", example = "개별난방")
+        String heating,
+
+        @Schema(description = "총세대수", example = "500")
+        Integer totalHouseholds,
+
+        @Schema(description = "공급호수합계", example = "50")
+        Integer totalSupplyInNotice,
+
+        @Schema(description = "1KM 이내 주요 생활편의 시설")
+        List<FacilityType> infra,
+
+        @Schema(description = "유닛타입 개수", example = "3")
         Integer unitCount,
+
+        @Schema(description = "유닛타입 코드 목록", example = "[\"59A\", \"59B\", \"84A\"]")
         List<String> unitTypes,
-        String totalTime,                   // 공고 상세조회용: 대중교통 총 소요 시간 (포맷: "0시간 0분")
-        DistanceResponse distance           // 임대주택 상세조회용: 전체 대중교통 정보
+
+        @Schema(description = "대중교통 총 소요 시간 (공고 상세조회용)", example = "1시간 30분")
+        String totalTime,
+
+        @Schema(description = "전체 대중교통 정보 (임대주택 상세조회용)")
+        DistanceResponse distance
 ) {
 
     /// 정적 팩토리 메서드 - 임대주택 상세조회용 (DistanceResponse 전체 포함)
@@ -88,7 +110,7 @@ public record ComplexDetailResponse(
                     NoticeFacilityListResponse facilities =
                             facilityListResponseMap.getOrDefault(document.getId(), NoticeFacilityListResponse.empty());
                     Integer totalTimeMinutes =
-                            totalTimeMap.getOrDefault(document.getId(), null);
+                            totalTimeMap.getOrDefault(document.getId(), 0);
 
                     return ComplexDetailResponse.builder()
                             .id(document.getId())
@@ -100,7 +122,7 @@ public record ComplexDetailResponse(
                             .infra(facilities.infra())
                             .unitCount(document.getUnitTypes().size())
                             .unitTypes(null)
-                            .totalTime(totalTimeMinutes != null ? formatTime(totalTimeMinutes) : null)
+                            .totalTime(formatTime(totalTimeMinutes))
                             .distance(null)
                             .build();
                 })
@@ -130,11 +152,11 @@ public record ComplexDetailResponse(
     /**
      * 시간을 "0시간 0분" 형식으로 포맷팅
      * @param totalMinutes 총 시간(분)
-     * @return 포맷팅된 시간 문자열 (예: "1시간 30분", "45분"), 0 이하면 null
+     * @return 포맷팅된 시간 문자열 (예: "1시간 30분", "45분"), 0 이하면 "0분"
      */
     private static String formatTime(int totalMinutes) {
         if (totalMinutes <= 0) {
-            return null;
+            return "0분";
         }
 
         if (totalMinutes < 60) {

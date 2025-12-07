@@ -25,8 +25,10 @@ public record DistanceResponse(
         @Schema(description = "총 거리 (KM)", example = "17")
         double totalDistance,
 
+        @Schema(description = "교통 구간 정보 목록")
         List<TransitResponse> routes,
 
+        @Schema(description = "환승 지점 정보 목록")
         List<TransferPointResponse> stops
 ) {
 

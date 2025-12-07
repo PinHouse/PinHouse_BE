@@ -116,17 +116,29 @@ public class NoticeService implements NoticeUseCase {
         /// pinPointId가 있는 경우, 모든 Complex에 대해 거리 정보를 미리 계산하고 totalTime만 저장
         Map<String, Integer> totalTimeMap = new HashMap<>();
         if (request.pinPointId() != null && !request.pinPointId().isBlank()) {
-            log.debug("Pre-calculating distances for all complexes in notice={}, pinPoint={}", noticeId, request.pinPointId());
+            log.info("공고 상세조회: 모든 단지에 대한 거리 계산 시작 - noticeId={}, pinPointId={}, 단지 개수={}",
+                    noticeId, request.pinPointId(), complexes.size());
+
+            int successCount = 0;
+            int failCount = 0;
+
             for (ComplexDocument complex : complexes) {
                 try {
                     com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse distance =
                             complexService.getEasyDistance(complex.getId(), request.pinPointId());
                     totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
-                    log.debug("Calculated and cached totalTime for complex={}", complex.getId());
+                    successCount++;
+                    log.debug("거리 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}분",
+                            complex.getId(), distance.totalTimeMinutes());
                 } catch (Exception e) {
-                    log.error("Failed to calculate distance for complex={}, pinPoint={}", complex.getId(), request.pinPointId(), e);
+                    failCount++;
+                    totalTimeMap.put(complex.getId(), 0);
+                    log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
+                            complex.getId(), request.pinPointId(), e.getMessage(), e);
                 }
             }
+
+            log.info("거리 계산 완료 - 성공: {}, 실패: {}, 총: {}", successCount, failCount, complexes.size());
         }
 
         /// 서비스 레이어에서 필터링 수행 (totalTimeMap 전달)
@@ -195,7 +207,9 @@ public class NoticeService implements NoticeUseCase {
                             complexService.getEasyDistance(complex.getId(), request.pinPointId());
                     totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
                 } catch (Exception e) {
-                    log.error("Failed to calculate distance for complex={}, pinPoint={}", complex.getId(), request.pinPointId(), e);
+                    totalTimeMap.put(complex.getId(), 0);
+                    log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
+                            complex.getId(), request.pinPointId(), e.getMessage());
                 }
             }
         }
