@@ -304,7 +304,7 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.RouteResponse.builder()
                 .routeIndex(index)
                 .summary(toSummaryResponse(route))
-                .segments(toSegmentResponses(route))
+                .distance(toSegmentResponses(route))
                 .steps(toStepResponses(route))
                 .build();
     }
@@ -355,7 +355,7 @@ public class TransitResponseMapper {
                     String bgColorHex = extractBgColorHex(step, type);
 
                     return TransitRoutesResponse.SegmentResponse.builder()
-                            .mode(step.type().name())
+                            .type(step.type().name())
                             .minutes(step.time())
                             .labelText(formatMinutes(step.time()))
                             .colorHex(bgColorHex)
@@ -420,15 +420,15 @@ public class TransitResponseMapper {
         RootResult.DistanceStep lastTransport = transportSteps.get(transportSteps.size() - 1);
         steps.add(createArriveStep(lastTransport.endName()));
 
-        // 4. durationMinutes가 0인 step 필터링 (DEPART/ARRIVE/ALIGHT는 null이므로 유지)
+        // 4. minutes가 0인 step 필터링 (DEPART/ARRIVE/ALIGHT는 null이므로 유지)
         List<TransitRoutesResponse.StepResponse> filteredSteps = steps.stream()
                 .filter(step -> {
-                    // durationMinutes가 null이면 유지 (DEPART, ARRIVE, ALIGHT)
-                    if (step.durationMinutes() == null) {
+                    // minutes가 null이면 유지 (DEPART, ARRIVE, ALIGHT)
+                    if (step.minutes() == null) {
                         return true;
                     }
-                    // durationMinutes가 0이면 제거, 0보다 크면 유지
-                    return step.durationMinutes() > 0;
+                    // minutes가 0이면 제거, 0보다 크면 유지
+                    return step.minutes() > 0;
                 })
                 .toList();
 
@@ -442,11 +442,11 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.DEPART)
-                .mode(null)
+                .type(null)
                 .stopName(stopName)
                 .primaryText(stopName)
                 .secondaryText("출발")
-                .durationMinutes(null)
+                .minutes(null)
                 .colorHex(null)
                 .line(null)
                 .build();
@@ -461,11 +461,11 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.WALK)
-                .mode("WALK")
+                .type("WALK")
                 .stopName(null)
                 .primaryText("도보 이동")
                 .secondaryText("약 " + formatMinutes(step.time()))
-                .durationMinutes(step.time())
+                .minutes(step.time())
                 .colorHex(colorHex)
                 .line(null)
                 .build();
@@ -490,11 +490,11 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.BOARD)
-                .mode(step.type().name())
+                .type(step.type().name())
                 .stopName(step.startName())
                 .primaryText(step.startName() + stopType + " 승차")
                 .secondaryText(secondaryText)
-                .durationMinutes(step.time())
+                .minutes(step.time())
                 .colorHex(colorHex)
                 .line(step.line())
                 .build();
@@ -513,11 +513,11 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.ALIGHT)
-                .mode(step.type().name())
+                .type(step.type().name())
                 .stopName(step.endName())
                 .primaryText(step.endName() + stopType + " 하차")
                 .secondaryText(step.lineInfo())
-                .durationMinutes(null)
+                .minutes(null)
                 .colorHex(colorHex)
                 .line(step.line())
                 .build();
@@ -530,11 +530,11 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.ARRIVE)
-                .mode(null)
+                .type(null)
                 .stopName(stopName)
                 .primaryText(stopName)
                 .secondaryText("도착")
-                .durationMinutes(null)
+                .minutes(null)
                 .colorHex(null)
                 .line(null)
                 .build();
@@ -550,11 +550,11 @@ public class TransitResponseMapper {
             result.add(TransitRoutesResponse.StepResponse.builder()
                     .stepIndex(i)
                     .action(original.action())
-                    .mode(original.mode())
+                    .type(original.type())
                     .stopName(original.stopName())
                     .primaryText(original.primaryText())
                     .secondaryText(original.secondaryText())
-                    .durationMinutes(original.durationMinutes())
+                    .minutes(original.minutes())
                     .colorHex(original.colorHex())
                     .line(original.line())
                     .build());

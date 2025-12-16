@@ -37,7 +37,7 @@ public record TransitRoutesResponse(
             SummaryResponse summary,
 
             @Schema(description = "색 막대용 구간 정보 배열")
-            List<SegmentResponse> segments,
+            List<SegmentResponse> distance,
 
             @Schema(description = "세부 경로 단계 배열 (색깔 + 승차/하차 + 소요시간 모두 포함)")
             List<StepResponse> steps
@@ -76,7 +76,7 @@ public record TransitRoutesResponse(
     public record SegmentResponse(
 
             @Schema(description = "이동 수단 (WALK, BUS, SUBWAY, TRAIN, AIR)", example = "SUBWAY")
-            String mode,
+            String type,
 
             @Schema(description = "소요 시간(분)", example = "65")
             int minutes,
@@ -105,7 +105,7 @@ public record TransitRoutesResponse(
             StepAction action,
 
             @Schema(description = "이동 수단 (WALK, BUS, SUBWAY, TRAIN, AIR, null)", example = "SUBWAY")
-            String mode,
+            String type,
 
             @Schema(description = "정류장/역 이름", example = "시청역")
             String stopName,
@@ -118,7 +118,7 @@ public record TransitRoutesResponse(
             String secondaryText,
 
             @Schema(description = "해당 구간 소요 시간(분), 없으면 null", example = "65")
-            Integer durationMinutes,
+            Integer minutes,
 
             @Schema(description = "색 막대용 색상(Hex), 출발/도착은 null", example = "#3356B4")
             String colorHex,
