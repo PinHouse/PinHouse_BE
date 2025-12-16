@@ -18,20 +18,23 @@ public enum BusRouteType {
     VILLAGE(3, "마을버스", "#86C34B"),
     DIRECT_SEAT(4, "직행좌석", "#D82628"),
     AIRPORT(5, "공항버스", "#F68A1E"),
-    TRUNK(6, "간선급행", "#BBBBBB"),
-    OUTER(10, "외곽", "#BBBBBB"),
+
+    TRUNK(6, "간선급행", "#E6002D"),
+    OUTER(10, "외곽", "#8E8E8E"),
     TRUNK_LINE(11, "간선", "#0069B3"),
     BRANCH(12, "지선", "#2E933C"),
     CIRCULAR(13, "순환", "#F8B600"),
     WIDE_AREA(14, "광역", "#D82628"),
     EXPRESS(15, "급행", "#F8B600"),
-    TOUR(16, "관광버스", "#BBBBBB"),
-    RURAL(20, "농어촌버스", "#BBBBBB"),
+
+    TOUR(16, "관광버스", "#6A4FB3"),
+    RURAL(20, "농어촌버스", "#5B8C3B"),
     GYEONGGI_INTERCITY(22, "경기도 시외형버스", "#D82628"),
-    EXPRESS_TRUNK(26, "급행간선", "#BBBBBB"),
-    HAN_RIVER(30, "한강버스", "#BBBBBB"),
+    EXPRESS_TRUNK(26, "급행간선", "#C8102E"),
+    HAN_RIVER(30, "한강버스", "#1CA9C9"),
 
     UNKNOWN(-1, "UNKNOWN", "#BBBBBB");
+
 
     private final int code;
     private final String label;
