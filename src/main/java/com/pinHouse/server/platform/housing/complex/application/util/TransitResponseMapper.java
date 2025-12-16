@@ -357,7 +357,7 @@ public class TransitResponseMapper {
                     return TransitRoutesResponse.SegmentResponse.builder()
                             .type(step.type().name())
                             .minutes(step.time())
-                            .labelText(formatMinutes(step.time()))
+                            .minutesText(formatMinutes(step.time()))
                             .colorHex(bgColorHex)
                             .line(step.line())
                             .build();

@@ -82,7 +82,7 @@ public record TransitRoutesResponse(
             int minutes,
 
             @Schema(description = "막대 위 표시 텍스트", example = "65분")
-            String labelText,
+            String minutesText,
 
             @Schema(description = "구간 색상(Hex)", example = "#3356B4")
             String colorHex,
