@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.application.usecase;
 
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
@@ -25,8 +26,11 @@ public interface ComplexUseCase {
     /// 상세 조회
     List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
 
-    /// 거리 시뮬레이터 전부 조회
+    /// 거리 시뮬레이터 전부 조회 (기존 스키마)
     List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
+
+    /// 거리 시뮬레이터 전부 조회 (새 스키마 - 3개 경로 한 번에)
+    TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException;
 
     /// 간편 거리 시뮬레이터 (Redis 캐싱 포함)
     DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException;

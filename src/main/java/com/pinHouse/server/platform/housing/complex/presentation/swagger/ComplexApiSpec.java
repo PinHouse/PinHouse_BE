@@ -4,6 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ComplexDetailResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DepositResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
@@ -26,7 +27,7 @@ public interface ComplexApiSpec {
             description = "임대주택 ID로 상세 조회하는 API 입니다."
     )
     ApiResponse<ComplexDetailResponse> getComplex(
-            @Parameter(example = "19231#37", description = "임대주택 ID")
+            @Parameter(example = "19413#1", description = "임대주택 ID")
             @PathVariable String complexId,
 
             @Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
@@ -38,7 +39,7 @@ public interface ComplexApiSpec {
             description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
     )
     ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
-            @Parameter(example = "19231#37", description = "임대주택 ID")
+            @Parameter(example = "19413#1", description = "임대주택 ID")
             @PathVariable String complexId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
@@ -52,12 +53,12 @@ public interface ComplexApiSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
-    /// 거리 시뮬레이터
+    /// 거리 시뮬레이터 (새 스키마)
     @Operation(
-            summary = "거리 시뮬레이터 API",
-            description = "임대주택 ID와 핀포인트 ID를 통해 계산을 진행합니다.")
-    ApiResponse<List<DistanceResponse>> distance(
-            @Parameter(example = "19207#1", description = "시도 간 조회")
+            summary = "거리 시뮬레이터 API (v2)",
+            description = "임대주택 ID와 핀포인트 ID를 통해 대중교통 경로 3개를 한 번에 조회합니다. 승차/하차 정보가 명확하게 표시됩니다.")
+    ApiResponse<TransitRoutesResponse> distance(
+            @Parameter(example = "19413#1", description = "시도 간 조회")
             @PathVariable String complexId,
             @Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
             @RequestParam String pinPointId) throws UnsupportedEncodingException;

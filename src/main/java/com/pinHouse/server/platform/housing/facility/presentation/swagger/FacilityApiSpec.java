@@ -21,7 +21,7 @@ public interface FacilityApiSpec {
             description = "공고 주변 3KM내 존재하는 인프라를 확인하는 API입니다."
     )
     ApiResponse<NoticeFacilityListResponse> showNotice(
-            @Parameter(example = "19231#37")
+            @Parameter(example = "19413#1")
             @PathVariable String complexId);
 
 

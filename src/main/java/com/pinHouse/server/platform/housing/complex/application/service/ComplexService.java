@@ -108,7 +108,7 @@ public class ComplexService implements ComplexUseCase {
 
 
 
-    /// 대중교통 시뮬레이터
+    /// 대중교통 시뮬레이터 (기존 스키마)
     @Override
     @Transactional
     public List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
@@ -139,6 +139,31 @@ public class ComplexService implements ComplexUseCase {
                 })
                 .toList();
 
+    }
+
+    /// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
+    @Override
+    @Transactional
+    public TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException {
+
+        /// 임대주택 예외처리
+        ComplexDocument complex = loadComplex(id);
+        Location location = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+        Location pointLocation = pinPoint.getLocation();
+
+        /// 대중교통 목록 가져오기
+        PathResult pathResult = distanceUtil.findPathResult(
+                pointLocation.getLatitude(),
+                pointLocation.getLongitude(),
+                location.getLatitude(),
+                location.getLongitude()
+        );
+
+        /// 새 스키마로 변환 (3개 경로 한 번에)
+        return mapper.toTransitRoutesResponse(pathResult);
     }
 
     /// 좋아요 누른 방 목록 조회

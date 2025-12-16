@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.application.util;
 
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ChipType;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import lombok.AccessLevel;
@@ -265,5 +266,323 @@ public class TransitResponseMapper {
 
         // 그 외의 경우 기본 회색 반환
         return "#BBBBBB";
+    }
+
+    // =================
+    //  새 스키마 변환 로직
+    // =================
+
+    /**
+     * 새 스키마: 3개 경로를 한 번에 변환
+     */
+    public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult) {
+        if (pathResult == null || pathResult.routes() == null) {
+            return TransitRoutesResponse.builder()
+                    .totalCount(0)
+                    .routes(List.of())
+                    .build();
+        }
+
+        List<RootResult> top3 = selectTop3(pathResult);
+        List<TransitRoutesResponse.RouteResponse> routeResponses = new ArrayList<>();
+
+        for (int i = 0; i < top3.size(); i++) {
+            RootResult route = top3.get(i);
+            routeResponses.add(toRouteResponse(route, i));
+        }
+
+        return TransitRoutesResponse.builder()
+                .totalCount(routeResponses.size())
+                .routes(routeResponses)
+                .build();
+    }
+
+    /**
+     * 개별 경로 변환
+     */
+    private TransitRoutesResponse.RouteResponse toRouteResponse(RootResult route, int index) {
+        return TransitRoutesResponse.RouteResponse.builder()
+                .routeIndex(index)
+                .summary(toSummaryResponse(route))
+                .steps(toStepResponses(route))
+                .build();
+    }
+
+    /**
+     * 요약 정보 생성
+     */
+    private TransitRoutesResponse.SummaryResponse toSummaryResponse(RootResult route) {
+        int totalMinutes = route.totalTime();
+        int transferCount = countTransfers(route);
+
+        return TransitRoutesResponse.SummaryResponse.builder()
+                .totalMinutes(totalMinutes)
+                .totalDistanceKm(Math.round(route.totalDistance() / 100.0) / 10.0)
+                .totalFareWon(route.totalPayment() > 0 ? route.totalPayment() : null)
+                .transferCount(transferCount)
+                .displayText(formatTime(totalMinutes))
+                .build();
+    }
+
+    /**
+     * 환승 횟수 계산 (WALK 제외한 교통수단이 2개 이상이면 환승 발생)
+     */
+    private int countTransfers(RootResult route) {
+        if (route == null || route.steps() == null) {
+            return 0;
+        }
+
+        long transportCount = route.steps().stream()
+                .filter(s -> s.type() != RootResult.TransportType.WALK)
+                .count();
+
+        return (int) Math.max(0, transportCount - 1);
+    }
+
+    /**
+     * Steps 생성 (색깔 + 승차/하차 통합)
+     */
+    private List<TransitRoutesResponse.StepResponse> toStepResponses(RootResult route) {
+        if (route == null || route.steps() == null || route.steps().isEmpty()) {
+            return List.of();
+        }
+
+        List<TransitRoutesResponse.StepResponse> steps = new ArrayList<>();
+        List<RootResult.DistanceStep> distanceSteps = route.steps();
+
+        // WALK를 제외한 실제 교통수단 구간
+        List<RootResult.DistanceStep> transportSteps = distanceSteps.stream()
+                .filter(s -> s.type() != RootResult.TransportType.WALK)
+                .toList();
+
+        if (transportSteps.isEmpty()) {
+            // WALK만 있는 경로 (드문 케이스)
+            for (RootResult.DistanceStep step : distanceSteps) {
+                steps.add(createWalkStep(step, null));
+            }
+            return assignStepIndexes(steps);
+        }
+
+        // 1. DEPART (출발) 추가
+        RootResult.DistanceStep firstTransport = transportSteps.get(0);
+        steps.add(createDepartStep(firstTransport.startName()));
+
+        // 2. 전체 구간 순회하며 steps 생성
+        int transportIndex = 0;
+        for (int i = 0; i < distanceSteps.size(); i++) {
+            RootResult.DistanceStep step = distanceSteps.get(i);
+
+            if (step.type() == RootResult.TransportType.WALK) {
+                // WALK step 추가 (색상 포함)
+                steps.add(createWalkStep(step, ChipType.WALK));
+            } else {
+                // 교통수단: BOARD + ALIGHT 추가 (색상 포함)
+                ChipType chipType = mapType(step.type());
+                steps.add(createBoardStep(step, true, chipType));
+
+                // 다음이 WALK거나 마지막이면 하차
+                boolean isLast = (transportIndex == transportSteps.size() - 1);
+                if (isLast || (i + 1 < distanceSteps.size() && distanceSteps.get(i + 1).type() == RootResult.TransportType.WALK)) {
+                    steps.add(createAlightStep(step, true, chipType));
+                }
+
+                transportIndex++;
+            }
+        }
+
+        // 3. ARRIVE (도착) 추가
+        RootResult.DistanceStep lastTransport = transportSteps.get(transportSteps.size() - 1);
+        steps.add(createArriveStep(lastTransport.endName()));
+
+        // 4. durationMinutes가 0인 step 필터링 (DEPART/ARRIVE/ALIGHT는 null이므로 유지)
+        List<TransitRoutesResponse.StepResponse> filteredSteps = steps.stream()
+                .filter(step -> {
+                    // durationMinutes가 null이면 유지 (DEPART, ARRIVE, ALIGHT)
+                    if (step.durationMinutes() == null) {
+                        return true;
+                    }
+                    // durationMinutes가 0이면 제거, 0보다 크면 유지
+                    return step.durationMinutes() > 0;
+                })
+                .toList();
+
+        return assignStepIndexes(filteredSteps);
+    }
+
+    /**
+     * DEPART step 생성
+     */
+    private TransitRoutesResponse.StepResponse createDepartStep(String stopName) {
+        return TransitRoutesResponse.StepResponse.builder()
+                .stepIndex(0)
+                .action(TransitRoutesResponse.StepAction.DEPART)
+                .mode(null)
+                .stopName(stopName)
+                .primaryText(stopName)
+                .secondaryText("출발")
+                .durationMinutes(null)
+                .colorHex(null)
+                .build();
+    }
+
+    /**
+     * WALK step 생성
+     */
+    private TransitRoutesResponse.StepResponse createWalkStep(RootResult.DistanceStep step, ChipType chipType) {
+        String colorHex = (chipType != null) ? chipType.defaultBg : ChipType.WALK.defaultBg;
+
+        return TransitRoutesResponse.StepResponse.builder()
+                .stepIndex(0)
+                .action(TransitRoutesResponse.StepAction.WALK)
+                .mode("WALK")
+                .stopName(null)
+                .primaryText("도보 이동")
+                .secondaryText("약 " + formatMinutes(step.time()))
+                .durationMinutes(step.time())
+                .colorHex(colorHex)
+                .build();
+    }
+
+    /**
+     * BOARD step 생성 (승차)
+     */
+    private TransitRoutesResponse.StepResponse createBoardStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+        String stopType = getStopTypeSuffix(step.type());
+        String shortLabel = shortenLineLabel(step.lineInfo());
+        String secondaryText = step.lineInfo();
+
+        // 버스 노선 축약
+        if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null) {
+            secondaryText = abbreviateBusNumbers(step.lineInfo());
+        }
+
+        // 색상 추출
+        String colorHex = extractBgColorHex(step, chipType);
+
+        return TransitRoutesResponse.StepResponse.builder()
+                .stepIndex(0)
+                .action(TransitRoutesResponse.StepAction.BOARD)
+                .mode(step.type().name())
+                .stopName(step.startName())
+                .primaryText(step.startName() + stopType + " 승차")
+                .secondaryText(secondaryText)
+                .durationMinutes(step.time())
+                .colorHex(colorHex)
+                .build();
+    }
+
+    /**
+     * ALIGHT step 생성 (하차)
+     */
+    private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+        String stopType = getStopTypeSuffix(step.type());
+        String shortLabel = shortenLineLabel(step.lineInfo());
+
+        // 색상 추출 (ALIGHT는 해당 교통수단의 색상 유지)
+        String colorHex = extractBgColorHex(step, chipType);
+
+        return TransitRoutesResponse.StepResponse.builder()
+                .stepIndex(0)
+                .action(TransitRoutesResponse.StepAction.ALIGHT)
+                .mode(step.type().name())
+                .stopName(step.endName())
+                .primaryText(step.endName() + stopType + " 하차")
+                .secondaryText(step.lineInfo())
+                .durationMinutes(null)
+                .colorHex(colorHex)
+                .build();
+    }
+
+    /**
+     * ARRIVE step 생성
+     */
+    private TransitRoutesResponse.StepResponse createArriveStep(String stopName) {
+        return TransitRoutesResponse.StepResponse.builder()
+                .stepIndex(0)
+                .action(TransitRoutesResponse.StepAction.ARRIVE)
+                .mode(null)
+                .stopName(stopName)
+                .primaryText(stopName)
+                .secondaryText("도착")
+                .durationMinutes(null)
+                .colorHex(null)
+                .build();
+    }
+
+    /**
+     * Step 인덱스 부여
+     */
+    private List<TransitRoutesResponse.StepResponse> assignStepIndexes(List<TransitRoutesResponse.StepResponse> steps) {
+        List<TransitRoutesResponse.StepResponse> result = new ArrayList<>();
+        for (int i = 0; i < steps.size(); i++) {
+            TransitRoutesResponse.StepResponse original = steps.get(i);
+            result.add(TransitRoutesResponse.StepResponse.builder()
+                    .stepIndex(i)
+                    .action(original.action())
+                    .mode(original.mode())
+                    .stopName(original.stopName())
+                    .primaryText(original.primaryText())
+                    .secondaryText(original.secondaryText())
+                    .durationMinutes(original.durationMinutes())
+                    .colorHex(original.colorHex())
+                    .build());
+        }
+        return result;
+    }
+
+    /**
+     * 정류장/역 접미어 반환
+     */
+    private String getStopTypeSuffix(RootResult.TransportType type) {
+        if (type == RootResult.TransportType.SUBWAY || type == RootResult.TransportType.TRAIN) {
+            return "역";
+        } else if (type == RootResult.TransportType.BUS) {
+            return "정류장";
+        }
+        return "";
+    }
+
+    /**
+     * 노선명 축약
+     */
+    private String shortenLineLabel(String label) {
+        if (label == null) return null;
+        return label.replace("수도권 ", "").replace("호선", "호선");
+    }
+
+    /**
+     * 버스 번호 축약
+     */
+    private String abbreviateBusNumbers(String busNumbers) {
+        if (busNumbers == null) return null;
+        String[] numbers = busNumbers.split(",\\s*");
+        if (numbers.length <= 3) {
+            return busNumbers + "번";
+        }
+        String first3 = String.join(", ", numbers[0], numbers[1], numbers[2]);
+        int remaining = numbers.length - 3;
+        return first3 + "번 외 " + remaining + "개";
+    }
+
+    /**
+     * 시간 포맷팅
+     */
+    private String formatTime(int totalMinutes) {
+        if (totalMinutes <= 0) {
+            return "0분";
+        }
+
+        if (totalMinutes < 60) {
+            return totalMinutes + "분";
+        }
+
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+
+        if (minutes == 0) {
+            return hours + "시간";
+        }
+
+        return hours + "시간 " + minutes + "분";
     }
 }
