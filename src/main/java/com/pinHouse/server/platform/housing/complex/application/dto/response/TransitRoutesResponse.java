@@ -36,6 +36,9 @@ public record TransitRoutesResponse(
             @Schema(description = "경로 요약 정보")
             SummaryResponse summary,
 
+            @Schema(description = "색 막대용 구간 정보 배열")
+            List<SegmentResponse> segments,
+
             @Schema(description = "세부 경로 단계 배열 (색깔 + 승차/하차 + 소요시간 모두 포함)")
             List<StepResponse> steps
     ) {
@@ -66,6 +69,29 @@ public record TransitRoutesResponse(
     }
 
     /**
+     * 색 막대용 구간 정보
+     */
+    @Builder
+    @Schema(name = "[응답][대중교통] 세그먼트", description = "색 막대 렌더링용 구간 정보")
+    public record SegmentResponse(
+
+            @Schema(description = "이동 수단 (WALK, BUS, SUBWAY, TRAIN, AIR)", example = "SUBWAY")
+            String mode,
+
+            @Schema(description = "소요 시간(분)", example = "65")
+            int minutes,
+
+            @Schema(description = "막대 위 표시 텍스트", example = "65분")
+            String labelText,
+
+            @Schema(description = "구간 색상(Hex)", example = "#3356B4")
+            String colorHex,
+
+            @Schema(description = "노선 정보 (WALK면 null)")
+            LineInfo line
+    ) {}
+
+    /**
      * 세부 경로 단계 (색깔 + 승차/하차 + 시간 정보 통합)
      */
     @Builder
@@ -88,13 +114,17 @@ public record TransitRoutesResponse(
             String primaryText,
 
             @Schema(description = "부 텍스트 (노선명, 방면 등)", example = "수도권 1호선")
+            @JsonIgnore
             String secondaryText,
 
             @Schema(description = "해당 구간 소요 시간(분), 없으면 null", example = "65")
             Integer durationMinutes,
 
             @Schema(description = "색 막대용 색상(Hex), 출발/도착은 null", example = "#3356B4")
-            String colorHex
+            String colorHex,
+
+            @Schema(description = "노선 정보 (WALK면 null)")
+            LineInfo line
     ) {
     }
 

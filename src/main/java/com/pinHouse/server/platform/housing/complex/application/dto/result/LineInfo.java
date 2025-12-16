@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -11,12 +12,14 @@ import lombok.Builder;
 @Schema(name = "교통수단 노선 정보", description = "교통수단의 코드, 이름, 색상 정보")
 public record LineInfo(
         @Schema(description = "노선 코드", example = "1")
+        @JsonIgnore
         Integer code,
 
         @Schema(description = "노선명", example = "KTX")
         String label,
 
         @Schema(description = "배경 색상 (Hex 코드)", example = "#3356B4")
+        @JsonIgnore
         String bgColorHex
 ) {
     /**

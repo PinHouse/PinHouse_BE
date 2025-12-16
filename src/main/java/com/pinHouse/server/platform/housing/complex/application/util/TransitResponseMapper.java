@@ -304,6 +304,7 @@ public class TransitResponseMapper {
         return TransitRoutesResponse.RouteResponse.builder()
                 .routeIndex(index)
                 .summary(toSummaryResponse(route))
+                .segments(toSegmentResponses(route))
                 .steps(toStepResponses(route))
                 .build();
     }
@@ -337,6 +338,31 @@ public class TransitResponseMapper {
                 .count();
 
         return (int) Math.max(0, transportCount - 1);
+    }
+
+    /**
+     * Segments 생성 (색 막대용)
+     */
+    private List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
+        if (route == null || route.steps() == null) {
+            return List.of();
+        }
+
+        return route.steps().stream()
+                .filter(step -> step.time() > 0)  // 0분인 구간은 제외
+                .map(step -> {
+                    ChipType type = mapType(step.type());
+                    String bgColorHex = extractBgColorHex(step, type);
+
+                    return TransitRoutesResponse.SegmentResponse.builder()
+                            .mode(step.type().name())
+                            .minutes(step.time())
+                            .labelText(formatMinutes(step.time()))
+                            .colorHex(bgColorHex)
+                            .line(step.line())
+                            .build();
+                })
+                .toList();
     }
 
     /**
@@ -422,6 +448,7 @@ public class TransitResponseMapper {
                 .secondaryText("출발")
                 .durationMinutes(null)
                 .colorHex(null)
+                .line(null)
                 .build();
     }
 
@@ -440,6 +467,7 @@ public class TransitResponseMapper {
                 .secondaryText("약 " + formatMinutes(step.time()))
                 .durationMinutes(step.time())
                 .colorHex(colorHex)
+                .line(null)
                 .build();
     }
 
@@ -468,6 +496,7 @@ public class TransitResponseMapper {
                 .secondaryText(secondaryText)
                 .durationMinutes(step.time())
                 .colorHex(colorHex)
+                .line(step.line())
                 .build();
     }
 
@@ -490,6 +519,7 @@ public class TransitResponseMapper {
                 .secondaryText(step.lineInfo())
                 .durationMinutes(null)
                 .colorHex(colorHex)
+                .line(step.line())
                 .build();
     }
 
@@ -506,6 +536,7 @@ public class TransitResponseMapper {
                 .secondaryText("도착")
                 .durationMinutes(null)
                 .colorHex(null)
+                .line(null)
                 .build();
     }
 
@@ -525,6 +556,7 @@ public class TransitResponseMapper {
                     .secondaryText(original.secondaryText())
                     .durationMinutes(original.durationMinutes())
                     .colorHex(original.colorHex())
+                    .line(original.line())
                     .build());
         }
         return result;
