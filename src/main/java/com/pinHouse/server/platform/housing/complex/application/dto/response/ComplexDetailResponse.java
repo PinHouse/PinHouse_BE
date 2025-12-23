@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse.SegmentResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
@@ -45,11 +46,11 @@ public record ComplexDetailResponse(
         String totalTime,
 
         @Schema(description = "전체 대중교통 정보 (임대주택 상세조회용)")
-        DistanceResponse distance
+        List<SegmentResponse> distance
 ) {
 
-    /// 정적 팩토리 메서드 - 임대주택 상세조회용 (DistanceResponse 전체 포함)
-    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, DistanceResponse distance) {
+    /// 정적 팩토리 메서드 - 임대주택 상세조회용 (SegmentResponse 리스트 포함)
+    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, List<SegmentResponse> distance) {
 
         return ComplexDetailResponse.builder()
                 .id(document.getId())

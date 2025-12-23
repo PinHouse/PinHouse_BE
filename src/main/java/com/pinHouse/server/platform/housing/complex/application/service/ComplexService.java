@@ -68,11 +68,11 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
-        /// 거리 계산
-        DistanceResponse distance = getEasyDistance(id, pinPointId);
+        /// 거리 계산 - Segment 리스트로 변환
+        List<TransitRoutesResponse.SegmentResponse> segments = getSegments(id, pinPointId);
 
         /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities, distance);
+        return ComplexDetailResponse.from(complex, nearFacilities, segments);
 
     }
 
@@ -461,6 +461,28 @@ public class ComplexService implements ComplexUseCase {
                 normalOption,
                 maxOption
         );
+    }
+
+    /// Segment 리스트 조회 (임대주택 상세조회용)
+    @Transactional(readOnly = true)
+    public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws UnsupportedEncodingException {
+
+        /// 임대주택 예외처리
+        ComplexDocument complex = loadComplex(id);
+        Location location = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+
+        /// 대중교통 목록 비교하기
+        Location pointLocation = pinPoint.getLocation();
+        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
+
+        /// 조건 바탕으로 가져오기
+        RootResult rootResult = mapper.selectBest(pathResult);
+
+        /// Segment 리스트 반환
+        return mapper.toSegmentResponses(rootResult);
     }
 
     /// 간편 대중교통 시뮬레이터

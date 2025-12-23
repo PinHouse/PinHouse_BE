@@ -343,7 +343,7 @@ public class TransitResponseMapper {
     /**
      * Segments 생성 (색 막대용)
      */
-    private List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
+    public List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
         if (route == null || route.steps() == null) {
             return List.of();
         }
@@ -354,10 +354,24 @@ public class TransitResponseMapper {
                     ChipType type = mapType(step.type());
                     String bgColorHex = extractBgColorHex(step, type);
 
+                    // 버스일 때 노선 정보 포함
+                    String minutesText;
+                    if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null && !step.lineInfo().isBlank()) {
+                        // 버스 노선 정보 포함
+                        minutesText = step.lineInfo();
+                    } else if (step.type() == RootResult.TransportType.SUBWAY && step.lineInfo() != null && !step.lineInfo().isBlank()) {
+                        // 지하철 노선 정보 포함
+                        String normalizedLine = normalizeLine(step, type);
+                        minutesText = normalizedLine;
+                    } else {
+                        // 기타 교통수단은 시간만 표시
+                        minutesText = formatMinutes(step.time());
+                    }
+
                     return TransitRoutesResponse.SegmentResponse.builder()
                             .type(step.type().name())
                             .minutes(step.time())
-                            .minutesText(formatMinutes(step.time()))
+                            .minutesText(minutesText)
                             .colorHex(bgColorHex)
                             .line(step.line())
                             .build();
