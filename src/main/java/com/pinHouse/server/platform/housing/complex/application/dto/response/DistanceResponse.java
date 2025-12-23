@@ -27,10 +27,7 @@ public record DistanceResponse(
         double totalDistance,
 
         @Schema(description = "교통 구간 정보 목록")
-        List<TransitResponse> routes,
-
-        @Schema(description = "환승 지점 정보 목록")
-        List<TransferPointResponse> stops
+        List<TransitResponse> routes
 ) {
 
     /// 정적 팩토리 메서드
@@ -41,19 +38,6 @@ public record DistanceResponse(
                 .totalTimeMinutes(minutes)
                 .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
-                .stops(null)
-                .build();
-    }
-
-    /// 정적 팩토리 메서드
-    public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes, List<TransferPointResponse> stops) {
-        int minutes = rootResult.totalTime();
-        return DistanceResponse.builder()
-                .totalTime(TimeFormatter.formatTimeOrNull(minutes))
-                .totalTimeMinutes(minutes)
-                .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
-                .routes(routes)
-                .stops(stops)
                 .build();
     }
 
@@ -99,55 +83,4 @@ public record DistanceResponse(
             String bgColorHex)
     { }
 
-    /**
-     * 환승 지점 정보 (구 스키마)
-     *
-     * @deprecated 이 DTO는 구식 스키마에서만 사용됩니다.
-     *             새 스키마에서는 {@link TransitRoutesResponse.StepResponse}를 사용하세요.
-     *             이 클래스는 향후 버전에서 제거될 예정입니다.
-     */
-    @Deprecated(since = "1.0", forRemoval = true)
-    @Builder
-    public record TransferPointResponse(
-            @Schema(description = "환승 역할 (START, TRANSFER, ARRIVAL)")
-            TransferRole role,
-
-            @Schema(description = "교통 타입 (WALK, BUS, SUBWAY, TRAIN, AIR)")
-            ChipType type,
-
-            @Schema(description = "정류장/역 이름")
-            String stopName,
-
-            @Schema(description = "노선 정보(버스번호/지하철 호선 등)")
-            String lineText,
-
-            @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
-            LineInfo line,
-
-            @Schema(hidden = true)
-            @com.fasterxml.jackson.annotation.JsonIgnore
-            SubwayLineType subwayLine,
-
-            @Schema(hidden = true)
-            @com.fasterxml.jackson.annotation.JsonIgnore
-            BusRouteType busRouteType,
-
-            @Schema(hidden = true)
-            @com.fasterxml.jackson.annotation.JsonIgnore
-            TrainType trainType,
-
-            @Schema(hidden = true)
-            @com.fasterxml.jackson.annotation.JsonIgnore
-            ExpressBusType expressBusType,
-
-            @Schema(description = "배경 컬러(Hex 코드)")
-            @JsonIgnore
-            String bgColorHex
-    ) {
-        public enum TransferRole {
-            START,     // 승차 지점
-            TRANSFER,  // 환승 지점
-            ARRIVAL    // 도착 지점
-        }
-    }
 }

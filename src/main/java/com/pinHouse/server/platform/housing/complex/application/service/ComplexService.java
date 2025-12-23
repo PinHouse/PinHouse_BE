@@ -109,47 +109,6 @@ public class ComplexService implements ComplexUseCase {
 
 
 
-    /**
-     * 대중교통 시뮬레이터 (구 스키마)
-     *
-     * @deprecated 이 메서드는 구식 스키마를 사용합니다.
-     *             대신 {@link #getDistanceV2(String, String)}를 사용하세요.
-     *             새 스키마는 더 나은 성능과 확장성을 제공합니다.
-     *             이 메서드는 향후 버전에서 제거될 예정입니다.
-     */
-    @Deprecated(since = "1.0", forRemoval = true)
-    @Override
-    @Transactional
-    public List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
-
-        /// 임대주택 예외처리
-        ComplexDocument complex = loadComplex(id);
-        Location location = complex.getLocation();
-
-        /// 핀포인트 조회
-        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-        Location pointLocation = pinPoint.getLocation();
-
-        /// 대중교통 목록 가져오기
-        PathResult rootResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
-
-        /// 빠른 순서 3개 가져오기
-        List<RootResult> rootResults = mapper.selectTop3(rootResult);
-
-        /// 간편조건 탐색 DTO
-        return rootResults.stream()
-                .map(route -> {
-                    // 각 경로의 세부 구간을 TransitResponse 리스트로 매핑
-                    List<DistanceResponse.TransitResponse> distance = mapper.from(route);
-                    List<DistanceResponse.TransferPointResponse> stops = mapper.extractStops(route);
-
-                    // DistanceResponse 하나 생성
-                    return DistanceResponse.from(route, distance, stops);
-                })
-                .toList();
-
-    }
-
     /// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
     @Override
     @Transactional
