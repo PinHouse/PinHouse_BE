@@ -1,6 +1,7 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse.SegmentResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
@@ -123,7 +124,7 @@ public record ComplexDetailResponse(
                             .infra(facilities.infra())
                             .unitCount(document.getUnitTypes().size())
                             .unitTypes(null)
-                            .totalTime(formatTime(totalTimeMinutes))
+                            .totalTime(TimeFormatter.formatTime(totalTimeMinutes))
                             .distance(null)
                             .build();
                 })
@@ -148,30 +149,6 @@ public record ComplexDetailResponse(
         }
 
         return parts[0] + " " + parts[1];
-    }
-
-    /**
-     * 시간을 "0시간 0분" 형식으로 포맷팅
-     * @param totalMinutes 총 시간(분)
-     * @return 포맷팅된 시간 문자열 (예: "1시간 30분", "45분"), 0 이하면 "0분"
-     */
-    private static String formatTime(int totalMinutes) {
-        if (totalMinutes <= 0) {
-            return "0분";
-        }
-
-        if (totalMinutes < 60) {
-            return totalMinutes + "분";
-        }
-
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-
-        if (minutes == 0) {
-            return hours + "시간";
-        }
-
-        return hours + "시간 " + minutes + "분";
     }
 
 }

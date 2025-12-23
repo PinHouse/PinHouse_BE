@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.complex.application.service;
 import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
+import com.pinHouse.server.core.util.DistanceCalculator;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.*;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -251,25 +252,12 @@ public class ComplexService implements ComplexUseCase {
         return complexDocuments.stream()
                 .filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
                 .map(c -> {
-                    double km = calcDistanceKm(pointLocation, c.getLocation());
+                    double km = DistanceCalculator.calculateDistanceKm(pointLocation, c.getLocation());
                     int minutes = (int) Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
                     return new ComplexDistanceResponse(c, km, minutes);
                 })
                 .sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
                 .toList();
-    }
-
-    /** 두 지점 간 거리(km) 계산 (Haversine) */
-    private double calcDistanceKm(Location a, Location b) {
-        final double R = 6371.0;
-        double dLat = Math.toRadians(b.getLatitude() - a.getLatitude());
-        double dLon = Math.toRadians(b.getLongitude() - a.getLongitude());
-        double lat1 = Math.toRadians(a.getLatitude());
-        double lat2 = Math.toRadians(b.getLatitude());
-
-        double h = Math.pow(Math.sin(dLat / 2), 2)
-                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
-        return 2 * R * Math.asin(Math.sqrt(h));
     }
 
 

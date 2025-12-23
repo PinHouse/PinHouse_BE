@@ -2,6 +2,7 @@ package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.BusRouteType;
@@ -36,7 +37,7 @@ public record DistanceResponse(
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes) {
         int minutes = rootResult.totalTime();
         return DistanceResponse.builder()
-                .totalTime(formatTime(minutes))
+                .totalTime(TimeFormatter.formatTimeOrNull(minutes))
                 .totalTimeMinutes(minutes)
                 .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
@@ -48,36 +49,12 @@ public record DistanceResponse(
     public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes, List<TransferPointResponse> stops) {
         int minutes = rootResult.totalTime();
         return DistanceResponse.builder()
-                .totalTime(formatTime(minutes))
+                .totalTime(TimeFormatter.formatTimeOrNull(minutes))
                 .totalTimeMinutes(minutes)
                 .totalDistance(Math.round(rootResult.totalDistance() / 100.0) / 10.0)
                 .routes(routes)
                 .stops(stops)
                 .build();
-    }
-
-    /**
-     * 시간을 "##시 ##분" 형식으로 포맷팅
-     * @param totalMinutes 총 시간(분)
-     * @return 포맷팅된 시간 문자열 (예: "1시간 30분", "45분"), 0 이하면 null
-     */
-    private static String formatTime(int totalMinutes) {
-        if (totalMinutes <= 0) {
-            return null;
-        }
-
-        if (totalMinutes < 60) {
-            return totalMinutes + "분";
-        }
-
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-
-        if (minutes == 0) {
-            return hours + "시간";
-        }
-
-        return hours + "시간 " + minutes + "분";
     }
 
 

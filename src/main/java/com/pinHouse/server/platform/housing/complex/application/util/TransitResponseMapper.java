@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.util;
 
+import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ChipType;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
@@ -82,7 +83,7 @@ public class TransitResponseMapper {
                 .busRouteType(first.busRouteType())
                 .trainType(first.trainType())
                 .expressBusType(first.expressBusType())
-                .bgColorHex(extractBgColorHex(first, firstType))
+                .bgColorHex(TransportColorResolver.extractBgColorHex(first, firstType))
                 .build());
 
         // 2) 중간 환승 지점들 (두 번째 탑승부터는 전부 환승으로 간주)
@@ -100,7 +101,7 @@ public class TransitResponseMapper {
                     .busRouteType(step.busRouteType())
                     .trainType(step.trainType())
                     .expressBusType(step.expressBusType())
-                    .bgColorHex(extractBgColorHex(step, stepType))
+                    .bgColorHex(TransportColorResolver.extractBgColorHex(step, stepType))
                     .build());
         }
 
@@ -143,13 +144,13 @@ public class TransitResponseMapper {
             ChipType type = mapType(step.type());
 
             /// 분
-            String minutes = formatMinutes(step.time());
+            String minutes = TimeFormatter.formatTime(step.time());
 
             /// 라인
             String line = normalizeLine(step, type);
 
             /// bgColorHex를 enum으로부터 추출
-            String bgColorHex = extractBgColorHex(step, type);
+            String bgColorHex = TransportColorResolver.extractBgColorHex(step, type);
 
             chips.add(DistanceResponse.TransitResponse.builder()
                     .type(type)
@@ -192,18 +193,6 @@ public class TransitResponseMapper {
         };
     }
 
-    /// 분 표기
-    private static String formatMinutes(int min) {
-
-        /// 방어
-        if (min <= 0){
-            return "0분";
-        }
-
-        /// 리턴
-        return min + "분";
-    }
-
     /** 버스/지하철 표기 보정 */
     private static String normalizeLine(RootResult.DistanceStep step, ChipType type) {
 
@@ -225,47 +214,6 @@ public class TransitResponseMapper {
 
         /// 나머지는 그대로
         return (line == null || line.isBlank()) ? null : line;
-    }
-
-    /// enum으로부터 bgColorHex 추출
-    private static String extractBgColorHex(RootResult.DistanceStep step, ChipType type) {
-        // WALK와 AIR는 ChipType의 defaultBg 사용
-        if (type == ChipType.WALK || type == ChipType.AIR) {
-            return type.defaultBg;
-        }
-
-        // SUBWAY: subwayLine enum의 색상 사용
-        if (type == ChipType.SUBWAY) {
-            if (step.subwayLine() != null) {
-                return step.subwayLine().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // BUS: busRouteType 또는 expressBusType enum의 색상 사용
-        if (type == ChipType.BUS) {
-            if (step.busRouteType() != null) {
-                return step.busRouteType().getColorHex();
-            }
-            if (step.expressBusType() != null) {
-                return step.expressBusType().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // TRAIN: trainType enum의 색상 사용
-        if (type == ChipType.TRAIN) {
-            if (step.trainType() != null) {
-                return step.trainType().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // 그 외의 경우 기본 회색 반환
-        return "#BBBBBB";
     }
 
     // =================
@@ -321,7 +269,7 @@ public class TransitResponseMapper {
                 .totalDistanceKm(Math.round(route.totalDistance() / 100.0) / 10.0)
                 .totalFareWon(route.totalPayment() > 0 ? route.totalPayment() : null)
                 .transferCount(transferCount)
-                .displayText(formatTime(totalMinutes))
+                .displayText(TimeFormatter.formatTime(totalMinutes))
                 .build();
     }
 
@@ -352,7 +300,7 @@ public class TransitResponseMapper {
                 .filter(step -> step.time() > 0)  // 0분인 구간은 제외
                 .map(step -> {
                     ChipType type = mapType(step.type());
-                    String bgColorHex = extractBgColorHex(step, type);
+                    String bgColorHex = TransportColorResolver.extractBgColorHex(step, type);
 
                     // 버스일 때 노선 정보 포함
                     String minutesText;
@@ -365,7 +313,7 @@ public class TransitResponseMapper {
                         minutesText = normalizedLine;
                     } else {
                         // 기타 교통수단은 시간만 표시
-                        minutesText = formatMinutes(step.time());
+                        minutesText = TimeFormatter.formatTime(step.time());
                     }
 
                     return TransitRoutesResponse.SegmentResponse.builder()
@@ -478,7 +426,7 @@ public class TransitResponseMapper {
                 .type("WALK")
                 .stopName(null)
                 .primaryText("도보 이동")
-                .secondaryText("약 " + formatMinutes(step.time()))
+                .secondaryText("약 " + TimeFormatter.formatTime(step.time()))
                 .minutes(step.time())
                 .colorHex(colorHex)
                 .line(null)
@@ -499,7 +447,7 @@ public class TransitResponseMapper {
         }
 
         // 색상 추출
-        String colorHex = extractBgColorHex(step, chipType);
+        String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
 
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
@@ -522,7 +470,7 @@ public class TransitResponseMapper {
         String shortLabel = shortenLineLabel(step.lineInfo());
 
         // 색상 추출 (ALIGHT는 해당 교통수단의 색상 유지)
-        String colorHex = extractBgColorHex(step, chipType);
+        String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
 
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
@@ -608,27 +556,5 @@ public class TransitResponseMapper {
         String first3 = String.join(", ", numbers[0], numbers[1], numbers[2]);
         int remaining = numbers.length - 3;
         return first3 + "번 외 " + remaining + "개";
-    }
-
-    /**
-     * 시간 포맷팅
-     */
-    private String formatTime(int totalMinutes) {
-        if (totalMinutes <= 0) {
-            return "0분";
-        }
-
-        if (totalMinutes < 60) {
-            return totalMinutes + "분";
-        }
-
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-
-        if (minutes == 0) {
-            return hours + "시간";
-        }
-
-        return hours + "시간 " + minutes + "분";
     }
 }
