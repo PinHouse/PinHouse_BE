@@ -26,7 +26,14 @@ public interface ComplexUseCase {
     /// 상세 조회
     List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
 
-    /// 거리 시뮬레이터 전부 조회 (기존 스키마)
+    /**
+     * 거리 시뮬레이터 전부 조회 (구 스키마)
+     *
+     * @deprecated 이 메서드는 구식 스키마를 사용합니다.
+     *             대신 {@link #getDistanceV2(String, String)}를 사용하세요.
+     *             이 메서드는 향후 버전에서 제거될 예정입니다.
+     */
+    @Deprecated(since = "1.0", forRemoval = true)
     List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
 
     /// 거리 시뮬레이터 전부 조회 (새 스키마 - 3개 경로 한 번에)

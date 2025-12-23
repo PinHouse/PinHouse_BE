@@ -53,6 +53,14 @@ public class TransitResponseMapper {
                 .toList();
     }
 
+    /**
+     * 환승 지점 추출 (구 스키마)
+     *
+     * @deprecated 이 메서드는 구식 스키마에서만 사용됩니다.
+     *             새 스키마에서는 {@link #toStepResponses(RootResult)}를 사용하세요.
+     *             이 메서드는 향후 버전에서 제거될 예정입니다.
+     */
+    @Deprecated(since = "1.0", forRemoval = true)
     public List<DistanceResponse.TransferPointResponse> extractStops(RootResult route) {
 
         List<DistanceResponse.TransferPointResponse> result = new ArrayList<>();

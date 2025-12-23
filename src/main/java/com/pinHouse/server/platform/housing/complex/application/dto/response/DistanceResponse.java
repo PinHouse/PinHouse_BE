@@ -99,6 +99,14 @@ public record DistanceResponse(
             String bgColorHex)
     { }
 
+    /**
+     * 환승 지점 정보 (구 스키마)
+     *
+     * @deprecated 이 DTO는 구식 스키마에서만 사용됩니다.
+     *             새 스키마에서는 {@link TransitRoutesResponse.StepResponse}를 사용하세요.
+     *             이 클래스는 향후 버전에서 제거될 예정입니다.
+     */
+    @Deprecated(since = "1.0", forRemoval = true)
     @Builder
     public record TransferPointResponse(
             @Schema(description = "환승 역할 (START, TRANSFER, ARRIVAL)")
