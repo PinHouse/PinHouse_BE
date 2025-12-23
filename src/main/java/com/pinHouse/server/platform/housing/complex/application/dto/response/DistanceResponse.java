@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.SubwayLineType;
@@ -97,6 +98,7 @@ public record DistanceResponse(
             String lineText,
 
             @Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+            @JsonIgnore
             LineInfo line,
 
             @Schema(hidden = true)
@@ -116,6 +118,7 @@ public record DistanceResponse(
             ExpressBusType expressBusType,
 
             @Schema(description = "세그먼트 배경 컬러(Hex 코드)", example = "#FF5722")
+            @JsonIgnore
             String bgColorHex)
     { }
 
@@ -153,6 +156,7 @@ public record DistanceResponse(
             ExpressBusType expressBusType,
 
             @Schema(description = "배경 컬러(Hex 코드)")
+            @JsonIgnore
             String bgColorHex
     ) {
         public enum TransferRole {
