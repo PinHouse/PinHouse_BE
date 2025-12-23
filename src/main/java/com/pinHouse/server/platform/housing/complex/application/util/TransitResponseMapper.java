@@ -14,6 +14,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * 대중교통 경로 응답 매퍼
+ *
+ * <p>ODsay API의 {@link PathResult}와 {@link RootResult}를
+ * 애플리케이션의 응답 DTO로 변환하는 역할을 담당합니다.</p>
+ *
+ * <h3>지원하는 스키마</h3>
+ * <ul>
+ *   <li><b>신규 스키마:</b> {@link TransitRoutesResponse} - 3개 경로 + 상세 단계 정보</li>
+ *   <li><b>구 스키마 (Deprecated):</b> {@link DistanceResponse} - 단일 경로 정보</li>
+ * </ul>
+ *
+ * <h3>주요 기능</h3>
+ * <ul>
+ *   <li>경로 선택 (최적 1개, 상위 3개)</li>
+ *   <li>교통수단 타입 매핑 및 색상 추출</li>
+ *   <li>노선 정보 정규화</li>
+ *   <li>승차/하차/도보 단계별 상세 정보 생성</li>
+ * </ul>
+ */
 @Component
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TransitResponseMapper {
@@ -374,12 +394,12 @@ public class TransitResponseMapper {
             } else {
                 // 교통수단: BOARD + ALIGHT 추가 (색상 포함)
                 ChipType chipType = mapType(step.type());
-                steps.add(createBoardStep(step, true, chipType));
+                steps.add(createBoardStep(step, chipType));
 
                 // 다음이 WALK거나 마지막이면 하차
                 boolean isLast = (transportIndex == transportSteps.size() - 1);
                 if (isLast || (i + 1 < distanceSteps.size() && distanceSteps.get(i + 1).type() == RootResult.TransportType.WALK)) {
-                    steps.add(createAlightStep(step, true, chipType));
+                    steps.add(createAlightStep(step, chipType));
                 }
 
                 transportIndex++;
@@ -444,9 +464,8 @@ public class TransitResponseMapper {
     /**
      * BOARD step 생성 (승차)
      */
-    private TransitRoutesResponse.StepResponse createBoardStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+    private TransitRoutesResponse.StepResponse createBoardStep(RootResult.DistanceStep step, ChipType chipType) {
         String stopType = getStopTypeSuffix(step.type());
-        String shortLabel = shortenLineLabel(step.lineInfo());
         String secondaryText = step.lineInfo();
 
         // 버스 노선 축약
@@ -473,9 +492,8 @@ public class TransitResponseMapper {
     /**
      * ALIGHT step 생성 (하차)
      */
-    private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+    private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, ChipType chipType) {
         String stopType = getStopTypeSuffix(step.type());
-        String shortLabel = shortenLineLabel(step.lineInfo());
 
         // 색상 추출 (ALIGHT는 해당 교통수단의 색상 유지)
         String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
@@ -542,14 +560,6 @@ public class TransitResponseMapper {
             return "정류장";
         }
         return "";
-    }
-
-    /**
-     * 노선명 축약
-     */
-    private String shortenLineLabel(String label) {
-        if (label == null) return null;
-        return label.replace("수도권 ", "").replace("호선", "호선");
     }
 
     /**
