@@ -377,7 +377,7 @@ public class TransitResponseMapper {
                 .type("WALK")
                 .stopName(null)
                 .primaryText("도보 이동")
-                .secondaryText("약 " + TimeFormatter.formatTime(step.time()))
+                .secondaryText(null)
                 .minutes(step.time())
                 .colorHex(colorHex)
                 .line(null)
@@ -417,6 +417,12 @@ public class TransitResponseMapper {
      */
     private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, ChipType chipType) {
         String stopType = getStopTypeSuffix(step.type());
+        String secondaryText = step.lineInfo();
+
+        // 버스 노선 축약 (승차와 동일하게 처리)
+        if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null) {
+            secondaryText = abbreviateBusNumbers(step.lineInfo());
+        }
 
         // 색상 추출 (ALIGHT는 해당 교통수단의 색상 유지)
         String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
@@ -427,7 +433,7 @@ public class TransitResponseMapper {
                 .type(step.type().name())
                 .stopName(step.endName())
                 .primaryText(step.endName() + stopType + " 하차")
-                .secondaryText(step.lineInfo())
+                .secondaryText(secondaryText)
                 .minutes(null)
                 .colorHex(colorHex)
                 .line(step.line())

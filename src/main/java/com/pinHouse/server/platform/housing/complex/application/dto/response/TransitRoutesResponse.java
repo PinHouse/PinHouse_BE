@@ -113,8 +113,7 @@ public record TransitRoutesResponse(
             @Schema(description = "주 텍스트 (UI에 굵게 표시)", example = "시청역 승차")
             String primaryText,
 
-            @Schema(description = "부 텍스트 (노선명, 방면 등)", example = "수도권 1호선")
-            @JsonIgnore
+            @Schema(description = "부 텍스트 (노선명, 버스번호 등)", example = "수도권 1호선")
             String secondaryText,
 
             @Schema(description = "해당 구간 소요 시간(분), 없으면 null", example = "65")
