@@ -8,8 +8,13 @@ import lombok.Builder;
 @Builder
 public record DepositResponse(
 
+        @Schema(description = "최소 보증금 및 월세 정보")
         DepositMinMaxResponse min,
+
+        @Schema(description = "보통 보증금 및 월세 정보")
         DepositMinMaxResponse normal,
+
+        @Schema(description = "최대 보증금 및 월세 정보")
         DepositMinMaxResponse max
 
 ) {
