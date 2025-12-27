@@ -52,8 +52,8 @@ public record DistanceResponse(
             @Schema(description = "교통 타입 (WALK, BUS, SUBWAY, TRAIN, AIR)", example = "BUS")
             ChipType type,
 
-            @Schema(description = "구간 소요 시간 텍스트", example = "12분")
-            String minutesText,
+            @Schema(description = "막대 위 표시 텍스트 (호선명, 버스번호, 또는 소요시간), WALK인 경우 null", example = "수도권 7호선")
+            String labelText,
 
             @Schema(description = "노선 정보(버스번호/지하철 호선 등), 없는 경우 null", example = "9401, G8110")
             String lineText,

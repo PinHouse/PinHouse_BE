@@ -92,8 +92,8 @@ public class TransitResponseMapper {
             /// enum
             ChipType type = mapType(step.type());
 
-            /// 분
-            String minutes = TimeFormatter.formatTime(step.time());
+            /// 라벨 텍스트 (WALK인 경우 null, 그 외에는 호선/버스 번호)
+            String labelText = (type == ChipType.WALK) ? null : normalizeLine(step, type);
 
             /// 라인
             String line = normalizeLine(step, type);
@@ -103,7 +103,7 @@ public class TransitResponseMapper {
 
             chips.add(DistanceResponse.TransitResponse.builder()
                     .type(type)
-                    .minutesText(minutes)
+                    .labelText(labelText)
                     .lineText(line)
                     .line(step.line())
                     .subwayLine(step.subwayLine())
@@ -251,24 +251,26 @@ public class TransitResponseMapper {
                     ChipType type = mapType(step.type());
                     String bgColorHex = TransportColorResolver.extractBgColorHex(step, type);
 
-                    // 버스일 때 노선 정보 포함
-                    String minutesText;
-                    if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null && !step.lineInfo().isBlank()) {
+                    // 막대 위 표시 텍스트 (WALK는 null)
+                    String labelText;
+                    if (type == ChipType.WALK) {
+                        // WALK는 null
+                        labelText = null;
+                    } else if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null && !step.lineInfo().isBlank()) {
                         // 버스 노선 정보 포함
-                        minutesText = step.lineInfo();
+                        labelText = step.lineInfo();
                     } else if (step.type() == RootResult.TransportType.SUBWAY && step.lineInfo() != null && !step.lineInfo().isBlank()) {
                         // 지하철 노선 정보 포함
-                        String normalizedLine = normalizeLine(step, type);
-                        minutesText = normalizedLine;
+                        labelText = normalizeLine(step, type);
                     } else {
-                        // 기타 교통수단은 시간만 표시
-                        minutesText = TimeFormatter.formatTime(step.time());
+                        // 기타 교통수단은 시간 표시
+                        labelText = TimeFormatter.formatTime(step.time());
                     }
 
                     return TransitRoutesResponse.SegmentResponse.builder()
                             .type(step.type().name())
                             .minutes(step.time())
-                            .minutesText(minutesText)
+                            .labelText(labelText)
                             .colorHex(bgColorHex)
                             .line(step.line())
                             .build();
