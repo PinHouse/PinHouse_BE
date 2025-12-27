@@ -30,7 +30,10 @@ public record FastUnitTypeResponse(
         List<String> infra,            // 인프라 종류
 
         @Schema(description = "좋아요 여부", example = "true")
-        boolean liked                  // 좋아요 여부
+        boolean liked,                 // 좋아요 여부
+
+        @Schema(description = "모집 대상 그룹", example = "[\"신혼부부\", \"청년\"]")
+        List<String> group             // 모집 대상 그룹
 ) {
 
 
@@ -58,6 +61,7 @@ public record FastUnitTypeResponse(
                         .map(FacilityType::getValue)
                         .toList())
                 .liked(liked)
+                .group(unitType.getGroup())
                 .build();
 
     }

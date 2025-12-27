@@ -219,13 +219,18 @@ public class ComplexService implements ComplexUseCase {
         final double maxM2 = toM2(req.getMaxSize());
         final long   maxDeposit    = req.getMaxDeposit();
         final long   maxMonthlyPay = req.getMaxMonthPay();
+        final List<String> rentalTypeValues = req.getRentalTypes() != null
+                ? req.getRentalTypes().stream()
+                        .map(com.pinHouse.server.platform.search.domain.entity.RentalType::getValue)
+                        .toList()
+                : List.of();
 
         return complexes.stream()
                 .filter(cd -> cd != null && cd.complex() != null
                         && cd.complex().getUnitTypes() != null
                         && !cd.complex().getUnitTypes().isEmpty())
                 .flatMap(cd -> cd.complex().getUnitTypes().stream()
-                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
+                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay, rentalTypeValues))
                         .map(u -> {
                             ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
                             return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
@@ -247,12 +252,13 @@ public class ComplexService implements ComplexUseCase {
         return pyeong * PYEONG_TO_M2;
     }
 
-    /** 전용면적(m²)/보증금/월임대료 필터 함수 */
+    /** 전용면적(m²)/보증금/월임대료/모집대상 필터 함수 */
     private boolean matchesUnitType(UnitType u,
                                     double minM2,
                                     double maxM2,
                                     long maxDeposit,
-                                    long maxMonthlyPay) {
+                                    long maxMonthlyPay,
+                                    List<String> rentalTypeValues) {
         if (u == null) return false;
 
         // 전용면적(m²) 체크
@@ -271,6 +277,24 @@ public class ComplexService implements ComplexUseCase {
         long monthlyRent = u.getMonthlyRent();
         if (monthlyRent <= 0) return false;
         if (monthlyRent > maxMonthlyPay) return false;
+
+        // 모집대상(group) 체크
+        List<String> group = u.getGroup();
+        if (group != null && !group.isEmpty() && rentalTypeValues != null && !rentalTypeValues.isEmpty()) {
+            // "기본" 또는 "일반"이 포함되어 있으면 무조건 포함
+            boolean hasDefaultGroup = group.stream()
+                    .anyMatch(g -> "기본".equals(g) || "일반".equals(g));
+
+            if (!hasDefaultGroup) {
+                // "기본"/"일반"이 없으면, rentalTypes 중 하나라도 group에 포함되어야 함
+                boolean hasMatchingRentalType = rentalTypeValues.stream()
+                        .anyMatch(group::contains);
+
+                if (!hasMatchingRentalType) {
+                    return false;
+                }
+            }
+        }
 
         return true;
     }
