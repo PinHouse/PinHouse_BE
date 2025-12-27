@@ -66,4 +66,9 @@ public class PinPoint {
 
 
     }
+
+    /// first 값 변경
+    public void setFirst(boolean isFirst) {
+        this.isFirst = isFirst;
+    }
 }
