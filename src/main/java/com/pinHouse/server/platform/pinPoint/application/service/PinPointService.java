@@ -81,11 +81,25 @@ public class PinPointService implements PinPointUseCase {
     @Transactional
     public void update(String id, UUID userId, UpdatePinPointRequest request) {
 
-        /// 영속성 컨테이너 조횐
+        /// 영속성 컨테이너 조회
         PinPoint pinPoint = loadPinPoint(id);
+
+        /// isFirst가 true로 변경되는 경우, 기존 first=true인 핀포인트를 false로 변경
+        if (request.isFirst() != null && request.isFirst() && !pinPoint.isFirst()) {
+            Optional<PinPoint> existingFirstPinPoint = repository.findByUserIdAndIsFirst(userId.toString(), true);
+            existingFirstPinPoint.ifPresent(existingPinPoint -> {
+                existingPinPoint.setFirst(false);
+                repository.save(existingPinPoint);
+            });
+        }
 
         /// 수정 (더티체킹)
         pinPoint.updateName(request.name());
+
+        /// isFirst 값이 null이 아닌 경우에만 업데이트
+        if (request.isFirst() != null) {
+            pinPoint.setFirst(request.isFirst());
+        }
 
         repository.save(pinPoint);
     }
