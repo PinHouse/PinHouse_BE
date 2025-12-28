@@ -2,7 +2,6 @@ package com.pinHouse.server.platform.housing.complex.presentation;
 
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;

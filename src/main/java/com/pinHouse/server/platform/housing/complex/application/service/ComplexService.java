@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.complex.application.service;
 import com.pinHouse.server.core.exception.code.CommonErrorCode;
 import com.pinHouse.server.core.exception.code.ComplexErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
+import com.pinHouse.server.core.util.DistanceCalculator;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.*;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
@@ -68,11 +69,11 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
-        /// 거리 계산
-        DistanceResponse distance = getEasyDistance(id, pinPointId);
+        /// 거리 계산 - Segment 리스트로 변환
+        List<TransitRoutesResponse.SegmentResponse> segments = getSegments(id, pinPointId);
 
         /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities, distance);
+        return ComplexDetailResponse.from(complex, nearFacilities, segments);
 
     }
 
@@ -108,62 +109,11 @@ public class ComplexService implements ComplexUseCase {
 
 
 
-    /// 대중교통 시뮬레이터 (기존 스키마)
-    @Override
-    @Transactional
-    public List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException {
-
-        /// 임대주택 예외처리
-        ComplexDocument complex = loadComplex(id);
-        Location location = complex.getLocation();
-
-        /// 핀포인트 조회
-        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-        Location pointLocation = pinPoint.getLocation();
-
-        /// 대중교통 목록 가져오기
-        PathResult rootResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
-
-        /// 빠른 순서 3개 가져오기
-        List<RootResult> rootResults = mapper.selectTop3(rootResult);
-
-        /// 간편조건 탐색 DTO
-        return rootResults.stream()
-                .map(route -> {
-                    // 각 경로의 세부 구간을 TransitResponse 리스트로 매핑
-                    List<DistanceResponse.TransitResponse> distance = mapper.from(route);
-                    List<DistanceResponse.TransferPointResponse> stops = mapper.extractStops(route);
-
-                    // DistanceResponse 하나 생성
-                    return DistanceResponse.from(route, distance, stops);
-                })
-                .toList();
-
-    }
-
     /// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
     @Override
     @Transactional
     public TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException {
-
-        /// 임대주택 예외처리
-        ComplexDocument complex = loadComplex(id);
-        Location location = complex.getLocation();
-
-        /// 핀포인트 조회
-        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-        Location pointLocation = pinPoint.getLocation();
-
-        /// 대중교통 목록 가져오기
-        PathResult pathResult = distanceUtil.findPathResult(
-                pointLocation.getLatitude(),
-                pointLocation.getLongitude(),
-                location.getLatitude(),
-                location.getLongitude()
-        );
-
-        /// 새 스키마로 변환 (3개 경로 한 번에)
-        return mapper.toTransitRoutesResponse(pathResult);
+        return calculateTransitRoute(id, pinPointId, mapper::toTransitRoutesResponse);
     }
 
     /// 좋아요 누른 방 목록 조회
@@ -251,25 +201,12 @@ public class ComplexService implements ComplexUseCase {
         return complexDocuments.stream()
                 .filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
                 .map(c -> {
-                    double km = calcDistanceKm(pointLocation, c.getLocation());
+                    double km = DistanceCalculator.calculateDistanceKm(pointLocation, c.getLocation());
                     int minutes = (int) Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
                     return new ComplexDistanceResponse(c, km, minutes);
                 })
                 .sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
                 .toList();
-    }
-
-    /** 두 지점 간 거리(km) 계산 (Haversine) */
-    private double calcDistanceKm(Location a, Location b) {
-        final double R = 6371.0;
-        double dLat = Math.toRadians(b.getLatitude() - a.getLatitude());
-        double dLon = Math.toRadians(b.getLongitude() - a.getLongitude());
-        double lat1 = Math.toRadians(a.getLatitude());
-        double lat2 = Math.toRadians(b.getLatitude());
-
-        double h = Math.pow(Math.sin(dLat / 2), 2)
-                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
-        return 2 * R * Math.asin(Math.sqrt(h));
     }
 
 
@@ -282,13 +219,18 @@ public class ComplexService implements ComplexUseCase {
         final double maxM2 = toM2(req.getMaxSize());
         final long   maxDeposit    = req.getMaxDeposit();
         final long   maxMonthlyPay = req.getMaxMonthPay();
+        final List<String> rentalTypeValues = req.getRentalTypes() != null
+                ? req.getRentalTypes().stream()
+                        .map(com.pinHouse.server.platform.search.domain.entity.RentalType::getValue)
+                        .toList()
+                : List.of();
 
         return complexes.stream()
                 .filter(cd -> cd != null && cd.complex() != null
                         && cd.complex().getUnitTypes() != null
                         && !cd.complex().getUnitTypes().isEmpty())
                 .flatMap(cd -> cd.complex().getUnitTypes().stream()
-                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay))
+                        .filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay, rentalTypeValues))
                         .map(u -> {
                             ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
                             return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
@@ -310,12 +252,13 @@ public class ComplexService implements ComplexUseCase {
         return pyeong * PYEONG_TO_M2;
     }
 
-    /** 전용면적(m²)/보증금/월임대료 필터 함수 */
+    /** 전용면적(m²)/보증금/월임대료/모집대상 필터 함수 */
     private boolean matchesUnitType(UnitType u,
                                     double minM2,
                                     double maxM2,
                                     long maxDeposit,
-                                    long maxMonthlyPay) {
+                                    long maxMonthlyPay,
+                                    List<String> rentalTypeValues) {
         if (u == null) return false;
 
         // 전용면적(m²) 체크
@@ -334,6 +277,24 @@ public class ComplexService implements ComplexUseCase {
         long monthlyRent = u.getMonthlyRent();
         if (monthlyRent <= 0) return false;
         if (monthlyRent > maxMonthlyPay) return false;
+
+        // 모집대상(group) 체크
+        List<String> group = u.getGroup();
+        if (group != null && !group.isEmpty() && rentalTypeValues != null && !rentalTypeValues.isEmpty()) {
+            // "기본" 또는 "일반"이 포함되어 있으면 무조건 포함
+            boolean hasDefaultGroup = group.stream()
+                    .anyMatch(g -> "기본".equals(g) || "일반".equals(g));
+
+            if (!hasDefaultGroup) {
+                // "기본"/"일반"이 없으면, rentalTypes 중 하나라도 group에 포함되어야 함
+                boolean hasMatchingRentalType = rentalTypeValues.stream()
+                        .anyMatch(group::contains);
+
+                if (!hasMatchingRentalType) {
+                    return false;
+                }
+            }
+        }
 
         return true;
     }
@@ -463,6 +424,57 @@ public class ComplexService implements ComplexUseCase {
         );
     }
 
+    // =================
+    //  대중교통 경로 계산 (공통 로직)
+    // =================
+
+    /**
+     * 대중교통 경로 계산 템플릿 메서드
+     * 공통 로직(complex/pinpoint 조회, pathResult 계산)을 처리하고,
+     * 결과 변환은 mapper 함수에 위임합니다.
+     *
+     * @param complexId 임대주택 ID
+     * @param pinPointId 핀포인트 ID
+     * @param pathMapper PathResult를 원하는 타입으로 변환하는 함수
+     * @param <T> 반환 타입
+     * @return 변환된 결과
+     * @throws UnsupportedEncodingException 인코딩 예외
+     */
+    private <T> T calculateTransitRoute(
+            String complexId,
+            String pinPointId,
+            java.util.function.Function<PathResult, T> pathMapper
+    ) throws UnsupportedEncodingException {
+
+        /// 임대주택 조회
+        ComplexDocument complex = loadComplex(complexId);
+        Location complexLocation = complex.getLocation();
+
+        /// 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+        Location pinPointLocation = pinPoint.getLocation();
+
+        /// 대중교통 경로 계산
+        PathResult pathResult = distanceUtil.findPathResult(
+                pinPointLocation.getLatitude(),
+                pinPointLocation.getLongitude(),
+                complexLocation.getLatitude(),
+                complexLocation.getLongitude()
+        );
+
+        /// 결과 매핑
+        return pathMapper.apply(pathResult);
+    }
+
+    /// Segment 리스트 조회 (임대주택 상세조회용)
+    @Transactional(readOnly = true)
+    public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws UnsupportedEncodingException {
+        return calculateTransitRoute(id, pinPointId, pathResult -> {
+            RootResult rootResult = mapper.selectBest(pathResult);
+            return mapper.toSegmentResponses(rootResult);
+        });
+    }
+
     /// 간편 대중교통 시뮬레이터
     @Override
     @Transactional(readOnly = true)
@@ -475,31 +487,17 @@ public class ComplexService implements ComplexUseCase {
             return cached;
         }
 
-        /// 임대주택 예외처리
-        ComplexDocument complex = loadComplex(id);
-        Location location = complex.getLocation();
-
-        /// 핀포인트 조회
-        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
-
-        /// 대중교통 목록 비교하기
-        Location pointLocation = pinPoint.getLocation();
-        PathResult pathResult = distanceUtil.findPathResult(pointLocation.getLatitude(), pointLocation.getLongitude(), location.getLatitude(), location.getLongitude());
-
-        /// 조건 바탕으로 가져오기
-        RootResult rootResult = mapper.selectBest(pathResult);
-
-        /// 간편 조건 탐색 DTO
-        List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
-
-        /// DistanceResponse 생성
-        DistanceResponse distance = DistanceResponse.from(rootResult, routes);
+        /// 템플릿 메서드를 사용하여 경로 계산
+        DistanceResponse distance = calculateTransitRoute(id, pinPointId, pathResult -> {
+            RootResult rootResult = mapper.selectBest(pathResult);
+            List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
+            return DistanceResponse.from(rootResult, routes);
+        });
 
         /// Redis에 캐싱
         distanceCacheService.cacheDistance(id, pinPointId, distance);
 
         /// 리턴
         return distance;
-
     }
 }

@@ -26,9 +26,6 @@ public interface ComplexUseCase {
     /// 상세 조회
     List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
 
-    /// 거리 시뮬레이터 전부 조회 (기존 스키마)
-    List<DistanceResponse> getDistance(String id, String pinPointId) throws UnsupportedEncodingException;
-
     /// 거리 시뮬레이터 전부 조회 (새 스키마 - 3개 경로 한 번에)
     TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException;
 

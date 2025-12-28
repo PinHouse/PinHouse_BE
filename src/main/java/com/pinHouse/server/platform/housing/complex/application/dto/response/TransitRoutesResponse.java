@@ -81,8 +81,8 @@ public record TransitRoutesResponse(
             @Schema(description = "소요 시간(분)", example = "65")
             int minutes,
 
-            @Schema(description = "막대 위 표시 텍스트", example = "65분")
-            String minutesText,
+            @Schema(description = "막대 위 표시 텍스트 (호선명, 버스번호, 또는 소요시간), WALK인 경우 null", example = "수도권 7호선")
+            String labelText,
 
             @Schema(description = "구간 색상(Hex)", example = "#3356B4")
             String colorHex,
@@ -113,8 +113,7 @@ public record TransitRoutesResponse(
             @Schema(description = "주 텍스트 (UI에 굵게 표시)", example = "시청역 승차")
             String primaryText,
 
-            @Schema(description = "부 텍스트 (노선명, 방면 등)", example = "수도권 1호선")
-            @JsonIgnore
+            @Schema(description = "부 텍스트 (노선명, 버스번호 등)", example = "수도권 1호선")
             String secondaryText,
 
             @Schema(description = "해당 구간 소요 시간(분), 없으면 null", example = "65")

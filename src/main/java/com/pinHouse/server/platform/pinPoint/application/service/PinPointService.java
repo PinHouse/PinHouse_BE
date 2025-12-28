@@ -43,6 +43,15 @@ public class PinPointService implements PinPointUseCase {
         /// 유저 검증
         User user = userService.loadUser(userId);
 
+        /// 새로운 핀포인트가 first=true인 경우, 기존 first=true인 핀포인트를 false로 변경
+        if (request.first()) {
+            Optional<PinPoint> existingFirstPinPoint = repository.findByUserIdAndIsFirst(user.getId().toString(), true);
+            existingFirstPinPoint.ifPresent(pinPoint -> {
+                pinPoint.setFirst(false);
+                repository.save(pinPoint);
+            });
+        }
+
         /// 주소를 좌표로 변환
         Location location = locationTool.getLocation(request.address());
 
@@ -61,8 +70,8 @@ public class PinPointService implements PinPointUseCase {
         /// 유저 검증
         User user = userService.loadUser(userId);
 
-        /// 유저가 존재하는 핀포인트 목록 조회
-        List<PinPoint> pinPoints = repository.findByUserId(user.getId().toString());
+        /// 유저가 존재하는 핀포인트 목록을 first 기준으로 정렬하여 조회
+        List<PinPoint> pinPoints = repository.findByUserIdOrderByIsFirstDesc(user.getId().toString());
 
         /// Stream 돌면서 DTO 변경
         return PinPointResponse.from(pinPoints);
@@ -72,11 +81,25 @@ public class PinPointService implements PinPointUseCase {
     @Transactional
     public void update(String id, UUID userId, UpdatePinPointRequest request) {
 
-        /// 영속성 컨테이너 조횐
+        /// 영속성 컨테이너 조회
         PinPoint pinPoint = loadPinPoint(id);
+
+        /// isFirst가 true로 변경되는 경우, 기존 first=true인 핀포인트를 false로 변경
+        if (request.isFirst() != null && request.isFirst() && !pinPoint.isFirst()) {
+            Optional<PinPoint> existingFirstPinPoint = repository.findByUserIdAndIsFirst(userId.toString(), true);
+            existingFirstPinPoint.ifPresent(existingPinPoint -> {
+                existingPinPoint.setFirst(false);
+                repository.save(existingPinPoint);
+            });
+        }
 
         /// 수정 (더티체킹)
         pinPoint.updateName(request.name());
+
+        /// isFirst 값이 null이 아닌 경우에만 업데이트
+        if (request.isFirst() != null) {
+            pinPoint.setFirst(request.isFirst());
+        }
 
         repository.save(pinPoint);
     }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UnitType {
@@ -31,9 +33,12 @@ public class UnitType {
     @Field("quota")
     private Quota quota;
 
+    @Field("group")
+    private List<String> group;
+
     /// 빌더 생성자
     @Builder
-    public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota) {
+    public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota, List<String> group) {
         this.typeId = typeId;
         this.typeCode = typeCode;
         this.complexId = complexId;
@@ -41,5 +46,6 @@ public class UnitType {
         this.monthlyRent = monthlyRent;
         this.deposit = deposit;
         this.quota = quota;
+        this.group = group;
     }
 }

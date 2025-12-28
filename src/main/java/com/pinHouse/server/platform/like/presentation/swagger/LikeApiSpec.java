@@ -56,7 +56,7 @@ public interface LikeApiSpec {
     /// 공고 좋아요 예시
     String NOTICE_EXAMPLE = """
             {
-                "targetId": "18442",
+                "targetId": "19417",
                 "type": "NOTICE"
               }
             
@@ -65,7 +65,7 @@ public interface LikeApiSpec {
     /// 방 좋아요 예시
     String COMPLEX_EXAMPLE = """
             {
-              "targetId": "68f65b276cd8c3eaf57c4658",
+              "targetId": "4b30ca7d718d4ea9a9f6966f",
               "type": "ROOM"
             }
             """;

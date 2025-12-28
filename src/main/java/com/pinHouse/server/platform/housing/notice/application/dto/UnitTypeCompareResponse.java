@@ -56,7 +56,10 @@ public record UnitTypeCompareResponse(
             String distanceFromPinPoint,
 
             @Schema(description = "좋아요 여부", example = "true")
-            boolean isLiked
+            boolean isLiked,
+
+            @Schema(description = "공급 그룹 정보", example = "[\"신혼부부\", \"청년\"]")
+            List<String> group
     ) {
         /**
          * 정적 팩토리 메서드
@@ -77,6 +80,7 @@ public record UnitTypeCompareResponse(
                     .nearbyFacilities(facilities != null ? facilities : List.of())
                     .distanceFromPinPoint(distance)
                     .isLiked(isLiked)
+                    .group(unitType.getGroup() != null ? unitType.getGroup() : List.of())
                     .build();
         }
     }

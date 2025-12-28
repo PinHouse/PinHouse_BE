@@ -2,7 +2,7 @@ package com.pinHouse.server.platform.diagnostic.diagnosis.presentation;
 
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
-import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisHistoryResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.diagnostic.diagnosis.presentation.swagger.DiagnosisApiSpec;
@@ -11,8 +11,6 @@ import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/diagnosis")
@@ -39,34 +37,17 @@ public class DiagnosisApi implements DiagnosisApiSpec {
     }
 
     /**
-     * 최근 진단 결과 1개 조회
+     * 최근 진단 결과 상세 조회 (입력 정보 + 결과)
      *
      * @param principalDetails 로그인한 유저
-     * @return 최근 진단 결과
+     * @return 최근 진단 상세 결과
      */
     @GetMapping("/latest")
     @CheckLogin
-    public ApiResponse<DiagnosisResponse> getLatestDiagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ApiResponse<DiagnosisDetailResponse> getLatestDiagnosis(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스
-        DiagnosisResponse response = service.getDiagnose(principalDetails.getId());
-
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
-
-    /**
-     * 진단 히스토리 목록 조회
-     *
-     * @param principalDetails 로그인한 유저
-     * @return 진단 히스토리 목록
-     */
-    @GetMapping("/history")
-    @CheckLogin
-    public ApiResponse<List<DiagnosisHistoryResponse>> getDiagnosisHistory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-        /// 서비스
-        List<DiagnosisHistoryResponse> response = service.getDiagnosisHistory(principalDetails.getId());
+        DiagnosisDetailResponse response = service.getDiagnoseDetail(principalDetails.getId());
 
         /// 리턴
         return ApiResponse.ok(response);

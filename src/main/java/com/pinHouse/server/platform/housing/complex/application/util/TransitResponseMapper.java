@@ -1,5 +1,6 @@
 package com.pinHouse.server.platform.housing.complex.application.util;
 
+import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ChipType;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
@@ -13,6 +14,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * 대중교통 경로 응답 매퍼
+ *
+ * <p>ODsay API의 {@link PathResult}와 {@link RootResult}를
+ * 애플리케이션의 응답 DTO로 변환하는 역할을 담당합니다.</p>
+ *
+ * <h3>지원하는 스키마</h3>
+ * <ul>
+ *   <li><b>신규 스키마:</b> {@link TransitRoutesResponse} - 3개 경로 + 상세 단계 정보</li>
+ *   <li><b>구 스키마 (Deprecated):</b> {@link DistanceResponse} - 단일 경로 정보</li>
+ * </ul>
+ *
+ * <h3>주요 기능</h3>
+ * <ul>
+ *   <li>경로 선택 (최적 1개, 상위 3개)</li>
+ *   <li>교통수단 타입 매핑 및 색상 추출</li>
+ *   <li>노선 정보 정규화</li>
+ *   <li>승차/하차/도보 단계별 상세 정보 생성</li>
+ * </ul>
+ */
 @Component
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TransitResponseMapper {
@@ -52,77 +73,6 @@ public class TransitResponseMapper {
                 .toList();
     }
 
-    public List<DistanceResponse.TransferPointResponse> extractStops(RootResult route) {
-
-        List<DistanceResponse.TransferPointResponse> result = new ArrayList<>();
-
-        if (route == null || route.steps() == null || route.steps().isEmpty()) {
-            return result;
-        }
-
-        // WALK 빼고 “실제 탑승하는 구간”만 추출
-        List<RootResult.DistanceStep> moveSteps = route.steps().stream()
-                .filter(s -> s.type() != RootResult.TransportType.WALK)
-                .toList();
-
-        if (moveSteps.isEmpty()) {
-            return result;
-        }
-
-        // 1) 첫 승차 지점
-        RootResult.DistanceStep first = moveSteps.get(0);
-        ChipType firstType = mapType(first.type());
-        result.add(DistanceResponse.TransferPointResponse.builder()
-                .role(DistanceResponse.TransferPointResponse.TransferRole.START)
-                .type(firstType)
-                .stopName(first.startName())
-                .lineText(first.lineInfo())
-                .line(first.line())
-                .subwayLine(first.subwayLine())
-                .busRouteType(first.busRouteType())
-                .trainType(first.trainType())
-                .expressBusType(first.expressBusType())
-                .bgColorHex(extractBgColorHex(first, firstType))
-                .build());
-
-        // 2) 중간 환승 지점들 (두 번째 탑승부터는 전부 환승으로 간주)
-        for (int i = 1; i < moveSteps.size(); i++) {
-            RootResult.DistanceStep step = moveSteps.get(i);
-            ChipType stepType = mapType(step.type());
-
-            result.add(DistanceResponse.TransferPointResponse.builder()
-                    .role(DistanceResponse.TransferPointResponse.TransferRole.TRANSFER)
-                    .type(stepType)
-                    .stopName(step.startName())
-                    .lineText(step.lineInfo())
-                    .line(step.line())
-                    .subwayLine(step.subwayLine())
-                    .busRouteType(step.busRouteType())
-                    .trainType(step.trainType())
-                    .expressBusType(step.expressBusType())
-                    .bgColorHex(extractBgColorHex(step, stepType))
-                    .build());
-        }
-
-        // 3) 마지막 도착 지점
-        RootResult.DistanceStep last = moveSteps.get(moveSteps.size() - 1);
-        ChipType lastType = mapType(last.type());
-        result.add(DistanceResponse.TransferPointResponse.builder()
-                .role(DistanceResponse.TransferPointResponse.TransferRole.ARRIVAL)
-                .type(lastType)
-                .stopName(last.endName())
-                .lineText(null)
-                .line(null)
-                .subwayLine(null)
-                .busRouteType(null)
-                .trainType(null)
-                .expressBusType(null)
-                .bgColorHex(null)
-                .build());
-
-        return result;
-    }
-
 
 
     /// 출력을 위한 매퍼
@@ -142,18 +92,18 @@ public class TransitResponseMapper {
             /// enum
             ChipType type = mapType(step.type());
 
-            /// 분
-            String minutes = formatMinutes(step.time());
+            /// 라벨 텍스트 (WALK인 경우 null, 그 외에는 호선/버스 번호)
+            String labelText = (type == ChipType.WALK) ? null : normalizeLine(step, type);
 
             /// 라인
             String line = normalizeLine(step, type);
 
             /// bgColorHex를 enum으로부터 추출
-            String bgColorHex = extractBgColorHex(step, type);
+            String bgColorHex = TransportColorResolver.extractBgColorHex(step, type);
 
             chips.add(DistanceResponse.TransitResponse.builder()
                     .type(type)
-                    .minutesText(minutes)
+                    .labelText(labelText)
                     .lineText(line)
                     .line(step.line())
                     .subwayLine(step.subwayLine())
@@ -192,18 +142,6 @@ public class TransitResponseMapper {
         };
     }
 
-    /// 분 표기
-    private static String formatMinutes(int min) {
-
-        /// 방어
-        if (min <= 0){
-            return "0분";
-        }
-
-        /// 리턴
-        return min + "분";
-    }
-
     /** 버스/지하철 표기 보정 */
     private static String normalizeLine(RootResult.DistanceStep step, ChipType type) {
 
@@ -225,47 +163,6 @@ public class TransitResponseMapper {
 
         /// 나머지는 그대로
         return (line == null || line.isBlank()) ? null : line;
-    }
-
-    /// enum으로부터 bgColorHex 추출
-    private static String extractBgColorHex(RootResult.DistanceStep step, ChipType type) {
-        // WALK와 AIR는 ChipType의 defaultBg 사용
-        if (type == ChipType.WALK || type == ChipType.AIR) {
-            return type.defaultBg;
-        }
-
-        // SUBWAY: subwayLine enum의 색상 사용
-        if (type == ChipType.SUBWAY) {
-            if (step.subwayLine() != null) {
-                return step.subwayLine().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // BUS: busRouteType 또는 expressBusType enum의 색상 사용
-        if (type == ChipType.BUS) {
-            if (step.busRouteType() != null) {
-                return step.busRouteType().getColorHex();
-            }
-            if (step.expressBusType() != null) {
-                return step.expressBusType().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // TRAIN: trainType enum의 색상 사용
-        if (type == ChipType.TRAIN) {
-            if (step.trainType() != null) {
-                return step.trainType().getColorHex();
-            }
-            // enum이 없으면 기본 회색
-            return "#BBBBBB";
-        }
-
-        // 그 외의 경우 기본 회색 반환
-        return "#BBBBBB";
     }
 
     // =================
@@ -321,7 +218,7 @@ public class TransitResponseMapper {
                 .totalDistanceKm(Math.round(route.totalDistance() / 100.0) / 10.0)
                 .totalFareWon(route.totalPayment() > 0 ? route.totalPayment() : null)
                 .transferCount(transferCount)
-                .displayText(formatTime(totalMinutes))
+                .displayText(TimeFormatter.formatTime(totalMinutes))
                 .build();
     }
 
@@ -343,7 +240,7 @@ public class TransitResponseMapper {
     /**
      * Segments 생성 (색 막대용)
      */
-    private List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
+    public List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
         if (route == null || route.steps() == null) {
             return List.of();
         }
@@ -352,12 +249,28 @@ public class TransitResponseMapper {
                 .filter(step -> step.time() > 0)  // 0분인 구간은 제외
                 .map(step -> {
                     ChipType type = mapType(step.type());
-                    String bgColorHex = extractBgColorHex(step, type);
+                    String bgColorHex = TransportColorResolver.extractBgColorHex(step, type);
+
+                    // 막대 위 표시 텍스트 (WALK는 null)
+                    String labelText;
+                    if (type == ChipType.WALK) {
+                        // WALK는 null
+                        labelText = null;
+                    } else if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null && !step.lineInfo().isBlank()) {
+                        // 버스 노선 정보 포함
+                        labelText = step.lineInfo();
+                    } else if (step.type() == RootResult.TransportType.SUBWAY && step.lineInfo() != null && !step.lineInfo().isBlank()) {
+                        // 지하철 노선 정보 포함
+                        labelText = normalizeLine(step, type);
+                    } else {
+                        // 기타 교통수단은 시간 표시
+                        labelText = TimeFormatter.formatTime(step.time());
+                    }
 
                     return TransitRoutesResponse.SegmentResponse.builder()
                             .type(step.type().name())
                             .minutes(step.time())
-                            .minutesText(formatMinutes(step.time()))
+                            .labelText(labelText)
                             .colorHex(bgColorHex)
                             .line(step.line())
                             .build();
@@ -404,12 +317,12 @@ public class TransitResponseMapper {
             } else {
                 // 교통수단: BOARD + ALIGHT 추가 (색상 포함)
                 ChipType chipType = mapType(step.type());
-                steps.add(createBoardStep(step, true, chipType));
+                steps.add(createBoardStep(step, chipType));
 
                 // 다음이 WALK거나 마지막이면 하차
                 boolean isLast = (transportIndex == transportSteps.size() - 1);
                 if (isLast || (i + 1 < distanceSteps.size() && distanceSteps.get(i + 1).type() == RootResult.TransportType.WALK)) {
-                    steps.add(createAlightStep(step, true, chipType));
+                    steps.add(createAlightStep(step, chipType));
                 }
 
                 transportIndex++;
@@ -464,7 +377,7 @@ public class TransitResponseMapper {
                 .type("WALK")
                 .stopName(null)
                 .primaryText("도보 이동")
-                .secondaryText("약 " + formatMinutes(step.time()))
+                .secondaryText(null)
                 .minutes(step.time())
                 .colorHex(colorHex)
                 .line(null)
@@ -474,9 +387,8 @@ public class TransitResponseMapper {
     /**
      * BOARD step 생성 (승차)
      */
-    private TransitRoutesResponse.StepResponse createBoardStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+    private TransitRoutesResponse.StepResponse createBoardStep(RootResult.DistanceStep step, ChipType chipType) {
         String stopType = getStopTypeSuffix(step.type());
-        String shortLabel = shortenLineLabel(step.lineInfo());
         String secondaryText = step.lineInfo();
 
         // 버스 노선 축약
@@ -485,7 +397,7 @@ public class TransitResponseMapper {
         }
 
         // 색상 추출
-        String colorHex = extractBgColorHex(step, chipType);
+        String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
 
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
@@ -503,12 +415,17 @@ public class TransitResponseMapper {
     /**
      * ALIGHT step 생성 (하차)
      */
-    private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, boolean isInferred, ChipType chipType) {
+    private TransitRoutesResponse.StepResponse createAlightStep(RootResult.DistanceStep step, ChipType chipType) {
         String stopType = getStopTypeSuffix(step.type());
-        String shortLabel = shortenLineLabel(step.lineInfo());
+        String secondaryText = step.lineInfo();
+
+        // 버스 노선 축약 (승차와 동일하게 처리)
+        if (step.type() == RootResult.TransportType.BUS && step.lineInfo() != null) {
+            secondaryText = abbreviateBusNumbers(step.lineInfo());
+        }
 
         // 색상 추출 (ALIGHT는 해당 교통수단의 색상 유지)
-        String colorHex = extractBgColorHex(step, chipType);
+        String colorHex = TransportColorResolver.extractBgColorHex(step, chipType);
 
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
@@ -516,7 +433,7 @@ public class TransitResponseMapper {
                 .type(step.type().name())
                 .stopName(step.endName())
                 .primaryText(step.endName() + stopType + " 하차")
-                .secondaryText(step.lineInfo())
+                .secondaryText(secondaryText)
                 .minutes(null)
                 .colorHex(colorHex)
                 .line(step.line())
@@ -575,14 +492,6 @@ public class TransitResponseMapper {
     }
 
     /**
-     * 노선명 축약
-     */
-    private String shortenLineLabel(String label) {
-        if (label == null) return null;
-        return label.replace("수도권 ", "").replace("호선", "호선");
-    }
-
-    /**
      * 버스 번호 축약
      */
     private String abbreviateBusNumbers(String busNumbers) {
@@ -594,27 +503,5 @@ public class TransitResponseMapper {
         String first3 = String.join(", ", numbers[0], numbers[1], numbers[2]);
         int remaining = numbers.length - 3;
         return first3 + "번 외 " + remaining + "개";
-    }
-
-    /**
-     * 시간 포맷팅
-     */
-    private String formatTime(int totalMinutes) {
-        if (totalMinutes <= 0) {
-            return "0분";
-        }
-
-        if (totalMinutes < 60) {
-            return totalMinutes + "분";
-        }
-
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-
-        if (minutes == 0) {
-            return hours + "시간";
-        }
-
-        return hours + "시간 " + minutes + "분";
     }
 }
