@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.housing.complex.application.util;
 import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.ChipType;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitInfoResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.server.platform.housing.complex.application.dto.result.RootResult;
@@ -235,6 +236,30 @@ public class TransitResponseMapper {
                 .count();
 
         return (int) Math.max(0, transportCount - 1);
+    }
+
+    /**
+     * TransitInfoResponse 생성 (전체 경로 정보 + 구간별 정보)
+     */
+    public TransitInfoResponse toTransitInfoResponse(RootResult route) {
+        if (route == null) {
+            return null;
+        }
+
+        // 전체 경로의 총 시간, 거리 계산
+        int totalMinutes = route.totalTime();
+        String totalTimeText = TimeFormatter.formatTime(totalMinutes);
+        double totalDistanceKm = Math.round(route.totalDistance() / 100.0) / 10.0;
+
+        // 구간별 정보 생성
+        List<TransitRoutesResponse.SegmentResponse> segments = toSegmentResponses(route);
+
+        return TransitInfoResponse.builder()
+                .totalTime(totalTimeText)
+                .totalTimeMinutes(totalMinutes)
+                .totalDistance(totalDistanceKm)
+                .segments(segments)
+                .build();
     }
 
     /**

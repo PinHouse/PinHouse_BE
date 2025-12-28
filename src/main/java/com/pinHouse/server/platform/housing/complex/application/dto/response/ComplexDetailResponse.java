@@ -2,7 +2,6 @@ package com.pinHouse.server.platform.housing.complex.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.server.core.util.TimeFormatter;
-import com.pinHouse.server.platform.housing.complex.application.dto.response.TransitRoutesResponse.SegmentResponse;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
 import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacilityListResponse;
@@ -47,11 +46,11 @@ public record ComplexDetailResponse(
         String totalTime,
 
         @Schema(description = "전체 대중교통 정보 (임대주택 상세조회용)")
-        List<SegmentResponse> distance
+        TransitInfoResponse distance
 ) {
 
-    /// 정적 팩토리 메서드 - 임대주택 상세조회용 (SegmentResponse 리스트 포함)
-    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, List<SegmentResponse> distance) {
+    /// 정적 팩토리 메서드 - 임대주택 상세조회용 (TransitInfoResponse 포함)
+    public static ComplexDetailResponse from(ComplexDocument document, NoticeFacilityListResponse facilities, TransitInfoResponse transitInfo) {
 
         return ComplexDetailResponse.builder()
                 .id(document.getId())
@@ -59,7 +58,7 @@ public record ComplexDetailResponse(
                 .address(extractRegion(document.getAddress().getFull()))
                 .heating(document.getHeating())
                 .totalHouseholds(
-                        document.getTotalHouseholds() == null || document.getTotalHouseholds().equals("")
+                        document.getTotalHouseholds() == null || document.getTotalHouseholds().isEmpty()
                                 ? 0
                                 : Integer.parseInt(document.getTotalHouseholds())
                 )
@@ -70,7 +69,7 @@ public record ComplexDetailResponse(
                         .map(UnitType::getTypeCode)
                         .toList())
                 .totalTime(null)
-                .distance(distance)
+                .distance(transitInfo)
                 .build();
     }
 
