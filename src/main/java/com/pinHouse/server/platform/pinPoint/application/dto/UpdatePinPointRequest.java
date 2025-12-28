@@ -8,6 +8,6 @@ public record UpdatePinPointRequest(
         String name,
 
         @Schema(description = "우선순위 설정 여부, true인 경우 최우선", example = "true")
-        Boolean isFirst
+        Boolean first
 ) {
 }
