@@ -23,44 +23,45 @@ public enum SubwayLineType {
     SEOUL_LINE_7(7, "수도권 7호선", "#69702D"),
     SEOUL_LINE_8(8, "수도권 8호선", "#E5046C"),
     SEOUL_LINE_9(9, "수도권 9호선", "#CEA43A"),
+
     GTX_A(91, "GTX-A", "#9A6292"),
     AIRPORT(101, "공항철도", "#3CA8EA"),
-    MAGLEV(102, "자기부상철도", "#BBBBBB"),
+    MAGLEV(102, "자기부상철도", "#8FC31F"),
     GYEONGUI_JUNGANG(104, "경의중앙선", "#69CCCC"),
     EVERLINE(107, "에버라인", "#6CAB2A"),
-    GYEONGCHUN(108, "경춘선", "#BBBBBB"),
+    GYEONGCHUN(108, "경춘선", "#0C8E72"),
     SINBUNDANG(109, "신분당선", "#C12B2F"),
     UIJEONGBU(110, "의정부경전철", "#DF7503"),
-    GYEONGGANG(112, "경강선", "#BBBBBB"),
+    GYEONGGANG(112, "경강선", "#003DA5"),
     UISINSEOL(113, "우이신설선", "#AFBF04"),
     SEOHAE(114, "서해선", "#4DA635"),
     GIMPO_GOLDLINE(115, "김포골드라인", "#957326"),
     SUIN_BUNDANG(116, "수인분당선", "#FFCE32"),
-    SILLIM(117, "신림선", "#BBBBBB"),
+    SILLIM(117, "신림선", "#6789CA"),
 
     // 인천
     INCHEON_LINE_1(21, "인천 1호선", "#7EAAD6"),
-    INCHEON_LINE_2(22, "인천 2호선", "#BBBBBB"),
+    INCHEON_LINE_2(22, "인천 2호선", "#F5A200"),
 
     // 대전
-    DAEJEON_LINE_1(31, "대전 1호선", "#BBBBBB"),
+    DAEJEON_LINE_1(31, "대전 1호선", "#007448"),
 
     // 대구
-    DAEGU_LINE_1(41, "대구 1호선", "#BBBBBB"),
-    DAEGU_LINE_2(42, "대구 2호선", "#BBBBBB"),
-    DAEGU_LINE_3(43, "대구 3호선", "#BBBBBB"),
-    DAEGYEONG(48, "대경선", "#BBBBBB"),
+    DAEGU_LINE_1(41, "대구 1호선", "#D93F3F"),
+    DAEGU_LINE_2(42, "대구 2호선", "#00AA80"),
+    DAEGU_LINE_3(43, "대구 3호선", "#F7B500"),
+    DAEGYEONG(48, "대경선", "#4B6CB7"),
 
     // 광주
-    GWANGJU_LINE_1(51, "광주 1호선", "#BBBBBB"),
+    GWANGJU_LINE_1(51, "광주 1호선", "#0094D8"),
 
     // 부산
-    BUSAN_LINE_1(71, "부산 1호선", "#BBBBBB"),
-    BUSAN_LINE_2(72, "부산 2호선", "#BBBBBB"),
-    BUSAN_LINE_3(73, "부산 3호선", "#BBBBBB"),
-    BUSAN_LINE_4(74, "부산 4호선", "#BBBBBB"),
-    DONGHAE(78, "동해선", "#BBBBBB"),
-    BUSAN_GIMHAE(79, "부산-김해경전철", "#BBBBBB"),
+    BUSAN_LINE_1(71, "부산 1호선", "#F06A00"),
+    BUSAN_LINE_2(72, "부산 2호선", "#6AC6B8"),
+    BUSAN_LINE_3(73, "부산 3호선", "#CFA32E"),
+    BUSAN_LINE_4(74, "부산 4호선", "#4E67A1"),
+    DONGHAE(78, "동해선", "#005BAC"),
+    BUSAN_GIMHAE(79, "부산-김해경전철", "#875CAC"),
 
     UNKNOWN(-1, "UNKNOWN", "#BBBBBB");
 
