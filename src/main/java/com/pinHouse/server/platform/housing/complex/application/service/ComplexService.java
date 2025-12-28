@@ -69,11 +69,11 @@ public class ComplexService implements ComplexUseCase {
         /// 주변 인프라 조회
         NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
-        /// 거리 계산 - Segment 리스트로 변환
-        List<TransitRoutesResponse.SegmentResponse> segments = getSegments(id, pinPointId);
+        /// 거리 계산 - TransitInfo 생성
+        TransitInfoResponse transitInfo = getTransitInfo(id, pinPointId);
 
         /// 리턴
-        return ComplexDetailResponse.from(complex, nearFacilities, segments);
+        return ComplexDetailResponse.from(complex, nearFacilities, transitInfo);
 
     }
 
@@ -466,7 +466,17 @@ public class ComplexService implements ComplexUseCase {
         return pathMapper.apply(pathResult);
     }
 
-    /// Segment 리스트 조회 (임대주택 상세조회용)
+    /// TransitInfo 조회 (임대주택 상세조회용)
+    @Transactional(readOnly = true)
+    public TransitInfoResponse getTransitInfo(String id, String pinPointId) throws UnsupportedEncodingException {
+        return calculateTransitRoute(id, pinPointId, pathResult -> {
+            RootResult rootResult = mapper.selectBest(pathResult);
+            return mapper.toTransitInfoResponse(rootResult);
+        });
+    }
+
+    /// Segment 리스트 조회 (임대주택 상세조회용) - Deprecated, use getTransitInfo instead
+    @Deprecated
     @Transactional(readOnly = true)
     public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws UnsupportedEncodingException {
         return calculateTransitRoute(id, pinPointId, pathResult -> {
