@@ -85,7 +85,7 @@ public class PinPointService implements PinPointUseCase {
         PinPoint pinPoint = loadPinPoint(id);
 
         /// isFirst가 true로 변경되는 경우, 기존 first=true인 핀포인트를 false로 변경
-        if (request.isFirst() != null && request.isFirst() && !pinPoint.isFirst()) {
+        if (request.first() != null && request.first() && !pinPoint.isFirst()) {
             Optional<PinPoint> existingFirstPinPoint = repository.findByUserIdAndIsFirst(userId.toString(), true);
             existingFirstPinPoint.ifPresent(existingPinPoint -> {
                 existingPinPoint.setFirst(false);
@@ -96,9 +96,9 @@ public class PinPointService implements PinPointUseCase {
         /// 수정 (더티체킹)
         pinPoint.updateName(request.name());
 
-        /// isFirst 값이 null이 아닌 경우에만 업데이트
-        if (request.isFirst() != null) {
-            pinPoint.setFirst(request.isFirst());
+        /// first 값이 null이 아닌 경우에만 업데이트
+        if (request.first() != null) {
+            pinPoint.setFirst(request.first());
         }
 
         repository.save(pinPoint);
