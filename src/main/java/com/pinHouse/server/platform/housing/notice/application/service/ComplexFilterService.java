@@ -241,20 +241,71 @@ public class ComplexFilterService {
     }
 
     /**
+     * 지역 필터만 계산
+     */
+    public ComplexFilterResponse.DistrictFilter buildDistrictFilter(List<ComplexDocument> complexes) {
+        return calculateDistrictFilter(complexes);
+    }
+
+    /**
+     * 가격 필터만 계산
+     */
+    public ComplexFilterResponse.CostFilter buildCostFilter(List<ComplexDocument> complexes) {
+        return calculateCostFilter(complexes);
+    }
+
+    /**
+     * 면적 필터만 계산
+     */
+    public ComplexFilterResponse.AreaFilter buildAreaFilter(List<ComplexDocument> complexes) {
+        return calculateAreaFilter(complexes);
+    }
+
+    /**
      * 지역 필터 계산
      */
     private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
-        List<String> uniqueDistricts = complexes.stream()
+        List<ComplexFilterResponse.District> uniqueDistricts = complexes.stream()
                 .map(ComplexDocument::getCounty)
                 .filter(Objects::nonNull)
                 .filter(county -> !county.isBlank())
+                .map(this::parseCounty)
+                .filter(Objects::nonNull)
                 .distinct()
-                .sorted()
+                .sorted(Comparator.comparing(ComplexFilterResponse.District::city)
+                        .thenComparing(ComplexFilterResponse.District::district))
                 .toList();
 
         return ComplexFilterResponse.DistrictFilter.builder()
                 .districts(uniqueDistricts)
                 .build();
+    }
+
+    /**
+     * "청주시 서원구" 형식의 문자열을 파싱하여 District 객체로 변환
+     */
+    private ComplexFilterResponse.District parseCounty(String county) {
+        if (county == null || county.isBlank()) {
+            return null;
+        }
+
+        // 공백으로 분리 (예: "청주시 서원구" -> ["청주시", "서원구"])
+        String[] parts = county.trim().split("\\s+");
+
+        if (parts.length >= 2) {
+            return ComplexFilterResponse.District.builder()
+                    .city(parts[0])
+                    .district(parts[1])
+                    .build();
+        } else if (parts.length == 1) {
+            // 구분이 없는 경우 전체를 city로 처리
+            return ComplexFilterResponse.District.builder()
+                    .city(parts[0])
+                    .district("")
+                    .build();
+        }
+
+        return null;
     }
 
     /**

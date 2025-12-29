@@ -28,8 +28,21 @@ public record ComplexFilterResponse(
     @Builder
     @Schema(name = "지역 필터", description = "단지가 속한 지역(구) 목록")
     public record DistrictFilter(
-            @Schema(description = "고유한 지역(구) 목록", example = "[\"성남시 분당구\", \"서울시 강남구\", \"부산시 해운대구\"]")
-            List<String> districts
+            @Schema(description = "고유한 지역 목록")
+            List<District> districts
+    ) {}
+
+    /**
+     * 지역 정보 (시/구 분리)
+     */
+    @Builder
+    @Schema(name = "지역 정보", description = "시와 구로 분리된 지역 정보")
+    public record District(
+            @Schema(description = "시", example = "청주시")
+            String city,
+
+            @Schema(description = "구", example = "서원구")
+            String district
     ) {}
 
     /**

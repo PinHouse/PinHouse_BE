@@ -63,6 +63,36 @@ public interface NoticeApiSpec {
             @PathVariable String noticeId
     );
 
+    /// 지역 필터 정보만 조회
+    @Operation(
+            summary = "공고의 지역 필터 정보 조회 API",
+            description = "공고에 포함된 단지들의 지역 필터링 정보만 제공합니다. 시와 구로 분리된 정보를 반환합니다."
+    )
+    ApiResponse<ComplexFilterResponse.DistrictFilter> getDistrictFilter(
+            @Parameter(description = "공고 ID", example = "18214")
+            @PathVariable String noticeId
+    );
+
+    /// 가격 필터 정보만 조회
+    @Operation(
+            summary = "공고의 가격 필터 정보 조회 API",
+            description = "공고에 포함된 단지들의 가격 필터링 정보만 제공합니다. 최소/최대/평균 가격과 가격 분포를 반환합니다."
+    )
+    ApiResponse<ComplexFilterResponse.CostFilter> getCostFilter(
+            @Parameter(description = "공고 ID", example = "18214")
+            @PathVariable String noticeId
+    );
+
+    /// 면적 필터 정보만 조회
+    @Operation(
+            summary = "공고의 면적 필터 정보 조회 API",
+            description = "공고에 포함된 단지들의 면적(타입코드) 필터링 정보만 제공합니다."
+    )
+    ApiResponse<ComplexFilterResponse.AreaFilter> getAreaFilter(
+            @Parameter(description = "공고 ID", example = "18214")
+            @PathVariable String noticeId
+    );
+
     /// 필터 조건에 맞는 단지 개수 조회
     @Operation(
             summary = "공고의 필터 조건에 맞는 단지 개수 조회 API",
