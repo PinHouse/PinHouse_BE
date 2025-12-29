@@ -33,6 +33,15 @@ public interface NoticeUseCase {
     /// 공고의 단지 필터링 정보 조회 (지역, 가격, 면적)
     ComplexFilterResponse getComplexFilters(String noticeId);
 
+    /// 공고의 단지 지역 필터 정보 조회
+    ComplexFilterResponse.DistrictFilter getDistrictFilter(String noticeId);
+
+    /// 공고의 단지 비용 필터 정보 조회
+    ComplexFilterResponse.CostFilter getCostFilter(String noticeId);
+
+    /// 공고의 단지 방타입 필터 정보 조회
+    ComplexFilterResponse.AreaFilter getAreaFilter(String noticeId);
+
     /// 공고의 필터 조건에 맞는 단지 개수 조회
     int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request);
 

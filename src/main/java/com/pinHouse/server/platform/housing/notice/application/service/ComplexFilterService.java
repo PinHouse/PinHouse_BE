@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housing.notice.application.service;
 
-import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.Deposit;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
@@ -8,8 +7,6 @@ import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacil
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
-import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ComplexFilterService {
-
-    private final PinPointMongoRepository pinPointRepository;
 
     /**
      * 필터 조건에 따라 단지를 filtered와 nonFiltered로 분리
@@ -186,46 +181,6 @@ public class ComplexFilterService {
     }
 
     /**
-     * PinPoint ID로부터 사용자 위치 정보 조회
-     */
-    private Location getUserLocation(String pinPointId) {
-        if (pinPointId == null || pinPointId.isBlank()) {
-            return null;
-        }
-
-        try {
-            PinPoint pinPoint = pinPointRepository.findById(pinPointId)
-                    .orElse(null);
-
-            if (pinPoint != null) {
-                return pinPoint.getLocation();
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch PinPoint: {}", pinPointId, e);
-        }
-
-        return null;
-    }
-
-    /**
-     * Haversine formula를 사용한 두 지점 간 거리 계산 (km)
-     */
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int EARTH_RADIUS_KM = 6371;
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return EARTH_RADIUS_KM * c;
-    }
-
-    /**
      * 단지 목록으로부터 필터 정보 계산
      */
     public ComplexFilterResponse buildFilterResponse(List<ComplexDocument> complexes) {
@@ -243,24 +198,181 @@ public class ComplexFilterService {
     /**
      * 지역 필터 계산
      */
-    private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
-        List<String> uniqueDistricts = complexes.stream()
-                .map(ComplexDocument::getCounty)
+    public ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
+        // 1. 각 complex에서 city와 district 추출
+        List<TempDistrictInfo> tempDistricts = complexes.stream()
+                .map(this::parseAddress)
                 .filter(Objects::nonNull)
-                .filter(county -> !county.isBlank())
-                .distinct()
-                .sorted()
+                .toList();
+
+        // 2. city별로 그룹화하여 district 목록 생성
+        Map<String, List<String>> cityToDistricts = tempDistricts.stream()
+                .collect(Collectors.groupingBy(
+                        TempDistrictInfo::city,
+                        Collectors.mapping(
+                                TempDistrictInfo::district,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream().distinct().sorted().toList()
+                                )
+                        )
+                ));
+
+        // 3. 최종 District 리스트 생성
+        List<ComplexFilterResponse.District> groupedDistricts = cityToDistricts.entrySet().stream()
+                .map(entry -> ComplexFilterResponse.District.builder()
+                        .city(entry.getKey())
+                        .districts(entry.getValue())
+                        .build())
+                .sorted(Comparator.comparing(ComplexFilterResponse.District::city))
                 .toList();
 
         return ComplexFilterResponse.DistrictFilter.builder()
-                .districts(uniqueDistricts)
+                .districts(groupedDistricts)
                 .build();
+    }
+
+    /**
+     * 임시 District 정보 (그룹화 전)
+     */
+    private record TempDistrictInfo(String city, String district) {}
+
+    /**
+     * ComplexDocument의 주소 정보를 파싱하여 TempDistrictInfo로 변환
+     *
+     * 변환 규칙:
+     * 1. 광역시/특별시: "부산시 해운대구" → city: "부산", district: "해운대구"
+     * 2. 일반시 (구 있음): city: "경기도", county: "청주시 서원구" → city: "경기", district: "청주시 서원구"
+     * 3. 일반시 (구 없음): city: "경기도", county: "동두천시" → city: "경기", district: "동두천시"
+     */
+    private TempDistrictInfo parseAddress(ComplexDocument complex) {
+        String county = complex.getCounty();
+        String city = complex.getCity();
+
+        if (county == null || county.isBlank()) {
+            return null;
+        }
+
+        // 광역시 및 특별시 목록
+        final Set<String> METRO_CITIES = Set.of(
+                "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
+        );
+
+        // county를 공백으로 분리
+        String[] countyParts = county.trim().split("\\s+");
+
+        String finalCity;
+        String finalDistrict;
+
+        // 광역시/특별시 여부 확인
+        boolean isMetroCity = false;
+        String metroCityName = null;
+
+        if (countyParts.length >= 1) {
+            String cityName = countyParts[0];
+            // "광주광역시", "부산광역시", "서울특별시" 등에서 도시 이름 추출
+            String cityBase = extractMetroCityName(cityName);
+            if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+                isMetroCity = true;
+                metroCityName = cityBase;
+            }
+        }
+
+        if (isMetroCity) {
+            // 광역시/특별시인 경우
+            finalCity = metroCityName;
+
+            if (countyParts.length >= 2) {
+                // "부산시 해운대구" 또는 "광주광역시 서구" → city: "부산", district: "해운대구"
+                finalDistrict = countyParts[1];
+            } else {
+                // "대구광역시"만 있는 경우 → city: "대구", district: "대구광역시" (원본 유지)
+                finalDistrict = county;
+            }
+        } else {
+            // 일반시인 경우
+            // city 필드가 광역시일 수도 있으므로 확인
+            String cityBase = extractMetroCityName(city);
+            if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+                // city 필드가 "대구광역시"인 경우 → city: "대구"
+                finalCity = cityBase;
+            } else {
+                // city 필드가 도인 경우 → "경기도" → "경기"
+                finalCity = shortenProvinceName(city);
+            }
+            finalDistrict = county;
+        }
+
+        return new TempDistrictInfo(finalCity, finalDistrict);
+    }
+
+    /**
+     * 광역시/특별시 이름 추출
+     * "광주광역시" → "광주"
+     * "부산광역시" → "부산"
+     * "서울특별시" → "서울"
+     * "부산시" → "부산"
+     */
+    private String extractMetroCityName(String cityName) {
+        if (cityName == null || cityName.isBlank()) {
+            return null;
+        }
+
+        // "광역시" 제거
+        if (cityName.endsWith("광역시")) {
+            return cityName.substring(0, cityName.length() - 3);
+        }
+
+        // "특별시" 제거
+        if (cityName.endsWith("특별시")) {
+            return cityName.substring(0, cityName.length() - 3);
+        }
+
+        // "특별자치시" 제거 (세종)
+        if (cityName.endsWith("특별자치시")) {
+            return cityName.substring(0, cityName.length() - 5);
+        }
+
+        // "시" 제거
+        if (cityName.endsWith("시")) {
+            return cityName.substring(0, cityName.length() - 1);
+        }
+
+        return cityName;
+    }
+
+    /**
+     * 도 이름 축약
+     * "경기도" → "경기"
+     * "충청북도" → "충북"
+     * "경상남도" → "경남"
+     */
+    private String shortenProvinceName(String province) {
+        if (province == null || province.isBlank()) {
+            return "";
+        }
+
+        // "도" 제거
+        if (province.endsWith("도")) {
+            String base = province.substring(0, province.length() - 1);
+
+            // "충청북", "충청남", "경상북", "경상남", "전라북", "전라남" → 첫글자 + 마지막글자
+            if (base.startsWith("충청") || base.startsWith("경상") || base.startsWith("전라")) {
+                // "충청북" → "충북", "경상남" → "경남"
+                return base.charAt(0) + String.valueOf(base.charAt(base.length() - 1));
+            }
+
+            // 그 외 도는 "도"만 제거 ("경기도" → "경기", "강원도" → "강원")
+            return base;
+        }
+
+        return province;
     }
 
     /**
      * 가격 필터 계산
      */
-    private ComplexFilterResponse.CostFilter calculateCostFilter(List<ComplexDocument> complexes) {
+    public ComplexFilterResponse.CostFilter calculateCostFilter(List<ComplexDocument> complexes) {
         // 모든 unitType의 보증금(deposit.total) 수집
         List<Long> allPrices = complexes.stream()
                 .flatMap(complex -> complex.getUnitTypes().stream())
@@ -348,7 +460,7 @@ public class ComplexFilterService {
     /**
      * 면적(타입코드) 필터 계산
      */
-    private ComplexFilterResponse.AreaFilter calculateAreaFilter(List<ComplexDocument> complexes) {
+    public ComplexFilterResponse.AreaFilter calculateAreaFilter(List<ComplexDocument> complexes) {
         List<String> uniqueTypeCodes = complexes.stream()
                 .flatMap(complex -> complex.getUnitTypes().stream())
                 .map(UnitType::getTypeCode)

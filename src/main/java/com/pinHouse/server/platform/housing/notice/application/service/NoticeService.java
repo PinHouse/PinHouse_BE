@@ -179,6 +179,51 @@ public class NoticeService implements NoticeUseCase {
         return complexFilterService.buildFilterResponse(complexes);
     }
 
+    /// 공고의 단지 지역 필터 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexFilterResponse.DistrictFilter getDistrictFilter(String noticeId) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// 지역 필터 계산
+        return complexFilterService.calculateDistrictFilter(complexes);
+    }
+
+    /// 공고의 단지 비용 필터 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexFilterResponse.CostFilter getCostFilter(String noticeId) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// 비용 필터 계산
+        return complexFilterService.calculateCostFilter(complexes);
+    }
+
+    /// 공고의 단지 방타입 필터 정보 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ComplexFilterResponse.AreaFilter getAreaFilter(String noticeId) {
+
+        /// 공고 존재 확인
+        loadNotice(noticeId);
+
+        /// 단지 목록 조회
+        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+
+        /// 방타입 필터 계산
+        return complexFilterService.calculateAreaFilter(complexes);
+    }
+
     /// 공고의 필터 조건에 맞는 단지 개수 조회
     @Override
     @Transactional(readOnly = true)

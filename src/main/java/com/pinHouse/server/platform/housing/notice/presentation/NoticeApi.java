@@ -87,6 +87,42 @@ public class NoticeApi implements NoticeApiSpec {
         return ApiResponse.ok(response);
     }
 
+    /// 공고의 단지 지역 필터 정보 조회
+    @GetMapping("/{noticeId}/filter/districts")
+    public ApiResponse<ComplexFilterResponse.DistrictFilter> getDistrictFilter(
+            @PathVariable String noticeId) {
+
+        /// 서비스 계층
+        var response = service.getDistrictFilter(noticeId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /// 공고의 단지 비용 필터 정보 조회
+    @GetMapping("/{noticeId}/filter/cost")
+    public ApiResponse<ComplexFilterResponse.CostFilter> getCostFilter(
+            @PathVariable String noticeId) {
+
+        /// 서비스 계층
+        var response = service.getCostFilter(noticeId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
+    /// 공고의 단지 방타입 필터 정보 조회
+    @GetMapping("/{noticeId}/filter/area")
+    public ApiResponse<ComplexFilterResponse.AreaFilter> getAreaFilter(
+            @PathVariable String noticeId) {
+
+        /// 서비스 계층
+        var response = service.getAreaFilter(noticeId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+    }
+
     /// 공고의 필터 조건에 맞는 단지 개수 조회
     @PostMapping("/{noticeId}/filter/count")
     public ApiResponse<Integer> countFilteredComplexes(
