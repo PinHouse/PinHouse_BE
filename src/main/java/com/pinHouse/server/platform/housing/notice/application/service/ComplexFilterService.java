@@ -245,7 +245,7 @@ public class ComplexFilterService {
      */
     private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
         List<ComplexFilterResponse.District> uniqueDistricts = complexes.stream()
-                .map(complex -> parseAddress(complex.getCity(), complex.getCounty()))
+                .map(this::parseAddress)
                 .filter(Objects::nonNull)
                 .distinct()
                 .sorted(Comparator.comparing(ComplexFilterResponse.District::city)
@@ -258,18 +258,25 @@ public class ComplexFilterService {
     }
 
     /**
-     * city와 county 필드를 조합하여 District 객체로 변환
+     * ComplexDocument의 주소 정보를 파싱하여 District 객체로 변환
      *
-     * 한국 주소 체계:
-     * - city: "경기도", county: "동두천시" → city: "경기도 동두천시", district: ""
-     * - city: "경기도", county: "고양시 일산서구" → city: "경기도 고양시", district: "일산서구"
-     * - city: null, county: "서울시 강남구" → city: "서울시", district: "강남구"
-     * - city: null, county: "동두천시" → city: "동두천시", district: ""
+     * 변환 규칙:
+     * 1. 광역시/특별시: "부산시 해운대구" → city: "부산", district: "해운대구"
+     * 2. 일반시 (구 있음): city: "경기도", county: "청주시 서원구" → city: "경기", district: "청주시 서원구"
+     * 3. 일반시 (구 없음): city: "경기도", county: "동두천시" → city: "경기", district: "동두천시"
      */
-    private ComplexFilterResponse.District parseAddress(String city, String county) {
+    private ComplexFilterResponse.District parseAddress(ComplexDocument complex) {
+        String county = complex.getCounty();
+        String city = complex.getCity();
+
         if (county == null || county.isBlank()) {
             return null;
         }
+
+        // 광역시 및 특별시 목록
+        final Set<String> METRO_CITIES = Set.of(
+                "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
+        );
 
         // county를 공백으로 분리
         String[] countyParts = county.trim().split("\\s+");
@@ -277,38 +284,99 @@ public class ComplexFilterService {
         String finalCity;
         String finalDistrict;
 
-        if (countyParts.length >= 2) {
-            // county에 "고양시 일산서구" 같은 형식이 있는 경우
-            if (city != null && !city.isBlank() && !city.equals(countyParts[0])) {
-                // city가 "경기도"이고 county가 "고양시 일산서구"인 경우
-                // → city: "경기도 고양시", district: "일산서구"
-                finalCity = city + " " + countyParts[0];
-                finalDistrict = countyParts[1];
-            } else {
-                // city가 없거나 county의 첫 부분과 같은 경우
-                // county: "서울시 강남구" → city: "서울시", district: "강남구"
-                finalCity = countyParts[0];
-                finalDistrict = countyParts[1];
+        // 광역시/특별시 여부 확인
+        boolean isMetroCity = false;
+        String metroCityName = null;
+
+        if (countyParts.length >= 1) {
+            String cityName = countyParts[0];
+            // "광주광역시", "부산광역시", "서울특별시" 등에서 도시 이름 추출
+            String cityBase = extractMetroCityName(cityName);
+            if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+                isMetroCity = true;
+                metroCityName = cityBase;
             }
+        }
+
+        if (isMetroCity && countyParts.length >= 2) {
+            // 광역시/특별시: "부산시 해운대구" 또는 "광주광역시 서구" → city: "부산", district: "해운대구"
+            finalCity = metroCityName;
+            finalDistrict = countyParts[1];
         } else {
-            // county에 "동두천시" 같은 단일 값만 있는 경우
-            if (city != null && !city.isBlank() && !city.equals(county)) {
-                // city가 "경기도"이고 county가 "동두천시"인 경우
-                // → city: "경기도 동두천시", district: ""
-                finalCity = city + " " + county;
-                finalDistrict = "";
-            } else {
-                // city가 없거나 county와 같은 경우
-                // county: "동두천시" → city: "동두천시", district: ""
-                finalCity = county;
-                finalDistrict = "";
-            }
+            // 일반시: city 필드(도) 사용, county 전체를 district로 사용
+            // "경기도", "동두천시" → city: "경기", district: "동두천시"
+            // "충청북도", "청주시 서원구" → city: "충북", district: "청주시 서원구"
+            finalCity = shortenProvinceName(city);
+            finalDistrict = county;
         }
 
         return ComplexFilterResponse.District.builder()
                 .city(finalCity)
                 .district(finalDistrict)
                 .build();
+    }
+
+    /**
+     * 광역시/특별시 이름 추출
+     * "광주광역시" → "광주"
+     * "부산광역시" → "부산"
+     * "서울특별시" → "서울"
+     * "부산시" → "부산"
+     */
+    private String extractMetroCityName(String cityName) {
+        if (cityName == null || cityName.isBlank()) {
+            return null;
+        }
+
+        // "광역시" 제거
+        if (cityName.endsWith("광역시")) {
+            return cityName.substring(0, cityName.length() - 3);
+        }
+
+        // "특별시" 제거
+        if (cityName.endsWith("특별시")) {
+            return cityName.substring(0, cityName.length() - 3);
+        }
+
+        // "특별자치시" 제거 (세종)
+        if (cityName.endsWith("특별자치시")) {
+            return cityName.substring(0, cityName.length() - 5);
+        }
+
+        // "시" 제거
+        if (cityName.endsWith("시")) {
+            return cityName.substring(0, cityName.length() - 1);
+        }
+
+        return cityName;
+    }
+
+    /**
+     * 도 이름 축약
+     * "경기도" → "경기"
+     * "충청북도" → "충북"
+     * "경상남도" → "경남"
+     */
+    private String shortenProvinceName(String province) {
+        if (province == null || province.isBlank()) {
+            return "";
+        }
+
+        // "도" 제거
+        if (province.endsWith("도")) {
+            String base = province.substring(0, province.length() - 1);
+
+            // "충청북", "충청남", "경상북", "경상남", "전라북", "전라남" → 첫글자 + 마지막글자
+            if (base.startsWith("충청") || base.startsWith("경상") || base.startsWith("전라")) {
+                // "충청북" → "충북", "경상남" → "경남"
+                return base.charAt(0) + String.valueOf(base.charAt(base.length() - 1));
+            }
+
+            // 그 외 도는 "도"만 제거 ("경기도" → "경기", "강원도" → "강원")
+            return base;
+        }
+
+        return province;
     }
 
     /**
