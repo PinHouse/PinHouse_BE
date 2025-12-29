@@ -346,10 +346,16 @@ public class ComplexFilterService {
      * "경기도" → "경기"
      * "충청북도" → "충북"
      * "경상남도" → "경남"
+     * "제주특별자치도" → "제주"
      */
     private String shortenProvinceName(String province) {
         if (province == null || province.isBlank()) {
             return "";
+        }
+
+        // "특별자치도" 제거 (제주)
+        if (province.endsWith("특별자치도")) {
+            return province.substring(0, province.length() - 5);
         }
 
         // "도" 제거
