@@ -1,6 +1,5 @@
 package com.pinHouse.server.platform.housing.notice.application.service;
 
-import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.server.platform.housing.complex.domain.entity.Deposit;
 import com.pinHouse.server.platform.housing.complex.domain.entity.UnitType;
@@ -8,8 +7,6 @@ import com.pinHouse.server.platform.housing.facility.application.dto.NoticeFacil
 import com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.server.platform.housing.notice.application.dto.ComplexFilterResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeDetailFilterRequest;
-import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
-import com.pinHouse.server.platform.pinPoint.domain.repository.PinPointMongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ComplexFilterService {
-
-    private final PinPointMongoRepository pinPointRepository;
 
     /**
      * 필터 조건에 따라 단지를 filtered와 nonFiltered로 분리
@@ -186,46 +181,6 @@ public class ComplexFilterService {
     }
 
     /**
-     * PinPoint ID로부터 사용자 위치 정보 조회
-     */
-    private Location getUserLocation(String pinPointId) {
-        if (pinPointId == null || pinPointId.isBlank()) {
-            return null;
-        }
-
-        try {
-            PinPoint pinPoint = pinPointRepository.findById(pinPointId)
-                    .orElse(null);
-
-            if (pinPoint != null) {
-                return pinPoint.getLocation();
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch PinPoint: {}", pinPointId, e);
-        }
-
-        return null;
-    }
-
-    /**
-     * Haversine formula를 사용한 두 지점 간 거리 계산 (km)
-     */
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int EARTH_RADIUS_KM = 6371;
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return EARTH_RADIUS_KM * c;
-    }
-
-    /**
      * 단지 목록으로부터 필터 정보 계산
      */
     public ComplexFilterResponse buildFilterResponse(List<ComplexDocument> complexes) {
@@ -243,7 +198,7 @@ public class ComplexFilterService {
     /**
      * 지역 필터 계산
      */
-    private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
+    public ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
         // 1. 각 complex에서 city와 district 추출
         List<TempDistrictInfo> tempDistricts = complexes.stream()
                 .map(this::parseAddress)
@@ -417,7 +372,7 @@ public class ComplexFilterService {
     /**
      * 가격 필터 계산
      */
-    private ComplexFilterResponse.CostFilter calculateCostFilter(List<ComplexDocument> complexes) {
+    public ComplexFilterResponse.CostFilter calculateCostFilter(List<ComplexDocument> complexes) {
         // 모든 unitType의 보증금(deposit.total) 수집
         List<Long> allPrices = complexes.stream()
                 .flatMap(complex -> complex.getUnitTypes().stream())
@@ -505,7 +460,7 @@ public class ComplexFilterService {
     /**
      * 면적(타입코드) 필터 계산
      */
-    private ComplexFilterResponse.AreaFilter calculateAreaFilter(List<ComplexDocument> complexes) {
+    public ComplexFilterResponse.AreaFilter calculateAreaFilter(List<ComplexDocument> complexes) {
         List<String> uniqueTypeCodes = complexes.stream()
                 .flatMap(complex -> complex.getUnitTypes().stream())
                 .map(UnitType::getTypeCode)
