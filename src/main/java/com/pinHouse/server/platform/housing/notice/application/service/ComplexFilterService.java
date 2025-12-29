@@ -241,35 +241,11 @@ public class ComplexFilterService {
     }
 
     /**
-     * 지역 필터만 계산
-     */
-    public ComplexFilterResponse.DistrictFilter buildDistrictFilter(List<ComplexDocument> complexes) {
-        return calculateDistrictFilter(complexes);
-    }
-
-    /**
-     * 가격 필터만 계산
-     */
-    public ComplexFilterResponse.CostFilter buildCostFilter(List<ComplexDocument> complexes) {
-        return calculateCostFilter(complexes);
-    }
-
-    /**
-     * 면적 필터만 계산
-     */
-    public ComplexFilterResponse.AreaFilter buildAreaFilter(List<ComplexDocument> complexes) {
-        return calculateAreaFilter(complexes);
-    }
-
-    /**
      * 지역 필터 계산
      */
     private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
         List<ComplexFilterResponse.District> uniqueDistricts = complexes.stream()
-                .map(ComplexDocument::getCounty)
-                .filter(Objects::nonNull)
-                .filter(county -> !county.isBlank())
-                .map(this::parseCounty)
+                .map(complex -> parseAddress(complex.getCity(), complex.getCounty()))
                 .filter(Objects::nonNull)
                 .distinct()
                 .sorted(Comparator.comparing(ComplexFilterResponse.District::city)
@@ -282,30 +258,57 @@ public class ComplexFilterService {
     }
 
     /**
-     * "청주시 서원구" 형식의 문자열을 파싱하여 District 객체로 변환
+     * city와 county 필드를 조합하여 District 객체로 변환
+     *
+     * 한국 주소 체계:
+     * - city: "경기도", county: "동두천시" → city: "경기도 동두천시", district: ""
+     * - city: "경기도", county: "고양시 일산서구" → city: "경기도 고양시", district: "일산서구"
+     * - city: null, county: "서울시 강남구" → city: "서울시", district: "강남구"
+     * - city: null, county: "동두천시" → city: "동두천시", district: ""
      */
-    private ComplexFilterResponse.District parseCounty(String county) {
+    private ComplexFilterResponse.District parseAddress(String city, String county) {
         if (county == null || county.isBlank()) {
             return null;
         }
 
-        // 공백으로 분리 (예: "청주시 서원구" -> ["청주시", "서원구"])
-        String[] parts = county.trim().split("\\s+");
+        // county를 공백으로 분리
+        String[] countyParts = county.trim().split("\\s+");
 
-        if (parts.length >= 2) {
-            return ComplexFilterResponse.District.builder()
-                    .city(parts[0])
-                    .district(parts[1])
-                    .build();
-        } else if (parts.length == 1) {
-            // 구분이 없는 경우 전체를 city로 처리
-            return ComplexFilterResponse.District.builder()
-                    .city(parts[0])
-                    .district("")
-                    .build();
+        String finalCity;
+        String finalDistrict;
+
+        if (countyParts.length >= 2) {
+            // county에 "고양시 일산서구" 같은 형식이 있는 경우
+            if (city != null && !city.isBlank() && !city.equals(countyParts[0])) {
+                // city가 "경기도"이고 county가 "고양시 일산서구"인 경우
+                // → city: "경기도 고양시", district: "일산서구"
+                finalCity = city + " " + countyParts[0];
+                finalDistrict = countyParts[1];
+            } else {
+                // city가 없거나 county의 첫 부분과 같은 경우
+                // county: "서울시 강남구" → city: "서울시", district: "강남구"
+                finalCity = countyParts[0];
+                finalDistrict = countyParts[1];
+            }
+        } else {
+            // county에 "동두천시" 같은 단일 값만 있는 경우
+            if (city != null && !city.isBlank() && !city.equals(county)) {
+                // city가 "경기도"이고 county가 "동두천시"인 경우
+                // → city: "경기도 동두천시", district: ""
+                finalCity = city + " " + county;
+                finalDistrict = "";
+            } else {
+                // city가 없거나 county와 같은 경우
+                // county: "동두천시" → city: "동두천시", district: ""
+                finalCity = county;
+                finalDistrict = "";
+            }
         }
 
-        return null;
+        return ComplexFilterResponse.District.builder()
+                .city(finalCity)
+                .district(finalDistrict)
+                .build();
     }
 
     /**
