@@ -59,7 +59,7 @@ public interface NoticeApiSpec {
             description = "공고에 포함된 단지들의 지역, 가격, 면적 필터링 정보를 제공합니다. 프론트엔드 필터 UI 구성에 사용됩니다."
     )
     ApiResponse<ComplexFilterResponse> getComplexFilters(
-            @Parameter(description = "공고 ID", example = "18214")
+            @Parameter(description = "공고 ID", example = "19347")
             @PathVariable String noticeId
     );
 

@@ -323,15 +323,28 @@ public class ComplexFilterService {
             }
         }
 
-        if (isMetroCity && countyParts.length >= 2) {
-            // 광역시/특별시: "부산시 해운대구" 또는 "광주광역시 서구" → city: "부산", district: "해운대구"
+        if (isMetroCity) {
+            // 광역시/특별시인 경우
             finalCity = metroCityName;
-            finalDistrict = countyParts[1];
+
+            if (countyParts.length >= 2) {
+                // "부산시 해운대구" 또는 "광주광역시 서구" → city: "부산", district: "해운대구"
+                finalDistrict = countyParts[1];
+            } else {
+                // "대구광역시"만 있는 경우 → city: "대구", district: "대구광역시" (원본 유지)
+                finalDistrict = county;
+            }
         } else {
-            // 일반시: city 필드(도) 사용, county 전체를 district로 사용
-            // "경기도", "동두천시" → city: "경기", district: "동두천시"
-            // "충청북도", "청주시 서원구" → city: "충북", district: "청주시 서원구"
-            finalCity = shortenProvinceName(city);
+            // 일반시인 경우
+            // city 필드가 광역시일 수도 있으므로 확인
+            String cityBase = extractMetroCityName(city);
+            if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+                // city 필드가 "대구광역시"인 경우 → city: "대구"
+                finalCity = cityBase;
+            } else {
+                // city 필드가 도인 경우 → "경기도" → "경기"
+                finalCity = shortenProvinceName(city);
+            }
             finalDistrict = county;
         }
 
