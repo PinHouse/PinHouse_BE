@@ -244,28 +244,53 @@ public class ComplexFilterService {
      * 지역 필터 계산
      */
     private ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
-        List<ComplexFilterResponse.District> uniqueDistricts = complexes.stream()
+        // 1. 각 complex에서 city와 district 추출
+        List<TempDistrictInfo> tempDistricts = complexes.stream()
                 .map(this::parseAddress)
                 .filter(Objects::nonNull)
-                .distinct()
-                .sorted(Comparator.comparing(ComplexFilterResponse.District::city)
-                        .thenComparing(ComplexFilterResponse.District::district))
+                .toList();
+
+        // 2. city별로 그룹화하여 district 목록 생성
+        Map<String, List<String>> cityToDistricts = tempDistricts.stream()
+                .collect(Collectors.groupingBy(
+                        TempDistrictInfo::city,
+                        Collectors.mapping(
+                                TempDistrictInfo::district,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream().distinct().sorted().toList()
+                                )
+                        )
+                ));
+
+        // 3. 최종 District 리스트 생성
+        List<ComplexFilterResponse.District> groupedDistricts = cityToDistricts.entrySet().stream()
+                .map(entry -> ComplexFilterResponse.District.builder()
+                        .city(entry.getKey())
+                        .districts(entry.getValue())
+                        .build())
+                .sorted(Comparator.comparing(ComplexFilterResponse.District::city))
                 .toList();
 
         return ComplexFilterResponse.DistrictFilter.builder()
-                .districts(uniqueDistricts)
+                .districts(groupedDistricts)
                 .build();
     }
 
     /**
-     * ComplexDocument의 주소 정보를 파싱하여 District 객체로 변환
+     * 임시 District 정보 (그룹화 전)
+     */
+    private record TempDistrictInfo(String city, String district) {}
+
+    /**
+     * ComplexDocument의 주소 정보를 파싱하여 TempDistrictInfo로 변환
      *
      * 변환 규칙:
      * 1. 광역시/특별시: "부산시 해운대구" → city: "부산", district: "해운대구"
      * 2. 일반시 (구 있음): city: "경기도", county: "청주시 서원구" → city: "경기", district: "청주시 서원구"
      * 3. 일반시 (구 없음): city: "경기도", county: "동두천시" → city: "경기", district: "동두천시"
      */
-    private ComplexFilterResponse.District parseAddress(ComplexDocument complex) {
+    private TempDistrictInfo parseAddress(ComplexDocument complex) {
         String county = complex.getCounty();
         String city = complex.getCity();
 
@@ -310,10 +335,7 @@ public class ComplexFilterService {
             finalDistrict = county;
         }
 
-        return ComplexFilterResponse.District.builder()
-                .city(finalCity)
-                .district(finalDistrict)
-                .build();
+        return new TempDistrictInfo(finalCity, finalDistrict);
     }
 
     /**

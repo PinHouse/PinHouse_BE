@@ -33,16 +33,16 @@ public record ComplexFilterResponse(
     ) {}
 
     /**
-     * 지역 정보 (시/구 분리)
+     * 지역 정보 (city별로 그룹화된 districts)
      */
     @Builder
-    @Schema(name = "지역 정보", description = "시와 구로 분리된 지역 정보")
+    @Schema(name = "지역 정보", description = "city별로 그룹화된 district 목록")
     public record District(
-            @Schema(description = "시", example = "청주시")
+            @Schema(description = "시/도", example = "경기")
             String city,
 
-            @Schema(description = "구", example = "서원구")
-            String district
+            @Schema(description = "구/시 목록", example = "[\"동두천시\", \"양주시\"]")
+            List<String> districts
     ) {}
 
     /**
