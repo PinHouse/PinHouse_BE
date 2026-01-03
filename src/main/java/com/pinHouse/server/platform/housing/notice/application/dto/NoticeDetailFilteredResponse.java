@@ -97,7 +97,10 @@ public record NoticeDetailFilteredResponse(
             String name,
 
             @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
-            String period
+            String period,
+
+            @Schema(description = "대상 계층", example = "[\"청년\", \"신혼부부\"]")
+            List<String> targetGroups
     ) {
         public static NoticeBasicInfo from(NoticeDocument notice) {
             String period = DateUtil.formatDate(notice.getApplyStart(), notice.getApplyEnd());
@@ -108,6 +111,7 @@ public record NoticeDetailFilteredResponse(
                     .period(period)
                     .type(notice.getSupplyType())
                     .housingType(notice.getHouseType())
+                    .targetGroups(notice.getTargetGroups())
                     .build();
         }
     }
