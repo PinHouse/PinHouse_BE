@@ -15,9 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -34,18 +31,15 @@ public class OdsayUtil implements DistanceUtil {
     // =================
 
     @Override
-    public PathResult findPathResult(double startY, double startX, double endY, double endX)
-            throws UnsupportedEncodingException {
+    public PathResult findPathResult(double startY, double startX, double endY, double endX) {
 
-        String encodedApiKey = URLEncoder.encode(apiKey, "UTF-8");
-
-        String uri = UriComponentsBuilder.fromHttpUrl("https://api.odsay.com/v1/api/searchPubTransPathT")
+        String uri = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                 .queryParam("SX", startX)
                 .queryParam("SY", startY)
                 .queryParam("EX", endX)
                 .queryParam("EY", endY)
-                .queryParam("apiKey", encodedApiKey)
-                .build(false) // 추가 인코딩 방지
+                .queryParam("apiKey", apiKey)
+                .build()
                 .toUriString();
 
         /// 값 호출
