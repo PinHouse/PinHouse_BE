@@ -16,8 +16,13 @@ public record FastUnitTypeResponse(
         String typeCode,                    // 방 유형
         String typeId,                      // 방 ID
         String heating,                     // 난방방식
-        long deposit,                       // 보증금
-        long monthPayment,                  // 월임대료
+
+        @Schema(description = "보증금 (만원 단위)", example = "5000")
+        long deposit,
+
+        @Schema(description = "월 임대료 (원)", example = "300000")
+        long monthPayment,
+
         double size,                        // 면적
         Integer totalSupplyInNotice,        // 공급호수합계
 
@@ -50,7 +55,7 @@ public record FastUnitTypeResponse(
                 .complexName(complexDocument.getName())
                 .typeCode(unitType.getTypeCode())
                 .heating(complexDocument.getHeating())
-                .deposit(unitType.getDeposit().getTotal())
+                .deposit(unitType.getDeposit().getTotal() / 10000)
                 .monthPayment(unitType.getMonthlyRent())
                 .size(unitType.getExclusiveAreaM2())
                 .totalSupplyInNotice(unitType.getQuota().getTotal())

@@ -51,13 +51,13 @@ public record ComplexFilterResponse(
     @Builder
     @Schema(name = "가격 필터", description = "단지의 가격 범위 및 분포 정보")
     public record CostFilter(
-            @Schema(description = "최소 가격 (보증금)", example = "5000000")
+            @Schema(description = "최소 가격 (보증금, 만원 단위)", example = "500")
             long minPrice,
 
-            @Schema(description = "최대 가격 (보증금)", example = "150000000")
+            @Schema(description = "최대 가격 (보증금, 만원 단위)", example = "15000")
             long maxPrice,
 
-            @Schema(description = "평균 가격 (보증금)", example = "45000000")
+            @Schema(description = "평균 가격 (보증금, 만원 단위)", example = "4500")
             long avgPrice,
 
             @Schema(description = "가격 분포 (최대 20개 구간)")
@@ -70,10 +70,10 @@ public record ComplexFilterResponse(
     @Builder
     @Schema(name = "가격 분포 구간", description = "특정 가격 범위에 속하는 유닛 개수")
     public record PriceDistribution(
-            @Schema(description = "구간 시작 가격", example = "10000000")
+            @Schema(description = "구간 시작 가격 (만원 단위)", example = "1000")
             long rangeStart,
 
-            @Schema(description = "구간 종료 가격", example = "20000000")
+            @Schema(description = "구간 종료 가격 (만원 단위)", example = "2000")
             long rangeEnd,
 
             @Schema(description = "해당 구간에 속하는 유닛 개수", example = "45")

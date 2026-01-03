@@ -397,19 +397,20 @@ public class ComplexFilterService {
                     .build();
         }
 
-        // 통계 계산
+        // 통계 계산 (원 단위)
         long minPrice = allPrices.stream().min(Long::compareTo).orElse(0L);
         long maxPrice = allPrices.stream().max(Long::compareTo).orElse(0L);
         long avgPrice = (long) allPrices.stream().mapToLong(Long::longValue).average().orElse(0.0);
 
-        // 가격 분포 계산
+        // 가격 분포 계산 (원 단위로 계산)
         List<ComplexFilterResponse.PriceDistribution> distribution =
                 calculatePriceDistribution(allPrices, minPrice, maxPrice);
 
+        // 만 단위로 변환하여 반환
         return ComplexFilterResponse.CostFilter.builder()
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .avgPrice(avgPrice)
+                .minPrice(minPrice / 10000)
+                .maxPrice(maxPrice / 10000)
+                .avgPrice(avgPrice / 10000)
                 .priceDistribution(distribution)
                 .build();
     }
@@ -424,8 +425,8 @@ public class ComplexFilterService {
     ) {
         if (prices.isEmpty() || minPrice == maxPrice) {
             return List.of(ComplexFilterResponse.PriceDistribution.builder()
-                    .rangeStart(minPrice)
-                    .rangeEnd(maxPrice)
+                    .rangeStart(minPrice / 10000)
+                    .rangeEnd(maxPrice / 10000)
                     .count(prices.size())
                     .build());
         }
@@ -446,7 +447,7 @@ public class ComplexFilterService {
             bucketCounts.merge(bucketIndex, 1L, Long::sum);
         }
 
-        // PriceDistribution 리스트 생성
+        // PriceDistribution 리스트 생성 (만 단위로 변환)
         List<ComplexFilterResponse.PriceDistribution> distributions = new ArrayList<>();
         for (int i = 0; i < bucketCount; i++) {
             long rangeStart = minPrice + (i * bucketSize);
@@ -454,8 +455,8 @@ public class ComplexFilterService {
             long count = bucketCounts.getOrDefault(i, 0L);
 
             distributions.add(ComplexFilterResponse.PriceDistribution.builder()
-                    .rangeStart(rangeStart)
-                    .rangeEnd(rangeEnd)
+                    .rangeStart(rangeStart / 10000)
+                    .rangeEnd(rangeEnd / 10000)
                     .count(count)
                     .build());
         }

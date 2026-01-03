@@ -138,7 +138,7 @@ public record UnitTypeCompareResponse(
     @Builder
     @Schema(name = "비용 정보", description = "유닛타입의 보증금 및 월세 정보")
     public record CostInfo(
-            @Schema(description = "보증금 (원)", example = "50000000")
+            @Schema(description = "보증금 (만원 단위)", example = "5000")
             long totalDeposit,
 
             @Schema(description = "월 임대료 (원)", example = "300000")
@@ -157,7 +157,7 @@ public record UnitTypeCompareResponse(
 
             long totalDeposit = deposit.getTotal();
             return CostInfo.builder()
-                    .totalDeposit(totalDeposit)
+                    .totalDeposit(totalDeposit / 10000)
                     .monthlyRent(monthlyRent)
                     .build();
         }
