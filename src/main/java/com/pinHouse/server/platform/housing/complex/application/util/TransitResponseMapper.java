@@ -322,23 +322,26 @@ public class TransitResponseMapper {
         if (transportSteps.isEmpty()) {
             // WALK만 있는 경로 (드문 케이스)
             for (RootResult.DistanceStep step : distanceSteps) {
-                steps.add(createWalkStep(step, null));
+                steps.add(createWalkStep(step, null, null, false));
             }
             return assignStepIndexes(steps);
         }
 
-        // 1. DEPART (출발) 추가
+        // 출발지 정보 (첫 번째 WALK에 사용)
         RootResult.DistanceStep firstTransport = transportSteps.get(0);
-        steps.add(createDepartStep(firstTransport.startName()));
+        String departureLocation = firstTransport.startName();
 
-        // 2. 전체 구간 순회하며 steps 생성
+        // 전체 구간 순회하며 steps 생성
         int transportIndex = 0;
+        boolean isFirstWalk = true;
+
         for (int i = 0; i < distanceSteps.size(); i++) {
             RootResult.DistanceStep step = distanceSteps.get(i);
 
             if (step.type() == RootResult.TransportType.WALK) {
-                // WALK step 추가 (색상 포함)
-                steps.add(createWalkStep(step, ChipType.WALK));
+                // 첫 번째 WALK는 출발지 정보 포함
+                steps.add(createWalkStep(step, ChipType.WALK, departureLocation, isFirstWalk));
+                isFirstWalk = false;
             } else {
                 // 교통수단: BOARD + ALIGHT 추가 (색상 포함)
                 ChipType chipType = mapType(step.type());
@@ -354,14 +357,14 @@ public class TransitResponseMapper {
             }
         }
 
-        // 3. ARRIVE (도착) 추가
+        // 도착지 추가
         RootResult.DistanceStep lastTransport = transportSteps.get(transportSteps.size() - 1);
         steps.add(createArriveStep(lastTransport.endName()));
 
-        // 4. minutes가 0인 step 필터링 (DEPART/ARRIVE/ALIGHT는 null이므로 유지)
+        // minutes가 0인 step 필터링 (ARRIVE/ALIGHT는 null이므로 유지)
         List<TransitRoutesResponse.StepResponse> filteredSteps = steps.stream()
                 .filter(step -> {
-                    // minutes가 null이면 유지 (DEPART, ARRIVE, ALIGHT)
+                    // minutes가 null이면 유지 (ARRIVE, ALIGHT)
                     if (step.minutes() == null) {
                         return true;
                     }
@@ -374,34 +377,32 @@ public class TransitResponseMapper {
     }
 
     /**
-     * DEPART step 생성
-     */
-    private TransitRoutesResponse.StepResponse createDepartStep(String stopName) {
-        return TransitRoutesResponse.StepResponse.builder()
-                .stepIndex(0)
-                .action(TransitRoutesResponse.StepAction.DEPART)
-                .type(null)
-                .stopName(stopName)
-                .primaryText(stopName)
-                .secondaryText("출발")
-                .minutes(null)
-                .colorHex(null)
-                .line(null)
-                .build();
-    }
-
-    /**
      * WALK step 생성
+     * UI에서는 중간 POI를 숨기고 행동 중심 정보만 표시
+     * 첫 번째 WALK인 경우 출발지 정보 포함
      */
-    private TransitRoutesResponse.StepResponse createWalkStep(RootResult.DistanceStep step, ChipType chipType) {
+    private TransitRoutesResponse.StepResponse createWalkStep(
+            RootResult.DistanceStep step,
+            ChipType chipType,
+            String departureLocation,
+            boolean isFirstWalk) {
+
         String colorHex = (chipType != null) ? chipType.defaultBg : ChipType.WALK.defaultBg;
+
+        // 첫 번째 WALK는 출발지 포함, 나머지는 "도보 약 n분"만
+        String primaryText;
+        if (isFirstWalk && departureLocation != null) {
+            primaryText = departureLocation + "에서 도보 약 " + step.time() + "분";
+        } else {
+            primaryText = "도보 약 " + step.time() + "분";
+        }
 
         return TransitRoutesResponse.StepResponse.builder()
                 .stepIndex(0)
                 .action(TransitRoutesResponse.StepAction.WALK)
                 .type("WALK")
-                .stopName(null)
-                .primaryText("도보 이동")
+                .stopName(step.startName())  // 내부 로직용 유지
+                .primaryText(primaryText)
                 .secondaryText(null)
                 .minutes(step.time())
                 .colorHex(colorHex)
