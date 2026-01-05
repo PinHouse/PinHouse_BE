@@ -7,7 +7,9 @@ import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
-import com.pinHouse.server.platform.housing.notice.application.usecase.NoticeUseCase;
+import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
+import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
+import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
@@ -16,9 +18,17 @@ import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,13 +41,14 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class HomeService implements HomeUseCase {
 
-    private final NoticeUseCase noticeService;
+    private final NoticeDocumentRepository noticeRepository;
+    private final LikeQueryUseCase likeService;
     private final NoticeSearchUseCase noticeSearchService;
     private final PinPointUseCase pinPointService;
 
     /**
      * 마감임박공고 조회 (PinPoint 지역 기반)
-     * - PinPoint의 address에서 광역 단위를 추출하여 해당 지역의 마감임박 공고를 조회
+     * - PinPoint의 address에서 광역 단위와 시/군/구를 추출하여 해당 지역의 마감임박 공고를 조회
      */
     @Override
     public SliceResponse<NoticeListResponse> getDeadlineApproachingNotices(
@@ -55,25 +66,37 @@ public class HomeService implements HomeUseCase {
         // PinPoint 조회
         PinPoint pinPoint = pinPointService.loadPinPoint(pinpointId);
 
-        // PinPoint의 address에서 광역 단위(Region) 추출
+        // PinPoint의 address에서 광역 단위(Region)와 시/군/구 추출
         NoticeListRequest.Region region = extractRegionFromAddress(pinPoint.getAddress());
-
-        // PinPoint의 address에서 시/군/구 추출
         String county = extractCountyFromAddress(pinPoint.getAddress());
-        List<String> counties = (county != null) ? List.of(county) : null;
 
-        // 마감임박공고 조회 요청 생성
-        NoticeListRequest deadlineRequest = new NoticeListRequest(
-                List.of(region),  // 해당 지역만 필터링
-                counties,         // 시/군/구 필터링 (성남시 등)
-                null,             // 모든 대상 유형
-                null,             // 모든 임대 유형
-                null,             // 모든 주택 유형
-                NoticeListRequest.NoticeStatus.RECRUITING,  // 모집중만
-                NoticeListRequest.ListSortType.END          // 마감임박순
+        // 현재 시각 (한국 시간 기준)
+        Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
+
+        // 페이징 설정 (마감임박순 정렬)
+        Sort sort = Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"));
+        Pageable pageable = PageRequest.of(sliceRequest.page() - 1, sliceRequest.offSet(), sort);
+
+        // Repository에서 직접 조회
+        Page<NoticeDocument> page = noticeRepository.findDeadlineApproachingNoticesByRegionAndCounty(
+                region.getFullName(),
+                county,
+                pageable,
+                now
         );
 
-        return noticeService.getNotices(deadlineRequest, sliceRequest, userId);
+        // 좋아요 상태 조회
+        List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
+
+        // DTO 변환
+        List<NoticeListResponse> content = page.getContent().stream()
+                .map(notice -> {
+                    boolean isLiked = likedNoticeIds.contains(notice.getId());
+                    return NoticeListResponse.from(notice, isLiked);
+                })
+                .toList();
+
+        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
     }
 
     /**
