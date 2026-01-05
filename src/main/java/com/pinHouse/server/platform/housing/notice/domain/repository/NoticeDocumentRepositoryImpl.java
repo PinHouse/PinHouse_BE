@@ -168,4 +168,41 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         return mongoTemplate.count(query, NoticeDocument.class);
     }
 
+    @Override
+    public Page<NoticeDocument> findDeadlineApproachingNoticesByRegionAndCounty(
+            String region,
+            String county,
+            Pageable pageable,
+            Instant now
+    ) {
+        Criteria criteria = new Criteria();
+
+        /// 오늘의 시작 시각 계산 (오늘까지 포함되도록)
+        Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
+                .toLocalDate()
+                .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                .toInstant();
+
+        /// 모집중인 공고만 조회 (마감일이 오늘 이후)
+        criteria.and("applyEnd").gte(todayStart);
+
+        /// 광역 단위 필터링
+        if (region != null && !region.isBlank()) {
+            criteria.and("city").is(region);
+        }
+
+        /// 시/군/구 필터링 (부분 일치: "성남시"로 "성남시 수정구", "성남시 분당구" 등 매칭)
+        if (county != null && !county.isBlank()) {
+            criteria.and("county").regex("^" + county);
+        }
+
+        Query query = new Query(criteria).with(pageable);
+
+        /// 실행 및 Page 응답 구성
+        List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);
+        long count = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), NoticeDocument.class);
+
+        return new PageImpl<>(notices, pageable, count);
+    }
+
 }

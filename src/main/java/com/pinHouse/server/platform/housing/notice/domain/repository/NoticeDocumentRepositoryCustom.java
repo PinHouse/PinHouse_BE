@@ -47,4 +47,21 @@ public interface NoticeDocumentRepositoryCustom {
      */
     long countByTitle(String keyword, boolean filterOpen, Instant now);
 
+    /**
+     * 지역(Region)과 시/군/구(County) 기반 마감임박 공고 조회
+     * HomeService의 마감임박 공고 조회 전용 메서드
+     *
+     * @param region 광역 단위 (예: "경기도")
+     * @param county 시/군/구 (예: "성남시", null 가능)
+     * @param pageable 페이징 정보
+     * @param now 현재 시각
+     * @return 마감임박순으로 정렬된 모집중인 공고 목록
+     */
+    Page<NoticeDocument> findDeadlineApproachingNoticesByRegionAndCounty(
+            String region,
+            String county,
+            Pageable pageable,
+            Instant now
+    );
+
 }

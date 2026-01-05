@@ -343,7 +343,7 @@ public class ComplexService implements ComplexUseCase {
         // 1) 기본 (NORMAL OPTION)
         // ===================================
 
-        DepositMinMaxResponse normalOption = new DepositMinMaxResponse(
+        DepositMinMaxResponse normalOption = DepositMinMaxResponse.fromWon(
                 totalDepositBase,
                 contractBase,
                 balanceBase,
@@ -378,7 +378,7 @@ public class ComplexService implements ComplexUseCase {
         long maxMonthRent  = monthRentBase + actualRentIncrease;
         long minDepositContract = Math.max(0, minDepositTotal - balanceBase);
 
-        DepositMinMaxResponse minOption = new DepositMinMaxResponse(
+        DepositMinMaxResponse minOption = DepositMinMaxResponse.fromWon(
                 minDepositTotal,
                 minDepositContract,
                 balanceBase,
@@ -409,7 +409,7 @@ public class ComplexService implements ComplexUseCase {
         long minMonthRent  = monthRentBase - actualRentReduce;
         long maxDepositContract = Math.max(0, maxDepositTotal - balanceBase);
 
-        DepositMinMaxResponse maxOption = new DepositMinMaxResponse(
+        DepositMinMaxResponse maxOption = DepositMinMaxResponse.fromWon(
                 maxDepositTotal,
                 maxDepositContract,
                 balanceBase,

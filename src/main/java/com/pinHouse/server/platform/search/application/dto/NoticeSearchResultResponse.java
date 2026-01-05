@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 공고 검색 결과 단일 항목 응답 DTO
@@ -36,6 +37,9 @@ public record NoticeSearchResultResponse(
         @Schema(description = "신청 종료일", example = "2024-01-24")
         LocalDate applyEnd,
 
+        @Schema(description = "모집 대상 그룹", example = "[\"청년\", \"신혼부부\"]")
+        List<String> targetGroups,
+
         @Schema(description = "좋아요 여부", example = "true")
         boolean liked
 ) {
@@ -53,6 +57,7 @@ public record NoticeSearchResultResponse(
                 .announceDate(notice.getAnnounceDate())
                 .applyStart(notice.getApplyStart())
                 .applyEnd(notice.getApplyEnd())
+                .targetGroups(notice.getTargetGroups())
                 .liked(liked)
                 .build();
     }

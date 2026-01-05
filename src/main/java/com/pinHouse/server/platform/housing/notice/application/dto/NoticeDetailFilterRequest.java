@@ -52,7 +52,7 @@ public record NoticeDetailFilterRequest(
     public enum DetailSortType {
 
         KM("거리 순"),
-        INFRA("생활태그 매칭순");
+        INFRA("주변환경 매칭순");
 
         private final String label;
 

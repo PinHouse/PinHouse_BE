@@ -31,6 +31,9 @@ public record NoticeDetailResponse(
         @Schema(description = "모집일정", example = "2025년 10월 ~ 11월")
         String period,
 
+        @Schema(description = "대상 계층", example = "[\"청년\", \"신혼부부\"]")
+        List<String> targetGroups,
+
         @Schema(description = "전체 임대주택 개수", example = "6")
         long totalCount,
 
@@ -51,6 +54,7 @@ public record NoticeDetailResponse(
                 .supplier(notice.getAgency())
                 .period(period)
                 .type(notice.getSupplyType())
+                .targetGroups(notice.getTargetGroups())
                 .totalCount(complexesResponse.size())
                 .housingType(notice.getHouseType())
                 .complexes(complexesResponse)
