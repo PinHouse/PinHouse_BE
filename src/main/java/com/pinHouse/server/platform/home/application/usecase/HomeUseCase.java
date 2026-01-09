@@ -2,8 +2,8 @@ package com.pinHouse.server.platform.home.application.usecase;
 
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
@@ -22,7 +22,7 @@ public interface HomeUseCase {
      * @param userId 사용자 ID (좋아요 정보 조회용, null 가능)
      * @return 해당 지역의 마감임박순으로 정렬된 공고 목록
      */
-    SliceResponse<NoticeListResponse> getDeadlineApproachingNotices(
+    SliceResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
             String pinpointId,
             SliceRequest sliceRequest,
             UUID userId

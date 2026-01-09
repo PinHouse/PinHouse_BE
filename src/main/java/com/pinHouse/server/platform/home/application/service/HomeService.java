@@ -4,9 +4,9 @@ import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
@@ -51,7 +51,7 @@ public class HomeService implements HomeUseCase {
      * - PinPoint의 address에서 광역 단위와 시/군/구를 추출하여 해당 지역의 마감임박 공고를 조회
      */
     @Override
-    public SliceResponse<NoticeListResponse> getDeadlineApproachingNotices(
+    public SliceResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
             String pinpointId,
             SliceRequest sliceRequest,
             UUID userId
@@ -88,11 +88,11 @@ public class HomeService implements HomeUseCase {
         // 좋아요 상태 조회
         List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
 
-        // DTO 변환
-        List<NoticeListResponse> content = page.getContent().stream()
+        // DTO 변환 (region 정보 포함)
+        List<HomeNoticeListResponse> content = page.getContent().stream()
                 .map(notice -> {
                     boolean isLiked = likedNoticeIds.contains(notice.getId());
-                    return NoticeListResponse.from(notice, isLiked);
+                    return HomeNoticeListResponse.from(notice, isLiked, county);
                 })
                 .toList();
 

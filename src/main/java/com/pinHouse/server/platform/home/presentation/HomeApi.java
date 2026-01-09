@@ -4,9 +4,9 @@ import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.home.presentation.swagger.HomeApiSpec;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
@@ -37,7 +37,7 @@ public class HomeApi implements HomeApiSpec {
     @Override
     @CheckLogin
     @GetMapping("/notice")
-    public ApiResponse<SliceResponse<NoticeListResponse>> getDeadlineApproachingNotices(
+    public ApiResponse<SliceResponse<HomeNoticeListResponse>> getDeadlineApproachingNotices(
             @RequestParam String pinpointId,
             SliceRequest sliceRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -46,7 +46,7 @@ public class HomeApi implements HomeApiSpec {
         UUID userId = principalDetails.getId();
 
         // 서비스 호출
-        SliceResponse<NoticeListResponse> response = homeService.getDeadlineApproachingNotices(
+        SliceResponse<HomeNoticeListResponse> response = homeService.getDeadlineApproachingNotices(
                 pinpointId,
                 sliceRequest,
                 userId
