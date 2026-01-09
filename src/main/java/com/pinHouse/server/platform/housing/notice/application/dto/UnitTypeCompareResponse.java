@@ -49,7 +49,7 @@ public record UnitTypeCompareResponse(
             @Schema(description = "비용 정보")
             CostInfo cost,
 
-            @Schema(description = "주변 인프라 태그", example = "[\"공원\", \"도서관\", \"병원\"]")
+            @Schema(description = "단지 기반 주변 인프라 태그 (Complex에 속한 시설 정보)", example = "[\"공원\", \"도서관\", \"병원\"]")
             List<FacilityType> nearbyFacilities,
 
             @Schema(description = "핀포인트 기준 거리", example = "3.5km")

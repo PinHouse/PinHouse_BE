@@ -46,7 +46,13 @@ public interface NoticeUseCase {
     int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request);
 
     /// 유닛타입(방) 비교
-    UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType, UUID userId);
+    UnitTypeCompareResponse compareUnitTypes(
+            String noticeId,
+            String pinPointId,
+            UnitTypeSortType sortType,
+            java.util.List<com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType> nearbyFacilities,
+            UUID userId
+    );
 
     /// 나의 좋아요 공고 목록 조회
     List<NoticeListResponse> getNoticesLike(UUID userId);

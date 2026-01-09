@@ -142,13 +142,14 @@ public class NoticeApi implements NoticeApiSpec {
             @PathVariable String noticeId,
             @RequestParam(required = false) String pinPointId,
             @RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType,
+            @RequestParam(required = false) List<com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType> nearbyFacilities,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 로그인하지 않은 경우 userId는 null
         var userId = (principalDetails != null) ? principalDetails.getId() : null;
 
         /// 서비스 계층
-        var response = service.compareUnitTypes(noticeId, pinPointId, sortType, userId);
+        var response = service.compareUnitTypes(noticeId, pinPointId, sortType, nearbyFacilities, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

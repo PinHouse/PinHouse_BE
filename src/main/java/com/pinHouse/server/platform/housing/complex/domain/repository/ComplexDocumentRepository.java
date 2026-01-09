@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface ComplexDocumentRepository extends MongoRepository<ComplexDocument, String> {
+public interface ComplexDocumentRepository extends MongoRepository<ComplexDocument, String>, CustomComplexDocumentRepository {
 
     List<ComplexDocument> findByNoticeId(String noticeId);
 

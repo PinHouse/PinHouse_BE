@@ -112,7 +112,7 @@ public interface NoticeApiSpec {
     @Operation(
             summary = "공고의 모든 유닛타입(방) 비교 API",
             description = "공고에 포함된 모든 유닛타입의 상세 특징을 조회하고 정렬합니다. " +
-                    "보증금 낮은 순(DEPOSIT_ASC) 또는 평수 넓은 순(AREA_DESC)으로 정렬 가능합니다. " +
+                    "보증금 낮은 순(DEPOSIT_ASC), 평수 넓은 순(AREA_DESC), 인프라 매칭 순(FACILITY_MATCH), 거리 가까운 순(DISTANCE_ASC)으로 정렬 가능합니다. " +
                     "면적, 비용, 공급호수, 단지 정보, 주변 인프라, 핀포인트 기준 거리, 좋아요 여부 등 모든 특징을 반환합니다. " +
                     "로그인한 사용자의 경우 각 유닛타입의 좋아요 여부가 포함됩니다."
     )
@@ -120,12 +120,16 @@ public interface NoticeApiSpec {
             @Parameter(description = "공고 ID", example = "18214")
             @PathVariable String noticeId,
 
-            @Parameter(description = "핀포인트 ID", example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
+            @Parameter(description = "핀포인트 ID (DISTANCE_ASC 정렬 시 필수)", example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251")
             @RequestParam(required = false) String pinPointId,
 
-            @Parameter(description = "정렬 기준 (DEPOSIT_ASC: 보증금 낮은 순, AREA_DESC: 평수 넓은 순)",
+            @Parameter(description = "정렬 기준 (DEPOSIT_ASC: 보증금 낮은 순, AREA_DESC: 평수 넓은 순, FACILITY_MATCH: 인프라 매칭 순, DISTANCE_ASC: 거리 가까운 순)",
                        example = "DEPOSIT_ASC")
             @RequestParam(required = false, defaultValue = "보증금 낮은 순") UnitTypeSortType sortType,
+
+            @Parameter(description = "필터링할 인프라 시설 목록 (FACILITY_MATCH 정렬 시 사용)",
+                       example = "PARK,LIBRARY,HOSPITAL")
+            @RequestParam(required = false) List<com.pinHouse.server.platform.housing.facility.domain.entity.FacilityType> nearbyFacilities,
 
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

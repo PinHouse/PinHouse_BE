@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum UnitTypeSortType {
     DEPOSIT_ASC("보증금 낮은 순"),
-    AREA_DESC("평수 넓은 순");
+    AREA_DESC("면적 넓은 순"),
+    FACILITY_MATCH("주변환경 매칭 순"),
+    DISTANCE_ASC("핀포인트 거리 순");
 
     private final String label;
 
