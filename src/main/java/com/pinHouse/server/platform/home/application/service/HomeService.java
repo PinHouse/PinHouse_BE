@@ -5,6 +5,7 @@ import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeNoticeResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
@@ -51,7 +52,7 @@ public class HomeService implements HomeUseCase {
      * - PinPoint의 address에서 광역 단위와 시/군/구를 추출하여 해당 지역의 마감임박 공고를 조회
      */
     @Override
-    public SliceResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
+    public HomeNoticeListResponse getDeadlineApproachingNotices(
             String pinpointId,
             SliceRequest sliceRequest,
             UUID userId
@@ -88,15 +89,21 @@ public class HomeService implements HomeUseCase {
         // 좋아요 상태 조회
         List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
 
-        // DTO 변환 (region 정보 포함)
-        List<HomeNoticeListResponse> content = page.getContent().stream()
+        // DTO 변환 (개별 공고 정보)
+        List<HomeNoticeResponse> content = page.getContent().stream()
                 .map(notice -> {
                     boolean isLiked = likedNoticeIds.contains(notice.getId());
-                    return HomeNoticeListResponse.from(notice, isLiked, county);
+                    return HomeNoticeResponse.from(notice, isLiked);
                 })
                 .toList();
 
-        return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
+        // 최종 응답 생성 (region + content + 페이징 정보)
+        return HomeNoticeListResponse.builder()
+                .region(county)
+                .content(content)
+                .hasNext(page.hasNext())
+                .totalElements(page.getTotalElements())
+                .build();
     }
 
     /**

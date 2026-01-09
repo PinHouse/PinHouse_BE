@@ -37,7 +37,7 @@ public class HomeApi implements HomeApiSpec {
     @Override
     @CheckLogin
     @GetMapping("/notice")
-    public ApiResponse<SliceResponse<HomeNoticeListResponse>> getDeadlineApproachingNotices(
+    public ApiResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
             @RequestParam String pinpointId,
             SliceRequest sliceRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -46,7 +46,7 @@ public class HomeApi implements HomeApiSpec {
         UUID userId = principalDetails.getId();
 
         // 서비스 호출
-        SliceResponse<HomeNoticeListResponse> response = homeService.getDeadlineApproachingNotices(
+        HomeNoticeListResponse response = homeService.getDeadlineApproachingNotices(
                 pinpointId,
                 sliceRequest,
                 userId
