@@ -65,9 +65,11 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
                 // 3. 정렬 적용 (DB 레벨 정렬)
                 sort(sort),
 
-                // 4. 단지별로 다시 그룹화 (⭐ 필드 경로는 $ 접두사 필요)
+                // 4. 단지별로 다시 그룹화
+                // group("$_id")로 원본 _id로 그룹화하면, 그룹화 키가 결과의 _id가 됨
+                // ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로 complexId도 포함 필요
                 group("$_id")
-                        .first("$_id").as("_id")
+                        .first("$complexId").as("complexId")
                         .first("$noticeId").as("noticeId")
                         .first("$houseSn").as("houseSn")
                         .first("$name").as("name")
@@ -84,10 +86,11 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
                         .push("$unitTypes").as("unitTypes"),
 
                 // 5. ComplexDocument 형태로 매핑을 위한 projection
+                // ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로
+                // complexId를 그대로 사용 (Spring Data가 자동으로 매핑)
                 project()
-                        .and("_id").as("id")
                         .andInclude(
-                                "noticeId", "houseSn", "name", "address",
+                                "complexId", "noticeId", "houseSn", "name", "address",
                                 "pnu", "city", "county", "heating",
                                 "totalHouseholds", "totalSupplyInNotice",
                                 "applyStart", "applyEnd", "location", "unitTypes"
