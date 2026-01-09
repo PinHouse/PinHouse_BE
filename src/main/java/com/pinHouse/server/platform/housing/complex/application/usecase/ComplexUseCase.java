@@ -47,6 +47,9 @@ public interface ComplexUseCase {
     /// 공고 내부 목록 조회
     List<ComplexDocument> loadComplexes(String noticeId);
 
+    /// 공고 내부 목록 조회 (정렬된 유닛타입 포함)
+    List<ComplexDocument> loadSortedComplexes(String noticeId, com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeSortType sortType);
+
     /// 유닛타입 ID 목록으로 단지 목록 조회
     List<ComplexDocument> findComplexesByUnitTypeIds(List<String> typeIds);
 

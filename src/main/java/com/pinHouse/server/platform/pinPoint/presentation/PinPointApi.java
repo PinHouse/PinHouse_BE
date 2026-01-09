@@ -2,8 +2,8 @@ package com.pinHouse.server.platform.pinPoint.presentation;
 
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointListResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointRequest;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.presentation.swagger.PinPointApiSpec;
@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/pinpoints")
@@ -54,15 +53,15 @@ public class PinPointApi implements PinPointApiSpec {
     /// 나의 핀포인트 목록 조회하기
     @CheckLogin
     @GetMapping()
-    public ApiResponse<List<PinPointResponse>> getPinPoints(
+    public ApiResponse<PinPointListResponse> getPinPoints(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
         /// 서비스
-        var responses = service.loadPinPoints(principalDetails.getId());
+        var response = service.loadPinPoints(principalDetails.getId());
 
         /// 리턴
-        return ApiResponse.ok(responses);
+        return ApiResponse.ok(response);
     }
 
     /// 핀포인트 제거하기

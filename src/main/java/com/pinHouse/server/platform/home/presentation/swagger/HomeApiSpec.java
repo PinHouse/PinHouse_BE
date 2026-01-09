@@ -3,7 +3,7 @@ package com.pinHouse.server.platform.home.presentation.swagger;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
-import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
@@ -22,9 +22,10 @@ public interface HomeApiSpec {
             description = "PinPoint의 지역을 기반으로 마감임박순으로 정렬된 공고 목록을 조회하는 API 입니다. " +
                     "PinPoint의 주소에서 광역 단위(시/도)를 추출하여 해당 지역의 모집중인 공고만 조회합니다. " +
                     "본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다. " +
-                    "좋아요 정보가 포함됩니다."
+                    "응답 구조: 공통 지역(region) + 공고 목록 배열(content) + 페이징 정보(hasNext, totalElements). " +
+                    "SliceResponse와 유사한 구조이지만 region 필드가 추가되었습니다."
     )
-    ApiResponse<SliceResponse<NoticeListResponse>> getDeadlineApproachingNotices(
+    ApiResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
             @Parameter(description = "PinPoint ID", example = "83ec36ce-8fc1-4f62-8983-397c2729fc22")
             @RequestParam String pinpointId,
 

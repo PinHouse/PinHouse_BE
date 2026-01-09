@@ -3,8 +3,8 @@ package com.pinHouse.server.platform.pinPoint.application.service;
 import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.platform.Location;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointListResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointRequest;
 import com.pinHouse.server.platform.pinPoint.util.LocationUtil;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
@@ -65,7 +65,7 @@ public class PinPointService implements PinPointUseCase {
     /// 목록 조회
     @Override
     @Transactional(readOnly = true)
-    public List<PinPointResponse> loadPinPoints(UUID userId) {
+    public PinPointListResponse loadPinPoints(UUID userId) {
 
         /// 유저 검증
         User user = userService.loadUser(userId);
@@ -73,8 +73,8 @@ public class PinPointService implements PinPointUseCase {
         /// 유저가 존재하는 핀포인트 목록을 first 기준으로 정렬하여 조회
         List<PinPoint> pinPoints = repository.findByUserIdOrderByIsFirstDesc(user.getId().toString());
 
-        /// Stream 돌면서 DTO 변경
-        return PinPointResponse.from(pinPoints);
+        /// 유저 이름과 핀포인트 목록을 포함한 응답 반환
+        return PinPointListResponse.of(user.getName(), pinPoints);
     }
 
     @Override

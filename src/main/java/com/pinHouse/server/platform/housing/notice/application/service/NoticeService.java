@@ -266,13 +266,36 @@ public class NoticeService implements NoticeUseCase {
     /// 유닛타입(방) 비교
     @Override
     @Transactional(readOnly = true)
-    public UnitTypeCompareResponse compareUnitTypes(String noticeId, String pinPointId, UnitTypeSortType sortType, UUID userId) {
+    public UnitTypeCompareResponse compareUnitTypes(
+            String noticeId,
+            String pinPointId,
+            UnitTypeSortType sortType,
+            List<FacilityType> nearbyFacilities,
+            UUID userId
+    ) {
 
         /// 공고 존재 확인
         loadNotice(noticeId);
 
-        /// 공고에 속한 모든 단지 조회
-        List<ComplexDocument> complexes = complexService.loadComplexes(noticeId);
+        /// 정렬 기준 설정 (null이면 기본값)
+        UnitTypeSortType finalSortType = sortType != null ? sortType : UnitTypeSortType.DEPOSIT_ASC;
+
+        /// DISTANCE_ASC 정렬은 pinPointId 필수
+        if (finalSortType == UnitTypeSortType.DISTANCE_ASC && (pinPointId == null || pinPointId.isBlank())) {
+            log.warn("거리순 정렬 요청이지만 pinPointId가 없어 기본 정렬(DEPOSIT_ASC)로 변경");
+            finalSortType = UnitTypeSortType.DEPOSIT_ASC;
+        }
+
+        /// ⭐️ DB 레벨에서 정렬된 단지 및 유닛타입 조회
+        /// FACILITY_MATCH, DISTANCE_ASC의 경우 DB 정렬 없이 전체 조회 (애플리케이션 레벨 정렬 예정)
+        List<ComplexDocument> complexes;
+        if (finalSortType == UnitTypeSortType.FACILITY_MATCH || finalSortType == UnitTypeSortType.DISTANCE_ASC) {
+            complexes = complexService.loadComplexes(noticeId);
+            log.debug("{} 정렬 - 정렬 없이 {} 개 단지 조회", finalSortType, complexes.size());
+        } else {
+            complexes = complexService.loadSortedComplexes(noticeId, finalSortType);
+            log.debug("DB 정렬 완료 - 총 {} 개 단지 조회", complexes.size());
+        }
 
         /// PinPoint 위치 조회 (optional)
         Location userLocation = null;
@@ -331,38 +354,137 @@ public class NoticeService implements NoticeUseCase {
                 })
                 .collect(Collectors.toList());
 
-        /// 정렬 기준 적용 (null이면 기본값)
-        UnitTypeSortType finalSortType = sortType != null ? sortType : UnitTypeSortType.DEPOSIT_ASC;
-        sortUnitTypes(comparisonItems, finalSortType);
+        /// ⭐️ 애플리케이션 레벨 정렬 수행
+        if (finalSortType == UnitTypeSortType.FACILITY_MATCH && nearbyFacilities != null && !nearbyFacilities.isEmpty()) {
+            // 시설 매칭 기반 정렬
+            sortByFacilityMatch(comparisonItems, nearbyFacilities);
+            log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", nearbyFacilities);
+        } else if (finalSortType == UnitTypeSortType.DISTANCE_ASC) {
+            // 거리 기반 정렬
+            sortByDistance(comparisonItems);
+            log.debug("거리순 정렬 완료");
+        }
+        /// 그 외에는 DB에서 이미 정렬되어 왔으므로 순서 유지
 
         /// DTO 정적 팩토리 메서드로 응답 생성
         return UnitTypeCompareResponse.from(comparisonItems);
     }
 
     /**
-     * 유닛타입 정렬
+     * 시설 매칭 기반 정렬
+     *
+     * 정렬 우선순위:
+     * 1. 시설 매칭 개수 (많은 순)
+     * 2. 보증금 (낮은 순)
+     * 3. 지역 (오름차순)
+     * 4. 단지명 (오름차순)
+     * 5. 방 이름 (오름차순)
      */
-    private void sortUnitTypes(
+    private void sortByFacilityMatch(
             List<UnitTypeCompareResponse.UnitTypeComparisonItem> items,
-            UnitTypeSortType sortType
+            List<FacilityType> targetFacilities
     ) {
-        switch (sortType) {
-            case DEPOSIT_ASC:
-                // 보증금 낮은 순 (null은 최대값으로 처리)
-                items.sort(Comparator.comparing(
-                        item -> item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
-                ));
-                break;
+        items.sort(Comparator
+                // 1차: 시설 매칭 개수 (많은 순 = 내림차순)
+                .comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
+                    List<FacilityType> itemFacilities = item.nearbyFacilities();
+                    if (itemFacilities == null || itemFacilities.isEmpty()) {
+                        return 0;
+                    }
+                    // targetFacilities와 itemFacilities의 교집합 개수 계산
+                    return (int) targetFacilities.stream()
+                            .filter(itemFacilities::contains)
+                            .count();
+                }).reversed()
+                // 2차: 보증금 (낮은 순 = 오름차순)
+                .thenComparing(item ->
+                        item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
+                )
+                // 3차: 지역 (오름차순)
+                .thenComparing(item ->
+                        item.complex() != null && item.complex().address() != null
+                                ? item.complex().address()
+                                : ""
+                )
+                // 4차: 단지명 (오름차순)
+                .thenComparing(item ->
+                        item.complex() != null && item.complex().name() != null
+                                ? item.complex().name()
+                                : ""
+                )
+                // 5차: 방 이름 (오름차순)
+                .thenComparing(item ->
+                        item.typeCode() != null ? item.typeCode() : ""
+                )
+        );
+    }
 
-            case AREA_DESC:
-                // 평수 넓은 순 (null은 최소값으로 처리)
-                items.sort(Comparator.comparing(
-                        (UnitTypeCompareResponse.UnitTypeComparisonItem item) ->
-                                item.area() != null ? item.area().exclusiveAreaM2() : 0.0
-                ).reversed());
-                break;
+    /**
+     * 거리 기반 정렬
+     *
+     * 정렬 우선순위:
+     * 1. 핀포인트로부터의 거리 (가까운 순)
+     * 2. 보증금 (낮은 순)
+     * 3. 지역 (오름차순)
+     * 4. 단지명 (오름차순)
+     * 5. 방 이름 (오름차순)
+     */
+    private void sortByDistance(List<UnitTypeCompareResponse.UnitTypeComparisonItem> items) {
+        items.sort(Comparator
+                // 1차: 거리 (가까운 순 = 오름차순)
+                .comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
+                    String distanceStr = item.distanceFromPinPoint();
+                    if (distanceStr == null || distanceStr.isBlank()) {
+                        return Double.MAX_VALUE;
+                    }
+                    // "3.5km" 또는 "500m" 형식을 km 단위 double로 변환
+                    return parseDistanceToKm(distanceStr);
+                })
+                // 2차: 보증금 (낮은 순)
+                .thenComparing(item ->
+                        item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
+                )
+                // 3차: 지역 (오름차순)
+                .thenComparing(item ->
+                        item.complex() != null && item.complex().address() != null
+                                ? item.complex().address()
+                                : ""
+                )
+                // 4차: 단지명 (오름차순)
+                .thenComparing(item ->
+                        item.complex() != null && item.complex().name() != null
+                                ? item.complex().name()
+                                : ""
+                )
+                // 5차: 방 이름 (오름차순)
+                .thenComparing(item ->
+                        item.typeCode() != null ? item.typeCode() : ""
+                )
+        );
+    }
+
+    /**
+     * 거리 문자열을 km 단위 double로 변환
+     * @param distanceStr "3.5km" 또는 "500m" 형식
+     * @return km 단위 거리
+     */
+    private double parseDistanceToKm(String distanceStr) {
+        try {
+            if (distanceStr.endsWith("km")) {
+                // "3.5km" → 3.5
+                return Double.parseDouble(distanceStr.replace("km", ""));
+            } else if (distanceStr.endsWith("m")) {
+                // "500m" → 0.5
+                double meters = Double.parseDouble(distanceStr.replace("m", ""));
+                return meters / 1000.0;
+            }
+            return Double.MAX_VALUE;
+        } catch (NumberFormatException e) {
+            log.warn("거리 문자열 파싱 실패: {}", distanceStr);
+            return Double.MAX_VALUE;
         }
     }
+
 
     /**
      * 두 지점 간 거리 계산 (Haversine formula)

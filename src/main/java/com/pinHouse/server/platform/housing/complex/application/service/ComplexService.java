@@ -166,6 +166,17 @@ public class ComplexService implements ComplexUseCase {
         return repository.findByNoticeId(noticeId);
     }
 
+    /// 공고 기반 목록 조회 (정렬된 유닛타입 포함)
+    @Override
+    @Transactional(readOnly = true)
+    public List<ComplexDocument> loadSortedComplexes(
+            String noticeId,
+            com.pinHouse.server.platform.housing.notice.application.dto.UnitTypeSortType sortType
+    ) {
+        log.debug("정렬된 단지 목록 조회 - noticeId: {}, sortType: {}", noticeId, sortType);
+        return repository.findSortedComplexesWithUnitTypes(noticeId, sortType);
+    }
+
     /// 유닛타입 ID 목록으로 단지 목록 조회
     @Override
     @Transactional(readOnly = true)

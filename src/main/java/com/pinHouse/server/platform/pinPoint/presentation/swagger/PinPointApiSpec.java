@@ -1,8 +1,8 @@
 package com.pinHouse.server.platform.pinPoint.presentation.swagger;
 
 import com.pinHouse.server.core.response.response.ApiResponse;
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointListResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointRequest;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,8 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Tag(name = "핀포인트 API", description = "핀포인트 생성/조회/삭제 API 입니다.")
 public interface PinPointApiSpec {
@@ -43,7 +41,7 @@ public interface PinPointApiSpec {
             summary = "핀포인트 목록조회 API",
             description = "나의 핀포인트 목록 들을 조회하는 API 입니다."
     )
-    ApiResponse<List<PinPointResponse>> getPinPoints(
+    ApiResponse<PinPointListResponse> getPinPoints(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
