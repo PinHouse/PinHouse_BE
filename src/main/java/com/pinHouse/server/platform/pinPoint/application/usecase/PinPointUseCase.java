@@ -1,11 +1,10 @@
 package com.pinHouse.server.platform.pinPoint.application.usecase;
 
+import com.pinHouse.server.platform.pinPoint.application.dto.PinPointListResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.PinPointRequest;
-import com.pinHouse.server.platform.pinPoint.application.dto.PinPointResponse;
 import com.pinHouse.server.platform.pinPoint.application.dto.UpdatePinPointRequest;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface PinPointUseCase {
@@ -18,7 +17,7 @@ public interface PinPointUseCase {
     void savePinPoint(UUID userId, PinPointRequest request);
 
     /// 목록 조회
-    List<PinPointResponse> loadPinPoints(UUID userId);
+    PinPointListResponse loadPinPoints(UUID userId);
 
     /// 수정
     void update(String id, UUID userId, UpdatePinPointRequest request);
