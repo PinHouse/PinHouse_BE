@@ -30,27 +30,57 @@ public class MultiChildCandidateRule implements Rule {
         /// 가능한 리스트 추출하기
         var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        /// 자녀가 3명 이상이 아니라면 후보 제공
-        if (!diagnosis.checkMultiple()) {
+        /// 미성년 자녀 수 계산 (태아 + 6세 이하 + 7세 이상 미성년)
+        int minorChildCount = diagnosis.getUnbornChildrenCount() +
+                              diagnosis.getUnder6ChildrenCount() +
+                              diagnosis.getOver7MinorChildrenCount();
 
-            /// 만약 있다면 삭제
-            candidates.removeIf(c ->
-                    c.supplyType() == SupplyType.MULTICHILD_SPECIAL);
+        /// 다자녀 특별공급 자격 요건:
+        /// - 통합공공임대/국민임대/장기전세: 미성년 자녀 2명 이상
+        /// - 공공임대: 미성년 자녀 3명 이상
 
-            /// 결과 저장하기
-            ctx.setCurrentCandidates(candidates);
+        /// Iterator로 후보 순회
+        var iter = candidates.iterator();
+        while (iter.hasNext()) {
+            var candidate = iter.next();
 
+            if (candidate.supplyType() == SupplyType.MULTICHILD_SPECIAL) {
+                var noticeType = candidate.noticeType();
+
+                /// 공공임대는 3명 이상 필요
+                if (noticeType == com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL) {
+                    if (minorChildCount < 3) {
+                        iter.remove();
+                    }
+                }
+                /// 그 외 (통합공공임대, 국민임대, 장기전세)는 2명 이상 필요
+                else {
+                    if (minorChildCount < 2) {
+                        iter.remove();
+                    }
+                }
+            }
+        }
+
+        /// 결과 저장하기
+        ctx.setCurrentCandidates(candidates);
+
+        /// 다자녀 특별공급 후보가 남아있는지 확인
+        boolean hasMultiChildCandidate = candidates.stream()
+                .anyMatch(c -> c.supplyType() == SupplyType.MULTICHILD_SPECIAL);
+
+        if (!hasMultiChildCandidate) {
             return RuleResult.fail(code(),
                     "다자녀 특별공급 해당 없음",
                     Map.of(
                             "candidate", candidates,
-                            "failReason", "자녀가 3명 미만"
+                            "failReason", "미성년 자녀 수 요건 미충족 (현재: " + minorChildCount + "명)"
                     ));
         }
 
         return RuleResult.pass(code(),
                 "다자녀 특별공급 후보",
-                Map.of("candidate", candidates));
+                Map.of("candidate", candidates, "minorChildCount", minorChildCount));
     }
 
     @Override public String code() {

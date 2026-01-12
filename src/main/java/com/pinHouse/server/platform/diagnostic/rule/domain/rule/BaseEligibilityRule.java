@@ -54,15 +54,37 @@ public class BaseEligibilityRule implements Rule {
             );
         }
 
-        /// 2차, 주택 소유 여부 (본인이 주택을 소유하고 있는 경우 대부분의 임대주택 신청 불가)
-        boolean ownsHouse = diagnosis.getHousingStatus().equals(
+        /// 2차, 주택 소유 여부
+        /// - 통합공공임대: 무주택세대구성원 또는 무주택자
+        /// - 영구임대: 생계급여 또는 의료급여 수급자 등
+        /// - 국민임대/장기전세/공공임대: 무주택세대구성원
+        /// - 행복주택: 무주택세대구성원 또는 무주택자
+
+        var housingStatus = diagnosis.getHousingStatus();
+        boolean ownsHouse = housingStatus.equals(
                 com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.OWN_HOUSE);
 
+        /// 본인이 주택을 소유한 경우 모든 임대주택 신청 불가
         if (ownsHouse) {
             return RuleResult.fail(
                     code(),
                     "주택 소유자는 임대주택 지원이 불가능",
-                    Map.of("housingStatus", diagnosis.getHousingStatus())
+                    Map.of("housingStatus", housingStatus)
+            );
+        }
+
+        /// 세대구성원 중 주택 소유자가 있는 경우
+        /// - 통합공공임대, 행복주택: 무주택자로도 신청 가능하므로 허용
+        /// - 국민임대, 장기전세, 공공임대: 무주택세대구성원만 가능하므로 일부 제한
+        boolean householdMemberOwnsHouse = housingStatus.equals(
+                com.pinHouse.server.platform.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
+
+        if (householdMemberOwnsHouse) {
+            /// 무주택세대구성원이 필수인 경우 해당 후보 제거
+            candidates.removeIf(c ->
+                c.noticeType() == com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType.NATIONAL_RENTAL ||
+                c.noticeType() == com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE ||
+                c.noticeType() == com.pinHouse.server.platform.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL
             );
         }
 
