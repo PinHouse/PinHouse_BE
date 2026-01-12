@@ -114,6 +114,19 @@ public class UserService implements UserUseCase {
 
     }
 
+    /// 관심 시설 타입 수정
+    @Override
+    @Transactional
+    public void updateFacilityTypes(UpdateFacilityTypesRequest request, UUID userId) {
+
+        /// 트랜잭션 (영속성 컨테이너 불러와서 더티체킹)
+        User user = loadUserWithFacilityType(userId);
+
+        /// 더티체킹
+        user.updateFacilityTypes(request.facilityTypes());
+
+    }
+
     /// 삭제
     @Override
     @Transactional

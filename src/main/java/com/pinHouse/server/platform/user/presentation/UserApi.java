@@ -89,6 +89,20 @@ public class UserApi implements UserApiSpec {
         return ApiResponse.updated();
     }
 
+    /// 관심 시설 타입 수정하기
+    @PatchMapping("/facility")
+    @CheckLogin
+    public ApiResponse<Void> updateFacilityTypes(
+            @RequestBody @Valid UpdateFacilityTypesRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 서비스
+        service.updateFacilityTypes(request, principalDetails.getId());
+
+        /// 리턴
+        return ApiResponse.updated();
+    }
+
     /// 회원탈퇴
     @DeleteMapping()
     @CheckLogin

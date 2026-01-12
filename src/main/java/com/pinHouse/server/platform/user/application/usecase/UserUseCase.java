@@ -29,6 +29,9 @@ public interface UserUseCase {
     /// 수정하기
     void updateUser(UpdateUserRequest request, UUID userId);
 
+    /// 관심 시설 타입 수정하기
+    void updateFacilityTypes(UpdateFacilityTypesRequest request, UUID userId);
+
     /// 탈퇴하기
     void deleteUser(UUID userId);
 

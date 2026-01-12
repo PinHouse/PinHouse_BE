@@ -138,4 +138,11 @@ public class User extends BaseTimeEntity {
             this.nickname = nickname;
         }
     }
+
+    /// 관심 시설 타입 업데이트
+    public void updateFacilityTypes(List<FacilityType> facilityTypes) {
+        if (facilityTypes != null) {
+            this.facilityTypes = new ArrayList<>(facilityTypes);
+        }
+    }
 }
