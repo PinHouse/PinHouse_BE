@@ -107,12 +107,13 @@ public class UserApi implements UserApiSpec {
     @DeleteMapping()
     @CheckLogin
     public ApiResponse<Void> delete(
+            @RequestBody WithdrawRequest request,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
         /// 서비스
-        service.deleteUser(principalDetails.getId());
+        service.deleteUser(principalDetails.getId(), request);
 
         /// 쿠키 삭제
         httpUtil.removeAccessTokenCookie(httpServletResponse);

@@ -130,7 +130,19 @@ public class UserService implements UserUseCase {
     /// 삭제
     @Override
     @Transactional
-    public void deleteUser(UUID userId) {
+    public void deleteUser(UUID userId, WithdrawRequest request) {
+
+        /// 탈퇴 사유 로깅 (0개 이상 복수 선택 가능)
+        if (request.reasons() != null && !request.reasons().isEmpty()) {
+            log.info("회원 탈퇴 - userId={}, 탈퇴 사유 개수={}, 사유={}",
+                    userId,
+                    request.reasons().size(),
+                    request.reasons().stream()
+                            .map(reason -> reason.getValue())
+                            .toList());
+        } else {
+            log.info("회원 탈퇴 - userId={}, 탈퇴 사유 선택 안함", userId);
+        }
 
         /// 핀포인트 DB에서 삭제
         pinPointRepository.deleteByUserId(userId.toString());

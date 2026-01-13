@@ -33,7 +33,7 @@ public interface UserUseCase {
     void updateFacilityTypes(UpdateFacilityTypesRequest request, UUID userId);
 
     /// 탈퇴하기
-    void deleteUser(UUID userId);
+    void deleteUser(UUID userId, WithdrawRequest request);
 
     // =================
     //  외부용 로직
