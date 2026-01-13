@@ -24,6 +24,9 @@ public record DiagnosisDetailResponse(
         @Schema(description = "진단 일시", example = "2025-12-28T10:30:00")
         LocalDateTime diagnosedAt,
 
+        @Schema(description = "사용자 닉네임", example = "집구하는청년")
+        String nickname,
+
         // === 1. 성별/나이 ===
         @Schema(description = "성별", example = "여자")
         String gender,
@@ -31,88 +34,16 @@ public record DiagnosisDetailResponse(
         @Schema(description = "나이 (만 나이)", example = "28")
         int age,
 
-        // === 2. 소득 ===
-        @Schema(description = "가구 소득 수준", example = "소득 1분위")
-        String incomeLevel,
-
-        @Schema(description = "월 소득 (원)", example = "2000000")
-        int monthPay,
-
-        // === 3. 대학생 여부 ===
-        @Schema(description = "대학생 여부", example = "false")
-        boolean isCollegeStudent,
-
-        // === 4. 청약 저축 ===
-        @Schema(description = "청약통장 보유 여부", example = "true")
-        boolean hasSubscription,
-
-        @Schema(description = "청약통장 가입 기간", example = "2년 이상")
-        String subscriptionYears,
-
-        @Schema(description = "청약통장 납입 횟수", example = "24회 이상")
-        String subscriptionCount,
-
-        @Schema(description = "청약통장 예치금", example = "600만원 이하")
-        String subscriptionAmount,
-
-        // === 5. 결혼 여부 ===
-        @Schema(description = "결혼 여부", example = "true")
-        boolean isMarried,
-
-        @Schema(description = "결혼 기간 (년)", example = "5")
-        Integer marriedYears,
-
-        // === 6. 자녀 여부 ===
-        @Schema(description = "태아 수", example = "0")
-        int unbornChildren,
-
-        @Schema(description = "6세 이하 자녀 수", example = "1")
-        int under6Children,
-
-        @Schema(description = "7세 이상 미성년 자녀 수", example = "1")
-        int over7MinorChildren,
-
-        @Schema(description = "총 자녀 수", example = "2")
-        int totalChildren,
-
-        // === 7. 세대 정보 ===
-        @Schema(description = "세대주 여부", example = "true")
-        boolean isHouseholdHead,
-
-        @Schema(description = "1인 가구 여부", example = "false")
-        boolean isSingleHousehold,
-
-        @Schema(description = "전체 세대원 수", example = "4")
-        int householdSize,
-
-        // === 8. 주택 소유 여부 ===
-        @Schema(description = "주택 소유 상태", example = "우리집 가구원 모두 주택을 소유하고 있지 않아요")
-        String housingStatus,
-
-        @Schema(description = "무주택 기간 (년)", example = "5")
-        int housingYears,
-
-        // === 9. 자동차 소유 여부 ===
-        @Schema(description = "자동차 보유 여부", example = "false")
-        boolean ownsCar,
-
-        @Schema(description = "자동차 가격 (원)", example = "0")
-        long carValue,
-
-        // === 10. 총 자산 ===
-        @Schema(description = "부동산/토지 자산 (원)", example = "0")
-        long propertyAsset,
-
-        @Schema(description = "자동차 자산 (원)", example = "0")
-        long carAsset,
-
-        @Schema(description = "금융 자산 (원)", example = "50000000")
-        long financialAsset,
-
-        @Schema(description = "총 자산 (원)", example = "50000000")
-        long totalAssets,
-
         // === 최종 진단 결과 ===
+        @Schema(description = "내 소득분위", example = "소득 1분위")
+        String myIncomeLevel,
+
+        @Schema(description = "나의 지원 가능 대상 (공급 유형)", example = "[\"청년 특별공급\", \"일반 공급\"]")
+        List<String> availableSupplyTypes,
+
+        @Schema(description = "신청가능한 임대주택 (주택 유형)", example = "[\"공공임대\", \"민간임대\"]")
+        List<String> availableRentalTypes,
+
         @Schema(description = "최종 자격 여부", example = "true")
         boolean eligible,
 
@@ -135,52 +66,34 @@ public record DiagnosisDetailResponse(
                         .map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
                         .toList();
 
-        // 총 자녀 수 계산
-        int totalChildren = diagnosis.getUnbornChildrenCount()
-                + diagnosis.getUnder6ChildrenCount()
-                + diagnosis.getOver7MinorChildrenCount();
+        // 지원 가능한 공급 유형 (중복 제거)
+        List<String> availableSupplyTypes = context.getCurrentCandidates().isEmpty() ?
+                List.of("해당 없음") :
+                context.getCurrentCandidates().stream()
+                        .map(c -> c.supplyType().getValue())
+                        .distinct()
+                        .toList();
+
+        // 신청 가능한 임대주택 유형 (중복 제거)
+        List<String> availableRentalTypes = context.getCurrentCandidates().isEmpty() ?
+                List.of("해당 없음") :
+                context.getCurrentCandidates().stream()
+                        .map(c -> c.noticeType().getValue())
+                        .distinct()
+                        .toList();
 
         return DiagnosisDetailResponse.builder()
                 // 메타 정보
                 .diagnosisId(diagnosis.getId())
                 .diagnosedAt(diagnosis.getCreatedAt())
+                .nickname(diagnosis.getUser() != null ? diagnosis.getUser().getNickname() : "알 수 없음")
                 // 1. 성별/나이
                 .gender(diagnosis.getGender() != null ? diagnosis.getGender().getValue() : "미입력")
                 .age(diagnosis.getAge())
-                // 2. 소득
-                .incomeLevel(diagnosis.getIncomeLevel() != null ? diagnosis.getIncomeLevel().getValue() : "미입력")
-                .monthPay(diagnosis.getMonthPay())
-                // 3. 대학생 여부
-                .isCollegeStudent(diagnosis.getEducationStatus() != null)
-                // 4. 청약 저축
-                .hasSubscription(diagnosis.isHasAccount())
-                .subscriptionYears(diagnosis.getAccountYears() != null ? diagnosis.getAccountYears().getDescription() : "미입력")
-                .subscriptionCount(diagnosis.getAccountDeposit() != null ? diagnosis.getAccountDeposit().getDescription() : "미입력")
-                .subscriptionAmount(diagnosis.getAccount() != null ? diagnosis.getAccount().getValue() : "미입력")
-                // 5. 결혼 여부
-                .isMarried(diagnosis.isMaritalStatus())
-                .marriedYears(diagnosis.getMarriageYears())
-                // 6. 자녀 여부
-                .unbornChildren(diagnosis.getUnbornChildrenCount())
-                .under6Children(diagnosis.getUnder6ChildrenCount())
-                .over7MinorChildren(diagnosis.getOver7MinorChildrenCount())
-                .totalChildren(totalChildren)
-                // 7. 세대 정보
-                .isHouseholdHead(diagnosis.isHouseholdHead())
-                .isSingleHousehold(diagnosis.isSingle())
-                .householdSize(diagnosis.getFamilyCount())
-                // 8. 주택 소유 여부
-                .housingStatus(diagnosis.getHousingStatus() != null ? diagnosis.getHousingStatus().getDescription() : "미입력")
-                .housingYears(diagnosis.getHousingYears())
-                // 9. 자동차 소유 여부
-                .ownsCar(diagnosis.isHasCar())
-                .carValue(diagnosis.getCarValue())
-                // 10. 총 자산
-                .propertyAsset(diagnosis.getPropertyAsset())
-                .carAsset(diagnosis.getCarAsset())
-                .financialAsset(diagnosis.getFinancialAsset())
-                .totalAssets(diagnosis.getTotalAsset())
                 // 최종 진단 결과
+                .myIncomeLevel(diagnosis.getIncomeLevel() != null ? diagnosis.getIncomeLevel().getValue() : "미입력")
+                .availableSupplyTypes(availableSupplyTypes)
+                .availableRentalTypes(availableRentalTypes)
                 .eligible(!recommended.contains("해당 없음"))
                 .diagnosisResult(!recommended.contains("해당 없음") ?
                         "추천 임대주택이 있습니다" : "모든 조건 미충족")
