@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.home.application.usecase;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
@@ -46,4 +47,13 @@ public interface HomeUseCase {
             NoticeSearchFilterType status,
             UUID userId
     );
+
+    /**
+     * 핀포인트 기준 최대 이동 시간 내 공고 개수 조회
+     * @param pinPointId 핀포인트 ID (기준 위치)
+     * @param maxTime 최대 이동 시간 (분)
+     * @param userId 사용자 ID (PinPoint 소유권 검증용)
+     * @return 공고 개수
+     */
+    NoticeCountResponse getNoticeCountWithinTravelTime(String pinPointId, int maxTime, UUID userId);
 }

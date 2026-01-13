@@ -5,6 +5,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.home.presentation.swagger.HomeApiSpec;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
@@ -78,6 +79,32 @@ public class HomeApi implements HomeApiSpec {
                 sliceRequest.offSet(),
                 sortType,
                 status,
+                userId
+        );
+
+        return ApiResponse.ok(response);
+    }
+
+    /**
+     * 핀포인트 기준 공고 개수 조회
+     * GET /v1/home/notice-count?pinPointId=xxx&maxTime=30
+     * 로그인 필수
+     */
+    @Override
+    @CheckLogin
+    @GetMapping("/notice-count")
+    public ApiResponse<NoticeCountResponse> getNoticeCountWithinTravelTime(
+            @RequestParam String pinPointId,
+            @RequestParam int maxTime,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        // @CheckLogin에 의해 principalDetails는 항상 non-null
+        UUID userId = principalDetails.getId();
+
+        // 서비스 호출
+        NoticeCountResponse response = homeService.getNoticeCountWithinTravelTime(
+                pinPointId,
+                maxTime,
                 userId
         );
 

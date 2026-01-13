@@ -4,9 +4,13 @@ import com.pinHouse.server.core.exception.code.PinPointErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeResponse;
+import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
+import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
+import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
@@ -32,6 +36,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * 홈 화면 서비스
@@ -43,6 +48,7 @@ import java.util.UUID;
 public class HomeService implements HomeUseCase {
 
     private final NoticeDocumentRepository noticeRepository;
+    private final ComplexDocumentRepository complexRepository;
     private final LikeQueryUseCase likeService;
     private final NoticeSearchUseCase noticeSearchService;
     private final PinPointUseCase pinPointService;
@@ -188,5 +194,57 @@ public class HomeService implements HomeUseCase {
             UUID userId
     ) {
         return noticeSearchService.searchNotices(keyword, page, size, sortType, status, userId);
+    }
+
+    /**
+     * 핀포인트 기준 최대 이동 시간 내 공고 개수 조회
+     * - 거리 기반 근사 계산을 통해 최대 이동 시간 내 단지를 찾고
+     * - 해당 단지들의 고유 공고 개수를 반환
+     *
+     * @param pinPointId 핀포인트 ID
+     * @param maxTime 최대 이동 시간 (분)
+     * @param userId 사용자 ID (PinPoint 소유권 검증용)
+     * @return 공고 개수 응답
+     */
+    @Override
+    public NoticeCountResponse getNoticeCountWithinTravelTime(String pinPointId, int maxTime, UUID userId) {
+        // PinPoint 소유자 검증
+        boolean isOwner = pinPointService.checkPinPoint(pinPointId, userId);
+        if (!isOwner) {
+            log.warn("PinPoint 소유자 불일치 - pinpointId={}, requestUserId={}", pinPointId, userId);
+            throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
+        }
+
+        // 핀포인트 조회
+        PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
+        Location pinPointLocation = pinPoint.getLocation();
+
+        // 평균 이동 속도 기반 반경 계산 (km 단위)
+        // 평균 속도: 15km/h (대중교통 평균 속도)
+        double avgSpeedKmh = 15.0;
+        double distanceKm = (avgSpeedKmh * maxTime) / 60.0;
+
+        // MongoDB 지오스페이셜 쿼리를 위한 라디안 단위 변환
+        // Earth radius: 6378.1 km
+        double radiusInRadians = distanceKm / 6378.1;
+
+        // 반경 내 단지 조회
+        List<ComplexDocument> nearbyComplexes = complexRepository.findByLocation(
+                pinPointLocation.getLongitude(),
+                pinPointLocation.getLatitude(),
+                radiusInRadians
+        );
+
+        // 단지들의 고유한 공고 ID 추출 및 개수 계산
+        long uniqueNoticeCount = nearbyComplexes.stream()
+                .map(ComplexDocument::getNoticeId)
+                .filter(noticeId -> noticeId != null && !noticeId.isBlank())
+                .distinct()
+                .count();
+
+        log.debug("핀포인트 {} 기준 {}분 내 공고 개수: {} (반경: {}km)",
+                pinPointId, maxTime, uniqueNoticeCount, distanceKm);
+
+        return NoticeCountResponse.from(uniqueNoticeCount);
     }
 }
