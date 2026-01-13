@@ -52,8 +52,8 @@ public record UnitTypeCompareResponse(
             @Schema(description = "단지 기반 주변 인프라 태그 (Complex에 속한 시설 정보)", example = "[\"공원\", \"도서관\", \"병원\"]")
             List<FacilityType> nearbyFacilities,
 
-            @Schema(description = "핀포인트 기준 거리", example = "3.5km")
-            String distanceFromPinPoint,
+            @Schema(description = "핀포인트 기준 대중교통 총 소요 시간", example = "1시간 30분")
+            String totalTime,
 
             @Schema(description = "좋아요 여부", example = "true")
             boolean isLiked,
@@ -68,7 +68,7 @@ public record UnitTypeCompareResponse(
                 ComplexDocument complex,
                 UnitType unitType,
                 List<FacilityType> facilities,
-                String distance,
+                String totalTime,
                 boolean isLiked
         ) {
             return UnitTypeComparisonItem.builder()
@@ -78,7 +78,7 @@ public record UnitTypeCompareResponse(
                     .area(AreaInfo.from(unitType))
                     .cost(CostInfo.from(unitType))
                     .nearbyFacilities(facilities != null ? facilities : List.of())
-                    .distanceFromPinPoint(distance)
+                    .totalTime(totalTime)
                     .isLiked(isLiked)
                     .group(unitType.getGroup() != null ? unitType.getGroup() : List.of())
                     .build();

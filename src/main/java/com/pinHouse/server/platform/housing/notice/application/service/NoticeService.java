@@ -4,6 +4,7 @@ import com.pinHouse.server.core.exception.code.NoticeErrorCode;
 import com.pinHouse.server.core.response.response.CustomException;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
+import com.pinHouse.server.core.util.TimeFormatter;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
@@ -323,32 +324,50 @@ public class NoticeService implements NoticeUseCase {
                         }
                 ));
 
-        /// 각 단지의 거리 계산 (userLocation이 있는 경우에만)
-        Map<String, String> distanceMap = new HashMap<>();
-        if (userLocation != null) {
-            Location finalUserLocation = userLocation;
-            distanceMap = complexes.stream()
-                    .collect(Collectors.toMap(
-                            ComplexDocument::getId,
-                            complex -> formatDistance(calculateDistance(finalUserLocation, complex.getLocation()))
-                    ));
+        /// 각 단지의 대중교통 소요 시간 계산 (pinPointId가 있는 경우에만)
+        Map<String, String> totalTimeMap = new HashMap<>();
+        if (pinPointId != null && !pinPointId.isBlank()) {
+            log.info("방 비교: 모든 단지에 대한 대중교통 소요 시간 계산 시작 - pinPointId={}, 단지 개수={}",
+                    pinPointId, complexes.size());
+
+            int successCount = 0;
+            int failCount = 0;
+
+            for (ComplexDocument complex : complexes) {
+                try {
+                    com.pinHouse.server.platform.housing.complex.application.dto.response.DistanceResponse distance =
+                            complexService.getEasyDistance(complex.getId(), pinPointId);
+                    String formattedTime = TimeFormatter.formatTime(distance.totalTimeMinutes());
+                    totalTimeMap.put(complex.getId(), formattedTime);
+                    successCount++;
+                    log.debug("대중교통 시간 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}",
+                            complex.getId(), formattedTime);
+                } catch (Exception e) {
+                    failCount++;
+                    totalTimeMap.put(complex.getId(), null);
+                    log.error("대중교통 시간 계산 실패 (null로 설정) - complexId={}, pinPointId={}, error={}",
+                            complex.getId(), pinPointId, e.getMessage(), e);
+                }
+            }
+
+            log.info("대중교통 시간 계산 완료 - 성공: {}, 실패: {}, 총: {}", successCount, failCount, complexes.size());
         }
 
-        /// 최종 거리 맵 (람다에서 사용하기 위해 effectively final)
-        Map<String, String> finalDistanceMap = distanceMap;
+        /// 최종 시간 맵 (람다에서 사용하기 위해 effectively final)
+        Map<String, String> finalTotalTimeMap = totalTimeMap;
 
         /// 모든 단지의 유닛타입을 수집하여 비교 항목 생성
         List<UnitTypeCompareResponse.UnitTypeComparisonItem> comparisonItems = complexes.stream()
                 .flatMap(complex -> {
                     String complexId = complex.getId();
                     List<FacilityType> facilities = facilityMap.getOrDefault(complexId, List.of());
-                    String distance = finalDistanceMap.getOrDefault(complexId, null);
+                    String totalTime = finalTotalTimeMap.getOrDefault(complexId, null);
 
                     return complex.getUnitTypes().stream()
                             .map(unitType -> {
                                 boolean isLiked = likedUnitTypeIds.contains(unitType.getTypeId());
                                 return UnitTypeCompareResponse.UnitTypeComparisonItem.from(
-                                        complex, unitType, facilities, distance, isLiked
+                                        complex, unitType, facilities, totalTime, isLiked
                                 );
                             });
                 })
@@ -431,14 +450,14 @@ public class NoticeService implements NoticeUseCase {
      */
     private void sortByDistance(List<UnitTypeCompareResponse.UnitTypeComparisonItem> items) {
         items.sort(Comparator
-                // 1차: 거리 (가까운 순 = 오름차순)
+                // 1차: 대중교통 소요 시간 (짧은 순 = 오름차순)
                 .comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
-                    String distanceStr = item.distanceFromPinPoint();
-                    if (distanceStr == null || distanceStr.isBlank()) {
-                        return Double.MAX_VALUE;
+                    String totalTimeStr = item.totalTime();
+                    if (totalTimeStr == null || totalTimeStr.isBlank()) {
+                        return Integer.MAX_VALUE;
                     }
-                    // "3.5km" 또는 "500m" 형식을 km 단위 double로 변환
-                    return parseDistanceToKm(distanceStr);
+                    // "1시간 30분" 또는 "45분" 형식을 분 단위 int로 변환
+                    return parseTimeToMinutes(totalTimeStr);
                 })
                 // 2차: 보증금 (낮은 순)
                 .thenComparing(item ->
@@ -482,6 +501,41 @@ public class NoticeService implements NoticeUseCase {
         } catch (NumberFormatException e) {
             log.warn("거리 문자열 파싱 실패: {}", distanceStr);
             return Double.MAX_VALUE;
+        }
+    }
+
+    /**
+     * 시간 문자열을 분 단위 int로 변환
+     * @param timeStr "1시간 30분", "45분", "2시간" 형식
+     * @return 분 단위 시간
+     */
+    private int parseTimeToMinutes(String timeStr) {
+        try {
+            int totalMinutes = 0;
+
+            // "1시간 30분" 또는 "2시간" 형식 처리
+            if (timeStr.contains("시간")) {
+                String[] parts = timeStr.split("시간");
+                // 시간 부분 파싱
+                totalMinutes += Integer.parseInt(parts[0].trim()) * 60;
+
+                // 분 부분이 있으면 파싱
+                if (parts.length > 1 && parts[1].contains("분")) {
+                    String minutesPart = parts[1].replace("분", "").trim();
+                    if (!minutesPart.isEmpty()) {
+                        totalMinutes += Integer.parseInt(minutesPart);
+                    }
+                }
+            } else if (timeStr.contains("분")) {
+                // "45분" 형식 처리
+                String minutesPart = timeStr.replace("분", "").trim();
+                totalMinutes = Integer.parseInt(minutesPart);
+            }
+
+            return totalMinutes;
+        } catch (NumberFormatException e) {
+            log.warn("시간 문자열 파싱 실패: {}", timeStr);
+            return Integer.MAX_VALUE;
         }
     }
 
