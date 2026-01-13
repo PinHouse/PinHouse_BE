@@ -13,6 +13,7 @@ public enum NoticeErrorCode implements ErrorCode {
     // 400 Bad Request
     // ========================
     MISSING_PINPOINT_ID(400_001, HttpStatus.BAD_REQUEST, "pinPointId는 필수 입력값입니다"),
+    MISSING_NEARBY_FACILITIES(400_002, HttpStatus.BAD_REQUEST, "주변환경매칭순 정렬을 위해서는 nearbyFacilities가 필수입니다"),
 
     // ========================
     // 401 Unauthorized

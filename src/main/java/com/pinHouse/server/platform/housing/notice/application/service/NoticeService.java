@@ -287,6 +287,12 @@ public class NoticeService implements NoticeUseCase {
             finalSortType = UnitTypeSortType.DEPOSIT_ASC;
         }
 
+        /// FACILITY_MATCH 정렬은 nearbyFacilities 필수
+        if (finalSortType == UnitTypeSortType.FACILITY_MATCH && (nearbyFacilities == null || nearbyFacilities.isEmpty())) {
+            log.error("주변환경매칭순 정렬 요청이지만 nearbyFacilities가 없음 - noticeId={}", noticeId);
+            throw new CustomException(NoticeErrorCode.MISSING_NEARBY_FACILITIES);
+        }
+
         /// ⭐️ DB 레벨에서 정렬된 단지 및 유닛타입 조회
         /// FACILITY_MATCH, DISTANCE_ASC의 경우 DB 정렬 없이 전체 조회 (애플리케이션 레벨 정렬 예정)
         List<ComplexDocument> complexes;
