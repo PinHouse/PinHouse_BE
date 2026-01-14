@@ -4,6 +4,7 @@ import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
 import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
@@ -51,6 +52,22 @@ public interface HomeApiSpec {
 
             @Parameter(description = "공고 상태 (ALL: 전체, RECRUITING: 모집중)", example = "ALL")
             @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
+
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    @Operation(
+            summary = "핀포인트 기준 공고 개수 조회 API - 로그인 필수",
+            description = "핀포인트를 기준으로 최대 이동 시간(분) 내에 위치한 공고의 개수를 조회하는 API 입니다. " +
+                    "대중교통 평균 속도(15km/h)를 기준으로 반경을 계산하여 해당 범위 내 단지들의 고유 공고 개수를 반환합니다. " +
+                    "본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다."
+    )
+    ApiResponse<NoticeCountResponse> getNoticeCountWithinTravelTime(
+            @Parameter(description = "핀포인트 ID", example = "83ec36ce-8fc1-4f62-8983-397c2729fc22")
+            @RequestParam String pinPointId,
+
+            @Parameter(description = "최대 이동 시간 (분)", example = "30")
+            @RequestParam int maxTime,
 
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

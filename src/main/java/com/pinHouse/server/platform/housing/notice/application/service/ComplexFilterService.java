@@ -393,7 +393,6 @@ public class ComplexFilterService {
                     .minPrice(0)
                     .maxPrice(0)
                     .avgPrice(0)
-                    .priceDistribution(List.of())
                     .build();
         }
 
@@ -402,66 +401,12 @@ public class ComplexFilterService {
         long maxPrice = allPrices.stream().max(Long::compareTo).orElse(0L);
         long avgPrice = (long) allPrices.stream().mapToLong(Long::longValue).average().orElse(0.0);
 
-        // 가격 분포 계산 (원 단위로 계산)
-        List<ComplexFilterResponse.PriceDistribution> distribution =
-                calculatePriceDistribution(allPrices, minPrice, maxPrice);
-
         // 만 단위로 변환하여 반환
         return ComplexFilterResponse.CostFilter.builder()
                 .minPrice(minPrice / 10000)
                 .maxPrice(maxPrice / 10000)
                 .avgPrice(avgPrice / 10000)
-                .priceDistribution(distribution)
                 .build();
-    }
-
-    /**
-     * 가격 분포 계산 (최대 20개 구간)
-     */
-    private List<ComplexFilterResponse.PriceDistribution> calculatePriceDistribution(
-            List<Long> prices,
-            long minPrice,
-            long maxPrice
-    ) {
-        if (prices.isEmpty() || minPrice == maxPrice) {
-            return List.of(ComplexFilterResponse.PriceDistribution.builder()
-                    .rangeStart(minPrice / 10000)
-                    .rangeEnd(maxPrice / 10000)
-                    .count(prices.size())
-                    .build());
-        }
-
-        // 구간 개수 결정 (최대 20개)
-        int bucketCount = Math.min(20, prices.size());
-        long range = maxPrice - minPrice;
-        long bucketSize = Math.max(1, range / bucketCount);
-
-        // 각 구간별 카운트 맵 생성
-        Map<Integer, Long> bucketCounts = new HashMap<>();
-        for (long price : prices) {
-            int bucketIndex = (int) ((price - minPrice) / bucketSize);
-            // 최대값이 정확히 maxPrice인 경우 마지막 버킷에 포함
-            if (bucketIndex >= bucketCount) {
-                bucketIndex = bucketCount - 1;
-            }
-            bucketCounts.merge(bucketIndex, 1L, Long::sum);
-        }
-
-        // PriceDistribution 리스트 생성 (만 단위로 변환)
-        List<ComplexFilterResponse.PriceDistribution> distributions = new ArrayList<>();
-        for (int i = 0; i < bucketCount; i++) {
-            long rangeStart = minPrice + (i * bucketSize);
-            long rangeEnd = (i == bucketCount - 1) ? maxPrice : rangeStart + bucketSize - 1;
-            long count = bucketCounts.getOrDefault(i, 0L);
-
-            distributions.add(ComplexFilterResponse.PriceDistribution.builder()
-                    .rangeStart(rangeStart / 10000)
-                    .rangeEnd(rangeEnd / 10000)
-                    .count(count)
-                    .build());
-        }
-
-        return distributions;
     }
 
     /**

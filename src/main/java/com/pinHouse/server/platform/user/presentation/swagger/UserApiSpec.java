@@ -63,9 +63,10 @@ public interface UserApiSpec {
     /// 탈퇴하기
     @Operation(
             summary = "탈퇴 API",
-            description = "JWT를 바탕으로 탈퇴를 진행합니다."
+            description = "JWT를 바탕으로 탈퇴를 진행합니다. 탈퇴 사유는 0개 이상 복수 선택 가능합니다."
     )
     ApiResponse<Void> delete(
+            @RequestBody WithdrawRequest request,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
