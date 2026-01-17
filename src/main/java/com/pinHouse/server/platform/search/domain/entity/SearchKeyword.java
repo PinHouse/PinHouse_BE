@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,6 +18,9 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor
 @Document(collection = "search_keywords")
+@CompoundIndexes({
+        @CompoundIndex(name = "idx_scope_keyword_unique", def = "{'scope': 1, 'keyword': 1}", unique = true)
+})
 public class SearchKeyword {
 
     @Id
@@ -24,8 +29,14 @@ public class SearchKeyword {
     /**
      * 검색 키워드 (정규화됨: 소문자, 공백 제거)
      */
-    @Indexed(unique = true)
+    @Indexed
     private String keyword;
+
+    /**
+     * 검색 영역 (기본: GENERAL)
+     */
+    @Indexed
+    private SearchKeywordScope scope;
 
     /**
      * 검색 횟수
@@ -45,8 +56,9 @@ public class SearchKeyword {
     private Instant firstSearchedAt;
 
     @Builder
-    public SearchKeyword(String keyword, Long count, Instant lastSearchedAt, Instant firstSearchedAt) {
+    public SearchKeyword(String keyword, SearchKeywordScope scope, Long count, Instant lastSearchedAt, Instant firstSearchedAt) {
         this.keyword = keyword;
+        this.scope = scope;
         this.count = count;
         this.lastSearchedAt = lastSearchedAt;
         this.firstSearchedAt = firstSearchedAt;
@@ -55,10 +67,11 @@ public class SearchKeyword {
     /**
      * 새로운 검색 키워드 생성
      */
-    public static SearchKeyword create(String keyword) {
+    public static SearchKeyword create(String keyword, SearchKeywordScope scope) {
         Instant now = Instant.now();
         return SearchKeyword.builder()
                 .keyword(normalizeKeyword(keyword))
+                .scope(scope)
                 .count(1L)
                 .lastSearchedAt(now)
                 .firstSearchedAt(now)

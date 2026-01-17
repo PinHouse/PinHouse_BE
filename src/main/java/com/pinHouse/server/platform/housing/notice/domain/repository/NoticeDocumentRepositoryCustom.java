@@ -77,4 +77,34 @@ public interface NoticeDocumentRepositoryCustom {
             Pageable pageable
     );
 
+    /**
+     * 모집대상 텍스트 검색 (중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchTargetGroups(String keyword, Pageable pageable);
+
+    /**
+     * 지역 텍스트 검색 (도시/시군구 조합, 중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchRegions(String keyword, Pageable pageable);
+
+    /**
+     * 주택유형 텍스트 검색 (중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchHouseTypes(String keyword, Pageable pageable);
+
+    /**
+     * 모집대상 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByTargetGroup(String keyword, Pageable pageable);
+
+    /**
+     * 지역 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByRegion(String keyword, Pageable pageable);
+
+    /**
+     * 주택유형 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword, Pageable pageable);
+
 }

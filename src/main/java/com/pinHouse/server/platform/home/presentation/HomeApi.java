@@ -3,14 +3,14 @@ package com.pinHouse.server.platform.home.presentation;
 import com.pinHouse.server.core.aop.CheckLogin;
 import com.pinHouse.server.core.response.response.ApiResponse;
 import com.pinHouse.server.core.response.response.pageable.SliceRequest;
-import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchCategoryPageResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchCategoryType;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchOverviewResponse;
 import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.home.presentation.swagger.HomeApiSpec;
-import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
-import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
-import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
+import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
 import com.pinHouse.server.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.List;
 
 /**
  * 홈 화면 API
@@ -57,31 +58,52 @@ public class HomeApi implements HomeApiSpec {
     }
 
     /**
-     * 통합 검색 (공고 제목 및 타겟 그룹 기반)
-     * GET /v1/home/search?q=키워드&page=1&offSet=20&sortType=LATEST&status=ALL
+     * 홈 통합 검색 미리보기 (섹션별 5개)
+     * GET /v1/home/search/overview?q=키워드
      */
     @Override
-    @GetMapping("/search")
-    public ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNoticesIntegrated(
+    @GetMapping("/search/overview")
+    public ApiResponse<HomeSearchOverviewResponse> searchOverview(
             @RequestParam String q,
-            SliceRequest sliceRequest,
-            @RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
-            @RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        // 로그인하지 않은 경우 userId는 null
         UUID userId = (principalDetails != null) ? principalDetails.getId() : null;
+        HomeSearchOverviewResponse response = homeService.searchHomeOverview(q, userId);
+        return ApiResponse.ok(response);
+    }
 
-        // 서비스 호출
-        SliceResponse<NoticeSearchResultResponse> response = homeService.searchNoticesIntegrated(
+    /**
+     * 홈 통합 검색 카테고리별 조회 (더보기)
+     * GET /v1/home/search/category?type=NOTICE&q=키워드&page=1&offSet=20
+     */
+    @Override
+    @GetMapping("/search/category")
+    public ApiResponse<HomeSearchCategoryPageResponse> searchByCategory(
+            @RequestParam HomeSearchCategoryType type,
+            @RequestParam String q,
+            @RequestParam(defaultValue = "1") int page,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        UUID userId = (principalDetails != null) ? principalDetails.getId() : null;
+        HomeSearchCategoryPageResponse response = homeService.searchHomeByCategory(
+                type,
                 q,
-                sliceRequest.page(),
-                sliceRequest.offSet(),
-                sortType,
-                status,
+                page,
                 userId
         );
+        return ApiResponse.ok(response);
+    }
 
+    /**
+     * 홈 인기 검색어 조회
+     * GET /v1/home/search/popular?limit=10
+     */
+    @Override
+    @GetMapping("/search/popular")
+    public ApiResponse<List<PopularKeywordResponse>> getHomePopularKeywords(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        List<PopularKeywordResponse> response = homeService.getHomePopularKeywords(limit);
         return ApiResponse.ok(response);
     }
 

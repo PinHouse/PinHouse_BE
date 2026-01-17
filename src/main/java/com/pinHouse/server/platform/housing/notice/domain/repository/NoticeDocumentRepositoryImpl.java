@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -227,6 +230,122 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         long count = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), NoticeDocument.class);
 
         return new PageImpl<>(notices, pageable, count);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<String> searchTargetGroups(String keyword, Pageable pageable) {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
+                Aggregation.unwind("targetGroup"),
+                Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
+                Aggregation.group("targetGroup"),
+                Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+                Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
+                Aggregation.limit(pageable.getPageSize() + 1)
+        );
+
+        List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
+                .getMappedResults()
+                .stream()
+                .map(StringAggregationResult::getId)
+                .toList();
+
+        return toSlice(results, pageable);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<String> searchRegions(String keyword, Pageable pageable) {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().orOperator(
+                        Criteria.where("city").regex(keyword, "i"),
+                        Criteria.where("county").regex(keyword, "i")
+                )),
+                Aggregation.project("city", "county")
+                        .andExpression("concat(city, ' ', county)").as("region"),
+                Aggregation.group("region"),
+                Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+                Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
+                Aggregation.limit(pageable.getPageSize() + 1)
+        );
+
+        List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
+                .getMappedResults()
+                .stream()
+                .map(StringAggregationResult::getId)
+                .toList();
+
+        return toSlice(results, pageable);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<String> searchHouseTypes(String keyword, Pageable pageable) {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("houseType").regex(keyword, "i")),
+                Aggregation.group("houseType"),
+                Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+                Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
+                Aggregation.limit(pageable.getPageSize() + 1)
+        );
+
+        List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
+                .getMappedResults()
+                .stream()
+                .map(StringAggregationResult::getId)
+                .toList();
+
+        return toSlice(results, pageable);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByTargetGroup(String keyword, Pageable pageable) {
+        Criteria criteria = Criteria.where("targetGroup").regex(keyword, "i");
+        return findNoticeSlice(criteria, pageable);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByRegion(String keyword, Pageable pageable) {
+        Criteria criteria = new Criteria().orOperator(
+                Criteria.where("city").regex(keyword, "i"),
+                Criteria.where("county").regex(keyword, "i")
+        );
+        return findNoticeSlice(criteria, pageable);
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword, Pageable pageable) {
+        Criteria criteria = Criteria.where("houseType").regex(keyword, "i");
+        return findNoticeSlice(criteria, pageable);
+    }
+
+    private org.springframework.data.domain.Slice<NoticeDocument> findNoticeSlice(Criteria criteria, Pageable pageable) {
+        Query query = new Query(criteria).with(pageable);
+        int limit = pageable.getPageSize();
+        query.limit(limit + 1);
+
+        List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);
+        boolean hasNext = notices.size() > limit;
+        List<NoticeDocument> content = hasNext ? notices.subList(0, limit) : notices;
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    private org.springframework.data.domain.Slice<String> toSlice(List<String> values, Pageable pageable) {
+        int size = pageable.getPageSize();
+        boolean hasNext = values.size() > size;
+        List<String> content = hasNext ? values.subList(0, size) : values;
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    private static class StringAggregationResult {
+        private String id;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
     }
 
 }
