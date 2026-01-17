@@ -12,6 +12,9 @@ public record HomeNoticeListResponse(
         @Schema(description = "공통 지역", example = "성남시")
         String region,
 
+        @Schema(description = "목록 설명/출처", example = "진단 기반 추천")
+        String title,
+
         @Schema(description = "공고 목록")
         List<HomeNoticeResponse> content,
 

@@ -108,11 +108,12 @@ public class HomeService implements HomeUseCase {
 
         // 최종 응답 생성 (region + content + 페이징 정보)
         return HomeNoticeListResponse.builder()
-                .region(county)
-                .content(content)
-                .hasNext(page.hasNext())
-                .totalElements(page.getTotalElements())
-                .build();
+            .region(county)
+            .title(null)
+            .content(content)
+            .hasNext(page.hasNext())
+            .totalElements(page.getTotalElements())
+            .build();
     }
 
     /**
@@ -281,7 +282,8 @@ public class HomeService implements HomeUseCase {
             availableRentalTypes.contains("해당 없음")) {
             log.info("추천 가능한 임대주택이 없습니다 - userId={}", userId);
             return HomeNoticeListResponse.builder()
-                .region("진단 기반 추천")
+                .region(null)
+                .title("진단 기반 추천")
                 .content(List.of())
                 .hasNext(false)
                 .totalElements(0L)
@@ -298,7 +300,8 @@ public class HomeService implements HomeUseCase {
         if (targetSupplyTypes.isEmpty()) {
             log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", userId);
             return HomeNoticeListResponse.builder()
-                .region("진단 기반 추천")
+                .region(null)
+                .title("진단 기반 추천")
                 .content(List.of())
                 .hasNext(false)
                 .totalElements(0L)
@@ -331,7 +334,8 @@ public class HomeService implements HomeUseCase {
 
         // 10. 최종 응답
         return HomeNoticeListResponse.builder()
-            .region("진단 기반 추천")
+            .region(null)
+            .title("진단 기반 추천")
             .content(content)
             .hasNext(page.hasNext())
             .totalElements(page.getTotalElements())
