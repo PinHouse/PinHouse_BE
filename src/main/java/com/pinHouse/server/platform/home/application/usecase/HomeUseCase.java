@@ -56,4 +56,17 @@ public interface HomeUseCase {
      * @return 공고 개수
      */
     NoticeCountResponse getNoticeCountWithinTravelTime(String pinPointId, int maxTime, UUID userId);
+
+    /**
+     * 진단 기반 추천 공고 조회
+     * 사용자의 최근 청약 진단 결과를 기반으로 맞춤형 공고를 추천
+     *
+     * @param sliceRequest 페이징 정보 (page, offSet)
+     * @param userId 사용자 ID (진단 결과 조회 및 좋아요 정보용)
+     * @return 진단 기반 추천 공고 목록 (마감임박순 정렬, 모든 공고 상태 포함)
+     */
+    HomeNoticeListResponse getRecommendedNoticesByDiagnosis(
+            SliceRequest sliceRequest,
+            UUID userId
+    );
 }

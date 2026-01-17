@@ -14,6 +14,8 @@ import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDoc
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
@@ -21,6 +23,7 @@ import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterTyp
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
+import com.pinHouse.server.core.exception.code.DiagnosisErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,7 +39,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * 홈 화면 서비스
@@ -52,6 +54,7 @@ public class HomeService implements HomeUseCase {
     private final LikeQueryUseCase likeService;
     private final NoticeSearchUseCase noticeSearchService;
     private final PinPointUseCase pinPointService;
+    private final DiagnosisUseCase diagnosisService;
 
     /**
      * 마감임박공고 조회 (PinPoint 지역 기반)
@@ -246,5 +249,92 @@ public class HomeService implements HomeUseCase {
                 pinPointId, maxTime, uniqueNoticeCount, distanceKm);
 
         return NoticeCountResponse.from(uniqueNoticeCount);
+    }
+
+    /**
+     * 진단 기반 추천 공고 조회
+     * - 사용자의 최근 청약 진단 결과를 기반으로 맞춤형 공고를 추천
+     * - 진단 결과의 availableRentalTypes를 NoticeDocument.supplyType으로 매핑하여 필터링
+     * - 마감임박순으로 정렬 (applyEnd ASC)
+     * - 모든 공고 상태 포함 (모집중 + 마감)
+     */
+    @Override
+    public HomeNoticeListResponse getRecommendedNoticesByDiagnosis(
+            SliceRequest sliceRequest,
+            UUID userId
+    ) {
+        // 1. 진단 결과 조회
+        DiagnosisDetailResponse diagnosis = diagnosisService.getDiagnoseDetail(userId);
+
+        // 2. 진단 기록 없음 처리
+        if (diagnosis == null) {
+            log.warn("진단 기록이 없습니다 - userId={}", userId);
+            throw new CustomException(DiagnosisErrorCode.NOT_FOUND_DIAGNOSIS);
+        }
+
+        // 3. 추천 임대주택 유형 추출
+        List<String> availableRentalTypes = diagnosis.availableRentalTypes();
+
+        // 4. 자격 없는 경우 빈 응답 반환
+        if (availableRentalTypes == null ||
+            availableRentalTypes.isEmpty() ||
+            availableRentalTypes.contains("해당 없음")) {
+            log.info("추천 가능한 임대주택이 없습니다 - userId={}", userId);
+            return HomeNoticeListResponse.builder()
+                .region("진단 기반 추천")
+                .content(List.of())
+                .hasNext(false)
+                .totalElements(0L)
+                .build();
+        }
+
+        // 5. 진단 결과 → 공고 supplyType 매핑
+        List<String> targetSupplyTypes = availableRentalTypes.stream()
+            .filter(type -> type != null && !type.isBlank())
+            .distinct()
+            .toList();
+
+        // 진단 결과에 매핑될 공고 유형이 없는 경우 빈 응답 반환
+        if (targetSupplyTypes.isEmpty()) {
+            log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", userId);
+            return HomeNoticeListResponse.builder()
+                .region("진단 기반 추천")
+                .content(List.of())
+                .hasNext(false)
+                .totalElements(0L)
+                .build();
+        }
+
+        log.debug("진단 기반 필터링 - rentalTypes={}, supplyTypes={}",
+            availableRentalTypes, targetSupplyTypes);
+
+        // 6. 페이징 설정 (마감임박순)
+        Sort sort = Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"));
+        Pageable pageable = PageRequest.of(sliceRequest.page() - 1, sliceRequest.offSet(), sort);
+
+        // 7. Repository 조회
+        Page<NoticeDocument> page = noticeRepository.findRecommendedNoticesByDiagnosis(
+            targetSupplyTypes,
+            pageable
+        );
+
+        // 8. 좋아요 상태 조회
+        List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
+
+        // 9. DTO 변환
+        List<HomeNoticeResponse> content = page.getContent().stream()
+            .map(notice -> {
+                boolean isLiked = likedNoticeIds.contains(notice.getId());
+                return HomeNoticeResponse.from(notice, isLiked);
+            })
+            .toList();
+
+        // 10. 최종 응답
+        return HomeNoticeListResponse.builder()
+            .region("진단 기반 추천")
+            .content(content)
+            .hasNext(page.hasNext())
+            .totalElements(page.getTotalElements())
+            .build();
     }
 }

@@ -110,4 +110,28 @@ public class HomeApi implements HomeApiSpec {
 
         return ApiResponse.ok(response);
     }
+
+    /**
+     * 진단 기반 추천 공고 조회
+     * GET /v1/home/recommended-notices?page=1&offSet=20
+     * 로그인 필수
+     */
+    @Override
+    @CheckLogin
+    @GetMapping("/recommended-notices")
+    public ApiResponse<HomeNoticeListResponse> getRecommendedNoticesByDiagnosis(
+            SliceRequest sliceRequest,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        // @CheckLogin에 의해 principalDetails는 항상 non-null
+        UUID userId = principalDetails.getId();
+
+        // 서비스 호출
+        HomeNoticeListResponse response = homeService.getRecommendedNoticesByDiagnosis(
+                sliceRequest,
+                userId
+        );
+
+        return ApiResponse.ok(response);
+    }
 }

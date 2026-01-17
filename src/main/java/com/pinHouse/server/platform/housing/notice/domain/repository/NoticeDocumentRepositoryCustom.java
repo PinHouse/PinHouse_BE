@@ -64,4 +64,17 @@ public interface NoticeDocumentRepositoryCustom {
             Instant now
     );
 
+    /**
+     * 진단 결과 기반 추천 공고 조회
+     * 사용자의 청약 진단 결과를 바탕으로 신청 가능한 공고를 조회
+     *
+     * @param supplyTypes 공급 유형 리스트 (진단 결과에서 매핑된 값)
+     * @param pageable 페이징 및 정렬 정보 (마감임박순 권장)
+     * @return 추천 공고 목록
+     */
+    Page<NoticeDocument> findRecommendedNoticesByDiagnosis(
+            java.util.List<String> supplyTypes,
+            Pageable pageable
+    );
+
 }

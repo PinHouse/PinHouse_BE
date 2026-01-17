@@ -205,4 +205,28 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
         return new PageImpl<>(notices, pageable, count);
     }
 
+    @Override
+    public Page<NoticeDocument> findRecommendedNoticesByDiagnosis(
+            java.util.List<String> supplyTypes,
+            Pageable pageable
+    ) {
+        Criteria criteria = new Criteria();
+
+        /// supplyType 필터링 (진단 결과에서 매핑된 주택 유형)
+        if (supplyTypes != null && !supplyTypes.isEmpty()) {
+            criteria.and("supplyType").in(supplyTypes);
+        }
+
+        /// 모집 상태 필터링 없음 (모든 공고 포함)
+        /// 정렬은 Pageable의 Sort로 처리 (마감임박순 권장)
+
+        Query query = new Query(criteria).with(pageable);
+
+        /// 실행 및 Page 응답 구성
+        List<NoticeDocument> notices = mongoTemplate.find(query, NoticeDocument.class);
+        long count = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), NoticeDocument.class);
+
+        return new PageImpl<>(notices, pageable, count);
+    }
+
 }
