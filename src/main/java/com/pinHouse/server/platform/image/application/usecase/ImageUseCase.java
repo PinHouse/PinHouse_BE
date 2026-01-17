@@ -13,7 +13,7 @@ public interface ImageUseCase {
     /**
      * 프로필 이미지 업로드를 위한 Presigned URL 생성
      *
-     * @param request 파일 메타데이터 (fileName, fileSize, contentType)
+     * @param request 파일 메타데이터 (fileName, contentType)
      * @param userId  인증된 사용자 ID
      * @return Presigned URL 정보 (업로드 URL, 최종 이미지 URL, 만료시간)
      */

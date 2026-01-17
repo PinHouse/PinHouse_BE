@@ -25,9 +25,6 @@ public class ImageService implements ImageUseCase {
 
     private final PresignedUrlGenerator presignedUrlGenerator;
 
-    @Value("${aws.s3.presigned-url.max-file-size-mb:5}")
-    private int maxFileSizeMb;
-
     @Value("${aws.s3.presigned-url.expiration-minutes:10}")
     private int expirationMinutes;
 
@@ -37,26 +34,23 @@ public class ImageService implements ImageUseCase {
     @Override
     public PresignedUrlResponse generatePresignedUrl(PresignedUrlRequest request, UUID userId) {
 
-        // 1. 파일 크기 검증
-        validateFileSize(request.fileSize());
-
-        // 2. Content-Type 검증
+        // 1. Content-Type 검증
         validateContentType(request.contentType());
 
-        // 3. 파일 확장자 추출 및 검증
+        // 2. 파일 확장자 추출 및 검증
         String extension = extractExtension(request.fileName());
         validateExtension(extension);
 
-        // 4. Object Key 생성: profile/{userId}/{uuid}.{ext}
+        // 3. Object Key 생성: profile/{userId}/{uuid}.{ext}
         String objectKey = generateObjectKey(ImageType.PROFILE, userId, extension);
 
-        // 5. Presigned URL 생성
+        // 4. Presigned URL 생성
         String presignedUrl = presignedUrlGenerator.generatePutPresignedUrl(objectKey, request.contentType());
 
-        // 6. Public URL 생성
+        // 5. Public URL 생성
         String publicUrl = presignedUrlGenerator.getPublicUrl(objectKey);
 
-        // 7. Response 반환
+        // 6. Response 반환
         int expiresInSeconds = expirationMinutes * 60;
 
         log.info("Presigned URL 생성 완료: userId={}, fileName={}, objectKey={}", userId, request.fileName(), objectKey);
@@ -67,17 +61,6 @@ public class ImageService implements ImageUseCase {
     // =================
     //  내부 로직
     // =================
-
-    /**
-     * 파일 크기 검증
-     */
-    private void validateFileSize(long fileSize) {
-        long maxSizeBytes = maxFileSizeMb * 1024L * 1024L;
-        if (fileSize > maxSizeBytes) {
-            log.warn("파일 크기 초과: fileSize={} bytes, maxSize={} bytes", fileSize, maxSizeBytes);
-            throw new CustomException(ImageErrorCode.FILE_SIZE_EXCEEDED);
-        }
-    }
 
     /**
      * Content-Type 검증
