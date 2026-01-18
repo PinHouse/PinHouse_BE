@@ -3,6 +3,7 @@ package com.pinHouse.server.platform.diagnostic.diagnosis.application.service;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisResponseV2;
 import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.server.platform.diagnostic.rule.domain.entity.EvaluationContext;
@@ -58,6 +59,17 @@ public class DiagnosisService implements DiagnosisUseCase {
         return DiagnosisResponse.from(context);
     }
 
+    @Override
+    @Transactional
+    public DiagnosisResponseV2 diagnoseV2(UUID userId, DiagnosisRequest request) {
+        User user = userService.loadUser(userId);
+        var diagnosis = Diagnosis.of(user, request);
+        Diagnosis entity = repository.save(diagnosis);
+
+        EvaluationContext context = ruleChain.evaluateAll(entity);
+        return DiagnosisResponseV2.from(context);
+    }
+
     /**
      * 나의 최근 청약진단 상세 조회 (입력 정보 + 결과)
      * @param userId    유저ID
@@ -84,6 +96,22 @@ public class DiagnosisService implements DiagnosisUseCase {
 
         /// DTO 생성
         return DiagnosisDetailResponse.from(context);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DiagnosisResponseV2 getDiagnoseSummaryV2(UUID userId) {
+        User user = userService.loadUser(userId);
+
+        Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
+                .orElse(null);
+
+        if (diagnosis == null) {
+            return null;
+        }
+
+        EvaluationContext context = ruleChain.evaluateAll(diagnosis);
+        return DiagnosisResponseV2.from(context);
     }
 
 }
