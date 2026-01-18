@@ -16,18 +16,6 @@ public class FacilityTypeConverter implements Converter<String, FacilityType> {
         if (source == null) {
             throw new CustomException(FacilityErrorCode.BAD_REQUEST_INPUT_FACILITY);
         }
-        String s = source.trim();
-
-        /// 한글 라벨 매칭
-        for (FacilityType t : FacilityType.values()) {
-            /// getValue()는 "공원", "도서관" 등
-            if (t.getValue().equals(s)) return t;
-        }
-        /// 영문 enum 이름 매칭도 허용하고 싶으면:
-        try {
-            return FacilityType.valueOf(s.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException ignore) {}
-
-        throw new CustomException(FacilityErrorCode.BAD_REQUEST_INPUT_FACILITY);
+        return FacilityType.fromValue(source.trim());
     }
 }

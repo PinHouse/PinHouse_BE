@@ -1,0 +1,88 @@
+name: 핀하우스 테스트 CI 파이프라인
+
+on:
+  pull_request:
+    branches: [ "develop", "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    services:
+      mysql:
+        image: mysql:8.0
+        ports: [ '3306:3306' ]
+        env:
+          MYSQL_DATABASE: pinhouse_test
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+          MYSQL_ROOT_PASSWORD: root
+      redis:
+        image: redis:7.2.5
+        ports: [ '6379:6379' ]
+      mongo:
+        image: mongo:6.0
+        ports: [ 27017:27017 ]
+
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 1-3. 환경 설정 파일 세팅
+      - name: Resources 디렉토리 생성
+        run: |
+          mkdir -p src/main/resources
+          mkdir -p src/test/resources
+
+      - name: 설정 파일 생성 (Secrets 활용)
+        run: |
+          echo "${{ secrets.APPLICATION_DEV_YML }}" > ./src/main/resources/application-dev.yml
+          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml
+
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}
+
+      - name: 서비스 대기 (Health Check)
+        run: |
+          for port in 3306 6379 27017; do
+            until nc -z localhost $port; do
+              echo "Waiting for port $port..."
+              sleep 3
+            done
+          done
+
+      # 2. 브랜치에 따른 조건부 빌드
+      # PR 대상이 main이면 prod 프로파일, 그 외(develop)는 dev 프로파일 사용
+      - name: Build with Gradle Wrapper
+        run: |
+          if [ "${{ github.base_ref }}" == "main" ]; then
+            echo "Running Build for Main Branch (PROD profile)"
+            ./gradlew clean build -Dspring.profiles.active=prod
+          else
+            echo "Running Build for Develop Branch (DEV profile)"
+            ./gradlew clean build -Dspring.profiles.active=dev
+          fi
+
+      - name: Test 결과 출력
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: '**/build/test-results/test/TEST-*.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}

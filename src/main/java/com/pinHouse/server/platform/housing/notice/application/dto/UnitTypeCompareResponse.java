@@ -49,7 +49,7 @@ public record UnitTypeCompareResponse(
             @Schema(description = "비용 정보")
             CostInfo cost,
 
-            @Schema(description = "단지 기반 주변 인프라 태그 (Complex에 속한 시설 정보)", example = "[\"공원\", \"도서관\", \"병원\"]")
+            @Schema(description = "단지 기반 주변 인프라 태그 (Complex에 속한 시설 정보)", example = "[\"문화센터\", \"병원-약국\"]")
             List<FacilityType> nearbyFacilities,
 
             @Schema(description = "핀포인트 기준 대중교통 총 소요 시간", example = "1시간 30분")
