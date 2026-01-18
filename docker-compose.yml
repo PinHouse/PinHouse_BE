@@ -1,7 +1,7 @@
 services:
 
   spring:
-    image: pinhouse/server:latest
+    image: pinhouse/prod-server:latest
     container_name: pinhouse-app
     ports:
       - "8080:8080"
