@@ -32,7 +32,17 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
         }
 
         List<Criteria> ands = types.stream()
-                .map(t -> Criteria.where("counts." + t.name()).gte(min))
+                .map(t -> {
+                    if (t == FacilityType.CULTURE_CENTER) {
+                        List<Criteria> ors = new ArrayList<>();
+                        ors.add(Criteria.where("counts." + FacilityType.CULTURE_CENTER.name()).gte(min));
+                        FacilityType.cultureCenterMembers().forEach(member ->
+                                ors.add(Criteria.where("counts." + member.name()).gte(min))
+                        );
+                        return new Criteria().orOperator(ors.toArray(new Criteria[0]));
+                    }
+                    return Criteria.where("counts." + t.name()).gte(min);
+                })
                 .toList();
 
         Query q = new Query(new Criteria().andOperator(ands.toArray(new Criteria[0])));
@@ -87,6 +97,7 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
         for (FacilityType t : FacilityType.values()) {
             map.putIfAbsent(t, 0);
         }
+        map.put(FacilityType.CULTURE_CENTER, computeCultureCenterCount(map));
         return map;
     }
 
@@ -95,7 +106,14 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
         for (FacilityType t : FacilityType.values()) {
             empty.put(t, 0);
         }
+        empty.put(FacilityType.CULTURE_CENTER, 0);
         return empty;
+    }
+
+    private int computeCultureCenterCount(Map<FacilityType, Integer> map) {
+        return FacilityType.cultureCenterMembers().stream()
+                .mapToInt(t -> map.getOrDefault(t, 0))
+                .sum();
     }
 
 }

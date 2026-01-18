@@ -111,7 +111,8 @@ public class FacilityService implements FacilityUseCase {
         /// 3개 이상인 FacilityType
         return response.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && entry.getValue() >= 3)
-                .map(Map.Entry::getKey)
+                .map(entry -> entry.getKey().displayType())
+                .distinct()
                 .toList();
     }
 
