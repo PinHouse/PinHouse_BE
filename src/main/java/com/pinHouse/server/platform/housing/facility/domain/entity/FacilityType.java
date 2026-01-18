@@ -23,6 +23,14 @@ public enum FacilityType {
     STORE("대형마트-백화점", Set.of("대형마트-백화점", "대형점포")),
     HOSPITAL("병원-약국", Set.of("병원-약국", "병원")),
     LAUNDRY("세탁소", Set.of("세탁소", "빨래방")),
+
+    ELDER("노인 시설", Set.of("노인 시설")),
+    CHILD("아동 시설", Set.of("아동 시설")),
+    BICYCLE("자전거길", Set.of("자전거길")),
+    DISABLED("장애인 시설", Set.of("장애인 시설")),
+    YOUTH("청소년 시설", Set.of("청소년 시설")),
+    POLICE("파출소", Set.of("파출소")),
+
     CULTURE_CENTER("문화센터", Set.of("문화센터"));
 
     private final String value;
