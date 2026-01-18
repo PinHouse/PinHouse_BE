@@ -5,10 +5,12 @@ services:
     container_name: pinhouse-app
     ports:
       - "8080:8080"
-    env_file:
-      - .env  # 여기서 .env 파일을 읽어 환경 변수로 주입
+    volumes:
+      # 서버의 설정파일 폴더를 컨테이너 내부로 연결
+      - /home/ubuntu/app/config:/app/config
     environment:
-        - SPRING_PROFILES_ACTIVE=prod
+      # Spring에게 외부 파일을 읽으라고 명령 (이게 핵심입니다)
+      - SPRING_CONFIG_LOCATION=optional:classpath:/,file:/app/config/application-prod.yml,file:/app/config/application-oauth2-prod.yml
     networks:
       - backend-bridge
 

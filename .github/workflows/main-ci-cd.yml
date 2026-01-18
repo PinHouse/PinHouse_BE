@@ -61,7 +61,7 @@ jobs:
           EOF
 
           echo "${{ secrets.APPLICATION_PROD_YML }}" > ./src/main/resources/application-prod.yml
-          echo "${{ secrets.APPLICATION_OAUTH2_DEV_YML }}" > ./src/main/resources/application-oauth2-dev.yml
+          echo "${{ secrets.APPLICATION_OAUTH2_PROD_YML }}" > ./src/main/resources/application-oauth2-prod.yml
           
           mkdir -p src/test/resources
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml
