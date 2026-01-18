@@ -19,4 +19,13 @@ public interface CustomComplexDocumentRepository {
      * @return 정렬된 단지 목록 (각 단지의 unitTypes도 정렬됨)
      */
     List<ComplexDocument> findSortedComplexesWithUnitTypes(String noticeId, UnitTypeSortType sortType);
+
+    /**
+     * 단지명 텍스트 검색 (무한 스크롤)
+     *
+     * @param keyword 검색 키워드
+     * @param pageable 페이징 정보
+     * @return 단지 결과 슬라이스
+     */
+    org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword, org.springframework.data.domain.Pageable pageable);
 }

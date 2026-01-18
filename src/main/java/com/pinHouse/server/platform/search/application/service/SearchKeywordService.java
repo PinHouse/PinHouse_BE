@@ -4,6 +4,7 @@ import com.pinHouse.server.platform.search.application.dto.PopularKeywordRespons
 import com.pinHouse.server.platform.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.server.platform.search.application.usecase.SearchKeywordUseCase;
 import com.pinHouse.server.platform.search.domain.entity.SearchKeyword;
+import com.pinHouse.server.platform.search.domain.entity.SearchKeywordScope;
 import com.pinHouse.server.platform.search.domain.repository.SearchKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,12 @@ public class SearchKeywordService implements SearchKeywordUseCase {
     @Override
     @Transactional
     public void recordSearch(String keyword) {
+        recordSearch(keyword, SearchKeywordScope.GENERAL);
+    }
+
+    @Override
+    @Transactional
+    public void recordSearch(String keyword, SearchKeywordScope scope) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return;
         }
@@ -50,10 +57,12 @@ public class SearchKeywordService implements SearchKeywordUseCase {
 
         try {
             // MongoDB atomic upsert를 사용한 카운트 증가
-            Query query = new Query(Criteria.where("keyword").is(normalizedKeyword));
+            Query query = new Query(Criteria.where("keyword").is(normalizedKeyword)
+                    .and("scope").is(scope));
             Update update = new Update()
                     .inc("count", 1)
                     .set("lastSearchedAt", Instant.now())
+                    .set("scope", scope)
                     .setOnInsert("firstSearchedAt", Instant.now());
 
             mongoTemplate.upsert(query, update, SearchKeyword.class);
@@ -71,8 +80,14 @@ public class SearchKeywordService implements SearchKeywordUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<PopularKeywordResponse> getPopularKeywords(int limit) {
+        return getPopularKeywords(limit, SearchKeywordScope.GENERAL);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PopularKeywordResponse> getPopularKeywords(int limit, SearchKeywordScope scope) {
         Pageable pageable = PageRequest.of(0, limit);
-        List<SearchKeyword> keywords = repository.findAllByOrderByCountDescLastSearchedAtDesc(pageable);
+        List<SearchKeyword> keywords = repository.findAllByScopeOrderByCountDescLastSearchedAtDesc(scope, pageable);
         return PopularKeywordResponse.from(keywords);
     }
 }

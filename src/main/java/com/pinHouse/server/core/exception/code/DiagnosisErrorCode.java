@@ -12,7 +12,7 @@ public enum DiagnosisErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
-    BAD_REQUEST_TYPE(400_000,HttpStatus.BAD_REQUEST,"진단 입력 파라미터가 잘못되었습니다");
+    BAD_REQUEST_TYPE(400_000, HttpStatus.BAD_REQUEST, "진단 입력 파라미터가 잘못되었습니다"),
 
     // ========================
     // 401 Unauthorized
@@ -25,6 +25,7 @@ public enum DiagnosisErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
+    NOT_FOUND_DIAGNOSIS(404_001, HttpStatus.NOT_FOUND, "진단 기록을 찾을 수 없습니다");
 
 
     /**

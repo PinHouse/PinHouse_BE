@@ -7,6 +7,10 @@ import com.pinHouse.server.core.response.response.pageable.SliceResponse;
 import com.pinHouse.server.platform.Location;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.server.platform.home.application.dto.HomeNoticeResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchCategoryPageResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchCategoryType;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchOverviewResponse;
+import com.pinHouse.server.platform.home.application.dto.HomeSearchSectionResponse;
 import com.pinHouse.server.platform.home.application.dto.NoticeCountResponse;
 import com.pinHouse.server.platform.home.application.usecase.HomeUseCase;
 import com.pinHouse.server.platform.housing.complex.domain.entity.ComplexDocument;
@@ -14,13 +18,19 @@ import com.pinHouse.server.platform.housing.complex.domain.repository.ComplexDoc
 import com.pinHouse.server.platform.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.server.platform.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.server.platform.housing.notice.domain.repository.NoticeDocumentRepository;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
+import com.pinHouse.server.platform.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import com.pinHouse.server.platform.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.server.platform.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.server.platform.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchFilterType;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchResultResponse;
 import com.pinHouse.server.platform.search.application.dto.NoticeSearchSortType;
+import com.pinHouse.server.platform.search.application.dto.PopularKeywordResponse;
+import com.pinHouse.server.platform.search.domain.entity.SearchKeywordScope;
 import com.pinHouse.server.platform.search.application.usecase.NoticeSearchUseCase;
+import com.pinHouse.server.platform.search.application.usecase.SearchKeywordUseCase;
+import com.pinHouse.server.core.exception.code.DiagnosisErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,7 +46,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * 홈 화면 서비스
@@ -51,7 +60,9 @@ public class HomeService implements HomeUseCase {
     private final ComplexDocumentRepository complexRepository;
     private final LikeQueryUseCase likeService;
     private final NoticeSearchUseCase noticeSearchService;
+    private final SearchKeywordUseCase searchKeywordService;
     private final PinPointUseCase pinPointService;
+    private final DiagnosisUseCase diagnosisService;
 
     /**
      * 마감임박공고 조회 (PinPoint 지역 기반)
@@ -105,11 +116,12 @@ public class HomeService implements HomeUseCase {
 
         // 최종 응답 생성 (region + content + 페이징 정보)
         return HomeNoticeListResponse.builder()
-                .region(county)
-                .content(content)
-                .hasNext(page.hasNext())
-                .totalElements(page.getTotalElements())
-                .build();
+            .region(county)
+            .title(null)
+            .content(content)
+            .hasNext(page.hasNext())
+            .totalElements(page.getTotalElements())
+            .build();
     }
 
     /**
@@ -181,20 +193,107 @@ public class HomeService implements HomeUseCase {
     }
 
     /**
-     * 통합 검색 (공고 제목 및 타겟 그룹 기반)
-     * - NoticeSearchUseCase를 그대로 활용
+     * 홈 통합 검색 (섹션별 5개 미리보기)
      */
+    private static final int HOME_SEARCH_PREVIEW_LIMIT = 5;
+    private static final int HOME_SEARCH_CATEGORY_PAGE_SIZE = 5;
+
     @Override
-    public SliceResponse<NoticeSearchResultResponse> searchNoticesIntegrated(
+    public HomeSearchOverviewResponse searchHomeOverview(String keyword, UUID userId) {
+        searchKeywordService.recordSearch(keyword, SearchKeywordScope.HOME);
+
+        // 좋아요 ID 캐싱
+        List<String> likedIds = likedIds(userId);
+
+        // 공고 검색 (기존 검색 로직 재사용)
+        SliceResponse<NoticeSearchResultResponse> notices = noticeSearchService.searchNotices(
+                keyword,
+                1,
+                HOME_SEARCH_PREVIEW_LIMIT,
+                NoticeSearchSortType.LATEST,
+                NoticeSearchFilterType.ALL,
+                userId
+        );
+
+        Pageable pageable = PageRequest.of(0, HOME_SEARCH_PREVIEW_LIMIT);
+
+        // 단지명 → 공고
+        var complexSlice = complexRepository.searchByName(keyword, pageable);
+        var complexNotices = toNoticeResponsesFromComplexes(complexSlice.getContent(), likedIds);
+
+        // 모집대상 → 공고
+        var targetGroupSlice = noticeRepository.searchNoticesByTargetGroup(keyword, pageable);
+        var targetNotices = toNoticeResponses(targetGroupSlice.getContent(), likedIds);
+
+        // 지역 → 공고
+        var regionSlice = noticeRepository.searchNoticesByRegion(keyword, pageable);
+        var regionNotices = toNoticeResponses(regionSlice.getContent(), likedIds);
+
+        // 주택유형 → 공고
+        var houseTypeSlice = noticeRepository.searchNoticesByHouseType(keyword, pageable);
+        var houseTypeNotices = toNoticeResponses(houseTypeSlice.getContent(), likedIds);
+
+        return HomeSearchOverviewResponse.builder()
+                .notices(HomeSearchSectionResponse.of(notices.content(), notices.hasNext()))
+                .complexes(HomeSearchSectionResponse.of(complexNotices, complexSlice.hasNext()))
+                .targetGroups(HomeSearchSectionResponse.of(targetNotices, targetGroupSlice.hasNext()))
+                .regions(HomeSearchSectionResponse.of(regionNotices, regionSlice.hasNext()))
+                .houseTypes(HomeSearchSectionResponse.of(houseTypeNotices, houseTypeSlice.hasNext()))
+                .build();
+    }
+
+    @Override
+    public HomeSearchCategoryPageResponse searchHomeByCategory(
+            HomeSearchCategoryType category,
             String keyword,
             int page,
-            int size,
-            NoticeSearchSortType sortType,
-            NoticeSearchFilterType status,
             UUID userId
     ) {
-        return noticeSearchService.searchNotices(keyword, page, size, sortType, status, userId);
+        searchKeywordService.recordSearch(keyword, SearchKeywordScope.HOME);
+        Pageable pageable = PageRequest.of(page - 1, HOME_SEARCH_CATEGORY_PAGE_SIZE);
+        List<String> likedIds = likedIds(userId);
+
+        switch (category) {
+            case NOTICE -> {
+                var notices = noticeSearchService.searchNotices(
+                    keyword,
+                    page,
+                    HOME_SEARCH_CATEGORY_PAGE_SIZE,
+                    NoticeSearchSortType.LATEST,
+                    NoticeSearchFilterType.ALL,
+                    userId
+                );
+                return HomeSearchCategoryPageResponse.notice(page, notices.content(), notices.hasNext());
+            }
+            case COMPLEX -> {
+                var complexes = complexRepository.searchByName(keyword, pageable);
+                List<NoticeSearchResultResponse> content = toNoticeResponsesFromComplexes(complexes.getContent(), likedIds);
+                return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.COMPLEX, page, content, complexes.hasNext());
+            }
+            case TARGET_GROUP -> {
+                var targets = noticeRepository.searchNoticesByTargetGroup(keyword, pageable);
+                List<NoticeSearchResultResponse> content = toNoticeResponses(targets.getContent(), likedIds);
+                return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.TARGET_GROUP, page, content, targets.hasNext());
+            }
+            case REGION -> {
+                var regions = noticeRepository.searchNoticesByRegion(keyword, pageable);
+                List<NoticeSearchResultResponse> content = toNoticeResponses(regions.getContent(), likedIds);
+                return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.REGION, page, content, regions.hasNext());
+            }
+            case HOUSE_TYPE -> {
+                var houseTypes = noticeRepository.searchNoticesByHouseType(keyword, pageable);
+                List<NoticeSearchResultResponse> content = toNoticeResponses(houseTypes.getContent(), likedIds);
+                return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.HOUSE_TYPE, page, content, houseTypes.hasNext());
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + category);
+        }
     }
+
+    @Override
+    public List<PopularKeywordResponse> getHomePopularKeywords(int limit) {
+        return searchKeywordService.getPopularKeywords(limit, SearchKeywordScope.HOME);
+    }
+
 
     /**
      * 핀포인트 기준 최대 이동 시간 내 공고 개수 조회
@@ -246,5 +345,130 @@ public class HomeService implements HomeUseCase {
                 pinPointId, maxTime, uniqueNoticeCount, distanceKm);
 
         return NoticeCountResponse.from(uniqueNoticeCount);
+    }
+
+    /**
+     * 진단 기반 추천 공고 조회
+     * - 사용자의 최근 청약 진단 결과를 기반으로 맞춤형 공고를 추천
+     * - 진단 결과의 availableRentalTypes를 NoticeDocument.supplyType으로 매핑하여 필터링
+     * - 마감임박순으로 정렬 (applyEnd ASC)
+     * - 모든 공고 상태 포함 (모집중 + 마감)
+     */
+    @Override
+    public HomeNoticeListResponse getRecommendedNoticesByDiagnosis(
+            SliceRequest sliceRequest,
+            UUID userId
+    ) {
+        // 1. 진단 결과 조회
+        DiagnosisDetailResponse diagnosis = diagnosisService.getDiagnoseDetail(userId);
+
+        // 2. 진단 기록 없음 처리
+        if (diagnosis == null) {
+            log.warn("진단 기록이 없습니다 - userId={}", userId);
+            throw new CustomException(DiagnosisErrorCode.NOT_FOUND_DIAGNOSIS);
+        }
+
+        // 3. 추천 임대주택 유형 추출
+        List<String> availableRentalTypes = diagnosis.availableRentalTypes();
+
+        // 4. 자격 없는 경우 빈 응답 반환
+        if (availableRentalTypes == null ||
+            availableRentalTypes.isEmpty() ||
+            availableRentalTypes.contains("해당 없음")) {
+            log.info("추천 가능한 임대주택이 없습니다 - userId={}", userId);
+            return HomeNoticeListResponse.builder()
+                .region(null)
+                .title("진단 기반 추천")
+                .content(List.of())
+                .hasNext(false)
+                .totalElements(0L)
+                .build();
+        }
+
+        // 5. 진단 결과 → 공고 supplyType 매핑
+        List<String> targetSupplyTypes = availableRentalTypes.stream()
+            .filter(type -> type != null && !type.isBlank())
+            .distinct()
+            .toList();
+
+        // 진단 결과에 매핑될 공고 유형이 없는 경우 빈 응답 반환
+        if (targetSupplyTypes.isEmpty()) {
+            log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", userId);
+            return HomeNoticeListResponse.builder()
+                .region(null)
+                .title("진단 기반 추천")
+                .content(List.of())
+                .hasNext(false)
+                .totalElements(0L)
+                .build();
+        }
+
+        log.debug("진단 기반 필터링 - rentalTypes={}, supplyTypes={}",
+            availableRentalTypes, targetSupplyTypes);
+
+        // 6. 페이징 설정 (마감임박순)
+        Sort sort = Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"));
+        Pageable pageable = PageRequest.of(sliceRequest.page() - 1, sliceRequest.offSet(), sort);
+
+        // 7. Repository 조회
+        Page<NoticeDocument> page = noticeRepository.findRecommendedNoticesByDiagnosis(
+            targetSupplyTypes,
+            pageable
+        );
+
+        // 8. 좋아요 상태 조회
+        List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
+
+        // 9. DTO 변환
+        List<HomeNoticeResponse> content = page.getContent().stream()
+            .map(notice -> {
+                boolean isLiked = likedNoticeIds.contains(notice.getId());
+                return HomeNoticeResponse.from(notice, isLiked);
+            })
+            .toList();
+
+        // 10. 최종 응답
+        return HomeNoticeListResponse.builder()
+            .region(null)
+            .title("진단 기반 추천")
+            .content(content)
+            .hasNext(page.hasNext())
+            .totalElements(page.getTotalElements())
+            .build();
+    }
+
+    private List<String> likedIds(UUID userId) {
+        return userId == null ? List.of() : likeService.getLikeNoticeIds(userId);
+    }
+
+    private List<NoticeSearchResultResponse> toNoticeResponses(List<NoticeDocument> notices, List<String> likedIds) {
+        return notices.stream()
+                .map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
+                .toList();
+    }
+
+    private List<NoticeSearchResultResponse> toNoticeResponsesFromComplexes(List<ComplexDocument> complexes, List<String> likedIds) {
+        List<String> noticeIds = complexes.stream()
+                .map(ComplexDocument::getNoticeId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .limit(HOME_SEARCH_PREVIEW_LIMIT + 1L)
+                .toList();
+
+        List<NoticeDocument> notices = noticeRepository.findByIdIn(noticeIds);
+
+        return noticeIds.stream()
+                .map(id -> notices.stream().filter(n -> id.equals(n.getId())).findFirst().orElse(null))
+                .filter(n -> n != null)
+                .limit(HOME_SEARCH_PREVIEW_LIMIT)
+                .map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
+                .toList();
+    }
+
+    private String buildAddress(String city, String county) {
+        if (city == null && county == null) return null;
+        if (city == null) return county;
+        if (county == null) return city;
+        return city + " " + county;
     }
 }

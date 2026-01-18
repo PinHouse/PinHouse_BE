@@ -64,4 +64,47 @@ public interface NoticeDocumentRepositoryCustom {
             Instant now
     );
 
+    /**
+     * 진단 결과 기반 추천 공고 조회
+     * 사용자의 청약 진단 결과를 바탕으로 신청 가능한 공고를 조회
+     *
+     * @param supplyTypes 공급 유형 리스트 (진단 결과에서 매핑된 값)
+     * @param pageable 페이징 및 정렬 정보 (마감임박순 권장)
+     * @return 추천 공고 목록
+     */
+    Page<NoticeDocument> findRecommendedNoticesByDiagnosis(
+            java.util.List<String> supplyTypes,
+            Pageable pageable
+    );
+
+    /**
+     * 모집대상 텍스트 검색 (중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchTargetGroups(String keyword, Pageable pageable);
+
+    /**
+     * 지역 텍스트 검색 (도시/시군구 조합, 중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchRegions(String keyword, Pageable pageable);
+
+    /**
+     * 주택유형 텍스트 검색 (중복 제거)
+     */
+    org.springframework.data.domain.Slice<String> searchHouseTypes(String keyword, Pageable pageable);
+
+    /**
+     * 모집대상 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByTargetGroup(String keyword, Pageable pageable);
+
+    /**
+     * 지역 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByRegion(String keyword, Pageable pageable);
+
+    /**
+     * 주택유형 공고 검색 (Slice)
+     */
+    org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword, Pageable pageable);
+
 }

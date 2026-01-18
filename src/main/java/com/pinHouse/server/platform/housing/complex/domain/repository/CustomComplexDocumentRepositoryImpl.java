@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -108,6 +109,21 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
         log.debug("MongoDB Aggregation 완료 - 조회된 단지 수: {}", complexes.size());
 
         return complexes;
+    }
+
+    @Override
+    public org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword, org.springframework.data.domain.Pageable pageable) {
+        Criteria criteria = Criteria.where("name").regex(keyword, "i");
+        Query query = new Query(criteria).with(pageable);
+
+        int limit = pageable.getPageSize();
+        query.limit(limit + 1);
+
+        List<ComplexDocument> complexes = mongoTemplate.find(query, ComplexDocument.class);
+        boolean hasNext = complexes.size() > limit;
+        List<ComplexDocument> content = hasNext ? complexes.subList(0, limit) : complexes;
+
+        return new org.springframework.data.domain.SliceImpl<>(content, pageable, hasNext);
     }
 
     /**
