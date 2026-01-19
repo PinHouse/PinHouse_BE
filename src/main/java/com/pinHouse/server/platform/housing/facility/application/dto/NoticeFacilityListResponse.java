@@ -23,7 +23,7 @@ public record NoticeFacilityListResponse(
 
         List<FacilityType> infraList = src.entrySet().stream()
                 .filter(e -> e.getValue() != null && e.getValue() >= 3)
-                .map(entry -> entry.getKey().displayType())
+                .map(Map.Entry::getKey)
                 .distinct()
                 .toList();
 
