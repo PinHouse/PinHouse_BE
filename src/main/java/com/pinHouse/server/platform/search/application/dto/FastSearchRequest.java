@@ -36,7 +36,7 @@ public record FastSearchRequest(
         @Schema(description = "월 임대료 최대값", example = "300000")
         Integer maxMonthPay,
 
-        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"도서관\"]")
+        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"문화센터\"]")
         @Size(max = 3)
         List<FacilityType> facilities,
 

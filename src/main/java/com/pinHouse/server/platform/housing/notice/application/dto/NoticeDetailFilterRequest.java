@@ -36,7 +36,7 @@ public record NoticeDetailFilterRequest(
         @Schema(description = "주택형 코드 필터", example = "[\"26A\"]")
         List<String> typeCode,
 
-        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"공원\"]")
+        @Schema(description = "원하는 인프라, 최대 3개까지 가능", example = "[\"문화센터\"]")
         @Size(max = 3)
         List<FacilityType> facilities
 

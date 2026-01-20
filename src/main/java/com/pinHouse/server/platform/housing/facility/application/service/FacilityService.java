@@ -112,6 +112,7 @@ public class FacilityService implements FacilityUseCase {
         return response.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && entry.getValue() >= 3)
                 .map(Map.Entry::getKey)
+                .distinct()
                 .toList();
     }
 

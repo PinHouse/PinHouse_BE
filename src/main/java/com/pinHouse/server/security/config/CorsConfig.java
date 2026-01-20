@@ -16,6 +16,9 @@ public class CorsConfig {
     @Value("${cors.front.dev}")
     private String front_dev;
 
+    @Value("${cors.front.prod}")
+    private String front_prod;
+
     @Value("${cors.back.dev}")
     private String back_dev;
 
@@ -29,6 +32,7 @@ public class CorsConfig {
         /// CORS 추가
         configuration.addAllowedOriginPattern(front_local);
         configuration.addAllowedOriginPattern(front_dev);
+        configuration.addAllowedOriginPattern(front_prod);
         configuration.addAllowedOriginPattern(back_dev);
 
         configuration.addAllowedHeader("*");
