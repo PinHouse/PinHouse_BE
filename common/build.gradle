@@ -1,0 +1,24 @@
+dependencies {
+    // Spring Boot 기본
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.security:spring-security-core'
+
+    // Redis (캐싱용)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // MongoDB (Config용)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
