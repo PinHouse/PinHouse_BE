@@ -229,7 +229,7 @@ graph TB
 │   └── dto/               # Request/Response DTO
 │       ├── request/
 │       └── response/
-├── domain/
+├── module-domain/
 │   ├── entity/            # JPA/MongoDB Entity
 │   └── repository/        # Repository Interface
 └── external/              # 외부 API 통합 (선택)
@@ -409,7 +409,7 @@ server/
 │   │   │   │   ├── exception/             # 예외 처리
 │   │   │   │   ├── response/              # 표준 응답
 │   │   │   │   └── util/                  # 유틸리티
-│   │   │   ├── security/                  # 보안 및 인증
+│   │   │   ├── module-security/                  # 보안 및 인증
 │   │   │   │   ├── auth/                  # OAuth2 처리
 │   │   │   │   ├── jwt/                   # JWT 토큰
 │   │   │   │   ├── oauth2/                # OAuth2 설정

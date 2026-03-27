@@ -53,8 +53,8 @@ subprojects {
     }
 }
 
-// app 모듈만 실행 가능한 bootJar 생성
-project(':app') {
+// module-app 모듈만 실행 가능한 bootJar 생성
+project(':module-app') {
     tasks.named('bootJar') {
         enabled = true
     }

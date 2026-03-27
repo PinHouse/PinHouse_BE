@@ -1,0 +1,19 @@
+dependencies {
+    // 목표 구조 기준 외부 연동 계층 의존성
+    implementation project(':module-common')
+    implementation project(':module-domain')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation platform('software.amazon.awssdk:bom:2.21.0')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:auth'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}

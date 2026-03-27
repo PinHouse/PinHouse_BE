@@ -1,7 +1,10 @@
 rootProject.name = 'pinhouse'
 
 // 멀티모듈 정의
-include 'common'
-include 'security'
-include 'domain'
-include 'app'
+include 'module-common'
+include 'module-security'
+include 'module-domain'
+include 'module-api'
+include 'module-external'
+include 'module-batch'
+include 'module-app'

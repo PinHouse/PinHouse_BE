@@ -1,0 +1,27 @@
+dependencies {
+    // 모듈 의존
+    implementation project(':module-common')
+
+    // JPA (MySQL)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MongoDB (PinPoint, SearchHistory용)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Redis (캐싱용)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Swagger/OpenAPI (for @Schema annotations)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}

@@ -1,0 +1,23 @@
+dependencies {
+    // 목표 구조 기준 API 계층 의존성
+    implementation project(':module-common')
+    implementation project(':module-domain')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.data:spring-data-mongodb'
+    implementation 'org.springframework.data:spring-data-redis'
+    implementation 'org.springframework:spring-tx'
+    compileOnly 'jakarta.persistence:jakarta.persistence-api'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
