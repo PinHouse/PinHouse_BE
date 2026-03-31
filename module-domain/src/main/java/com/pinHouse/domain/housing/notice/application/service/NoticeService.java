@@ -55,7 +55,7 @@ public class NoticeService implements NoticeUseCase {
     private final PinPointUseCase pinPointService;
 
     /// 거리 캐싱
-    private final com.pinHouse.common.cache.DistanceCacheService distanceCacheService;
+    private final com.pinHouse.domain.housing.complex.application.service.DistanceCacheService distanceCacheService;
 
     // =================
     //  퍼블릭 로직

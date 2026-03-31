@@ -1,4 +1,4 @@
-package com.pinHouse.common.cache;
+package com.pinHouse.domain.housing.complex.application.service;
 
 import com.pinHouse.domain.housing.complex.application.dto.response.DistanceResponse;
 import com.pinHouse.domain.housing.complex.application.dto.result.RootResult;

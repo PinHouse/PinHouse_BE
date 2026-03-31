@@ -1,11 +1,9 @@
 dependencies {
-    // 모든 모듈 통합
+    // 실행 모듈 조립
     implementation project(':module-common')
-    implementation project(':module-security')
     implementation project(':module-domain')
-    implementation project(':module-api')
-    implementation project(':module-external')
-    implementation project(':module-batch')
+    implementation project(':module-infrastructure')
+    implementation project(':module-presentation')
 
     // module-app 모듈에서 직접 사용하는 Spring Data 어노테이션
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -14,6 +12,9 @@ dependencies {
 
     // Actuator (Health check, Metrics)
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Micrometer - Prometheus 메트릭 노출
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // Runtime 의존성 (MySQL JDBC 드라이버)
     runtimeOnly 'com.mysql:mysql-connector-j'

@@ -3,12 +3,12 @@ package com.pinHouse.domain.housing.complex.application.service;
 import com.pinHouse.common.exception.code.CommonErrorCode;
 import com.pinHouse.common.exception.code.ComplexErrorCode;
 import com.pinHouse.common.response.CustomException;
-import com.pinHouse.common.util.DistanceCalculator;
 import com.pinHouse.domain.Location;
 import com.pinHouse.domain.housing.complex.application.dto.response.*;
 import com.pinHouse.domain.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.domain.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.domain.housing.complex.application.usecase.ComplexUseCase;
+import com.pinHouse.domain.housing.complex.application.util.DistanceCalculator;
 import com.pinHouse.domain.housing.complex.application.util.DistanceUtil;
 import com.pinHouse.domain.housing.complex.application.util.TransitResponseMapper;
 import com.pinHouse.domain.housing.complex.domain.entity.ComplexDocument;
@@ -53,7 +53,7 @@ public class ComplexService implements ComplexUseCase {
     private final FacilityUseCase facilityService;
 
     /// 거리 캐싱
-    private final com.pinHouse.common.cache.DistanceCacheService distanceCacheService;
+    private final DistanceCacheService distanceCacheService;
 
     // =================
     //  퍼블릭 로직

@@ -1,4 +1,4 @@
-package com.pinHouse.common.util;
+package com.pinHouse.domain.housing.complex.application.util;
 
 import com.pinHouse.domain.Location;
 import lombok.AccessLevel;
