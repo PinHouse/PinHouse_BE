@@ -6,6 +6,13 @@ build/
 !**/src/test/**/build/
 *.yml
 .env
+.env.local
+.env.dev
+.env.stg
+.env.prod
+
+### Local Setting ###
+local
 
 ### STS ###
 .apt_generated
