@@ -1,7 +1,7 @@
 package com.pinHouse.security.oauth2.handler;
 
+import com.pinHouse.common.dto.TempUserInfo;
 import com.pinHouse.common.util.KeyUtil;
-import com.pinHouse.security.oauth2.domain.TempUserInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

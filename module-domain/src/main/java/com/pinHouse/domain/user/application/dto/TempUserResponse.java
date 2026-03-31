@@ -1,5 +1,6 @@
 package com.pinHouse.domain.user.application.dto;
 
+import com.pinHouse.common.dto.TempUserInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.Map;
@@ -17,7 +18,16 @@ public record TempUserResponse(
         String username)
 {
 
-    /// from Map (TempUserInfo는 security 모듈에 있으므로 Map으로 처리)
+    /// from TempUserInfo
+    public static TempUserResponse from(TempUserInfo userInfo) {
+        return TempUserResponse.builder()
+                .social(userInfo.getSocial())
+                .email(userInfo.getEmail())
+                .username(userInfo.getUsername())
+                .build();
+    }
+
+    /// from Map (하위 호환성)
     public static TempUserResponse from(Map<String, Object> infoMap) {
         return TempUserResponse.builder()
                 .social((String) infoMap.get("social"))

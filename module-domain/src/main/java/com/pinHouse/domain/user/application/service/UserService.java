@@ -1,9 +1,9 @@
 package com.pinHouse.domain.user.application.service;
 
+import com.pinHouse.common.dto.TempUserInfo;
 import com.pinHouse.common.exception.code.UserErrorCode;
 import com.pinHouse.common.response.CustomException;
 import com.pinHouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
-import com.pinHouse.domain.housing.facility.domain.entity.FacilityType;
 import com.pinHouse.domain.like.domain.LikeJpaRepository;
 import com.pinHouse.domain.pinPoint.domain.repository.PinPointMongoRepository;
 import com.pinHouse.domain.user.application.dto.*;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import static com.pinHouse.common.util.BirthDayUtil.parseBirthday;
 
 @Slf4j
 @Service
@@ -53,37 +51,60 @@ public class UserService implements UserUseCase {
             throw new CustomException(UserErrorCode.NOT_TEMP_USER_KEY);
         }
 
-        // TempUserInfo는 security 모듈에 있으므로 Map으로 처리 (임시)
-        // app 모듈에서 security와 통합하여 처리 필요
-        if (raw instanceof Map) {
+        // TempUserInfo 타입으로 처리
+        TempUserInfo userInfo;
+
+        if (raw instanceof TempUserInfo) {
+            userInfo = (TempUserInfo) raw;
+        } else if (raw instanceof Map) {
+            // 하위 호환성을 위해 Map도 지원
             @SuppressWarnings("unchecked")
             Map<String, Object> infoMap = (Map<String, Object>) raw;
-
-            // Map에서 필요한 정보 추출
-            String socialType = (String) infoMap.get("socialType");
-            String socialId = (String) infoMap.get("socialId");
-            String email = (String) infoMap.get("email");
-            String name = (String) infoMap.get("name");
-            String profileImage = (String) infoMap.get("profileImageUrl");
-
-            /// User 생성 및 저장
-            User user = User.builder()
-                    .id(UUID.randomUUID())
-                    .provider(Provider.valueOf(socialType))
-                    .socialId(socialId)
-                    .email(email)
-                    .name(name)
-                    .nickname(name)  // 닉네임은 이름으로 초기화
-                    .profileImage(profileImage)
-                    .role(Role.USER)
-                    .facilityTypes(request.facilityTypes() != null ? request.facilityTypes() : new ArrayList<>())
+            userInfo = TempUserInfo.builder()
+                    .social((String) infoMap.get("social"))
+                    .socialId((String) infoMap.get("socialId"))
+                    .email((String) infoMap.get("email"))
+                    .username((String) infoMap.get("username"))
+                    .imageUrl((String) infoMap.get("imageUrl"))
+                    .gender((String) infoMap.get("gender"))
+                    .birthyear((String) infoMap.get("birthyear"))
+                    .birthday((String) infoMap.get("birthday"))
                     .build();
-
-            return repository.save(user);
+        } else {
+            log.error("Redis raw object type is unexpected: {}", raw.getClass().getName());
+            throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
         }
 
-        /// 에러 발생
-        throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
+        log.info("Processing user signup - social: {}, email: {}, name: {}",
+                userInfo.getSocial(), userInfo.getEmail(), userInfo.getUsername());
+
+        // Gender 파싱 (문자열 -> Gender enum)
+        Gender gender = Gender.Other; // 기본값
+        if (userInfo.getGender() != null) {
+            try {
+                // "Male", "Female", "Other" 등의 enum 이름으로 시도
+                gender = Gender.valueOf(userInfo.getGender());
+            } catch (IllegalArgumentException e) {
+                // "남성", "여성", "미정" 등의 값으로 변환 시도
+                gender = Gender.getGender(userInfo.getGender());
+            }
+        }
+
+        /// User 생성 및 저장
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .provider(Provider.valueOf(userInfo.getSocial()))
+                .socialId(userInfo.getSocialId())
+                .email(userInfo.getEmail())
+                .name(userInfo.getUsername())
+                .nickname(userInfo.getUsername())  // 닉네임은 이름으로 초기화
+                .profileImage(userInfo.getImageUrl())
+                .gender(gender)
+                .role(Role.USER)
+                .facilityTypes(request.facilityTypes() != null ? request.facilityTypes() : new ArrayList<>())
+                .build();
+
+        return repository.save(user);
     }
 
     /// 레디스에 존재하는 데이터 조회
@@ -99,10 +120,11 @@ public class UserService implements UserUseCase {
             throw new CustomException(UserErrorCode.NOT_TEMP_USER_KEY);
         }
 
-        if (raw instanceof Map) {
+        if (raw instanceof TempUserInfo) {
+            return TempUserResponse.from((TempUserInfo) raw);
+        } else if (raw instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, Object> info = (Map<String, Object>) raw;
-            /// 리턴
             return TempUserResponse.from(info);
         } else {
             throw new CustomException(UserErrorCode.BAD_REQUEST_REDIS);

@@ -1,14 +1,15 @@
 package com.pinHouse.security.oauth2.service;
 
+import com.pinHouse.common.dto.TempUserInfo;
 import com.pinHouse.common.exception.code.SecurityErrorCode;
 import com.pinHouse.common.response.CustomException;
 import com.pinHouse.common.response.ErrorCode;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
+import com.pinHouse.domain.user.domain.entity.Gender;
 import com.pinHouse.domain.user.domain.entity.Provider;
 import com.pinHouse.domain.user.domain.entity.User;
 import com.pinHouse.security.oauth2.domain.OAuth2UserInfo;
 import com.pinHouse.security.oauth2.domain.PrincipalDetails;
-import com.pinHouse.security.oauth2.domain.TempUserInfo;
 import com.pinHouse.security.oauth2.domain.kakao.KakaoUserInfo;
 import com.pinHouse.security.oauth2.domain.naver.NaverUserInfo;
 import com.pinHouse.security.oauth2.handler.OAuth2FailureHandler;
@@ -62,7 +63,16 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             return PrincipalDetails.of(user, oAuth2UserAttributes);
         } else {
             /// 기존에 유저가 없다면, 실패 핸들러로 예외 던지기
-            var temp = TempUserInfo.from(userInfo);
+            TempUserInfo temp = TempUserInfo.builder()
+                    .social(userInfo.getProvider())
+                    .socialId(userInfo.getProviderId())
+                    .email(userInfo.getEmail())
+                    .username(userInfo.getUserName())
+                    .gender(userInfo.getGender() == null ? Gender.Other.name() : userInfo.getGender())
+                    .birthyear(userInfo.getBirthYear())
+                    .birthday(userInfo.getBirthday())
+                    .imageUrl(userInfo.getImageUrl())
+                    .build();
             throw new SignupRequiredException(temp);
         }
 

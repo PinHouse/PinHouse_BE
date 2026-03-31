@@ -1,6 +1,6 @@
 package com.pinHouse.security.oauth2.handler;
 
-import com.pinHouse.security.oauth2.domain.TempUserInfo;
+import com.pinHouse.common.dto.TempUserInfo;
 import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 

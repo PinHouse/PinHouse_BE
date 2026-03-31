@@ -33,7 +33,7 @@ public record MyPageResponse(
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole().getLabel())
-                .gender(user.getGender().getValue())
+                .gender(user.getGender() != null ? user.getGender().getValue() : "미정")
                 .profileImage(user.getProfileImage())
                 .birthday(BirthDayUtil.formatString(user.getBirthday()))
                 .facilityTypes(user.getFacilityTypes())
