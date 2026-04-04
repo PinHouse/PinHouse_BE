@@ -6,6 +6,7 @@ import com.pinHouse.common.response.ApiResponse;
 import com.pinHouse.domain.user.application.dto.*;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.common.util.HttpUtil;
+import com.pinHouse.security.auth.application.usecase.AuthUseCase;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserApi implements UserApiSpec {
 
     private final UserUseCase service;
+    private final AuthUseCase authUseCase;
 
     /// 쿠키 삭제
     private final HttpUtil httpUtil;
@@ -37,12 +39,13 @@ public class UserApi implements UserApiSpec {
                                     @RequestParam String tempKey,
                                     @RequestBody @Valid UserRequest request) {
 
-        /// 서비스 - User 엔티티 반환 (JWT 토큰은 app 모듈에서 생성)
+        /// 서비스 - User 엔티티 반환
         var user = service.saveUser(tempKey, request);
 
-        // TODO: app 모듈에서 JWT 토큰 생성 및 쿠키 추가 로직 구현
-        // JWT 토큰 생성은 security 모듈의 책임
-        // 현재는 컴파일을 위해 주석 처리
+        /// 회원가입 직후 즉시 로그인 상태가 되도록 토큰 발급
+        var tokenResponse = authUseCase.issueTokens(user);
+        httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
+        httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
 
         /// 리턴
         return ApiResponse.created();

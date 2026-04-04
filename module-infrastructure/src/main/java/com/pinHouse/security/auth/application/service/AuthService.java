@@ -33,6 +33,21 @@ public class AuthService implements AuthUseCase {
     //  퍼블릭 로직
     // =================
 
+    /// 액세스/리프레쉬 토큰 발급
+    @Override
+    @Transactional
+    public JwtTokenResponse issueTokens(User user) {
+
+        /// 인증된 유저에게 JWT 발급하기
+        var jwtRequest = JwtTokenRequest.from(user);
+
+        /// 액세스토큰/리프레쉬 토큰 발급
+        String accessToken = jwtProvider.createAccessToken(jwtRequest);
+        String refreshToken = jwtProvider.createRefreshToken(jwtRequest);
+
+        return JwtTokenResponse.of(accessToken, refreshToken);
+    }
+
     /// 로그아웃
     @Override
     @Transactional
@@ -86,17 +101,10 @@ public class AuthService implements AuthUseCase {
         User user = repository.findById(token.getUserId())
                 .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
-        /// 인증된 유저에게 JWT 발급하기
-        var jwtRequest = JwtTokenRequest.from(user);
-
         /// 기존 리프레쉬 토큰 무효화하기 (RDB)
         jwtValidator.removeRefreshToken(user.getId(), token.getRefreshToken());
 
-        /// 새로운 액세스토큰/리프레쉬 토큰 발급
-        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
-        String newRefreshToken = jwtProvider.createRefreshToken(jwtRequest);
-
-        return JwtTokenResponse.of(newAccessToken, newRefreshToken);
+        return issueTokens(user);
     }
 
 }

@@ -1,9 +1,9 @@
 package com.pinHouse.security.oauth2.handler;
 
+import com.pinHouse.security.auth.application.usecase.AuthUseCase;
 import com.pinHouse.domain.user.domain.entity.User;
-import com.pinHouse.security.jwt.application.dto.JwtTokenRequest;
+import com.pinHouse.security.jwt.application.dto.JwtTokenResponse;
 import com.pinHouse.common.util.HttpUtil;
-import com.pinHouse.security.jwt.application.util.JwtProvider;
 import com.pinHouse.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtProvider jwtProvider;
+    private final AuthUseCase authUseCase;
     private final HttpUtil httpUtil;
 
     @Value("${cors.front.redirect}")
@@ -43,13 +43,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             User user = principal.getUser();
 
             /// Access, Refresh 토큰 생성
-            JwtTokenRequest tokenRequest = JwtTokenRequest.from(user);
-            String accessToken = jwtProvider.createAccessToken(tokenRequest);
-            String refreshToken = jwtProvider.createRefreshToken(tokenRequest);
+            JwtTokenResponse tokenResponse = authUseCase.issueTokens(user);
 
             /// HTTP 쿠키 추가
-            httpUtil.addAccessTokenCookie(httpServletResponse, accessToken);
-            httpUtil.addRefreshTokenCookie(httpServletResponse, refreshToken);
+            httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
+            httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
 
             /// 시큐리티 홀더에 해당 멤버 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);

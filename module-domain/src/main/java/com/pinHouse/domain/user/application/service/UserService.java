@@ -78,6 +78,14 @@ public class UserService implements UserUseCase {
         log.info("Processing user signup - social: {}, email: {}, name: {}",
                 userInfo.getSocial(), userInfo.getEmail(), userInfo.getUsername());
 
+        Provider provider = Provider.valueOf(userInfo.getSocial());
+
+        Optional<User> existUser = repository.findByProviderAndSocialId(provider, userInfo.getSocialId());
+        if (existUser.isPresent()) {
+            redisTemplate.delete(tempUserKey);
+            return existUser.get();
+        }
+
         // Gender 파싱 (문자열 -> Gender enum)
         Gender gender = Gender.Other; // 기본값
         if (userInfo.getGender() != null) {
@@ -93,7 +101,7 @@ public class UserService implements UserUseCase {
         /// User 생성 및 저장
         User user = User.builder()
                 .id(UUID.randomUUID())
-                .provider(Provider.valueOf(userInfo.getSocial()))
+                .provider(provider)
                 .socialId(userInfo.getSocialId())
                 .email(userInfo.getEmail())
                 .name(userInfo.getUsername())
@@ -104,7 +112,10 @@ public class UserService implements UserUseCase {
                 .facilityTypes(request.facilityTypes() != null ? request.facilityTypes() : new ArrayList<>())
                 .build();
 
-        return repository.save(user);
+        User savedUser = repository.save(user);
+        redisTemplate.delete(tempUserKey);
+
+        return savedUser;
     }
 
     /// 레디스에 존재하는 데이터 조회
