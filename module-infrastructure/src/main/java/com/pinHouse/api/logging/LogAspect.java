@@ -20,32 +20,4 @@ public class LogAspect {
     @Pointcut("execution(* com.pinHouse.security..application..*Service*.*(..))")
     private void authLayer() {}
 
-
-    /// 성능 시간 테스트
-    @Around("applicationLayer() || authLayer()")
-    public Object logProcessTime(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        /// 시작 시간
-        long start = System.currentTimeMillis();
-
-        /// 실제 메서드 실행
-        Object proceed = joinPoint.proceed();
-
-        /// 마무리 된 시간
-        long executionTime = System.currentTimeMillis() - start;
-
-        /// 서비스명 추출하기
-        String declaringTypeName = joinPoint.getSignature().getDeclaringTypeName();
-        String[] split = declaringTypeName.split("\\.");
-        String serviceName = split[split.length - 1];
-
-        log.info("[서비스 로깅] 실행 메서드: {}.{} 실행 시간 = {}ms",
-                serviceName,
-                joinPoint.getSignature().getName(),
-                executionTime);
-
-        return proceed;
-    }
-
-
 }

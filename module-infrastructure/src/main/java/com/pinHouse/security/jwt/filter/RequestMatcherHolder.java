@@ -23,6 +23,8 @@ public class RequestMatcherHolder {
             new RequestInfo(OPTIONS, "/**", null),
             new RequestInfo(GET, "/", null),
             new RequestInfo(GET, "/login", null),
+            new RequestInfo(GET, "/actuator/**", null),
+
 
             // user
             new RequestInfo(GET, "/v1/user", null),     /// 임시 정보

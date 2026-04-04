@@ -1,0 +1,176 @@
+spring:
+  application:
+    name: pinhouse-be-${SPRING_PROFILES_ACTIVE:local}
+
+  # DB 정보
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
+      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
+      max-lifetime: ${HIKARI_MAX_LIFETIME}
+      idle-timeout: ${HIKARI_IDLE_TIMEOUT}
+
+  # JPA 설정
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: ${JPA_DDL}
+    properties:
+      hibernate:
+        auto_quote_keyword: false
+        globally_quoted_identifiers: false
+        format_sql: false
+        show_sql: false
+    defer-datasource-initialization: true
+    open-in-view: false
+
+#  sql:
+#    init:
+#      mode: always
+#      platform: mysql
+
+  data:
+    # REDIS
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      ssl:
+        enabled: ${REDIS_SSL}
+
+    # MongoDB
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DB}
+
+  # OAuth2 설정 추가
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+            scope:
+              - name
+              - email
+              - phoneNumber
+              - gender
+              - birthday
+              - birthyear
+            client-name: Naver
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+            client-name: kakao
+
+        provider:
+          naver:
+            authorization-uri: https://nid.naver.com/oauth2.0/authorize
+            token-uri: https://nid.naver.com/oauth2.0/token
+            user-info-uri: https://openapi.naver.com/v1/nid/me
+            user-name-attribute: response
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+# 스웨거
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+
+# Odsay 설정
+odsay:
+  apiKey: ${ODSAY_API_KEY}
+
+# CORS 설정
+cors:
+  front:
+    local: ${CORS_FRONT_LOCAL}
+    dev: ${CORS_FRONT_DEV}
+    prod: ${CORS_FRONT_PROD}
+    redirect: ${CORS_FRONT_REDIRECT}
+  back:
+    dev: ${CORS_BACK_DEV}
+
+# JWT 관련 설정
+auth:
+  jwt:
+    secret: ${JWT_SECRET}
+    access:
+      expiration: ${JWT_ACCESS_EXPIRATION}
+      dev_expiration: ${JWT_DEV_EXPIRATION}
+    refresh:
+      expiration: ${JWT_REFRESH_EXPIRATION}
+  cookie:
+    PathOption: ${JWT_COOKIE_PATH}
+    secureOption: ${JWT_SECURE_OPTION}
+    sameSiteOption: ${JWT_SAME_SITE}
+
+# 카카오 좌표 설정
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY}
+
+# AWS 설정
+aws:
+  s3:
+    bucket: ${S3_BUCKET}
+    region: ${S3_REGION}
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    presigned-url:
+      max-file-size-mb: 5
+      expiration-minutes: 10
+
+# Logging 설정
+logging:
+  level:
+    com.pinHouse: ${LOGGING_LEVEL:WARN}
+    org.springframework: WARN
+    org.hibernate: WARN
+
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    # 헬스체크 여부
+    health:
+      show-details: never
+    # 프로메테우스
+    prometheus:
+      access: read_only
+  metrics:
+    tags:
+      application: pinhouse-server
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${MANAGEMENT_OTLP_TRACING_ENDPOINT}

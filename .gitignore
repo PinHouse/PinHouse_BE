@@ -12,7 +12,19 @@ build/
 .env.prod
 
 ### Local Setting ###
-local
+!local/
+local/**
+!local/**/
+!local/*.yml
+!local/*.yaml
+!local/**/*.yml
+!local/**/*.yaml
+!local/**/*.alloy
+!local/**/*.cnf
+local/.env
+local/**/.env
+local/loki/data/
+local/tempo/data/
 
 ### STS ###
 .apt_generated
