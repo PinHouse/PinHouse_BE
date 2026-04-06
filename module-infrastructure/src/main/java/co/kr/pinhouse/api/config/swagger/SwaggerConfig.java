@@ -26,7 +26,7 @@ import io.swagger.v3.oas.models.media.Schema;
 public class SwaggerConfig {
 
 	@Bean
-	public OpenAPI openAPI() {
+	public OpenAPI openApi() {
 		return new OpenAPI()
 			.info(apiInfo());
 	}

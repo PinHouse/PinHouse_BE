@@ -28,7 +28,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final HttpUtil httpUtil;
 
 	@Value("${cors.front.redirect}")
-	private String REDIRECT_PATH;
+	private String redirectPath;
 
 	/*
 		기존에 존재하는 유저의 경우, 토큰 발급을 진행합니다.
@@ -55,7 +55,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			/// 쿠키와 함께 리다이렉트 (프론트 홈 주소)
-			getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, REDIRECT_PATH);
+			getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, redirectPath);
 		} catch (Exception e) {
 			log.error("OAuth2 회원가입 진행중 에러 발생", e);
 		}

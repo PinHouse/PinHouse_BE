@@ -30,16 +30,16 @@ public record DiagnosisResponse(
 	public static DiagnosisResponse from(EvaluationContext context) {
 
 		// 추천 후보 (후보군이 남아있으면 추천, 없으면 "해당 없음")
-		List<String> recommended = context.getCurrentCandidates().isEmpty() ?
-			List.of("해당 없음") :
-			context.getCurrentCandidates().stream()
+		List<String> recommended = context.getCurrentCandidates().isEmpty()
+			? List.of("해당 없음")
+			: context.getCurrentCandidates().stream()
 				.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
 				.toList();
 
 		return DiagnosisResponse.builder()
 			.eligible(!recommended.contains("해당 없음"))
-			.decisionMessage(!recommended.contains("해당 없음") ?
-				"추천 임대주택이 있습니다" : "모든 조건 미충족")
+			.decisionMessage(!recommended.contains("해당 없음")
+				? "추천 임대주택이 있습니다" : "모든 조건 미충족")
 			.recommended(recommended)
 			.build();
 	}

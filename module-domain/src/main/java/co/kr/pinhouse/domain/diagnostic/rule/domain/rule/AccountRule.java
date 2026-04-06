@@ -36,7 +36,7 @@ public class AccountRule implements Rule {
 		PUBLIC_RENTAL
 	);
 
-	private static void removePUBLIC_RENTAL(ArrayList<SupplyRentalCandidate> candidates, double years,
+	private static void removePublicRental(ArrayList<SupplyRentalCandidate> candidates, double years,
 		Diagnosis diagnosis) {
 
 		for (SupplyRentalCandidate c : new ArrayList<>(candidates)) { // 반복 중 수정 방지
@@ -95,7 +95,7 @@ public class AccountRule implements Rule {
 		double years = accountYears.getYears(); // 실제 연도 값
 
 		/// 공공임대 내부에서, 가입기간에 따른 불가능 제거
-		removePUBLIC_RENTAL(candidates, years, diagnosis);
+		removePublicRental(candidates, years, diagnosis);
 
 		String message = String.format("청약통장 가입기간 %.1f년, 가입기간이 길수록 우선순위가 높습니다.", years);
 

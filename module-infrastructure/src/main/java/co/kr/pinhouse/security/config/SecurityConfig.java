@@ -69,8 +69,8 @@ public class SecurityConfig {
 				.failureHandler(oAuth2FailureHandler)
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-			.exceptionHandling(exception -> {
-				exception.authenticationEntryPoint(jwtFailureHandler)
+			.exceptionHandling(exceptionConfigurer -> {
+				exceptionConfigurer.authenticationEntryPoint(jwtFailureHandler)
 					.accessDeniedHandler(jwtDeniedHandler);
 			});
 

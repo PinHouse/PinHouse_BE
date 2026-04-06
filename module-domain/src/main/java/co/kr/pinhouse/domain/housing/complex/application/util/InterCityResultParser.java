@@ -58,19 +58,19 @@ public class InterCityResultParser {
 				if (subPaths.isArray()) {
 					for (JsonNode sub : subPaths) {
 						int trafficType = sub.path("trafficType").asInt();
-						RootResult.TransportType t = RootResult.TransportType.fromTrafficType(trafficType);
+						RootResult.TransportType transportType = RootResult.TransportType.fromTrafficType(trafficType);
 
 						String lineInfo = null;
 						TrainType trainTypeEnum = null;
 
-						if (t == RootResult.TransportType.TRAIN) {
+						if (transportType == RootResult.TransportType.TRAIN) {
 							int trainTypeCode = sub.path("trainType").asInt(-1);
 							trainTypeEnum = TrainType.from(trainTypeCode);
 							lineInfo = trainTypeEnum.getLabel();
-						} else if (t == RootResult.TransportType.BUS) {
+						} else if (transportType == RootResult.TransportType.BUS) {
 							// 5: 고속, 6: 시외
 							lineInfo = (trafficType == 5) ? "고속버스" : "시외버스";
-						} else if (t == RootResult.TransportType.AIR) {
+						} else if (transportType == RootResult.TransportType.AIR) {
 							lineInfo = "항공";
 						}
 
@@ -81,7 +81,7 @@ public class InterCityResultParser {
 						}
 
 						steps.add(RootResult.DistanceStep.builder()
-							.type(t)
+							.type(transportType)
 							.time(sub.path("sectionTime").asInt(0))
 							.startName(sub.path("startName").asText(null))
 							.endName(sub.path("endName").asText(null))

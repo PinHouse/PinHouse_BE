@@ -48,8 +48,8 @@ public record ApiResponse<T>(
 	}
 
 	// 실패 응답 생성
-	public static <T> ApiResponse<T> fail(final CustomException e) {
-		return new ApiResponse<>(e.getErrorCode().getHttpStatus(), false, e.getErrorCode().getCode(),
-			e.getErrorCode().getMessage(), null, e.getFieldErrorResponses());
+	public static <T> ApiResponse<T> fail(final CustomException exception) {
+		return new ApiResponse<>(exception.getErrorCode().getHttpStatus(), false, exception.getErrorCode().getCode(),
+			exception.getErrorCode().getMessage(), null, exception.getFieldErrorResponses());
 	}
 }

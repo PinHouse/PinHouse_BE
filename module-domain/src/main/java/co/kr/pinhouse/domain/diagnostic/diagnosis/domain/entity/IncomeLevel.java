@@ -16,9 +16,8 @@ public enum IncomeLevel {
 	PERCENT_150("6구간", 150),
 	PERCENT_160("기타", 160),
 	PERCENT_170("기타", 170),
-	PERCENT_180("기타", 180),
-	PERCENT_190("기타", 190),
-	;
+		PERCENT_180("기타", 180),
+		PERCENT_190("기타", 190);
 
 	private final String value;
 	private final int percent;

@@ -26,10 +26,10 @@ public class LoginCheckAspect {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		/// 미인증(=null), 익명 토큰, Principal 타입 불일치 케이스 모두 차단
-		if (auth == null ||
-			!auth.isAuthenticated() ||
-			auth instanceof AnonymousAuthenticationToken ||
-			!(auth.getPrincipal() instanceof PrincipalDetails principal)) {
+		if (auth == null
+			|| !auth.isAuthenticated()
+			|| auth instanceof AnonymousAuthenticationToken
+			|| !(auth.getPrincipal() instanceof PrincipalDetails principal)) {
 
 			/// 401 매핑
 			throw new CustomException(CommonErrorCode.UNAUTHORIZED);

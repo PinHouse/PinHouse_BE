@@ -409,9 +409,9 @@ public class HomeService implements HomeUseCase {
 		List<String> availableRentalTypes = diagnosis.availableRentalTypes();
 
 		// 4. 자격 없는 경우 빈 응답 반환
-		if (availableRentalTypes == null ||
-			availableRentalTypes.isEmpty() ||
-			availableRentalTypes.contains("해당 없음")) {
+		if (availableRentalTypes == null
+			|| availableRentalTypes.isEmpty()
+			|| availableRentalTypes.contains("해당 없음")) {
 			log.info("추천 가능한 임대주택이 없습니다 - userId={}", userId);
 			return HomeNoticeListResponse.builder()
 				.region(null)

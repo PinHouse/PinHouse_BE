@@ -49,9 +49,9 @@ public final class DistanceCalculator {
 		double radLat1 = Math.toRadians(lat1);
 		double radLat2 = Math.toRadians(lat2);
 
-		double h = Math.pow(Math.sin(dLat / 2), 2)
+		double haversine = Math.pow(Math.sin(dLat / 2), 2)
 			+ Math.pow(Math.sin(dLon / 2), 2) * Math.cos(radLat1) * Math.cos(radLat2);
 
-		return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+		return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(haversine));
 	}
 }

@@ -36,8 +36,8 @@ public record NoticeListRequest(
 	// =================
 	//  내부 로직
 	// =================
-	private static String normalize(String x) {
-		return x.trim().replaceAll("\\s+", "");
+	private static String normalize(String value) {
+		return value.trim().replaceAll("\\s+", "");
 	}
 
 	@Getter
@@ -234,17 +234,17 @@ public record NoticeListRequest(
 			if (source == null) {
 				return null;
 			}
-			String s = normalize(source);
+			String normalizedSource = normalize(source);
 
 			/// Enum.name() 매칭 허용 (LATEST, DEADLINE_ASC ...)
 			for (ListSortType t : values()) {
-				if (t.name().equalsIgnoreCase(s)) {
+				if (t.name().equalsIgnoreCase(normalizedSource)) {
 					return t;
 				}
 			}
 			/// 한글 라벨 매칭 허용
 			for (ListSortType t : values()) {
-				if (normalize(t.label).equalsIgnoreCase(s)) {
+				if (normalize(t.label).equalsIgnoreCase(normalizedSource)) {
 					return t;
 				}
 			}

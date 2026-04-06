@@ -63,8 +63,8 @@ public class FacilityStatService {
 		countsRepo.save(doc);
 	}
 
-	private boolean isExpired(Instant t) {
-		return t == null || t.isBefore(Instant.now().minus(TTL));
+	private boolean isExpired(Instant timestamp) {
+		return timestamp == null || timestamp.isBefore(Instant.now().minus(TTL));
 	}
 
 	private Map<FacilityType, Integer> withDerivedCounts(Map<FacilityType, Integer> counts) {

@@ -25,11 +25,11 @@ public interface HomeApiSpec {
 
 	@Operation(
 		summary = "마감임박공고 조회 API",
-		description = "PinPoint의 지역을 기반으로 마감임박순으로 정렬된 공고 목록을 조회하는 API 입니다. " +
-			"PinPoint의 주소에서 광역 단위(시/도)를 추출하여 해당 지역의 모집중인 공고만 조회합니다. " +
-			"본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다. " +
-			"응답 구조: 공통 지역(region) + 공고 목록 배열(content) + 페이징 정보(hasNext, totalElements). " +
-			"SliceResponse와 유사한 구조이지만 region 필드가 추가되었습니다."
+		description = "PinPoint의 지역을 기반으로 마감임박순으로 정렬된 공고 목록을 조회하는 API 입니다. "
+			+ "PinPoint의 주소에서 광역 단위(시/도)를 추출하여 해당 지역의 모집중인 공고만 조회합니다. "
+			+ "본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다. "
+			+ "응답 구조: 공통 지역(region) + 공고 목록 배열(content) + 페이징 정보(hasNext, totalElements). "
+			+ "SliceResponse와 유사한 구조이지만 region 필드가 추가되었습니다."
 	)
 	ApiResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
 		@Parameter(description = "PinPoint ID", example = "83ec36ce-8fc1-4f62-8983-397c2729fc22")
@@ -46,7 +46,7 @@ public interface HomeApiSpec {
 	)
 	ApiResponse<HomeSearchOverviewResponse> searchOverview(
 		@Parameter(description = "검색 키워드", example = "청년")
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 
 		@CurrentUserId UUID userId
 	);
@@ -60,7 +60,7 @@ public interface HomeApiSpec {
 		@RequestParam HomeSearchCategoryType type,
 
 		@Parameter(description = "검색 키워드", example = "청년")
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 
 		@Parameter(description = "페이지 (1부터 시작)", example = "1")
 		@RequestParam(defaultValue = "1") int page,
@@ -79,9 +79,9 @@ public interface HomeApiSpec {
 
 	@Operation(
 		summary = "핀포인트 기준 공고 개수 조회 API",
-		description = "핀포인트를 기준으로 최대 이동 시간(분) 내에 위치한 공고의 개수를 조회하는 API 입니다. " +
-			"대중교통 평균 속도(15km/h)를 기준으로 반경을 계산하여 해당 범위 내 단지들의 고유 공고 개수를 반환합니다. " +
-			"본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다."
+		description = "핀포인트를 기준으로 최대 이동 시간(분) 내에 위치한 공고의 개수를 조회하는 API 입니다. "
+			+ "대중교통 평균 속도(15km/h)를 기준으로 반경을 계산하여 해당 범위 내 단지들의 고유 공고 개수를 반환합니다. "
+			+ "본인의 PinPoint만 사용 가능하며, 다른 사용자의 PinPoint ID를 사용하면 400 에러가 발생합니다."
 	)
 	ApiResponse<NoticeCountResponse> getNoticeCountWithinTravelTime(
 		@Parameter(description = "핀포인트 ID", example = "83ec36ce-8fc1-4f62-8983-397c2729fc22")
@@ -95,11 +95,11 @@ public interface HomeApiSpec {
 
 	@Operation(
 		summary = "진단 기반 추천 공고 조회 API",
-		description = "사용자의 최근 청약 진단 결과를 기반으로 추천 공고를 조회하는 API입니다. " +
-			"진단 결과의 신청가능한 임대주택 유형(availableRentalTypes)을 기준으로 공고를 필터링하며, " +
-			"마감임박순으로 정렬됩니다. 모든 공고 상태(모집중 + 마감)를 포함합니다. " +
-			"진단 기록이 없는 경우 404 에러가 발생합니다. " +
-			"진단 결과 자격이 없는 경우(해당 없음) 200 OK와 함께 빈 리스트를 반환합니다."
+		description = "사용자의 최근 청약 진단 결과를 기반으로 추천 공고를 조회하는 API입니다. "
+			+ "진단 결과의 신청가능한 임대주택 유형(availableRentalTypes)을 기준으로 공고를 필터링하며, "
+			+ "마감임박순으로 정렬됩니다. 모든 공고 상태(모집중 + 마감)를 포함합니다. "
+			+ "진단 기록이 없는 경우 404 에러가 발생합니다. "
+			+ "진단 결과 자격이 없는 경우(해당 없음) 200 OK와 함께 빈 리스트를 반환합니다."
 	)
 	@ApiResponses(value = {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(

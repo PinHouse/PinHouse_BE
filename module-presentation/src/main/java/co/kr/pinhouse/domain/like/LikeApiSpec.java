@@ -23,7 +23,6 @@ public interface LikeApiSpec {
 			"targetId": "19417",
 			"type": "NOTICE"
 		}
-		
 		""";
 	/// 방 좋아요 예시
 	String COMPLEX_EXAMPLE = """

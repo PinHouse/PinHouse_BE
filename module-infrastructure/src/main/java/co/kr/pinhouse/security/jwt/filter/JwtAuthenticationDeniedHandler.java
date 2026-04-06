@@ -36,8 +36,8 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
 		AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
 		/// 권한 부족 403 Error
-		CustomException exception = new CustomException(CommonErrorCode.FORBIDDEN);
-		ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
+		CustomException customException = new CustomException(CommonErrorCode.FORBIDDEN);
+		ApiResponse<Object> apiResponse = ApiResponse.fail(customException);
 
 		/// response 제작
 		response.setStatus(HttpServletResponse.SC_FORBIDDEN);

@@ -11,16 +11,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class CorsConfig {
 
 	@Value("${cors.front.local}")
-	private String front_local;
+	private String frontLocal;
 
 	@Value("${cors.front.dev}")
-	private String front_dev;
+	private String frontDev;
 
 	@Value("${cors.front.prod}")
-	private String front_prod;
+	private String frontProd;
 
 	@Value("${cors.back.dev}")
-	private String back_dev;
+	private String backDev;
 
 	/**
 	 * CORS 설정을 진행합니다.
@@ -30,10 +30,10 @@ public class CorsConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		/// CORS 추가
-		configuration.addAllowedOriginPattern(front_local);
-		configuration.addAllowedOriginPattern(front_dev);
-		configuration.addAllowedOriginPattern(front_prod);
-		configuration.addAllowedOriginPattern(back_dev);
+		configuration.addAllowedOriginPattern(frontLocal);
+		configuration.addAllowedOriginPattern(frontDev);
+		configuration.addAllowedOriginPattern(frontProd);
+		configuration.addAllowedOriginPattern(backDev);
 
 		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod("*");

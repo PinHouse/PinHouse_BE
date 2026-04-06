@@ -40,9 +40,9 @@ public class FirstSpecialRule implements Rule {
 
 		/// 혼인 중이거나 자녀가 있는 경우
 		boolean isMarried = diagnosis.isMaritalStatus();
-		boolean hasChildren = (diagnosis.getUnbornChildrenCount() +
-			diagnosis.getUnder6ChildrenCount() +
-			diagnosis.getOver7MinorChildrenCount()) > 0;
+		boolean hasChildren = (diagnosis.getUnbornChildrenCount()
+			+ diagnosis.getUnder6ChildrenCount()
+			+ diagnosis.getOver7MinorChildrenCount()) > 0;
 
 		/// 생애최초 요건: 무주택 세대주 + (결혼했거나 자녀가 있음)
 		boolean qualifies = noOwnHome && isHouseholdHead && (isMarried || hasChildren);

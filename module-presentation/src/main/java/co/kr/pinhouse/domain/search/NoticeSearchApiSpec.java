@@ -32,7 +32,7 @@ public interface NoticeSearchApiSpec {
 	)
 	ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNotices(
 		@Parameter(description = "검색 키워드", example = "행복주택", required = true)
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 
 		SliceRequest sliceRequest,
 

@@ -40,7 +40,7 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
 	@Override
 	@GetMapping("/notices")
 	public ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNotices(
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 		SliceRequest sliceRequest,
 		@RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
 		@RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
@@ -50,7 +50,7 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
 
 		// 검색 실행
 		SliceResponse<NoticeSearchResultResponse> response = noticeSearchService.searchNotices(
-			q,
+			keyword,
 			sliceRequest.page(),
 			sliceRequest.offSet(),
 			sortType,

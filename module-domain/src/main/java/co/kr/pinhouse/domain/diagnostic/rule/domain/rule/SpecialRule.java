@@ -56,17 +56,16 @@ public class SpecialRule implements Rule {
 				"특수계층 공급 후보",
 				Map.of("candidate", candidates));
 
-		}
+		} else {
 
-		/// 특별계층이 하나도 없다면 삭제
-		else {
+			/// 특별계층이 하나도 없다면 삭제
 
 			/// 모든 특별계층이 있는 것 삭제
 			specialTypes.forEach(supplyType -> {
 				candidates.removeIf(c ->
 					c.supplyType() == supplyType);
-
 			});
+
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),

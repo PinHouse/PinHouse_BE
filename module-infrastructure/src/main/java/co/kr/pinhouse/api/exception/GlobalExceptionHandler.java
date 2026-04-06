@@ -35,10 +35,10 @@ public class GlobalExceptionHandler {
 
 	/// CustomException 에러 처리
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ApiResponse<?>> handleCustomException(CustomException e) {
+	public ResponseEntity<ApiResponse<?>> handleCustomException(CustomException exception) {
 
 		/// 에러 코드
-		ErrorCode errorCode = e.getErrorCode();
+		ErrorCode errorCode = exception.getErrorCode();
 
 		/// 로그찍기
 		log.error(errorCode.getMessage());
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 		/// 응답
 		return ResponseEntity
 			.status(errorCode.getHttpStatus())
-			.body(ApiResponse.fail(e));
+			.body(ApiResponse.fail(exception));
 	}
 
 	// JWT 관련 에러 처리는 security 모듈로 이동됨
@@ -55,200 +55,200 @@ public class GlobalExceptionHandler {
 	/// @Valid 파라미터 에러 처리
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e) {
+	public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 파라미터용 예외 코드
 		ErrorCode errorCode = CommonErrorCode.BAD_PARAMETER;
 
 		/// 기본 에러 코드로 응답 생성 및 파라미터 담기
-		List<FieldErrorResponse> errors = e.getBindingResult().getFieldErrors()
+		List<FieldErrorResponse> errors = exception.getBindingResult().getFieldErrors()
 			.stream()
 			.map(error -> FieldErrorResponse.of(error.getField(), error.getDefaultMessage()))
 			.toList();
 
-		CustomException exception = new CustomException(errorCode, errors);
+		CustomException customException = new CustomException(errorCode, errors);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 레디스 에러 처리 핸들러
 	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
 	@ExceptionHandler(RedisConnectionFailureException.class)
-	public ApiResponse<?> handleRedisConnectionFailureException(RedisConnectionFailureException e) {
+	public ApiResponse<?> handleRedisConnectionFailureException(RedisConnectionFailureException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_REDIS_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 몽고디비 에러 처리 핸들러
 	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
 	@ExceptionHandler({UncategorizedMongoDbException.class, MongoCommandException.class})
-	public ApiResponse<?> handleMongoException(UncategorizedMongoDbException e) {
+	public ApiResponse<?> handleMongoException(UncategorizedMongoDbException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_MONGO_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 값이 없는 내용 에러 처리
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
-	public ApiResponse<?> handleNoSuchException(Exception e) {
+	public ApiResponse<?> handleNoSuchException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.NOT_FOUND;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 값이 없는 내용 에러 처리
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NullPointerException.class)
-	public ApiResponse<?> handleNullPointerException(NullPointerException e) {
+	public ApiResponse<?> handleNullPointerException(NullPointerException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.NULL_VALUE;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 값이 없는 내용 에러 처리
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
-	public ApiResponse<?> handleIllegalException(Exception e) {
+	public ApiResponse<?> handleIllegalException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage(), e);
+		log.error(exception.getMessage(), exception);
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// JSON 값 에러 처리
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ApiResponse<?> handleJSONException(HttpMessageNotReadableException e) {
+	public ApiResponse<?> handleJsonException(HttpMessageNotReadableException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_JSON;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 타입 오류
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler({UnexpectedTypeException.class, MethodArgumentTypeMismatchException.class})
-	public ApiResponse<?> handleJUnexpectedTypeException(Exception e) {
+	public ApiResponse<?> handleJUnexpectedTypeException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_INVALID_INPUT;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// DB 문법 등 관련 문제 발생
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(InvalidDataAccessResourceUsageException.class)
-	public ApiResponse<?> handleInvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException e) {
+	public ApiResponse<?> handleInvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// DB 스키마 관련 문제 발생
 	@ResponseStatus(HttpStatus.CONFLICT)
 	@ExceptionHandler({DataIntegrityViolationException.class, DuplicateKeyException.class})
-	public ApiResponse<?> handleDataIntegrityViolationException(Exception e) {
+	public ApiResponse<?> handleDataIntegrityViolationException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SCHEMA_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// DB 스키마 관련 문제 발생
 	@ResponseStatus(HttpStatus.CONFLICT)
 	@ExceptionHandler(TransientDataAccessException.class)
-	public ApiResponse<?> handleTransientDataAccessException(TransientDataAccessException e) {
+	public ApiResponse<?> handleTransientDataAccessException(TransientDataAccessException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage());
+		log.error(exception.getMessage());
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 	/// 최하위 에러 처리 (여기까지는 안오길 ...)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
-	public ApiResponse<?> handleException(Exception e) {
+	public ApiResponse<?> handleException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(e.getMessage(), e);
+		log.error(exception.getMessage(), exception);
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-		CustomException exception = new CustomException(errorCode);
+		CustomException customException = new CustomException(errorCode);
 
 		/// 응답
-		return ApiResponse.fail(exception);
+		return ApiResponse.fail(customException);
 	}
 
 }

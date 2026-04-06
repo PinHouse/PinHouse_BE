@@ -17,8 +17,8 @@ public interface UniversityJpaRepository extends JpaRepository<University, Strin
 	 * @param keyword 검색 키워드
 	 * @return 검색된 대학교 목록 (시작하는 것 우선)
 	 */
-	@Query("SELECT u FROM University u WHERE u.schoolName LIKE %:keyword% " +
-		"ORDER BY CASE WHEN u.schoolName LIKE :keyword% THEN 0 ELSE 1 END, u.schoolName")
+	@Query("SELECT u FROM University u WHERE u.schoolName LIKE %:keyword% "
+		+ "ORDER BY CASE WHEN u.schoolName LIKE :keyword% THEN 0 ELSE 1 END, u.schoolName")
 	List<University> findBySchoolNameContaining(@Param("keyword") String keyword);
 
 	boolean existsBySchoolName(String schoolName);

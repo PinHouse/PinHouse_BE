@@ -27,28 +27,28 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 	private final KeyUtil keyUtil;
 
 	@Value("${cors.front.redirect}")
-	public String REDIRECT_PATH;
+	public String redirectPath;
 
 	/**
 	 * 실패 핸들러 예외 처리
 	 */
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException exception) throws IOException, ServletException {
+		AuthenticationException authException) throws IOException, ServletException {
 
 		/// SignupRequiredException 예외처리 받았으면 실행
-		if (exception instanceof SignupRequiredException) {
+		if (authException instanceof SignupRequiredException) {
 
 			/// 레디스로 회원가입 키 생성
 			String tempUserKey = keyUtil.generateOAuth2TempUserKey();
 
 			/// 임시 유저 처리
-			TempUserInfo userInfo = ((SignupRequiredException)exception).getUserInfo();
+			TempUserInfo userInfo = ((SignupRequiredException)authException).getUserInfo();
 
 			/// 레디스에 값 추가( 유효시간 5분 )
 			redisTemplate.opsForValue().set(tempUserKey, userInfo, Duration.ofMinutes(5));
 
-			String extraInfoUrl = REDIRECT_PATH + "/signup?state=" + tempUserKey;
+			String extraInfoUrl = redirectPath + "/signup?state=" + tempUserKey;
 
 			/// 응답을 리다이렉트
 			response.sendRedirect(extraInfoUrl);

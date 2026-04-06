@@ -21,14 +21,14 @@ public interface DiagnosisApiSpec {
 		description = "청약 진단을 수행하고 결과만 반환합니다."
 	)
 	ApiResponse<DiagnosisResponse> diagnosis(@CurrentUserId(required = true) UUID userId,
-		@RequestBody DiagnosisRequest requestDTO);
+		@RequestBody DiagnosisRequest requestDto);
 
 	@Operation(
 		summary = "청약 진단 API v2",
 		description = "청약 진단을 수행하고 추천 결과를 공고 유형별로 그룹화한 v2 응답을 반환합니다."
 	)
 	ApiResponse<DiagnosisResponseV2> diagnosisV2(@CurrentUserId(required = true) UUID userId,
-		@RequestBody DiagnosisRequest requestDTO);
+		@RequestBody DiagnosisRequest requestDto);
 
 	@Operation(
 		summary = "최근 진단 결과 상세 조회 API",

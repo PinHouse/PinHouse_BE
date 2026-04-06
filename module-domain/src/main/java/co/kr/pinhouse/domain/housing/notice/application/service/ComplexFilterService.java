@@ -255,7 +255,7 @@ public class ComplexFilterService {
 		}
 
 		// 광역시 및 특별시 목록
-		final Set<String> METRO_CITIES = Set.of(
+		final Set<String> metroCities = Set.of(
 			"서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
 		);
 
@@ -273,7 +273,7 @@ public class ComplexFilterService {
 			String cityName = countyParts[0];
 			// "광주광역시", "부산광역시", "서울특별시" 등에서 도시 이름 추출
 			String cityBase = extractMetroCityName(cityName);
-			if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+			if (cityBase != null && metroCities.contains(cityBase)) {
 				isMetroCity = true;
 				metroCityName = cityBase;
 			}
@@ -294,7 +294,7 @@ public class ComplexFilterService {
 			// 일반시인 경우
 			// city 필드가 광역시일 수도 있으므로 확인
 			String cityBase = extractMetroCityName(city);
-			if (cityBase != null && METRO_CITIES.contains(cityBase)) {
+			if (cityBase != null && metroCities.contains(cityBase)) {
 				// city 필드가 "대구광역시"인 경우 → city: "대구"
 				finalCity = cityBase;
 			} else {

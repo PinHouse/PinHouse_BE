@@ -54,8 +54,8 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
 			})
 			.toList();
 
-		Query q = new Query(new Criteria().andOperator(ands.toArray(new Criteria[0])));
-		return mongoTemplate.find(q, FacilityStatDocument.class);
+		Query query = new Query(new Criteria().andOperator(ands.toArray(new Criteria[0])));
+		return mongoTemplate.find(query, FacilityStatDocument.class);
 	}
 
 	/** $geoNear → $group 로 타입별 개수 */

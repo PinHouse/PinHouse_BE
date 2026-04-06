@@ -65,10 +65,10 @@ public class HomeApi implements HomeApiSpec {
 	@Override
 	@GetMapping("/search/overview")
 	public ApiResponse<HomeSearchOverviewResponse> searchOverview(
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 		@CurrentUserId UUID userId
 	) {
-		HomeSearchOverviewResponse response = homeService.searchHomeOverview(q, userId);
+		HomeSearchOverviewResponse response = homeService.searchHomeOverview(keyword, userId);
 		return ApiResponse.ok(response);
 	}
 
@@ -80,13 +80,13 @@ public class HomeApi implements HomeApiSpec {
 	@GetMapping("/search/category")
 	public ApiResponse<HomeSearchCategoryPageResponse> searchByCategory(
 		@RequestParam HomeSearchCategoryType type,
-		@RequestParam String q,
+		@RequestParam("q") String keyword,
 		@RequestParam(defaultValue = "1") int page,
 		@CurrentUserId UUID userId
 	) {
 		HomeSearchCategoryPageResponse response = homeService.searchHomeByCategory(
 			type,
-			q,
+			keyword,
 			page,
 			userId
 		);

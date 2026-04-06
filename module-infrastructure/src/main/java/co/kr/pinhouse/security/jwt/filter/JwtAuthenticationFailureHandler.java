@@ -37,15 +37,15 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
 		AuthenticationException authException) throws IOException {
 
 		/// 인증 문제 발생시, 401 Error 발생
-		CustomException exception = new CustomException(CommonErrorCode.UNAUTHORIZED);
+		CustomException customException = new CustomException(CommonErrorCode.UNAUTHORIZED);
 
 		/// JWT 예외인 경우
 		if (authException instanceof JwtAuthenticationException jwtEx) {
-			exception = new CustomException(jwtEx.getErrorCode());
+			customException = new CustomException(jwtEx.getErrorCode());
 		}
 
 		/// 예외 처리
-		ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
+		ApiResponse<Object> apiResponse = ApiResponse.fail(customException);
 
 		/// 응답 설정
 		response.setStatus(apiResponse.httpStatus().value());

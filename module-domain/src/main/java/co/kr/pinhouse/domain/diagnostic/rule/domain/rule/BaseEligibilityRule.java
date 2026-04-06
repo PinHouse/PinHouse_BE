@@ -37,21 +37,21 @@ public class BaseEligibilityRule implements Rule {
 		/// 나이별 후보군 필터링
 		if (age < 19) {
 			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL ||
-					c.supplyType() == SupplyType.ELDER_SPECIAL ||
-					c.supplyType() == SupplyType.GENERAL
+				c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
+					|| c.supplyType() == SupplyType.ELDER_SPECIAL
+					|| c.supplyType() == SupplyType.GENERAL
 			);
 		} else if (age <= 39) {
 			candidates.removeIf(c -> c.supplyType() == SupplyType.ELDER_SPECIAL);
 		} else if (age <= 64) {
 			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.YOUTH_SPECIAL ||
-					c.supplyType() == SupplyType.ELDER_SPECIAL
+				c.supplyType() == SupplyType.YOUTH_SPECIAL
+					|| c.supplyType() == SupplyType.ELDER_SPECIAL
 			);
 		} else if (age >= 65) {
 			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.YOUTH_SPECIAL ||
-					c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
+				c.supplyType() == SupplyType.YOUTH_SPECIAL
+					|| c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
 			);
 		}
 
@@ -83,9 +83,9 @@ public class BaseEligibilityRule implements Rule {
 		if (householdMemberOwnsHouse) {
 			/// 무주택세대구성원이 필수인 경우 해당 후보 제거
 			candidates.removeIf(c ->
-				c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.NATIONAL_RENTAL ||
-					c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE ||
-					c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL
+				c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.NATIONAL_RENTAL
+					|| c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE
+					|| c.noticeType() == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL
 			);
 		}
 

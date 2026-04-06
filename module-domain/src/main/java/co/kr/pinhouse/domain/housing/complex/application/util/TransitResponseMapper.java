@@ -45,15 +45,15 @@ public class TransitResponseMapper {
 	// =================
 
 	/// Enum 매핑
-	private static ChipType mapType(RootResult.TransportType t) {
+	private static ChipType mapType(RootResult.TransportType transportType) {
 
 		/// 없으면 걷기
-		if (t == null) {
+		if (transportType == null) {
 			return ChipType.WALK;
 		}
 
 		/// 있으면
-		return switch (t) {
+		return switch (transportType) {
 			case WALK -> ChipType.WALK;
 			case BUS -> ChipType.BUS;
 			case SUBWAY -> ChipType.SUBWAY;

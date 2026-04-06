@@ -32,9 +32,9 @@ public class MultiChildCandidateRule implements Rule {
 		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
 		/// 미성년 자녀 수 계산 (태아 + 6세 이하 + 7세 이상 미성년)
-		int minorChildCount = diagnosis.getUnbornChildrenCount() +
-			diagnosis.getUnder6ChildrenCount() +
-			diagnosis.getOver7MinorChildrenCount();
+		int minorChildCount = diagnosis.getUnbornChildrenCount()
+			+ diagnosis.getUnder6ChildrenCount()
+			+ diagnosis.getOver7MinorChildrenCount();
 
 		/// 다자녀 특별공급 자격 요건:
 		/// - 통합공공임대/국민임대/장기전세: 미성년 자녀 2명 이상
@@ -53,9 +53,8 @@ public class MultiChildCandidateRule implements Rule {
 					if (minorChildCount < 3) {
 						iter.remove();
 					}
-				}
-				/// 그 외 (통합공공임대, 국민임대, 장기전세)는 2명 이상 필요
-				else {
+				} else {
+					/// 그 외 (통합공공임대, 국민임대, 장기전세)는 2명 이상 필요
 					if (minorChildCount < 2) {
 						iter.remove();
 					}

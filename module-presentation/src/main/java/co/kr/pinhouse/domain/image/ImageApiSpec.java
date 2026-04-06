@@ -25,9 +25,9 @@ public interface ImageApiSpec {
 
 	@Operation(
 		summary = "Presigned URL 생성",
-		description = "프로필 이미지 업로드를 위한 S3 Presigned URL을 생성합니다. " +
-			"생성된 presignedUrl로 클라이언트가 직접 S3에 PUT 요청을 보내 이미지를 업로드합니다. " +
-			"파일 크기 전달은 필요 없으며, 파일명과 Content-Type만 보내면 됩니다.",
+		description = "프로필 이미지 업로드를 위한 S3 Presigned URL을 생성합니다. "
+			+ "생성된 presignedUrl로 클라이언트가 직접 S3에 PUT 요청을 보내 이미지를 업로드합니다. "
+			+ "파일 크기 전달은 필요 없으며, 파일명과 Content-Type만 보내면 됩니다.",
 		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
 			description = "Presigned URL 생성 요청",
 			required = true,

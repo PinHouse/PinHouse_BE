@@ -53,16 +53,16 @@ public class IncomeAssetRule implements Rule {
 			boolean carOk = carValue <= policyUseCase.checkMaxCarValue();
 
 			/// 2. 소득 비율 체크
-			boolean incomeOk = incomeLevel.getPercent() <=
-				policyUseCase.maxIncomeRatio(supplyType, noticeType, familyCount);
+			boolean incomeOk = incomeLevel.getPercent()
+				<= policyUseCase.maxIncomeRatio(supplyType, noticeType, familyCount);
 
 			/// 3. 자산 체크 (임대 유형에 따라 총자산 또는 부동산 자산)
 			boolean assetOk;
 			long assetLimit = policyUseCase.maxTotalAsset(supplyType, noticeType, familyCount);
 
 			/// 장기전세와 공공임대는 부동산 자산 기준, 나머지는 총자산 기준
-			if (noticeType == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE ||
-				noticeType == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL) {
+			if (noticeType == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE
+				|| noticeType == co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL) {
 				assetOk = propertyAsset <= assetLimit;
 			} else {
 				assetOk = totalAsset <= assetLimit;

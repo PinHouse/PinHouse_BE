@@ -44,8 +44,8 @@ public enum NoticeSearchSortType {
 		return LATEST;
 	}
 
-	private static String normalize(String x) {
-		return x.trim().replaceAll("\\s+", "");
+	private static String normalize(String value) {
+		return value.trim().replaceAll("\\s+", "");
 	}
 
 	@JsonValue

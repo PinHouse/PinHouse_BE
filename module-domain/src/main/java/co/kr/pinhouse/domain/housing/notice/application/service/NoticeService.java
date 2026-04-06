@@ -568,7 +568,7 @@ public class NoticeService implements NoticeUseCase {
 			return 0.0;
 		}
 
-		final int EARTH_RADIUS_KM = 6371;
+		final int earthRadiusKm = 6371;
 
 		double lat1 = from.getLatitude();
 		double lon1 = from.getLongitude();
@@ -578,13 +578,13 @@ public class NoticeService implements NoticeUseCase {
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLon = Math.toRadians(lon2 - lon1);
 
-		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-				Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		double haversineValue = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+			+ Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+				* Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		double centralAngle = 2 * Math.atan2(Math.sqrt(haversineValue), Math.sqrt(1 - haversineValue));
 
-		return EARTH_RADIUS_KM * c;
+		return earthRadiusKm * centralAngle;
 	}
 
 	/**

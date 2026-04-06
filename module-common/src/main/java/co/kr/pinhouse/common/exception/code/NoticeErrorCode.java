@@ -27,8 +27,7 @@ public enum NoticeErrorCode implements ErrorCode {
 	// ========================
 	// 404 Not Found
 	// ========================
-	NOT_FOUND_NOTICE(404_001, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다"),
-	;
+		NOT_FOUND_NOTICE(404_001, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다");
 
 	/**
 	 * 에러 코드 (고유값)

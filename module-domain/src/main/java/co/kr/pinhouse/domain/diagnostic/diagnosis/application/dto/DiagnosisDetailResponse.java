@@ -60,24 +60,24 @@ public record DiagnosisDetailResponse(
 		Diagnosis diagnosis = context.getDiagnosis();
 
 		// 추천 후보 계산
-		List<String> recommended = context.getCurrentCandidates().isEmpty() ?
-			List.of("해당 없음") :
-			context.getCurrentCandidates().stream()
+		List<String> recommended = context.getCurrentCandidates().isEmpty()
+			? List.of("해당 없음")
+			: context.getCurrentCandidates().stream()
 				.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
 				.toList();
 
 		// 지원 가능한 공급 유형 (중복 제거)
-		List<String> availableSupplyTypes = context.getCurrentCandidates().isEmpty() ?
-			List.of("해당 없음") :
-			context.getCurrentCandidates().stream()
+		List<String> availableSupplyTypes = context.getCurrentCandidates().isEmpty()
+			? List.of("해당 없음")
+			: context.getCurrentCandidates().stream()
 				.map(c -> c.supplyType().getValue())
 				.distinct()
 				.toList();
 
 		// 신청 가능한 임대주택 유형 (중복 제거)
-		List<String> availableRentalTypes = context.getCurrentCandidates().isEmpty() ?
-			List.of("해당 없음") :
-			context.getCurrentCandidates().stream()
+		List<String> availableRentalTypes = context.getCurrentCandidates().isEmpty()
+			? List.of("해당 없음")
+			: context.getCurrentCandidates().stream()
 				.map(c -> c.noticeType().getValue())
 				.distinct()
 				.toList();
@@ -95,8 +95,8 @@ public record DiagnosisDetailResponse(
 			.availableSupplyTypes(availableSupplyTypes)
 			.availableRentalTypes(availableRentalTypes)
 			.eligible(!recommended.contains("해당 없음"))
-			.diagnosisResult(!recommended.contains("해당 없음") ?
-				"추천 임대주택이 있습니다" : "모든 조건 미충족")
+			.diagnosisResult(!recommended.contains("해당 없음")
+				? "추천 임대주택이 있습니다" : "모든 조건 미충족")
 			.recommended(recommended)
 			.build();
 	}

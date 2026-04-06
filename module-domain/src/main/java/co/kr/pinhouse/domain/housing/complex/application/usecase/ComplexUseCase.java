@@ -22,8 +22,6 @@ public interface ComplexUseCase {
 	/// 상세 조회
 	ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException;
 
-	;
-
 	/// 상세 조회
 	List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
 

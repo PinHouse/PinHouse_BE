@@ -46,8 +46,8 @@ public enum FacilityType {
 
 		String normalized = normalize(value);
 
-		if (CULTURE_CENTER.matches(normalized) ||
-			FacilityType.cultureCenterMembers().stream().anyMatch(t -> t.matches(normalized))) {
+		if (CULTURE_CENTER.matches(normalized)
+			|| FacilityType.cultureCenterMembers().stream().anyMatch(t -> t.matches(normalized))) {
 			return CULTURE_CENTER;
 		}
 

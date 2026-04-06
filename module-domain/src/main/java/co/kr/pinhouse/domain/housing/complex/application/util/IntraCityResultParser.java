@@ -140,9 +140,9 @@ public class IntraCityResultParser {
 	private static String joinField(JsonNode arrayNode, String field) {
 		var list = new ArrayList<String>();
 		arrayNode.forEach(n -> {
-			String v = n.path(field).asText(null);
-			if (v != null && !v.isBlank()) {
-				list.add(v);
+			String value = n.path(field).asText(null);
+			if (value != null && !value.isBlank()) {
+				list.add(value);
 			}
 		});
 		if (list.isEmpty()) {
@@ -154,11 +154,11 @@ public class IntraCityResultParser {
 	private static String addSuffixForEachNumber(String text, String suffix) {
 		var parts = text.split(",");
 		for (int i = 0; i < parts.length; i++) {
-			String p = parts[i].trim();
-			if (p.chars().allMatch(Character::isDigit)) {
-				parts[i] = p + suffix;
+			String part = parts[i].trim();
+			if (part.chars().allMatch(Character::isDigit)) {
+				parts[i] = part + suffix;
 			} else {
-				parts[i] = p;
+				parts[i] = part;
 			}
 		}
 		return String.join(", ", parts);
@@ -168,7 +168,7 @@ public class IntraCityResultParser {
 		if (node == null || !node.has(field)) {
 			return null;
 		}
-		String v = node.path(field).asText(null);
-		return (v == null || v.isBlank()) ? null : v;
+		String value = node.path(field).asText(null);
+		return (value == null || value.isBlank()) ? null : value;
 	}
 }

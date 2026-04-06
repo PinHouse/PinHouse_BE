@@ -45,7 +45,7 @@ public interface UserUseCase {
 	// =================
 
 	/// DB 유저 조회
-	User loadUser(UUID Id);
+	User loadUser(UUID id);
 
 	/// DB 중복 유저 존재하는지 체크
 	Optional<User> loadUserBySocialAndSocialId(Provider socialType, String socialId);

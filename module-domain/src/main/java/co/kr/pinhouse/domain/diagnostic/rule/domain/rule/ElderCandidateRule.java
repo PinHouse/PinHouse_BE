@@ -35,8 +35,8 @@ public class ElderCandidateRule implements Rule {
 
 			/// 고령자 관련 특별공급 모두 제거
 			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.ELDER_SPECIAL ||
-					c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
+				c.supplyType() == SupplyType.ELDER_SPECIAL
+					|| c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);

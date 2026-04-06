@@ -43,8 +43,8 @@ public enum UnitTypeSortType {
 		return DEPOSIT_ASC; // 기본값
 	}
 
-	private static String normalize(String x) {
-		return x.trim().replaceAll("\\s+", "");
+	private static String normalize(String value) {
+		return value.trim().replaceAll("\\s+", "");
 	}
 
 	@JsonValue

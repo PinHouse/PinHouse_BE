@@ -262,18 +262,18 @@ public class ComplexService implements ComplexUseCase {
 	}
 
 	/** 전용면적(m²)/보증금/월임대료/모집대상 필터 함수 */
-	private boolean matchesUnitType(UnitType u,
+	private boolean matchesUnitType(UnitType unitType,
 		double minM2,
 		double maxM2,
 		long maxDeposit,
 		long maxMonthlyPay,
 		List<String> rentalTypeValues) {
-		if (u == null) {
+		if (unitType == null) {
 			return false;
 		}
 
 		// 전용면적(m²) 체크
-		double areaM2 = u.getExclusiveAreaM2();
+		double areaM2 = unitType.getExclusiveAreaM2();
 		if (Double.isNaN(areaM2)) {
 			return false;
 		}
@@ -282,11 +282,11 @@ public class ComplexService implements ComplexUseCase {
 		}
 
 		// 보증금 체크
-		Deposit d = u.getDeposit();
-		if (d == null) {
+		Deposit deposit = unitType.getDeposit();
+		if (deposit == null) {
 			return false;
 		}
-		long depositTotal = d.getTotal();
+		long depositTotal = deposit.getTotal();
 		if (depositTotal <= 0) {
 			return false;
 		}
@@ -295,7 +295,7 @@ public class ComplexService implements ComplexUseCase {
 		}
 
 		// 월 임대료 체크
-		long monthlyRent = u.getMonthlyRent();
+		long monthlyRent = unitType.getMonthlyRent();
 		if (monthlyRent <= 0) {
 			return false;
 		}
@@ -304,7 +304,7 @@ public class ComplexService implements ComplexUseCase {
 		}
 
 		// 모집대상(group) 체크
-		List<String> group = u.getGroup();
+		List<String> group = unitType.getGroup();
 		if (group != null && !group.isEmpty() && rentalTypeValues != null && !rentalTypeValues.isEmpty()) {
 			// "기본" 또는 "일반"이 포함되어 있으면 무조건 포함
 			boolean hasDefaultGroup = group.stream()
@@ -376,8 +376,8 @@ public class ComplexService implements ComplexUseCase {
 		);
 
 		// 2) 전환 이율 정의
-		final double DEPOSIT_TO_RENT_ANNUAL_RATE = 0.035; // 보증금 감소 이율
-		final double RENT_TO_DEPOSIT_ANNUAL_RATE = 0.07;  // 보증금 증가 이율
+		final double depositToRentAnnualRate = 0.035; // 보증금 감소 이율
+		final double rentToDepositAnnualRate = 0.07;  // 보증금 증가 이율
 
 		// ===================================
 		// 3) 최소 보증금 / 최대 월세 계산 (MIN OPTION)
@@ -393,7 +393,7 @@ public class ComplexService implements ComplexUseCase {
 		actualDepositReduce = Math.round(actualDepositReduce / 1_000_000.0) * 1_000_000;
 
 		// 3-3. 증가하는 월세 계산: (감소 보증금) × (연 3.5% / 12)
-		long rentIncrease = Math.round(actualDepositReduce * (DEPOSIT_TO_RENT_ANNUAL_RATE / 12.0));
+		long rentIncrease = Math.round(actualDepositReduce * (depositToRentAnnualRate / 12.0));
 
 		// 1천원 단위로 반올림
 		long actualRentIncrease = Math.round(rentIncrease / 1_000.0) * 1_000;
@@ -424,7 +424,7 @@ public class ComplexService implements ComplexUseCase {
 		actualRentReduce = Math.round(actualRentReduce / 1_000.0) * 1_000;
 
 		// 4-3. 증가하는 보증금 계산: (감소 월세) × (12 / 연 7%)
-		long depositIncrease = Math.round(actualRentReduce * (12.0 / RENT_TO_DEPOSIT_ANNUAL_RATE));
+		long depositIncrease = Math.round(actualRentReduce * (12.0 / rentToDepositAnnualRate));
 
 		// 100만원 단위로 반올림
 		long actualDepositIncrease = Math.round(depositIncrease / 1_000_000.0) * 1_000_000;
