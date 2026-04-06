@@ -4,13 +4,11 @@ import java.util.List;
 import java.util.UUID;
 
 import com.pinHouse.common.response.pageable.SliceRequest;
-import com.pinHouse.common.response.pageable.SliceResponse;
 import com.pinHouse.domain.home.application.dto.HomeNoticeListResponse;
 import com.pinHouse.domain.home.application.dto.HomeSearchCategoryPageResponse;
 import com.pinHouse.domain.home.application.dto.HomeSearchCategoryType;
 import com.pinHouse.domain.home.application.dto.HomeSearchOverviewResponse;
 import com.pinHouse.domain.home.application.dto.NoticeCountResponse;
-import com.pinHouse.domain.housing.notice.application.dto.NoticeListRequest;
 import com.pinHouse.domain.search.application.dto.PopularKeywordResponse;
 
 /**

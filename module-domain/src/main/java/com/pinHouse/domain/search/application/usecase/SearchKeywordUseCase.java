@@ -3,7 +3,6 @@ package com.pinHouse.domain.search.application.usecase;
 import java.util.List;
 
 import com.pinHouse.domain.search.application.dto.PopularKeywordResponse;
-import com.pinHouse.domain.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.domain.search.domain.entity.SearchKeywordScope;
 
 /**

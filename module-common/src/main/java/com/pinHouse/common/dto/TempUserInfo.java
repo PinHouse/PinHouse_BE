@@ -2,7 +2,10 @@ package com.pinHouse.common.dto;
 
 import java.io.Serializable;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 회원가입을 위한 임시 사용자 정보

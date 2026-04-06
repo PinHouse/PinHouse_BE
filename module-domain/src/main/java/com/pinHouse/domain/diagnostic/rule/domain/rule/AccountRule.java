@@ -1,6 +1,9 @@
 package com.pinHouse.domain.diagnostic.rule.domain.rule;
 
-import static com.pinHouse.domain.housing.notice.domain.entity.NoticeType.*;
+import static com.pinHouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE;
+import static com.pinHouse.domain.housing.notice.domain.entity.NoticeType.NATIONAL_RENTAL;
+import static com.pinHouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_INTEGRATED;
+import static com.pinHouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL;
 
 import java.util.ArrayList;
 import java.util.List;

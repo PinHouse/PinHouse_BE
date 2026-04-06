@@ -3,7 +3,6 @@ package com.pinHouse.common.response;
 import java.util.List;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 
 /**

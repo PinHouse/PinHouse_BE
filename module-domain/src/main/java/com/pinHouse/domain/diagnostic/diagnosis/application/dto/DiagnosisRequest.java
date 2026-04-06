@@ -3,7 +3,13 @@ package com.pinHouse.domain.diagnostic.diagnosis.application.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.*;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.EducationStatus;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.IncomeLevel;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.SpecialCategory;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionAccount;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionCount;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionPeriod;
 import com.pinHouse.domain.user.domain.entity.Gender;
 
 import io.swagger.v3.oas.annotations.media.Schema;

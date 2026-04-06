@@ -2,7 +2,6 @@ package com.pinHouse.domain.housing.complex.application.dto.response;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinHouse.domain.housing.complex.application.dto.result.LineInfo;
 

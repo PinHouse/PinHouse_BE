@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinHouse.domain.search.application.dto.PopularKeywordResponse;
-import com.pinHouse.domain.search.application.dto.SearchSuggestionResponse;
 import com.pinHouse.domain.search.application.usecase.SearchKeywordUseCase;
 import com.pinHouse.domain.search.domain.entity.SearchKeyword;
 import com.pinHouse.domain.search.domain.entity.SearchKeywordScope;

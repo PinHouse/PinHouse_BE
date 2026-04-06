@@ -11,7 +11,6 @@ import com.pinHouse.domain.housing.complex.application.dto.response.UnitTypeResp
 import com.pinHouse.domain.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.domain.like.application.dto.UnityTypeLikeResponse;
 import com.pinHouse.domain.search.application.dto.ComplexDistanceResponse;
-import com.pinHouse.domain.search.application.dto.FastSearchRequest;
 import com.pinHouse.domain.search.domain.entity.SearchHistory;
 
 public interface ComplexUseCase {

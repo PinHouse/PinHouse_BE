@@ -1,6 +1,6 @@
 package com.pinHouse.domain.diagnostic.rule.application.service;
 
-import java.util.*;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 

@@ -6,10 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.pinHouse.domain.housing.facility.domain.entity.FacilityType;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

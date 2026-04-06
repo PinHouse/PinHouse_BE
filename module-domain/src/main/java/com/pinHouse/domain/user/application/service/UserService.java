@@ -1,6 +1,9 @@
 package com.pinHouse.domain.user.application.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,7 +15,13 @@ import com.pinHouse.common.response.CustomException;
 import com.pinHouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.domain.like.domain.LikeJpaRepository;
 import com.pinHouse.domain.pinPoint.domain.repository.PinPointMongoRepository;
-import com.pinHouse.domain.user.application.dto.*;
+import com.pinHouse.domain.user.application.dto.MyPageResponse;
+import com.pinHouse.domain.user.application.dto.TempUserResponse;
+import com.pinHouse.domain.user.application.dto.UpdateFacilityTypesRequest;
+import com.pinHouse.domain.user.application.dto.UpdateUserRequest;
+import com.pinHouse.domain.user.application.dto.UserRequest;
+import com.pinHouse.domain.user.application.dto.UserResponse;
+import com.pinHouse.domain.user.application.dto.WithdrawRequest;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.domain.user.domain.entity.Gender;
 import com.pinHouse.domain.user.domain.entity.Provider;

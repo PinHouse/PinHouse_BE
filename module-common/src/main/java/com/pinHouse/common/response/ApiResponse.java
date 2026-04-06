@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.micrometer.common.lang.Nullable;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * API 응답을 표준화하기 위한 레코드 클래스입니다.

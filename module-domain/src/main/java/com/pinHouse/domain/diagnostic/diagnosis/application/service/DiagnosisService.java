@@ -17,7 +17,7 @@ import com.pinHouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.domain.user.domain.entity.User;
 
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 청약 진단 서비스

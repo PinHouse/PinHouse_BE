@@ -1,7 +1,5 @@
 package com.pinHouse.domain.search.application.dto;
 
-import java.util.Optional;
-
 import com.pinHouse.domain.search.domain.entity.SearchHistory;
 
 import io.swagger.v3.oas.annotations.media.Schema;

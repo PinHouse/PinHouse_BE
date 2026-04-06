@@ -3,7 +3,6 @@ package com.pinHouse.security.jwt.filter;
 import static com.pinHouse.common.util.KeyUtil.HTTP_ERROR_401;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

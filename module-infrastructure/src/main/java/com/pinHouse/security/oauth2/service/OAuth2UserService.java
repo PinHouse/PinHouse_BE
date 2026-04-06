@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinHouse.common.dto.TempUserInfo;
 import com.pinHouse.common.exception.code.SecurityErrorCode;
 import com.pinHouse.common.response.CustomException;
-import com.pinHouse.common.response.ErrorCode;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.domain.user.domain.entity.Gender;
 import com.pinHouse.domain.user.domain.entity.Provider;
@@ -22,11 +21,9 @@ import com.pinHouse.security.oauth2.domain.OAuth2UserInfo;
 import com.pinHouse.security.oauth2.domain.PrincipalDetails;
 import com.pinHouse.security.oauth2.domain.kakao.KakaoUserInfo;
 import com.pinHouse.security.oauth2.domain.naver.NaverUserInfo;
-import com.pinHouse.security.oauth2.handler.OAuth2FailureHandler;
 import com.pinHouse.security.oauth2.handler.SignupRequiredException;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional

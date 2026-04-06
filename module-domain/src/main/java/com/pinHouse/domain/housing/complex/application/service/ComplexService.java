@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +12,13 @@ import com.pinHouse.common.exception.code.CommonErrorCode;
 import com.pinHouse.common.exception.code.ComplexErrorCode;
 import com.pinHouse.common.response.CustomException;
 import com.pinHouse.domain.Location;
-import com.pinHouse.domain.housing.complex.application.dto.response.*;
+import com.pinHouse.domain.housing.complex.application.dto.response.ComplexDetailResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.DepositMinMaxResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.DepositResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.DistanceResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.TransitInfoResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
+import com.pinHouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
 import com.pinHouse.domain.housing.complex.application.dto.result.PathResult;
 import com.pinHouse.domain.housing.complex.application.dto.result.RootResult;
 import com.pinHouse.domain.housing.complex.application.usecase.ComplexUseCase;
@@ -31,7 +36,6 @@ import com.pinHouse.domain.like.application.usecase.LikeQueryUseCase;
 import com.pinHouse.domain.pinPoint.application.usecase.PinPointUseCase;
 import com.pinHouse.domain.pinPoint.domain.entity.PinPoint;
 import com.pinHouse.domain.search.application.dto.ComplexDistanceResponse;
-import com.pinHouse.domain.search.application.dto.FastSearchRequest;
 import com.pinHouse.domain.search.domain.entity.SearchHistory;
 
 import lombok.RequiredArgsConstructor;

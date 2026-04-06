@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinHouse.common.exception.code.ComplexErrorCode;
 import com.pinHouse.common.response.CustomException;
-import com.pinHouse.domain.housing.complex.application.usecase.ComplexUseCase;
 import com.pinHouse.domain.housing.complex.domain.entity.ComplexDocument;
 import com.pinHouse.domain.housing.complex.domain.repository.ComplexDocumentRepository;
 import com.pinHouse.domain.housing.facility.application.dto.NoticeFacilityListResponse;
