@@ -117,10 +117,12 @@ public class RequestMatcherHolder {
 	}
 
 	private boolean isAccessible(@Nullable Role requiredRole, @Nullable Role currentRole) {
-		if (requiredRole == null)
+		if (requiredRole == null) {
 			return true; // 누구나 접근 가능
-		if (currentRole == null)
+		}
+		if (currentRole == null) {
 			return false; // 권한 없음
+		}
 		return currentRole.ordinal() >= requiredRole.ordinal(); // ADMIN이면 MEMBER 포함
 	}
 

@@ -40,8 +40,9 @@ public class AccountRule implements Rule {
 		Diagnosis diagnosis) {
 
 		for (SupplyRentalCandidate c : new ArrayList<>(candidates)) { // 반복 중 수정 방지
-			if (c.noticeType() != PUBLIC_RENTAL)
+			if (c.noticeType() != PUBLIC_RENTAL) {
 				continue;
+			}
 
 			switch (c.supplyType()) {
 				case FIRST_SPECIAL -> {

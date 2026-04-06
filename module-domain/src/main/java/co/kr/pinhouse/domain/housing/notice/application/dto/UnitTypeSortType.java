@@ -20,8 +20,9 @@ public enum UnitTypeSortType {
 	 * 문자열로부터 UnitTypeSortType 생성
 	 */
 	public static UnitTypeSortType from(String source) {
-		if (source == null)
+		if (source == null) {
 			return DEPOSIT_ASC; // 기본값
+		}
 
 		String normalized = normalize(source);
 

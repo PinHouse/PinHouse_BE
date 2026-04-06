@@ -141,11 +141,13 @@ public class IntraCityResultParser {
 		var list = new ArrayList<String>();
 		arrayNode.forEach(n -> {
 			String v = n.path(field).asText(null);
-			if (v != null && !v.isBlank())
+			if (v != null && !v.isBlank()) {
 				list.add(v);
+			}
 		});
-		if (list.isEmpty())
+		if (list.isEmpty()) {
 			return null;
+		}
 		return list.stream().filter(Objects::nonNull).distinct().collect(Collectors.joining(", "));
 	}
 
@@ -153,17 +155,19 @@ public class IntraCityResultParser {
 		var parts = text.split(",");
 		for (int i = 0; i < parts.length; i++) {
 			String p = parts[i].trim();
-			if (p.chars().allMatch(Character::isDigit))
+			if (p.chars().allMatch(Character::isDigit)) {
 				parts[i] = p + suffix;
-			else
+			} else {
 				parts[i] = p;
+			}
 		}
 		return String.join(", ", parts);
 	}
 
 	private static String safeText(JsonNode node, String field) {
-		if (node == null || !node.has(field))
+		if (node == null || !node.has(field)) {
 			return null;
+		}
 		String v = node.path(field).asText(null);
 		return (v == null || v.isBlank()) ? null : v;
 	}

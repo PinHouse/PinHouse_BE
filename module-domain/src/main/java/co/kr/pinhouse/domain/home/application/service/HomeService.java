@@ -174,40 +174,57 @@ public class HomeService implements HomeUseCase {
 		}
 
 		// 2차: 약칭으로 매칭 시도 (예: "서울" -> "서울특별시")
-		if (address.startsWith("서울"))
+		if (address.startsWith("서울")) {
 			return NoticeListRequest.Region.SEOUL;
-		if (address.startsWith("부산"))
+		}
+		if (address.startsWith("부산")) {
 			return NoticeListRequest.Region.BUSAN;
-		if (address.startsWith("대구"))
+		}
+		if (address.startsWith("대구")) {
 			return NoticeListRequest.Region.DAEGU;
-		if (address.startsWith("인천"))
+		}
+		if (address.startsWith("인천")) {
 			return NoticeListRequest.Region.INCHEON;
-		if (address.startsWith("광주"))
+		}
+		if (address.startsWith("광주")) {
 			return NoticeListRequest.Region.GWANGJU;
-		if (address.startsWith("대전"))
+		}
+		if (address.startsWith("대전")) {
 			return NoticeListRequest.Region.DAEJEON;
-		if (address.startsWith("울산"))
+		}
+		if (address.startsWith("울산")) {
 			return NoticeListRequest.Region.ULSAN;
-		if (address.startsWith("세종"))
+		}
+		if (address.startsWith("세종")) {
 			return NoticeListRequest.Region.SEJONG;
-		if (address.startsWith("경기"))
+		}
+		if (address.startsWith("경기")) {
 			return NoticeListRequest.Region.GYEONGGI;
-		if (address.startsWith("강원"))
+		}
+		if (address.startsWith("강원")) {
 			return NoticeListRequest.Region.GANGWON;
-		if (address.startsWith("충북") || address.startsWith("충청북"))
+		}
+		if (address.startsWith("충북") || address.startsWith("충청북")) {
 			return NoticeListRequest.Region.CHUNGBUK;
-		if (address.startsWith("충남") || address.startsWith("충청남"))
+		}
+		if (address.startsWith("충남") || address.startsWith("충청남")) {
 			return NoticeListRequest.Region.CHUNGNAM;
-		if (address.startsWith("전북") || address.startsWith("전라북"))
+		}
+		if (address.startsWith("전북") || address.startsWith("전라북")) {
 			return NoticeListRequest.Region.JEONBUK;
-		if (address.startsWith("전남") || address.startsWith("전라남"))
+		}
+		if (address.startsWith("전남") || address.startsWith("전라남")) {
 			return NoticeListRequest.Region.JEONNAM;
-		if (address.startsWith("경북") || address.startsWith("경상북"))
+		}
+		if (address.startsWith("경북") || address.startsWith("경상북")) {
 			return NoticeListRequest.Region.GYEONGBUK;
-		if (address.startsWith("경남") || address.startsWith("경상남"))
+		}
+		if (address.startsWith("경남") || address.startsWith("경상남")) {
 			return NoticeListRequest.Region.GYEONGNAM;
-		if (address.startsWith("제주"))
+		}
+		if (address.startsWith("제주")) {
 			return NoticeListRequest.Region.JEJU;
+		}
 
 		// 매칭되는 Region을 찾지 못한 경우
 		log.warn("주소에서 광역 단위를 추출할 수 없습니다. address={}", address);
@@ -487,12 +504,15 @@ public class HomeService implements HomeUseCase {
 	}
 
 	private String buildAddress(String city, String county) {
-		if (city == null && county == null)
+		if (city == null && county == null) {
 			return null;
-		if (city == null)
+		}
+		if (city == null) {
 			return county;
-		if (county == null)
+		}
+		if (county == null) {
 			return city;
+		}
 		return city + " " + county;
 	}
 }

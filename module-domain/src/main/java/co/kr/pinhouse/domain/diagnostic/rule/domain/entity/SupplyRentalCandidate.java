@@ -34,8 +34,9 @@ public record SupplyRentalCandidate(
 			List<SupplyType> allowedSupplies = RentalSupplyMapping.RENTAL_SUPPLY_MAP.get(rental);
 
 			/// 매핑 없는 경우 무시
-			if (allowedSupplies == null)
+			if (allowedSupplies == null) {
 				continue;
+			}
 			for (SupplyType supply : allowedSupplies) {
 
 				/// 더하기

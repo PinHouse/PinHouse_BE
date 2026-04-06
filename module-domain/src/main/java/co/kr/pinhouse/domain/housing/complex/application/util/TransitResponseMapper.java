@@ -523,8 +523,9 @@ public class TransitResponseMapper {
 	 * 버스 번호 축약
 	 */
 	private String abbreviateBusNumbers(String busNumbers) {
-		if (busNumbers == null)
+		if (busNumbers == null) {
 			return null;
+		}
 		String[] numbers = busNumbers.split(",\\s*");
 		if (numbers.length <= 3) {
 			return busNumbers + "번";

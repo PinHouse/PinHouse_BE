@@ -52,8 +52,9 @@ public enum FacilityType {
 		}
 
 		for (FacilityType facilityType : FacilityType.values()) {
-			if (facilityType == CULTURE_CENTER)
+			if (facilityType == CULTURE_CENTER) {
 				continue;
+			}
 			if (facilityType.matches(normalized)) {
 				return facilityType;
 			}

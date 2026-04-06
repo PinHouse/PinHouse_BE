@@ -66,19 +66,22 @@ public record NoticeDetailFilterRequest(
 
 		/// 생성기
 		public static DetailSortType from(String source) {
-			if (source == null)
+			if (source == null) {
 				return null;
+			}
 			String s = normalize(source);
 
 			/// Enum.name() 매칭 허용 (LATEST, DEADLINE_ASC ...)
 			for (DetailSortType t : values()) {
-				if (t.name().equalsIgnoreCase(s))
+				if (t.name().equalsIgnoreCase(s)) {
 					return t;
+				}
 			}
 			/// 한글 라벨 매칭 허용
 			for (DetailSortType t : values()) {
-				if (normalize(t.label).equalsIgnoreCase(s))
+				if (normalize(t.label).equalsIgnoreCase(s)) {
 					return t;
+				}
 			}
 			throw new IllegalArgumentException("Invalid DetailSortType: " + source);
 		}

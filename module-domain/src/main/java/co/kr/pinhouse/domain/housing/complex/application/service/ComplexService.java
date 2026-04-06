@@ -255,8 +255,9 @@ public class ComplexService implements ComplexUseCase {
 
 	/** 평 → m² 변환 */
 	private double toM2(double pyeong) {
-		if (Double.isNaN(pyeong) || pyeong <= 0)
+		if (Double.isNaN(pyeong) || pyeong <= 0) {
 			return 0d;
+		}
 		return pyeong * PYEONG_TO_M2;
 	}
 
@@ -267,32 +268,40 @@ public class ComplexService implements ComplexUseCase {
 		long maxDeposit,
 		long maxMonthlyPay,
 		List<String> rentalTypeValues) {
-		if (u == null)
+		if (u == null) {
 			return false;
+		}
 
 		// 전용면적(m²) 체크
 		double areaM2 = u.getExclusiveAreaM2();
-		if (Double.isNaN(areaM2))
+		if (Double.isNaN(areaM2)) {
 			return false;
-		if (areaM2 < minM2 || areaM2 > maxM2)
+		}
+		if (areaM2 < minM2 || areaM2 > maxM2) {
 			return false;
+		}
 
 		// 보증금 체크
 		Deposit d = u.getDeposit();
-		if (d == null)
+		if (d == null) {
 			return false;
+		}
 		long depositTotal = d.getTotal();
-		if (depositTotal <= 0)
+		if (depositTotal <= 0) {
 			return false;
-		if (depositTotal > maxDeposit)
+		}
+		if (depositTotal > maxDeposit) {
 			return false;
+		}
 
 		// 월 임대료 체크
 		long monthlyRent = u.getMonthlyRent();
-		if (monthlyRent <= 0)
+		if (monthlyRent <= 0) {
 			return false;
-		if (monthlyRent > maxMonthlyPay)
+		}
+		if (monthlyRent > maxMonthlyPay) {
 			return false;
+		}
 
 		// 모집대상(group) 체크
 		List<String> group = u.getGroup();
