@@ -23,6 +23,7 @@ env:
   GCP_ARTIFACT_REGISTRY_REPOSITORY: ${{ secrets.GCP_PROD_ARTIFACT_REGISTRY_REPOSITORY }}
   GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
   GCP_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+  ARTIFACT_REGISTRY_IMAGE: pinhouse-server
 
 jobs:
   # 린트
@@ -109,6 +110,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/prod-server:${{ env.IMAGE_TAG }}
-            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/prod-server:latest
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:${{ env.IMAGE_TAG }}
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:latest
           provenance: false

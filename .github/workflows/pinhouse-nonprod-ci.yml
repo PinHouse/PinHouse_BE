@@ -28,6 +28,7 @@ env:
   GCP_ARTIFACT_REGISTRY_REPOSITORY: ${{ startsWith(github.ref_name, 'release/') && secrets.GCP_STG_ARTIFACT_REGISTRY_REPOSITORY || secrets.GCP_DEV_ARTIFACT_REGISTRY_REPOSITORY }}
   GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
   GCP_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+  ARTIFACT_REGISTRY_IMAGE: pinhouse-server
 
   # Discord 설정
   DISCORD_WEBHOOK_NON_PROD_URL: ${{ secrets.DISCORD_WEBHOOK_NON_PROD_URL }}
@@ -190,6 +191,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ startsWith(github.ref_name, 'release/') && 'be-stg' || 'be-dev' }}:${{ env.IMAGE_TAG }}
-            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ startsWith(github.ref_name, 'release/') && 'be-stg' || 'be-dev' }}:latest
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:${{ env.IMAGE_TAG }}
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:latest
           provenance: false
