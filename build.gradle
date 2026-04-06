@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '3.4.3' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'checkstyle'
 }
 
 allprojects {
@@ -16,6 +17,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'checkstyle'
 
     java {
         toolchain {
@@ -50,6 +52,20 @@ subprojects {
 
     tasks.named('jar') {
         enabled = true
+    }
+
+    checkstyle {
+        maxWarnings = 0 // 경고가 1개라도 있으면 실패하게 설정
+        configFile = rootProject.file("checkstyle/naver-checkstyle-rules.xml")
+        configProperties = ["suppressionFile": rootProject.file("checkstyle/naver-checkstyle-suppressions.xml").absolutePath]
+        toolVersion = "13.0.0"
+    }
+
+    tasks.withType(org.gradle.api.plugins.quality.Checkstyle).configureEach {
+        reports {
+            xml.required = true
+            html.required = true
+        }
     }
 }
 
