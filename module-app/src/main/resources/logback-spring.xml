@@ -45,10 +45,10 @@
     </root>
 
     <!-- yml logging.level에서 주입받는 로거 레벨 -->
-    <springProperty name="LOG_LEVEL_APP" source="logging.level.com.pinHouse"/>
+    <springProperty name="LOG_LEVEL_APP" source="logging.level.co.kr.pinhouse"/>
 
     <!-- 애플리케이션 로거 레벨 설정 -->
-    <logger name="com.pinHouse" level="${LOG_LEVEL_APP}"/>
+    <logger name="co.kr.pinhouse" level="${LOG_LEVEL_APP}"/>
 
     <!-- Spring 프레임워크 로그 최소화 -->
     <logger name="org.springframework" level="WARN"/>

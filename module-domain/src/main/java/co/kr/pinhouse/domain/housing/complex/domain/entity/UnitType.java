@@ -1,0 +1,52 @@
+package co.kr.pinhouse.domain.housing.complex.domain.entity;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UnitType {
+
+	@Field("typeId")
+	private String typeId;
+
+	@Field("typeCode")
+	private String typeCode;
+
+	@Field("exclusiveAreaM2")
+	private double exclusiveAreaM2;
+
+	@Field("monthlyRent")
+	private int monthlyRent;
+
+	@Field("complexId")
+	private String complexId;
+
+	@Field("deposit")
+	private Deposit deposit;
+
+	@Field("quota")
+	private Quota quota;
+
+	@Field("group")
+	private List<String> group;
+
+	/// 빌더 생성자
+	@Builder
+	public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota, List<String> group) {
+		this.typeId = typeId;
+		this.typeCode = typeCode;
+		this.complexId = complexId;
+		this.exclusiveAreaM2 = exclusiveAreaM2;
+		this.monthlyRent = monthlyRent;
+		this.deposit = deposit;
+		this.quota = quota;
+		this.group = group;
+	}
+}

@@ -6,7 +6,7 @@ plugins {
 }
 
 allprojects {
-    group = 'com.pinhouse'
+    group = 'co.kr.pinhouse'
     version = '0.0.1-SNAPSHOT'
 
     repositories {

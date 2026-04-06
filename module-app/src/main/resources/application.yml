@@ -142,7 +142,7 @@ aws:
 # Logging 설정
 logging:
   level:
-    com.pinHouse: ${LOGGING_LEVEL:WARN}
+    co.kr.pinhouse: ${LOGGING_LEVEL:WARN}
     org.springframework: WARN
     org.hibernate: WARN
 
