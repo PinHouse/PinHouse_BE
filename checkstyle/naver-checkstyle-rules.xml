@@ -17,6 +17,7 @@ The following rules in the Naver coding convention cannot be checked by this con
 - [space-around-comment]
 -->
 
+<!--suppress ALL -->
 <module name = "Checker">
 	<property name="severity" value="warning"/>
 	<property name="fileExtensions" value="java"/>

@@ -27,7 +27,6 @@ public class FastSearchApi implements FastSearchApiSpec {
 
 	/**
 	 * 검색 기록이 있는지 여부 체크
-	 * @param principalDetails
 	 * @return
 	 */
 	@GetMapping("/history")

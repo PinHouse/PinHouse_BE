@@ -29,7 +29,6 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 	/**
 	 * 청약 진단하는 로직
 	 *
-	 * @param principalDetails 로그인한 유저
 	 * @param request       청약 진단할 결과 내용
 	 */
 	@PostMapping()
@@ -60,7 +59,6 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 	/**
 	 * 최근 진단 결과 상세 조회 (입력 정보 + 결과)
 	 *
-	 * @param principalDetails 로그인한 유저
 	 * @return 최근 진단 상세 결과
 	 */
 	@GetMapping("/latest")
