@@ -29,7 +29,8 @@ public class LogFilter extends OncePerRequestFilter {
 	private final HttpLogUtil httpUtil;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
 
 		/// 로그 찍기
 		httpUtil.logHttpRequest(request, HTTP_REQ);

@@ -13,7 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum CommonErrorCode implements ErrorCode {
 
-
 	// ========================
 	// 400 Bad Request
 	// ========================
@@ -38,7 +37,6 @@ public enum CommonErrorCode implements ErrorCode {
 	// ========================
 	NOT_FOUND(404_000, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
 
-
 	// ========================
 	// 409 Conflict
 	// ========================
@@ -52,8 +50,8 @@ public enum CommonErrorCode implements ErrorCode {
 	INTERNAL_SERVER_ERROR(500_002, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
 	INTERNAL_DB_SERVER_ERROR(500_003, HttpStatus.INTERNAL_SERVER_ERROR, "DB 서버 내부 오류입니다."),
 	INTERNAL_DB_SYNTAX_SERVER_ERROR(500_004, HttpStatus.INTERNAL_SERVER_ERROR, "SQL 문법 오류나 리소스 방식 등에 대한 DB 서버 오류입니다."),
-	INTERNAL_DB_SCHEMA_SERVER_ERROR(500_005, HttpStatus.INTERNAL_SERVER_ERROR, "외래키 위반, Unique 제약 위반에 대한 DB 서버 오류입니다."),;
-
+	INTERNAL_DB_SCHEMA_SERVER_ERROR(500_005, HttpStatus.INTERNAL_SERVER_ERROR, "외래키 위반, Unique 제약 위반에 대한 DB 서버 오류입니다."),
+	;
 
 	/**
 	 * 에러 코드 (고유값)

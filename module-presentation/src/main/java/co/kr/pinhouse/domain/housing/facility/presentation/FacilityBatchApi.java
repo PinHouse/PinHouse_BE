@@ -29,5 +29,4 @@ public class FacilityBatchApi {
 		return ApiResponse.created();
 	}
 
-
 }

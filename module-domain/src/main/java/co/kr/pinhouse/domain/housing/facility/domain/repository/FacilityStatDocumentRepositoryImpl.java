@@ -41,18 +41,18 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
 		}
 
 		List<Criteria> ands = types.stream()
-				.map(t -> {
-					if (t == FacilityType.CULTURE_CENTER) {
-						List<Criteria> ors = new ArrayList<>();
-						ors.add(Criteria.where("counts." + FacilityType.CULTURE_CENTER.name()).gte(min));
-						FacilityType.cultureCenterMembers().forEach(member ->
-								ors.add(Criteria.where("counts." + member.name()).gte(min))
-						);
-						return new Criteria().orOperator(ors.toArray(new Criteria[0]));
-					}
-					return Criteria.where("counts." + t.name()).gte(min);
-				})
-				.toList();
+			.map(t -> {
+				if (t == FacilityType.CULTURE_CENTER) {
+					List<Criteria> ors = new ArrayList<>();
+					ors.add(Criteria.where("counts." + FacilityType.CULTURE_CENTER.name()).gte(min));
+					FacilityType.cultureCenterMembers().forEach(member ->
+						ors.add(Criteria.where("counts." + member.name()).gte(min))
+					);
+					return new Criteria().orOperator(ors.toArray(new Criteria[0]));
+				}
+				return Criteria.where("counts." + t.name()).gte(min);
+			})
+			.toList();
 
 		Query q = new Query(new Criteria().andOperator(ands.toArray(new Criteria[0])));
 		return mongoTemplate.find(q, FacilityStatDocument.class);
@@ -70,23 +70,23 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
 		double radiusKm = radiusMeters / 1000.0;
 
 		GeoNearOperation geoNear = Aggregation.geoNear(
-				NearQuery.near(near)
-						.maxDistance(new org.springframework.data.geo.Distance(radiusKm, Metrics.KILOMETERS))
-						.spherical(true),
-				"dist"
+			NearQuery.near(near)
+				.maxDistance(new org.springframework.data.geo.Distance(radiusKm, Metrics.KILOMETERS))
+				.spherical(true),
+			"dist"
 		);
 
 		GroupOperation groupByType = Aggregation.group("type").count().as("cnt");
 
 		ProjectionOperation project = Aggregation.project()
-				.and("_id").as("type")
-				.and("cnt").as("cnt")
-				.andExclude("_id");
+			.and("_id").as("type")
+			.and("cnt").as("cnt")
+			.andExclude("_id");
 
 		Aggregation agg = Aggregation.newAggregation(geoNear, groupByType, project);
 
 		AggregationResults<Document> results =
-				mongoTemplate.aggregate(agg, "facilities", Document.class);
+			mongoTemplate.aggregate(agg, "facilities", Document.class);
 
 		// 결과가 비었으면 -> 빈 맵 생성
 		if (!results.iterator().hasNext()) {
@@ -99,7 +99,8 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
 			int cnt = d.getInteger("cnt", 0);
 			try {
 				map.put(FacilityType.valueOf(typeStr), cnt);
-			} catch (Exception ignore) { }
+			} catch (Exception ignore) {
+			}
 		}
 
 		// 누락된 타입 0으로 채우기
@@ -121,8 +122,8 @@ public class FacilityStatDocumentRepositoryImpl implements FacilityStatDocumentR
 
 	private int computeCultureCenterCount(Map<FacilityType, Integer> map) {
 		return FacilityType.cultureCenterMembers().stream()
-				.mapToInt(t -> map.getOrDefault(t, 0))
-				.sum();
+			.mapToInt(t -> map.getOrDefault(t, 0))
+			.sum();
 	}
 
 }

@@ -16,6 +16,7 @@ public interface UserJpaRepository extends JpaRepository<User, UUID> {
 
 	Optional<User> findByProviderAndSocialId(Provider social, String socialId);
 
-	@EntityGraph(attributePaths = "facilityTypes") // LAZY 컬렉션을 같이 로딩
+	@EntityGraph(attributePaths = "facilityTypes")
+		// LAZY 컬렉션을 같이 로딩
 	Optional<User> findWithFacilityTypesById(UUID id);
 }

@@ -46,35 +46,33 @@ public class SecurityConfig {
 	private final RequestMatcherHolder requestMatcherHolder;
 	private final CorsConfigurationSource corsConfigurationSource;
 
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.csrf(AbstractHttpConfigurer::disable)
-				.cors(cors -> cors.configurationSource(corsConfigurationSource))
-				.formLogin(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(null))
-						.permitAll()
-						.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(USER))
-						.hasAnyAuthority(ADMIN.getRole(), USER.getRole())
-						.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(ADMIN))
-						.hasAnyAuthority(ADMIN.getRole())
-						.anyRequest().authenticated()
+			.csrf(AbstractHttpConfigurer::disable)
+			.cors(cors -> cors.configurationSource(corsConfigurationSource))
+			.formLogin(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(null))
+				.permitAll()
+				.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(USER))
+				.hasAnyAuthority(ADMIN.getRole(), USER.getRole())
+				.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(ADMIN))
+				.hasAnyAuthority(ADMIN.getRole())
+				.anyRequest().authenticated()
+			)
+			.oauth2Login(oauth2 -> oauth2
+				.userInfoEndpoint(userInfo -> userInfo
+					.userService(oAuth2UserService)
 				)
-				.oauth2Login(oauth2 -> oauth2
-						.userInfoEndpoint(userInfo -> userInfo
-								.userService(oAuth2UserService)
-						)
-						.successHandler(oAuth2SuccessHandler)
-						.failureHandler(oAuth2FailureHandler)
-				)
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.exceptionHandling(exception -> {
-					exception.authenticationEntryPoint(jwtFailureHandler)
-							.accessDeniedHandler(jwtDeniedHandler);
-				});
-
+				.successHandler(oAuth2SuccessHandler)
+				.failureHandler(oAuth2FailureHandler)
+			)
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtFailureHandler)
+					.accessDeniedHandler(jwtDeniedHandler);
+			});
 
 		return http.build();
 	}

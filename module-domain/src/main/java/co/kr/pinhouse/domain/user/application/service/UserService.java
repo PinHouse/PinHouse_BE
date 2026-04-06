@@ -65,28 +65,28 @@ public class UserService implements UserUseCase {
 		TempUserInfo userInfo;
 
 		if (raw instanceof TempUserInfo) {
-			userInfo = (TempUserInfo) raw;
+			userInfo = (TempUserInfo)raw;
 		} else if (raw instanceof Map) {
 			// 하위 호환성을 위해 Map도 지원
 			@SuppressWarnings("unchecked")
-			Map<String, Object> infoMap = (Map<String, Object>) raw;
+			Map<String, Object> infoMap = (Map<String, Object>)raw;
 			userInfo = TempUserInfo.builder()
-					.social((String) infoMap.get("social"))
-					.socialId((String) infoMap.get("socialId"))
-					.email((String) infoMap.get("email"))
-					.username((String) infoMap.get("username"))
-					.imageUrl((String) infoMap.get("imageUrl"))
-					.gender((String) infoMap.get("gender"))
-					.birthyear((String) infoMap.get("birthyear"))
-					.birthday((String) infoMap.get("birthday"))
-					.build();
+				.social((String)infoMap.get("social"))
+				.socialId((String)infoMap.get("socialId"))
+				.email((String)infoMap.get("email"))
+				.username((String)infoMap.get("username"))
+				.imageUrl((String)infoMap.get("imageUrl"))
+				.gender((String)infoMap.get("gender"))
+				.birthyear((String)infoMap.get("birthyear"))
+				.birthday((String)infoMap.get("birthday"))
+				.build();
 		} else {
 			log.error("Redis raw object type is unexpected: {}", raw.getClass().getName());
 			throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
 		}
 
 		log.info("Processing user signup - social: {}, email: {}, name: {}",
-				userInfo.getSocial(), userInfo.getEmail(), userInfo.getUsername());
+			userInfo.getSocial(), userInfo.getEmail(), userInfo.getUsername());
 
 		Provider provider = Provider.valueOf(userInfo.getSocial());
 
@@ -110,17 +110,17 @@ public class UserService implements UserUseCase {
 
 		/// User 생성 및 저장
 		User user = User.builder()
-				.id(UUID.randomUUID())
-				.provider(provider)
-				.socialId(userInfo.getSocialId())
-				.email(userInfo.getEmail())
-				.name(userInfo.getUsername())
-				.nickname(userInfo.getUsername())  // 닉네임은 이름으로 초기화
-				.profileImage(userInfo.getImageUrl())
-				.gender(gender)
-				.role(Role.USER)
-				.facilityTypes(request.facilityTypes() != null ? request.facilityTypes() : new ArrayList<>())
-				.build();
+			.id(UUID.randomUUID())
+			.provider(provider)
+			.socialId(userInfo.getSocialId())
+			.email(userInfo.getEmail())
+			.name(userInfo.getUsername())
+			.nickname(userInfo.getUsername())  // 닉네임은 이름으로 초기화
+			.profileImage(userInfo.getImageUrl())
+			.gender(gender)
+			.role(Role.USER)
+			.facilityTypes(request.facilityTypes() != null ? request.facilityTypes() : new ArrayList<>())
+			.build();
 
 		User savedUser = repository.save(user);
 		redisTemplate.delete(tempUserKey);
@@ -137,15 +137,15 @@ public class UserService implements UserUseCase {
 		Object raw = redisTemplate.opsForValue().get(tempUserKey);
 
 		/// 없다면 예외 처리
-		if (raw == null){
+		if (raw == null) {
 			throw new CustomException(UserErrorCode.NOT_TEMP_USER_KEY);
 		}
 
 		if (raw instanceof TempUserInfo) {
-			return TempUserResponse.from((TempUserInfo) raw);
+			return TempUserResponse.from((TempUserInfo)raw);
 		} else if (raw instanceof Map) {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> info = (Map<String, Object>) raw;
+			Map<String, Object> info = (Map<String, Object>)raw;
 			return TempUserResponse.from(info);
 		} else {
 			throw new CustomException(UserErrorCode.BAD_REQUEST_REDIS);
@@ -186,11 +186,11 @@ public class UserService implements UserUseCase {
 		/// 탈퇴 사유 로깅 (0개 이상 복수 선택 가능)
 		if (request.reasons() != null && !request.reasons().isEmpty()) {
 			log.info("회원 탈퇴 - userId={}, 탈퇴 사유 개수={}, 사유={}",
-					userId,
-					request.reasons().size(),
-					request.reasons().stream()
-							.map(reason -> reason.getValue())
-							.toList());
+				userId,
+				request.reasons().size(),
+				request.reasons().stream()
+					.map(reason -> reason.getValue())
+					.toList());
 		} else {
 			log.info("회원 탈퇴 - userId={}, 탈퇴 사유 선택 안함", userId);
 		}
@@ -208,7 +208,6 @@ public class UserService implements UserUseCase {
 		repository.deleteById(userId);
 	}
 
-
 	/// 나의 정보 조회
 	@Override
 	@Transactional(readOnly = true)
@@ -220,8 +219,6 @@ public class UserService implements UserUseCase {
 		/// 리턴
 		return MyPageResponse.from(user);
 	}
-
-
 
 	/// 타인의 유저 정보 조회
 	@Override
@@ -238,11 +235,12 @@ public class UserService implements UserUseCase {
 	// =================
 	//  외부 로직
 	// =================
+
 	/// ID 기반 조회
 	@Transactional(readOnly = true)
 	public User loadUser(UUID userId) {
 		return repository.findById(userId)
-				.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
+			.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
 	}
 
 	/// 소셜로그인 중복 로그인 조횐
@@ -259,10 +257,8 @@ public class UserService implements UserUseCase {
 
 	protected User loadUserWithFacilityType(UUID userId) {
 		return repository.findWithFacilityTypesById(userId)
-				.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
-
+			.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
 
 	}
-
 
 }

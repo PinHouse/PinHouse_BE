@@ -28,7 +28,6 @@ public enum DiagnosisErrorCode implements ErrorCode {
 	// ========================
 	NOT_FOUND_DIAGNOSIS(404_001, HttpStatus.NOT_FOUND, "진단 기록을 찾을 수 없습니다");
 
-
 	/**
 	 * 에러 코드 (고유값)
 	 */
@@ -43,6 +42,5 @@ public enum DiagnosisErrorCode implements ErrorCode {
 	 * 에러 메시지
 	 */
 	private final String message;
-
 
 }

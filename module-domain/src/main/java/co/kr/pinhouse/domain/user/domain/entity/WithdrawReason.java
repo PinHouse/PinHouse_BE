@@ -16,11 +16,6 @@ public enum WithdrawReason {
 
 	private final String value;
 
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
-
 	/**
 	 * value로 enum 찾기
 	 * @param value 밸류
@@ -33,5 +28,10 @@ public enum WithdrawReason {
 			}
 		}
 		throw new IllegalArgumentException("Unknown withdraw reason: " + value);
+	}
+
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }

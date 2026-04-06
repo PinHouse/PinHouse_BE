@@ -32,13 +32,6 @@ public enum RentalType {
 
 	private final String value;
 
-	/// 한글값
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
-
-
 	/// 생성기
 	@JsonCreator
 	public static RentalType fromValue(String value) {
@@ -48,5 +41,11 @@ public enum RentalType {
 			}
 		}
 		throw new CustomException(CommonErrorCode.BAD_PARAMETER);
+	}
+
+	/// 한글값
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }

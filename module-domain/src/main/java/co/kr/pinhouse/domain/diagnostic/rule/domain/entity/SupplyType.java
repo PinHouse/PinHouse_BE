@@ -22,7 +22,6 @@ public enum SupplyType {
 	ELDER_SUPPORT_SPECIAL("고령자 부양 특별공급"),
 	SPECIAL("미성년자 특별계층 공급"),
 
-
 	/// 특별계층 항목들
 	DEMOLITION("철거민 특별공급"),
 	NATIONAL_MERIT("국가유공자 특별공급"),
@@ -37,12 +36,6 @@ public enum SupplyType {
 
 	private final String value;
 
-	@JsonGetter
-	public String getValue() {
-		return value;
-	}
-
-
 	/**
 	 * 모든 SupplyType enum 반환
 	 */
@@ -55,8 +48,13 @@ public enum SupplyType {
 	 */
 	public static List<SupplyType> getSpecialTypes() {
 		return Arrays.asList(DEMOLITION, NATIONAL_MERIT, LONG_SERVICE_VETERAN,
-				NORTH_DEFECTOR, COMFORT_WOMAN_VICTIM, DISABLED,
-				NON_HOUSING_RESIDENT, PERMANENT_LEASE_EVICTEE, TEMPORARY_STRUCTURE_RESIDENT,
-				UNAUTHORIZED_BUILDING_TENANT);
+			NORTH_DEFECTOR, COMFORT_WOMAN_VICTIM, DISABLED,
+			NON_HOUSING_RESIDENT, PERMANENT_LEASE_EVICTEE, TEMPORARY_STRUCTURE_RESIDENT,
+			UNAUTHORIZED_BUILDING_TENANT);
+	}
+
+	@JsonGetter
+	public String getValue() {
+		return value;
 	}
 }

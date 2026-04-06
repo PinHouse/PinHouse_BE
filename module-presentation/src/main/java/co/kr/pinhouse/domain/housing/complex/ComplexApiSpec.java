@@ -22,44 +22,42 @@ public interface ComplexApiSpec {
 
 	/// 상세 조회
 	@Operation(
-			summary = "임대주택 상세 조회 API",
-			description = "임대주택 ID로 상세 조회하는 API 입니다."
+		summary = "임대주택 상세 조회 API",
+		description = "임대주택 ID로 상세 조회하는 API 입니다."
 	)
 	ApiResponse<ComplexDetailResponse> getComplex(
-			@Parameter(example = "19413#1", description = "임대주택 ID")
-			@PathVariable String complexId,
+		@Parameter(example = "19413#1", description = "임대주택 ID")
+		@PathVariable String complexId,
 
-			@Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
-			@RequestParam String pinPointId) throws UnsupportedEncodingException;
-
+		@Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
+		@RequestParam String pinPointId) throws UnsupportedEncodingException;
 
 	@Operation(
-			summary = "임대주택 방 타입 상세 조회 API",
-			description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
+		summary = "임대주택 방 타입 상세 조회 API",
+		description = "임대주택 ID로 방 타입을 상세 조회하는 API 입니다. 로그인한 사용자의 경우 좋아요 정보가 포함됩니다."
 	)
 	ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
-			@Parameter(example = "19413#1", description = "임대주택 ID")
-			@PathVariable String complexId,
-			@CurrentUserId UUID userId
+		@Parameter(example = "19413#1", description = "임대주택 ID")
+		@PathVariable String complexId,
+		@CurrentUserId UUID userId
 	);
 
-
 	@Operation(
-			summary = "좋아요 한 임대주택 목록 조회",
-			description = "좋아요 누른 임대주택을 조회하는 API 입니다."
+		summary = "좋아요 한 임대주택 목록 조회",
+		description = "좋아요 누른 임대주택을 조회하는 API 입니다."
 	)
 	ApiResponse<List<UnityTypeLikeResponse>> getLikeComplexes(
-			@CurrentUserId(required = true) UUID userId
+		@CurrentUserId(required = true) UUID userId
 	);
 
 	/// 거리 시뮬레이터 (새 스키마)
 	@Operation(
-			summary = "거리 시뮬레이터 API (v2)",
-			description = "임대주택 ID와 핀포인트 ID를 통해 대중교통 경로 3개를 한 번에 조회합니다. 승차/하차 정보가 명확하게 표시됩니다.")
+		summary = "거리 시뮬레이터 API (v2)",
+		description = "임대주택 ID와 핀포인트 ID를 통해 대중교통 경로 3개를 한 번에 조회합니다. 승차/하차 정보가 명확하게 표시됩니다.")
 	ApiResponse<TransitRoutesResponse> distance(
-			@Parameter(example = "19413#1", description = "시도 간 조회")
-			@PathVariable String complexId,
-			@Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
-			@RequestParam String pinPointId) throws UnsupportedEncodingException;
+		@Parameter(example = "19413#1", description = "시도 간 조회")
+		@PathVariable String complexId,
+		@Parameter(example = "fec9aba3-0fd9-4b75-bebf-9cb7641fd251", description = "핀포인트 ID")
+		@RequestParam String pinPointId) throws UnsupportedEncodingException;
 
 }

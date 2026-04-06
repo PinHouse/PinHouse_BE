@@ -19,10 +19,10 @@ public interface FacilityUseCase {
 	List<ComplexDocument> getComplexes(List<FacilityType> facilityTypes);
 
 	/// 외부 필터링 함수
-	List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments, List<FacilityType> facilityTypes);
+	List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments,
+		List<FacilityType> facilityTypes);
 
 	/// 주변의 인프라 목록 조회
 	List<FacilityType> getFacilities(String complexId);
-
 
 }

@@ -34,5 +34,6 @@ public interface SearchKeywordRepository extends MongoRepository<SearchKeyword, 
 	 * @param pageable 페이징 정보
 	 * @return 매칭되는 검색어 목록
 	 */
-	List<SearchKeyword> findByKeywordStartingWithAndScopeOrderByCountDescLastSearchedAtDesc(String prefix, SearchKeywordScope scope, Pageable pageable);
+	List<SearchKeyword> findByKeywordStartingWithAndScopeOrderByCountDescLastSearchedAtDesc(String prefix,
+		SearchKeywordScope scope, Pageable pageable);
 }

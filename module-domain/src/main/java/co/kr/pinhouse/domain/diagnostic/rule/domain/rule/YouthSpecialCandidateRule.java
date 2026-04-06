@@ -45,11 +45,10 @@ public class YouthSpecialCandidateRule implements Rule {
 
 			/// 있다면 삭제
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.SPECIAL);
+				c.supplyType() == SupplyType.SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
-
 
 			// 실패 이유 분류
 			String failReason;
@@ -62,20 +61,21 @@ public class YouthSpecialCandidateRule implements Rule {
 			}
 
 			return RuleResult.fail(code(),
-					"미성년자 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReason
-					));
+				"미성년자 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReason
+				));
 		}
 
 		/// 미성년자 특별공급 후보
 		return RuleResult.pass(code(),
-				"미성년자 특별공급 후보",
-				Map.of("candidate", candidates));
+			"미성년자 특별공급 후보",
+			Map.of("candidate", candidates));
 	}
 
-	@Override public String code() {
+	@Override
+	public String code() {
 		return "CANDIDATE_YOUTH_SPECIAL";
 	}
 }

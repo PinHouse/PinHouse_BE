@@ -28,7 +28,6 @@ public enum FacilityErrorCode implements ErrorCode {
 	// 404 Not Found
 	// ========================
 
-
 	/**
 	 * 에러 코드 (고유값)
 	 */
@@ -43,6 +42,5 @@ public enum FacilityErrorCode implements ErrorCode {
 	 * 에러 메시지
 	 */
 	private final String message;
-
 
 }

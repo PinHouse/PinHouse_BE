@@ -65,8 +65,8 @@ public class User extends BaseTimeEntity {
 	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(
-			name = "user_facility_types",
-			joinColumns = @JoinColumn(name = "user_id")
+		name = "user_facility_types",
+		joinColumns = @JoinColumn(name = "user_id")
 	)
 	@Column(name = "facility_type")
 	private List<FacilityType> facilityTypes;
@@ -74,17 +74,17 @@ public class User extends BaseTimeEntity {
 	/// 빌더 생성자
 	@Builder
 	protected User(UUID id,
-				Provider provider,
-				String socialId,
-				String name,
-				String nickname,
-				String email,
-				String phoneNumber,
-				Role role,
-				Gender gender,
-				String profileImage,
-				LocalDate birthday,
-				List<FacilityType> facilityTypes) {
+		Provider provider,
+		String socialId,
+		String name,
+		String nickname,
+		String email,
+		String phoneNumber,
+		Role role,
+		Gender gender,
+		String profileImage,
+		LocalDate birthday,
+		List<FacilityType> facilityTypes) {
 		this.id = id;
 		this.provider = provider;
 		this.socialId = socialId;
@@ -101,41 +101,41 @@ public class User extends BaseTimeEntity {
 
 	/// 정적 팩토리 메서드
 	public static User of(
-			Provider provider, String socialId, String name, String email,
-			String profileImage, String phoneNumber, LocalDate birthday, Gender gender, List<FacilityType> facilityTypes
+		Provider provider, String socialId, String name, String email,
+		String profileImage, String phoneNumber, LocalDate birthday, Gender gender, List<FacilityType> facilityTypes
 	) {
 		return User.builder()
-				.id(UUID.randomUUID())
-				.provider(provider)
-				.socialId(socialId)
-				.name(name)
-				.nickname(NicknameUtil.generateFromSocial(name, socialId))
-				.email(email)
-				.profileImage(profileImage)
-				.phoneNumber(phoneNumber)
-				.birthday(birthday)
-				.gender(gender)
-				.role(Role.USER)
-				.facilityTypes(facilityTypes)
-				.build();
+			.id(UUID.randomUUID())
+			.provider(provider)
+			.socialId(socialId)
+			.name(name)
+			.nickname(NicknameUtil.generateFromSocial(name, socialId))
+			.email(email)
+			.profileImage(profileImage)
+			.phoneNumber(phoneNumber)
+			.birthday(birthday)
+			.gender(gender)
+			.role(Role.USER)
+			.facilityTypes(facilityTypes)
+			.build();
 	}
 
 	/// 정적 팩토리 메서드
 	public static User devOf(UUID id) {
 		return User.builder()
-				.id(id)
-				.socialId("dev-naver-id")
-				.email("pinhouse_naver@example.com")
-				.profileImage("http://image-url")
-				.phoneNumber("010-1111-1111")
-				.name("naver개발자")
-				.nickname("단단한집")
-				.provider(Provider.NAVER)
-				.role(Role.ADMIN)
-				.birthday(LocalDate.now())
-				.gender(Gender.Male)
-				.facilityTypes(List.of())
-				.build();
+			.id(id)
+			.socialId("dev-naver-id")
+			.email("pinhouse_naver@example.com")
+			.profileImage("http://image-url")
+			.phoneNumber("010-1111-1111")
+			.name("naver개발자")
+			.nickname("단단한집")
+			.provider(Provider.NAVER)
+			.role(Role.ADMIN)
+			.birthday(LocalDate.now())
+			.gender(Gender.Male)
+			.facilityTypes(List.of())
+			.build();
 	}
 
 	/// 비즈니스 로직

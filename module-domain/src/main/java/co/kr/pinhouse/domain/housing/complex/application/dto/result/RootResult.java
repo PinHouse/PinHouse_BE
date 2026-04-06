@@ -17,17 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @Schema(name = "[응답][거리] 거리 및 이동 정보 응답", description = "총 소요 시간, 총 요금, 환승 횟수 등을 포함한 거리 응답 DTO입니다.")
 public record RootResult(
 
-		@Schema(description = "총 소요 시간(분)", example = "45")
-		int totalTime,
+	@Schema(description = "총 소요 시간(분)", example = "45")
+	int totalTime,
 
-		@Schema(description = "총 요금(원)", example = "1350")
-		int totalPayment,
+	@Schema(description = "총 요금(원)", example = "1350")
+	int totalPayment,
 
-		@Schema(description = "총 이동 거리(m)", example = "28598")
-		double totalDistance,
+	@Schema(description = "총 이동 거리(m)", example = "28598")
+	double totalDistance,
 
-		@Schema(description = "구간별 이동 단계 리스트")
-		List<DistanceStep> steps
+	@Schema(description = "구간별 이동 단계 리스트")
+	List<DistanceStep> steps
 ) {
 
 	/// 정적 팩토리 메서드
@@ -69,30 +69,29 @@ public record RootResult(
 					}
 
 					steps.add(DistanceStep.builder()
-							.type(type)
-							.time(sub.path("sectionTime").asInt())
-							.distance(sub.path("distance").asInt())
-							.startName(sub.path("startName").asText(null))
-							.endName(sub.path("endName").asText(null))
-							.lineInfo(lineInfo)
-							.line(line)
-							.subwayLine(subwayLine)
-							.busRouteType(busRouteType)
-							.trainType(null)
-							.expressBusType(null)
-							.build());
+						.type(type)
+						.time(sub.path("sectionTime").asInt())
+						.distance(sub.path("distance").asInt())
+						.startName(sub.path("startName").asText(null))
+						.endName(sub.path("endName").asText(null))
+						.lineInfo(lineInfo)
+						.line(line)
+						.subwayLine(subwayLine)
+						.busRouteType(busRouteType)
+						.trainType(null)
+						.expressBusType(null)
+						.build());
 				}
 
 				/// ODsay info.totalDistance 사용
 				int totalDistance = info.path("totalDistance").asInt(0);
 
-
 				RootResult response = RootResult.builder()
-						.totalTime(info.path("totalTime").asInt())
-						.totalPayment(info.path("payment").asInt())
-						.totalDistance(totalDistance)
-						.steps(steps)
-						.build();
+					.totalTime(info.path("totalTime").asInt())
+					.totalPayment(info.path("payment").asInt())
+					.totalDistance(totalDistance)
+					.steps(steps)
+					.build();
 
 				responses.add(response);
 			}
@@ -102,51 +101,6 @@ public record RootResult(
 		}
 
 	}
-
-	@Builder
-	@Schema(name = "[응답][거리 단계] 거리 단계 정보 응답", description = "거리 단계 정보를 나타내는 DTO입니다.")
-	public record DistanceStep(
-
-			@Schema(description = "타입", example = "SUBWAY")
-			TransportType type,
-
-			@Schema(description = "소요 시간(분)", example = "15")
-			int time,
-
-			@Schema(description = "이동 거리(m)", example = "1200")
-			int distance,
-
-			@Schema(description = "출발 지점명", example = "서울역")
-			String startName,
-
-			@Schema(description = "도착 지점명", example = "강남역")
-			String endName,
-
-			@Schema(description = "버스 번호, 지하철 노선명 등", example = "100번, 2호선")
-			String lineInfo,
-
-			@Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
-			LineInfo line,
-
-			@Schema(hidden = true)
-			@com.fasterxml.jackson.annotation.JsonIgnore
-			SubwayLineType subwayLine,
-
-			@Schema(hidden = true)
-			@com.fasterxml.jackson.annotation.JsonIgnore
-			BusRouteType busRouteType,
-
-			@Schema(hidden = true)
-			@com.fasterxml.jackson.annotation.JsonIgnore
-			TrainType trainType,
-
-			@Schema(hidden = true)
-			@com.fasterxml.jackson.annotation.JsonIgnore
-			ExpressBusType expressBusType
-
-	) {
-	}
-
 
 	public enum TransportType {
 		WALK, BUS, SUBWAY, TRAIN, AIR, UNKNOWN;
@@ -167,5 +121,49 @@ public record RootResult(
 				default -> UNKNOWN;
 			};
 		}
+	}
+
+	@Builder
+	@Schema(name = "[응답][거리 단계] 거리 단계 정보 응답", description = "거리 단계 정보를 나타내는 DTO입니다.")
+	public record DistanceStep(
+
+		@Schema(description = "타입", example = "SUBWAY")
+		TransportType type,
+
+		@Schema(description = "소요 시간(분)", example = "15")
+		int time,
+
+		@Schema(description = "이동 거리(m)", example = "1200")
+		int distance,
+
+		@Schema(description = "출발 지점명", example = "서울역")
+		String startName,
+
+		@Schema(description = "도착 지점명", example = "강남역")
+		String endName,
+
+		@Schema(description = "버스 번호, 지하철 노선명 등", example = "100번, 2호선")
+		String lineInfo,
+
+		@Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
+		LineInfo line,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		SubwayLineType subwayLine,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		BusRouteType busRouteType,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		TrainType trainType,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		ExpressBusType expressBusType
+
+	) {
 	}
 }

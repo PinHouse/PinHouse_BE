@@ -41,8 +41,8 @@ public class FirstSpecialRule implements Rule {
 		/// 혼인 중이거나 자녀가 있는 경우
 		boolean isMarried = diagnosis.isMaritalStatus();
 		boolean hasChildren = (diagnosis.getUnbornChildrenCount() +
-							diagnosis.getUnder6ChildrenCount() +
-							diagnosis.getOver7MinorChildrenCount()) > 0;
+			diagnosis.getUnder6ChildrenCount() +
+			diagnosis.getOver7MinorChildrenCount()) > 0;
 
 		/// 생애최초 요건: 무주택 세대주 + (결혼했거나 자녀가 있음)
 		boolean qualifies = noOwnHome && isHouseholdHead && (isMarried || hasChildren);
@@ -51,7 +51,7 @@ public class FirstSpecialRule implements Rule {
 
 			/// 만약 있다면 삭제
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.FIRST_SPECIAL);
+				c.supplyType() == SupplyType.FIRST_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
@@ -67,19 +67,18 @@ public class FirstSpecialRule implements Rule {
 			}
 
 			return RuleResult.fail(code(),
-					"생애최초 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReason
-					));
+				"생애최초 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReason
+				));
 		}
 
 		return RuleResult.pass(code(),
-				"생애최초 특별공급 후보",
-				Map.of("candidate", candidates));
+			"생애최초 특별공급 후보",
+			Map.of("candidate", candidates));
 
 	}
-
 
 	@Override
 	public String code() {

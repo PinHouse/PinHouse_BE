@@ -43,25 +43,25 @@ public class SingleParentRule implements Rule {
 
 		/// 한부모인지
 		boolean hasSingleParent = specialCategories.stream()
-				.anyMatch(c -> c == SINGLE_PARENT || c == PROTECTED_SINGLE_PARENT);
+			.anyMatch(c -> c == SINGLE_PARENT || c == PROTECTED_SINGLE_PARENT);
 
 		if (!hasSingleParent) {
 
 			/// 한부모 계층이 아니라면 삭제
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.SINGLE_PARENT_SPECIAL);
+				c.supplyType() == SupplyType.SINGLE_PARENT_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),
-					"한부모 특별공급 해당 없음",
-					Map.of("candidate", candidates));
+				"한부모 특별공급 해당 없음",
+				Map.of("candidate", candidates));
 		}
 
 		return RuleResult.pass(code(),
-				"한부모 특별공급 후보",
-				Map.of("candidate", candidates));
+			"한부모 특별공급 후보",
+			Map.of("candidate", candidates));
 	}
 
 	@Override

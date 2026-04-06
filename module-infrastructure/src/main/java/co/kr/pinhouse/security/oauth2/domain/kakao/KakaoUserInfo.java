@@ -18,14 +18,14 @@ public class KakaoUserInfo implements OAuth2UserInfo {
 	public KakaoUserInfo(Map<String, Object> attributes) {
 		this.attributes = attributes;
 		this.account = Optional.ofNullable(attributes.get("kakao_account"))
-				.filter(Map.class::isInstance)
-				.map(m -> (Map<String, Object>) m)
-				.orElse(Collections.emptyMap());
+			.filter(Map.class::isInstance)
+			.map(m -> (Map<String, Object>)m)
+			.orElse(Collections.emptyMap());
 
 		this.profile = Optional.ofNullable(account.get("profile"))
-				.filter(Map.class::isInstance)
-				.map(m -> (Map<String, Object>) m)
-				.orElse(Collections.emptyMap());
+			.filter(Map.class::isInstance)
+			.map(m -> (Map<String, Object>)m)
+			.orElse(Collections.emptyMap());
 	}
 
 	@Override
@@ -35,31 +35,31 @@ public class KakaoUserInfo implements OAuth2UserInfo {
 
 	@Override
 	public String getProviderId() {
-		return  Optional.ofNullable(attributes.get("id"))
-				.map(Object::toString)
-				.orElse("Unknown");
+		return Optional.ofNullable(attributes.get("id"))
+			.map(Object::toString)
+			.orElse("Unknown");
 	}
 
 	@Override
 	public String getEmail() {
 		return Optional.ofNullable(account.get("email"))
-				.map(Object::toString)
-				.orElse("No email provided");
+			.map(Object::toString)
+			.orElse("No email provided");
 	}
 
 	@Override
 	public String getUserName() {
 		return Optional.ofNullable(profile.get("nickname"))
-				.map(Object::toString)
-				.orElse("No name provided");
+			.map(Object::toString)
+			.orElse("No name provided");
 	}
 
 	@Override
 	public String getImageUrl() {
 
 		return Optional.ofNullable(profile.get("profile_image_url"))
-				.map(Object::toString)
-				.orElse("No image provided");
+			.map(Object::toString)
+			.orElse("No image provided");
 	}
 
 	@Override

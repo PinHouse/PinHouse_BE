@@ -25,8 +25,8 @@ public class LikeApi implements LikeApiSpec {
 	/// 좋아요 생성
 	@PostMapping
 	public ApiResponse<Void> like(
-			@RequestBody @Valid LikeRequest request,
-			@CurrentUserId(required = true) UUID userId) {
+		@RequestBody @Valid LikeRequest request,
+		@CurrentUserId(required = true) UUID userId) {
 
 		/// 서비스 호출
 		service.saveLike(userId, request);
@@ -39,8 +39,8 @@ public class LikeApi implements LikeApiSpec {
 	/// 좋아요 취소
 	@DeleteMapping
 	public ApiResponse<Void> disLike(
-			@RequestBody @Valid LikeRequest request,
-			@CurrentUserId(required = true) UUID userId) {
+		@RequestBody @Valid LikeRequest request,
+		@CurrentUserId(required = true) UUID userId) {
 
 		/// 서비스 호출
 		service.deleteLike(userId, request);

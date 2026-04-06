@@ -51,9 +51,9 @@ public enum TrainType {
 	 */
 	public LineInfo toLineInfo() {
 		return LineInfo.builder()
-				.code(this.code)
-				.label(this.label)
-				.bgColorHex(this.colorHex)
-				.build();
+			.code(this.code)
+			.label(this.label)
+			.bgColorHex(this.colorHex)
+			.build();
 	}
 }

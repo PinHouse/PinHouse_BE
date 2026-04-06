@@ -57,5 +57,4 @@ public class Mart implements Facility {
 	@Field("location")
 	private Location location;
 
-
 }

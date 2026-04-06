@@ -37,9 +37,9 @@ public class AuthApi implements AuthApiSpec {
 	 */
 	@DeleteMapping
 	public ApiResponse<Void> logout(
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse,
-			@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		HttpServletRequest httpServletRequest,
+		HttpServletResponse httpServletResponse,
+		@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
 		/// 리프레쉬 토큰 까보기
 		Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
@@ -60,8 +60,8 @@ public class AuthApi implements AuthApiSpec {
 	 */
 	@PutMapping
 	public ApiResponse<Void> reissue(
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse
+		HttpServletRequest httpServletRequest,
+		HttpServletResponse httpServletResponse
 	) {
 
 		/// 리프레쉬 토큰 까보기

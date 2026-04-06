@@ -41,10 +41,10 @@ public class JwtRefreshToken {
 	/// 정적 팩토리 메소드
 	public static JwtRefreshToken of(UUID userId, String refreshToken, Long expireTime) {
 		return JwtRefreshToken.builder()
-				.userId(userId)
-				.refreshToken(refreshToken)
-				.expireTime(expireTime)
-				.build();
+			.userId(userId)
+			.refreshToken(refreshToken)
+			.expireTime(expireTime)
+			.build();
 	}
 
 }

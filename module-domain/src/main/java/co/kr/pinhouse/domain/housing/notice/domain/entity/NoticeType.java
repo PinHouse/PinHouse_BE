@@ -23,15 +23,15 @@ public enum NoticeType {
 
 	private final String value;
 
-	@JsonGetter
-	public String getValue() {
-		return value;
-	}
-
 	/**
 	 * 모든 SupplyType enum 반환
 	 */
 	public static List<NoticeType> getAllTypes() {
 		return Arrays.asList(NoticeType.values());
+	}
+
+	@JsonGetter
+	public String getValue() {
+		return value;
 	}
 }

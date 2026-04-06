@@ -40,22 +40,22 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
 	@Override
 	@GetMapping("/notices")
 	public ApiResponse<SliceResponse<NoticeSearchResultResponse>> searchNotices(
-			@RequestParam String q,
-			SliceRequest sliceRequest,
-			@RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
-			@RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
-			@CurrentUserId UUID userId
+		@RequestParam String q,
+		SliceRequest sliceRequest,
+		@RequestParam(required = false, defaultValue = "LATEST") NoticeSearchSortType sortType,
+		@RequestParam(required = false, defaultValue = "ALL") NoticeSearchFilterType status,
+		@CurrentUserId UUID userId
 	) {
 		// 로그인하지 않은 경우 userId는 null
 
 		// 검색 실행
 		SliceResponse<NoticeSearchResultResponse> response = noticeSearchService.searchNotices(
-				q,
-				sliceRequest.page(),
-				sliceRequest.offSet(),
-				sortType,
-				status,
-				userId
+			q,
+			sliceRequest.page(),
+			sliceRequest.offSet(),
+			sortType,
+			status,
+			userId
 		);
 
 		return ApiResponse.ok(response);
@@ -68,7 +68,7 @@ public class NoticeSearchApi implements NoticeSearchApiSpec {
 	@Override
 	@GetMapping("/popular")
 	public ApiResponse<List<PopularKeywordResponse>> getPopularKeywords(
-			@RequestParam(defaultValue = "10") int limit
+		@RequestParam(defaultValue = "10") int limit
 	) {
 		List<PopularKeywordResponse> response = searchKeywordService.getPopularKeywords(limit);
 		return ApiResponse.ok(response);

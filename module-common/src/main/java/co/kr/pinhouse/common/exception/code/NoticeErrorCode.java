@@ -45,5 +45,4 @@ public enum NoticeErrorCode implements ErrorCode {
 	 */
 	private final String message;
 
-
 }

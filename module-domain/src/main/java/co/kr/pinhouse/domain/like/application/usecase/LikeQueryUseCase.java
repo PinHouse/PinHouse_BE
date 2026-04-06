@@ -13,5 +13,4 @@ public interface LikeQueryUseCase {
 
 	List<String> getLikeUnitTypeIds(UUID userId);
 
-
 }

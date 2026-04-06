@@ -45,24 +45,25 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ComplexService implements ComplexUseCase {
 
+	// =================
+	//  내부 로직
+	// =================
+	private static final double PYEONG_TO_M2 = 3.305785;
 	/// 의존성
 	private final ComplexDocumentRepository repository;
 	private final PinPointUseCase pinPointService;
-
 	/// 거리 계산 툴
 	private final DistanceUtil distanceUtil;
 	private final TransitResponseMapper mapper;
-
 	/// 좋아요 목록 조회
 	private final LikeQueryUseCase likeService;
 	private final FacilityUseCase facilityService;
 
-	/// 거리 캐싱
-	private final DistanceCacheService distanceCacheService;
-
 	// =================
 	//  퍼블릭 로직
 	// =================
+	/// 거리 캐싱
+	private final DistanceCacheService distanceCacheService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -91,28 +92,26 @@ public class ComplexService implements ComplexUseCase {
 
 		/// 좋아요 상태 조회 (userId가 null이면 빈 목록)
 		List<String> likedTypeIds = (userId != null)
-				? likeService.getLikeUnitTypeIds(userId)
-				: List.of();
+			? likeService.getLikeUnitTypeIds(userId)
+			: List.of();
 
 		/// 최대 /최소 보증금
 		List<UnitType> unitTypes = complex.getUnitTypes();
 		return unitTypes.stream()
-				.map(unitType -> {
-					String typeCode = unitType.getTypeCode();
+			.map(unitType -> {
+				String typeCode = unitType.getTypeCode();
 
-					// 2. 해당 타입에 대한 최소/최대 보증금 옵션 계산
-					DepositResponse depositOptions = getLeaseMinMax(id, typeCode);
+				// 2. 해당 타입에 대한 최소/최대 보증금 옵션 계산
+				DepositResponse depositOptions = getLeaseMinMax(id, typeCode);
 
-					// 3. 좋아요 상태 확인
-					boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
+				// 3. 좋아요 상태 확인
+				boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
 
-					// 4. UnitTypeResponse 생성 및 옵션 주입
-					return UnitTypeResponse.from(unitType, depositOptions, isLiked);
-				})
-				.toList();
+				// 4. UnitTypeResponse 생성 및 옵션 주입
+				return UnitTypeResponse.from(unitType, depositOptions, isLiked);
+			})
+			.toList();
 	}
-
-
 
 	/// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
 	@Override
@@ -120,6 +119,10 @@ public class ComplexService implements ComplexUseCase {
 	public TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException {
 		return calculateTransitRoute(id, pinPointId, mapper::toTransitRoutesResponse);
 	}
+
+	// =================
+	//  외부 로직
+	// =================
 
 	/// 좋아요 누른 방 목록 조회
 	@Override
@@ -137,16 +140,12 @@ public class ComplexService implements ComplexUseCase {
 
 	}
 
-	// =================
-	//  외부 로직
-	// =================
-
 	/// 상세 조회
 	@Override
 	@Transactional
 	public ComplexDocument loadComplex(String id) {
 		return repository.findById(id)
-				.orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
+			.orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
 	}
 
 	/// 방 아이디로 조회하기
@@ -175,8 +174,8 @@ public class ComplexService implements ComplexUseCase {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ComplexDocument> loadSortedComplexes(
-			String noticeId,
-			co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType sortType
+		String noticeId,
+		co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType sortType
 	) {
 		log.debug("정렬된 단지 목록 조회 - noticeId: {}, sortType: {}", noticeId, sortType);
 		return repository.findSortedComplexesWithUnitTypes(noticeId, sortType);
@@ -210,101 +209,102 @@ public class ComplexService implements ComplexUseCase {
 
 		/// 반경 내 단지 목록
 		List<ComplexDocument> nearbyDocs =
-				repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
-
+			repository.findByLocation(pointLocation.getLongitude(), pointLocation.getLatitude(), radiusInRadians);
 
 		/// 기존 목록과 교집합 + 거리/시간 계산
 		return complexDocuments.stream()
-				.filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
-				.map(c -> {
-					double km = DistanceCalculator.calculateDistanceKm(pointLocation, c.getLocation());
-					int minutes = (int) Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
-					return new ComplexDistanceResponse(c, km, minutes);
-				})
-				.sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
-				.toList();
+			.filter(c -> nearbyDocs.stream().anyMatch(n -> n.getId().equals(c.getId())))
+			.map(c -> {
+				double km = DistanceCalculator.calculateDistanceKm(pointLocation, c.getLocation());
+				int minutes = (int)Math.round((km / avgSpeedKmh) * 60.0); // 평균속도 기반 시간 예측
+				return new ComplexDistanceResponse(c, km, minutes);
+			})
+			.sorted(Comparator.comparingDouble(ComplexDistanceResponse::distanceKm)) // 가까운 순 정렬 (선택)
+			.toList();
 	}
-
 
 	/// 필터링
 	@Override
 	@Transactional(readOnly = true)
-	public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes, SearchHistory req) {
+	public List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> complexes,
+		SearchHistory req) {
 
 		final double minM2 = toM2(req.getMinSize());
 		final double maxM2 = toM2(req.getMaxSize());
-		final long   maxDeposit    = req.getMaxDeposit();
-		final long   maxMonthlyPay = req.getMaxMonthPay();
+		final long maxDeposit = req.getMaxDeposit();
+		final long maxMonthlyPay = req.getMaxMonthPay();
 		final List<String> rentalTypeValues = req.getRentalTypes() != null
-				? req.getRentalTypes().stream()
-						.map(co.kr.pinhouse.domain.search.domain.entity.RentalType::getValue)
-						.toList()
-				: List.of();
+			? req.getRentalTypes().stream()
+			.map(co.kr.pinhouse.domain.search.domain.entity.RentalType::getValue)
+			.toList()
+			: List.of();
 
 		return complexes.stream()
-				.filter(cd -> cd != null && cd.complex() != null
-						&& cd.complex().getUnitTypes() != null
-						&& !cd.complex().getUnitTypes().isEmpty())
-				.flatMap(cd -> cd.complex().getUnitTypes().stream()
-						.filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay, rentalTypeValues))
-						.map(u -> {
-							ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
-							return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
-						})
-				)
-				.toList();
+			.filter(cd -> cd != null && cd.complex() != null
+				&& cd.complex().getUnitTypes() != null
+				&& !cd.complex().getUnitTypes().isEmpty())
+			.flatMap(cd -> cd.complex().getUnitTypes().stream()
+				.filter(u -> matchesUnitType(u, minM2, maxM2, maxDeposit, maxMonthlyPay, rentalTypeValues))
+				.map(u -> {
+					ComplexDocument oneUnitDoc = new ComplexDocument(cd.complex(), List.of(u));
+					return new ComplexDistanceResponse(oneUnitDoc, cd.distanceKm(), cd.estimatedMinutes());
+				})
+			)
+			.toList();
 	}
-
-
-
-	// =================
-	//  내부 로직
-	// =================
-	private static final double PYEONG_TO_M2 = 3.305785;
 
 	/** 평 → m² 변환 */
 	private double toM2(double pyeong) {
-		if (Double.isNaN(pyeong) || pyeong <= 0) return 0d;
+		if (Double.isNaN(pyeong) || pyeong <= 0)
+			return 0d;
 		return pyeong * PYEONG_TO_M2;
 	}
 
 	/** 전용면적(m²)/보증금/월임대료/모집대상 필터 함수 */
 	private boolean matchesUnitType(UnitType u,
-									double minM2,
-									double maxM2,
-									long maxDeposit,
-									long maxMonthlyPay,
-									List<String> rentalTypeValues) {
-		if (u == null) return false;
+		double minM2,
+		double maxM2,
+		long maxDeposit,
+		long maxMonthlyPay,
+		List<String> rentalTypeValues) {
+		if (u == null)
+			return false;
 
 		// 전용면적(m²) 체크
 		double areaM2 = u.getExclusiveAreaM2();
-		if (Double.isNaN(areaM2)) return false;
-		if (areaM2 < minM2 || areaM2 > maxM2) return false;
+		if (Double.isNaN(areaM2))
+			return false;
+		if (areaM2 < minM2 || areaM2 > maxM2)
+			return false;
 
 		// 보증금 체크
 		Deposit d = u.getDeposit();
-		if (d == null) return false;
+		if (d == null)
+			return false;
 		long depositTotal = d.getTotal();
-		if (depositTotal <= 0) return false;
-		if (depositTotal > maxDeposit) return false;
+		if (depositTotal <= 0)
+			return false;
+		if (depositTotal > maxDeposit)
+			return false;
 
 		// 월 임대료 체크
 		long monthlyRent = u.getMonthlyRent();
-		if (monthlyRent <= 0) return false;
-		if (monthlyRent > maxMonthlyPay) return false;
+		if (monthlyRent <= 0)
+			return false;
+		if (monthlyRent > maxMonthlyPay)
+			return false;
 
 		// 모집대상(group) 체크
 		List<String> group = u.getGroup();
 		if (group != null && !group.isEmpty() && rentalTypeValues != null && !rentalTypeValues.isEmpty()) {
 			// "기본" 또는 "일반"이 포함되어 있으면 무조건 포함
 			boolean hasDefaultGroup = group.stream()
-					.anyMatch(g -> "기본".equals(g) || "일반".equals(g));
+				.anyMatch(g -> "기본".equals(g) || "일반".equals(g));
 
 			if (!hasDefaultGroup) {
 				// "기본"/"일반"이 없으면, rentalTypes 중 하나라도 group에 포함되어야 함
 				boolean hasMatchingRentalType = rentalTypeValues.stream()
-						.anyMatch(group::contains);
+					.anyMatch(group::contains);
 
 				if (!hasMatchingRentalType) {
 					return false;
@@ -321,8 +321,8 @@ public class ComplexService implements ComplexUseCase {
 
 		/// ObjectId 리스트로 변환
 		List<String> typeIdsAsObjectId = roomIds.stream()
-				.map(String::new)
-				.toList();
+			.map(String::new)
+			.toList();
 
 		/// 조회 (각 Document는 매칭된 UnitType 1개만 포함)
 		return repository.findFirstMatchingUnitType(typeIdsAsObjectId);
@@ -345,14 +345,14 @@ public class ComplexService implements ComplexUseCase {
 
 		ComplexDocument complex = loadComplex(complexId);
 		UnitType unitType = complex.getUnitTypes().stream()
-				.filter(info -> info.getTypeCode().equalsIgnoreCase(type))
-				.findFirst()
-				.orElseThrow(() -> new CustomException(ComplexErrorCode.BAD_REQUEST_DEPOSIT));
+			.filter(info -> info.getTypeCode().equalsIgnoreCase(type))
+			.findFirst()
+			.orElseThrow(() -> new CustomException(ComplexErrorCode.BAD_REQUEST_DEPOSIT));
 
 		// 기본 보증금 정보
-		long balanceBase      = unitType.getDeposit().getBalance(); // 잔금 (정책상 변동 없음)
-		long contractBase     = unitType.getDeposit().getContract(); // 기본 계약금
-		long monthRentBase    = unitType.getMonthlyRent();          // 기본 월임대료
+		long balanceBase = unitType.getDeposit().getBalance(); // 잔금 (정책상 변동 없음)
+		long contractBase = unitType.getDeposit().getContract(); // 기본 계약금
+		long monthRentBase = unitType.getMonthlyRent();          // 기본 월임대료
 		long totalDepositBase = Math.max(0, contractBase + balanceBase); // 기본 보증금 총액
 
 		// ===================================
@@ -360,10 +360,10 @@ public class ComplexService implements ComplexUseCase {
 		// ===================================
 
 		DepositMinMaxResponse normalOption = DepositMinMaxResponse.fromWon(
-				totalDepositBase,
-				contractBase,
-				balanceBase,
-				monthRentBase
+			totalDepositBase,
+			contractBase,
+			balanceBase,
+			monthRentBase
 		);
 
 		// 2) 전환 이율 정의
@@ -375,7 +375,7 @@ public class ComplexService implements ComplexUseCase {
 		// ===================================
 
 		// 3-1. 최소 보증금: 보통 총 보증금의 50% (100만원 단위 반올림 적용)
-		long minRequiredDeposit = (long) Math.round(totalDepositBase * 0.5 / 1_000_000.0) * 1_000_000;
+		long minRequiredDeposit = (long)Math.round(totalDepositBase * 0.5 / 1_000_000.0) * 1_000_000;
 
 		// 3-2. 최종 전환될 보증금 감소액: (총 보증금 - 최소 보증금)
 		long actualDepositReduce = Math.max(0, totalDepositBase - minRequiredDeposit);
@@ -391,14 +391,14 @@ public class ComplexService implements ComplexUseCase {
 
 		// 최종 결과 (최소 보증금 옵션)
 		long minDepositTotal = totalDepositBase - actualDepositReduce;
-		long maxMonthRent  = monthRentBase + actualRentIncrease;
+		long maxMonthRent = monthRentBase + actualRentIncrease;
 		long minDepositContract = Math.max(0, minDepositTotal - balanceBase);
 
 		DepositMinMaxResponse minOption = DepositMinMaxResponse.fromWon(
-				minDepositTotal,
-				minDepositContract,
-				balanceBase,
-				maxMonthRent
+			minDepositTotal,
+			minDepositContract,
+			balanceBase,
+			maxMonthRent
 		);
 
 		// ===================================
@@ -406,7 +406,7 @@ public class ComplexService implements ComplexUseCase {
 		// ===================================
 
 		// 4-1. 최소 월세: 보통 기본 월세의 40% (1천원 단위 반올림 적용)
-		long minRequiredRent = Math.max(0, (long) Math.round(monthRentBase * 0.4 / 1_000.0) * 1_000);
+		long minRequiredRent = Math.max(0, (long)Math.round(monthRentBase * 0.4 / 1_000.0) * 1_000);
 
 		// 4-2. 최종 전환될 월세 감소액: (기본 월세 - 최소 월세)
 		long actualRentReduce = Math.max(0, monthRentBase - minRequiredRent);
@@ -422,21 +422,21 @@ public class ComplexService implements ComplexUseCase {
 
 		// 최종 결과 (최대 보증금 옵션)
 		long maxDepositTotal = totalDepositBase + actualDepositIncrease;
-		long minMonthRent  = monthRentBase - actualRentReduce;
+		long minMonthRent = monthRentBase - actualRentReduce;
 		long maxDepositContract = Math.max(0, maxDepositTotal - balanceBase);
 
 		DepositMinMaxResponse maxOption = DepositMinMaxResponse.fromWon(
-				maxDepositTotal,
-				maxDepositContract,
-				balanceBase,
-				minMonthRent
+			maxDepositTotal,
+			maxDepositContract,
+			balanceBase,
+			minMonthRent
 		);
 
 		// 5) 최종 응답 DTO 구성
 		return DepositResponse.from(
-				minOption,
-				normalOption,
-				maxOption
+			minOption,
+			normalOption,
+			maxOption
 		);
 	}
 
@@ -457,9 +457,9 @@ public class ComplexService implements ComplexUseCase {
 	 * @throws UnsupportedEncodingException 인코딩 예외
 	 */
 	private <T> T calculateTransitRoute(
-			String complexId,
-			String pinPointId,
-			java.util.function.Function<PathResult, T> pathMapper
+		String complexId,
+		String pinPointId,
+		java.util.function.Function<PathResult, T> pathMapper
 	) throws UnsupportedEncodingException {
 
 		/// 임대주택 조회
@@ -472,10 +472,10 @@ public class ComplexService implements ComplexUseCase {
 
 		/// 대중교통 경로 계산
 		PathResult pathResult = distanceUtil.findPathResult(
-				pinPointLocation.getLatitude(),
-				pinPointLocation.getLongitude(),
-				complexLocation.getLatitude(),
-				complexLocation.getLongitude()
+			pinPointLocation.getLatitude(),
+			pinPointLocation.getLongitude(),
+			complexLocation.getLatitude(),
+			complexLocation.getLongitude()
 		);
 
 		/// 결과 매핑
@@ -488,7 +488,7 @@ public class ComplexService implements ComplexUseCase {
 
 		/// Redis 캐시에서 RootResult 먼저 확인
 		co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult cachedRootResult =
-				distanceCacheService.getRootResult(id, pinPointId);
+			distanceCacheService.getRootResult(id, pinPointId);
 
 		if (cachedRootResult != null) {
 			log.debug("Using cached RootResult for TransitInfo - complexId={}, pinPointId={}", id, pinPointId);
@@ -509,7 +509,8 @@ public class ComplexService implements ComplexUseCase {
 	/// Segment 리스트 조회 (임대주택 상세조회용) - Deprecated, use getTransitInfo instead
 	@Deprecated
 	@Transactional(readOnly = true)
-	public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws UnsupportedEncodingException {
+	public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws
+		UnsupportedEncodingException {
 		return calculateTransitRoute(id, pinPointId, pathResult -> {
 			RootResult rootResult = mapper.selectBest(pathResult);
 			return mapper.toSegmentResponses(rootResult);
@@ -523,7 +524,7 @@ public class ComplexService implements ComplexUseCase {
 
 		/// Redis 캐시에서 RootResult 먼저 확인
 		co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult cachedRootResult =
-				distanceCacheService.getRootResult(id, pinPointId);
+			distanceCacheService.getRootResult(id, pinPointId);
 
 		if (cachedRootResult != null) {
 			log.debug("Using cached RootResult for complexId={}, pinPointId={}", id, pinPointId);

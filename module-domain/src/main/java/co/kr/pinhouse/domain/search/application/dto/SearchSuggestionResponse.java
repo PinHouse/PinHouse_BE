@@ -12,8 +12,8 @@ import lombok.Builder;
 @Builder
 @Schema(name = "[응답][검색] 검색어 자동완성", description = "검색어 자동완성 제안 목록")
 public record SearchSuggestionResponse(
-		@Schema(description = "제안 검색어 목록")
-		List<String> suggestions
+	@Schema(description = "제안 검색어 목록")
+	List<String> suggestions
 ) {
 
 	/**
@@ -21,11 +21,11 @@ public record SearchSuggestionResponse(
 	 */
 	public static SearchSuggestionResponse from(List<SearchKeyword> searchKeywords) {
 		List<String> keywords = searchKeywords.stream()
-				.map(SearchKeyword::getKeyword)
-				.toList();
+			.map(SearchKeyword::getKeyword)
+			.toList();
 
 		return SearchSuggestionResponse.builder()
-				.suggestions(keywords)
-				.build();
+			.suggestions(keywords)
+			.build();
 	}
 }

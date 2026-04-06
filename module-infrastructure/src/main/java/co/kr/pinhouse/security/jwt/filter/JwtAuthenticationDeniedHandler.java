@@ -33,7 +33,7 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
-					AccessDeniedException accessDeniedException) throws IOException, ServletException {
+		AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
 		/// 권한 부족 403 Error
 		CustomException exception = new CustomException(CommonErrorCode.FORBIDDEN);

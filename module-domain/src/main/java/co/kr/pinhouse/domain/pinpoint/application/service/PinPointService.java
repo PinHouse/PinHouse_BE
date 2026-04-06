@@ -57,7 +57,8 @@ public class PinPointService implements PinPointUseCase {
 		Location location = locationTool.getLocation(request.address());
 
 		/// 도메인 생성
-		var entity = PinPoint.of(user.getId().toString(), request.address(), request.name(), location.getLatitude(), location.getLongitude(), request.first());
+		var entity = PinPoint.of(user.getId().toString(), request.address(), request.name(), location.getLatitude(),
+			location.getLongitude(), request.first());
 
 		/// 저장하기
 		repository.save(entity);
@@ -144,7 +145,7 @@ public class PinPointService implements PinPointUseCase {
 	public PinPoint loadPinPoint(String pinPointId) {
 
 		return repository.findById(pinPointId)
-				.orElseThrow(() -> new CustomException(PinPointErrorCode.NOT_FOUND_PINPOINT));
+			.orElseThrow(() -> new CustomException(PinPointErrorCode.NOT_FOUND_PINPOINT));
 	}
 
 	/// 유저와 함께 상세 조회

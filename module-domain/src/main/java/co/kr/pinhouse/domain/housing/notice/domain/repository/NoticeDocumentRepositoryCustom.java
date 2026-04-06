@@ -59,10 +59,10 @@ public interface NoticeDocumentRepositoryCustom {
 	 * @return 마감임박순으로 정렬된 모집중인 공고 목록
 	 */
 	Page<NoticeDocument> findDeadlineApproachingNoticesByRegionAndCounty(
-			String region,
-			String county,
-			Pageable pageable,
-			Instant now
+		String region,
+		String county,
+		Pageable pageable,
+		Instant now
 	);
 
 	/**
@@ -74,8 +74,8 @@ public interface NoticeDocumentRepositoryCustom {
 	 * @return 추천 공고 목록
 	 */
 	Page<NoticeDocument> findRecommendedNoticesByDiagnosis(
-			java.util.List<String> supplyTypes,
-			Pageable pageable
+		java.util.List<String> supplyTypes,
+		Pageable pageable
 	);
 
 	/**

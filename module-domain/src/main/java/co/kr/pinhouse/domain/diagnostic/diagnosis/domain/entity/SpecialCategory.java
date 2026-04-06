@@ -28,7 +28,6 @@ public enum SpecialCategory {
 	LONG_SERVICE_VETERAN("장기복무 제대군인"),
 	HOUSING_VULNERABLE_OR_EMERGENCY_SUPPORT("주거 취약계층/긴급 주거지원 대상자"),
 
-
 	FOSTER_FAMILY_OR_CHILDCARE_TERMINATING_WITHIN_2Y("위탁가정/보육원 시설종료2년이내, 종료예정자"),
 	RETURNED_MILITARY_PERSONNEL("귀한 국군포로 본인"),
 	TRAFFIC_ACCIDENT_SURVIVOR_CHILD_HOUSEHOLD("교통사고 유자녀 가정"),

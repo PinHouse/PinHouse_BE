@@ -11,7 +11,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
-
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
@@ -30,8 +29,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 	public MongoClient mongoClient() {
 		ConnectionString connectionString = new ConnectionString(this.connectionString);
 		MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
-				.applyConnectionString(connectionString)
-				.build();
+			.applyConnectionString(connectionString)
+			.build();
 
 		return MongoClients.create(mongoClientSettings);
 	}

@@ -58,7 +58,6 @@ public class Diagnosis extends BaseTimeEntity {
 	private SubscriptionCount accountDeposit;                   // 가입 횟수
 	private SubscriptionAccount account;                        // 가입 금액
 
-
 	/**
 	 * 11) 신혼 부부 요건
 	 */
@@ -117,37 +116,36 @@ public class Diagnosis extends BaseTimeEntity {
 	/// 정적 팩토리 메서드
 	public static Diagnosis of(User user, DiagnosisRequest request) {
 		return Diagnosis.builder()
-				.user(user)
-				.gender(request.gender())
-				.age(BirthDayUtil.calculateAge(request.birthday()))
-				.monthPay(request.monthPay())
-				.hasAccount(request.hasAccount())
-				.accountYears(request.accountYears())
-				.accountDeposit(request.accountDeposit())
-				.account(request.account())
-				.maritalStatus(request.maritalStatus())
-				.marriageYears(request.marriageYears())
-				.unbornChildrenCount(request.unbornChildrenCount())
-				.under6ChildrenCount(request.under6ChildrenCount())
-				.over7MinorChildrenCount(request.over7MinorChildrenCount())
-				.educationStatus(request.educationStatus())
-				.hasCar(request.hasCar())
-				.carValue(request.carValue())
-				.isHouseholdHead(request.isHouseholdHead())
-				.isSingle(request.isSingle())
-				.fetusCount(request.fetusCount())
-				.minorCount(request.minorCount())
-				.adultCount(request.adultCount())
-				.incomeLevel(request.incomeLevel())
-				.housingStatus(request.housingStatus())
-				.housingYears(request.housingYears())
-				.propertyAsset(request.propertyAsset())
-				.carAsset(request.carAsset())
-				.financialAsset(request.financialAsset())
-				.hasSpecialCategory(request.hasSpecialCategory())
-				.build();
+			.user(user)
+			.gender(request.gender())
+			.age(BirthDayUtil.calculateAge(request.birthday()))
+			.monthPay(request.monthPay())
+			.hasAccount(request.hasAccount())
+			.accountYears(request.accountYears())
+			.accountDeposit(request.accountDeposit())
+			.account(request.account())
+			.maritalStatus(request.maritalStatus())
+			.marriageYears(request.marriageYears())
+			.unbornChildrenCount(request.unbornChildrenCount())
+			.under6ChildrenCount(request.under6ChildrenCount())
+			.over7MinorChildrenCount(request.over7MinorChildrenCount())
+			.educationStatus(request.educationStatus())
+			.hasCar(request.hasCar())
+			.carValue(request.carValue())
+			.isHouseholdHead(request.isHouseholdHead())
+			.isSingle(request.isSingle())
+			.fetusCount(request.fetusCount())
+			.minorCount(request.minorCount())
+			.adultCount(request.adultCount())
+			.incomeLevel(request.incomeLevel())
+			.housingStatus(request.housingStatus())
+			.housingYears(request.housingYears())
+			.propertyAsset(request.propertyAsset())
+			.carAsset(request.carAsset())
+			.financialAsset(request.financialAsset())
+			.hasSpecialCategory(request.hasSpecialCategory())
+			.build();
 	}
-
 
 	/// 다자녀 계산 로직
 	public boolean checkMultiple() {

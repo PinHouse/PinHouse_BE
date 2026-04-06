@@ -108,9 +108,9 @@ public enum SubwayLineType {
 	 */
 	public LineInfo toLineInfo() {
 		return LineInfo.builder()
-				.code(this.code)
-				.label(this.name)
-				.bgColorHex(this.colorHex)
-				.build();
+			.code(this.code)
+			.label(this.name)
+			.bgColorHex(this.colorHex)
+			.build();
 	}
 }

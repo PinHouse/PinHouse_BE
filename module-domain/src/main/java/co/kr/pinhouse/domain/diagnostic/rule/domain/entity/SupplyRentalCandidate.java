@@ -12,8 +12,8 @@ import lombok.Builder;
 
 @Builder
 public record SupplyRentalCandidate(
-		SupplyType supplyType,
-		NoticeType noticeType
+	SupplyType supplyType,
+	NoticeType noticeType
 ) {
 
 	/// 정적 팩토리 메서드 (기본 값)
@@ -34,7 +34,8 @@ public record SupplyRentalCandidate(
 			List<SupplyType> allowedSupplies = RentalSupplyMapping.RENTAL_SUPPLY_MAP.get(rental);
 
 			/// 매핑 없는 경우 무시
-			if (allowedSupplies == null) continue;
+			if (allowedSupplies == null)
+				continue;
 			for (SupplyType supply : allowedSupplies) {
 
 				/// 더하기
@@ -48,10 +49,9 @@ public record SupplyRentalCandidate(
 	/// 정적 팩토리 메서드
 	public static SupplyRentalCandidate basic(SupplyType supplyType, NoticeType noticeType) {
 		return SupplyRentalCandidate.builder()
-				.supplyType(supplyType)
-				.noticeType(noticeType)
-				.build();
+			.supplyType(supplyType)
+			.noticeType(noticeType)
+			.build();
 	}
-
 
 }

@@ -26,26 +26,26 @@ public class PolicyProvider implements PolicyUseCase {
 			case PUBLIC_INTEGRATED -> switch (supply) {
 				/// 청년 특별공급 - 가구원 수별 차등 (1인 170%, 2인 160%, 3인 이상 150%)
 				case YOUTH_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
+					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
 				/// 고령자 특별공급 - 가구원 수별 차등 (1인 170%, 2인 160%, 3인 이상 150%)
 				case ELDER_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
+					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
 				/// 신혼부부 특별공급 - 가구원 수별 차등 + 맞벌이 가구 가산
 				/// (1인 170%, 2인 160%, 3인 150%, 맞벌이 2인 190%, 맞벌이 3인 이상 180%)
 				case NEWCOUPLE_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 170.0, 2, 160.0, 3, 150.0, 100, 190.0, 101, 180.0), 150.0);
+					Map.of(1, 170.0, 2, 160.0, 3, 150.0, 100, 190.0, 101, 180.0), 150.0);
 
 				/// 기타 우선공급 (다자녀, 특별계층 등) - 가구원 수별 차등
 				case SPECIAL, MULTICHILD_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100.0);
+					Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100.0);
 
 				/// 나머지 특별공급 - 기준중위소득 기본
 				case SINGLE_PARENT_SPECIAL, MINOR_SPECIAL, FIRST_SPECIAL, ELDER_SUPPORT_SPECIAL,
-					NATIONAL_MERIT, DEMOLITION, LONG_SERVICE_VETERAN, NORTH_DEFECTOR,
-					DISABLED, NON_HOUSING_RESIDENT -> incomeByFamily(familyCount,
-						Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
+					 NATIONAL_MERIT, DEMOLITION, LONG_SERVICE_VETERAN, NORTH_DEFECTOR,
+					 DISABLED, NON_HOUSING_RESIDENT -> incomeByFamily(familyCount,
+					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
 				/// 일반공급 - 기준중위소득 150%
 				case GENERAL -> 150.0;
@@ -69,8 +69,8 @@ public class PolicyProvider implements PolicyUseCase {
 			case NATIONAL_RENTAL -> switch (supply) {
 				/// 60㎡ 이하 기준
 				case GENERAL, MULTICHILD_SPECIAL, NATIONAL_MERIT, NEWCOUPLE_SPECIAL,
-					DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
-					ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 70.0;
+					 DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
+					 ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 70.0;
 
 				/// 60㎡ 초과는 100%로 처리 (면적 정보 없으면 보수적으로 70% 적용)
 				default -> 70.0;
@@ -80,8 +80,8 @@ public class PolicyProvider implements PolicyUseCase {
 			case LONG_TERM_JEONSE -> switch (supply) {
 				/// 60㎡ 이하 기준
 				case GENERAL, MULTICHILD_SPECIAL, NATIONAL_MERIT, NEWCOUPLE_SPECIAL,
-					DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
-					ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 100.0;
+					 DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
+					 ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 100.0;
 
 				/// 60㎡ 초과는 120%로 처리
 				default -> 100.0;
@@ -91,34 +91,34 @@ public class PolicyProvider implements PolicyUseCase {
 			case PUBLIC_RENTAL -> switch (supply) {
 				/// 대학생, 청년, 고령자 특별공급 - 기준중위소득 100%
 				case STUDENT_SPECIAL, YOUTH_SPECIAL, ELDER_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 100.0), 100.0);
+					Map.of(1, 100.0), 100.0);
 
 				/// 다자녀, 노부모 특별공급 - 기준중위소득 120%
 				case ELDER_SUPPORT_SPECIAL, MULTICHILD_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 120.0), 120.0);
+					Map.of(1, 120.0), 120.0);
 
 				/// 신혼부부 특별공급 - 기준중위소득 130% (맞벌이 140%)
 				case NEWCOUPLE_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 130.0, 100, 140.0), 130.0);
+					Map.of(1, 130.0, 100, 140.0), 130.0);
 
 				/// 일반공급, 생애최초 등 기본 - 기준중위소득 100~130%
 				default -> incomeByFamily(familyCount,
-						Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100.0);
+					Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100.0);
 			};
 
 			/// 행복주택 (계층별 소득 기준 상이)
 			case HAPPY_HOUSING -> switch (supply) {
 				/// 대학생, 청년, 고령자 특별공급 - 기준중위소득 100%
 				case STUDENT_SPECIAL, YOUTH_SPECIAL, ELDER_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 100.0), 100.0);
+					Map.of(1, 100.0), 100.0);
 
 				/// 신혼부부 특별공급 - 기본 100%, 맞벌이 120%
 				case NEWCOUPLE_SPECIAL -> incomeByFamily(familyCount,
-						Map.of(1, 100.0, 100, 120.0), 100.0);
+					Map.of(1, 100.0, 100, 120.0), 100.0);
 
 				/// 기타 - 가구원 수별 차등
 				default -> incomeByFamily(familyCount,
-						Map.of(1, 120.0, 2, 110.0, 3, 70.0), 70.0);
+					Map.of(1, 120.0, 2, 110.0, 3, 70.0), 70.0);
 			};
 
 			default -> 150.0;
@@ -143,15 +143,14 @@ public class PolicyProvider implements PolicyUseCase {
 		} else {
 			// 중간 값인데 정의 안 된 경우 → 가장 가까운 key 찾기
 			return table.entrySet().stream()
-					.min((e1, e2) ->
-							Integer.compare(
-									Math.abs(e1.getKey() - familyCount),
-									Math.abs(e2.getKey() - familyCount)))
-					.map(Map.Entry::getValue)
-					.orElse(defaultValue);
+				.min((e1, e2) ->
+					Integer.compare(
+						Math.abs(e1.getKey() - familyCount),
+						Math.abs(e2.getKey() - familyCount)))
+				.map(Map.Entry::getValue)
+				.orElse(defaultValue);
 		}
 	}
-
 
 	/**
 	 * 최대 총자산 제한 (단위: 원)
@@ -194,7 +193,6 @@ public class PolicyProvider implements PolicyUseCase {
 		};
 	}
 
-
 	/**
 	 * 자동차 자산 제한 - 45,630,000원 (4,563만원)
 	 * 모든 임대주택 유형 공통 적용
@@ -203,7 +201,6 @@ public class PolicyProvider implements PolicyUseCase {
 	public long checkMaxCarValue() {
 		return 45_630_000L;
 	}
-
 
 	@Override
 	public int youthAgeMin() {

@@ -36,13 +36,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GeneralSupplyRule implements Rule {
 
-	private final PolicyUseCase policyUseCase;
-
 	/// 청약통장이 필요한 임대주택 유형
 	private static final Set<NoticeType> SUBSCRIPTION_REQUIRED_TYPES = Set.of(
-			NoticeType.PUBLIC_RENTAL,        // 공공임대 (분양전환 가능)
-			NoticeType.PUBLIC_INTEGRATED     // 통합공공임대 (분양전환 가능)
+		NoticeType.PUBLIC_RENTAL,        // 공공임대 (분양전환 가능)
+		NoticeType.PUBLIC_INTEGRATED     // 통합공공임대 (분양전환 가능)
 	);
+	private final PolicyUseCase policyUseCase;
 
 	@Override
 	public RuleResult evaluate(EvaluationContext ctx) {
@@ -58,8 +57,8 @@ public class GeneralSupplyRule implements Rule {
 		/// 청약통장 정보
 		boolean hasAccount = diagnosis.isHasAccount();
 		boolean hasAccountOver6Months = hasAccount
-				&& diagnosis.getAccountYears() != null
-				&& diagnosis.getAccountYears() != SubscriptionPeriod.LESS_THAN_6_MONTHS;
+			&& diagnosis.getAccountYears() != null
+			&& diagnosis.getAccountYears() != SubscriptionPeriod.LESS_THAN_6_MONTHS;
 
 		/// 일반공급 후보 필터링
 		candidates.removeIf(c -> {
@@ -87,7 +86,7 @@ public class GeneralSupplyRule implements Rule {
 
 		/// 일반공급 후보가 있는지 확인
 		boolean hasGeneralCandidate = candidates.stream()
-				.anyMatch(c -> c.supplyType() == SupplyType.GENERAL);
+			.anyMatch(c -> c.supplyType() == SupplyType.GENERAL);
 
 		if (!hasGeneralCandidate) {
 			String failReason = "";
@@ -98,17 +97,17 @@ public class GeneralSupplyRule implements Rule {
 			}
 
 			return RuleResult.fail(code(),
-					"일반공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReason
-					));
+				"일반공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReason
+				));
 		}
 
 		/// 일반공급 후보
 		return RuleResult.pass(code(),
-				"일반공급 후보",
-				Map.of("candidate", candidates));
+			"일반공급 후보",
+			Map.of("candidate", candidates));
 	}
 
 	@Override

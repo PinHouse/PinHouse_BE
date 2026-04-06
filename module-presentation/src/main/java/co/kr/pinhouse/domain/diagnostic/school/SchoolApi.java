@@ -75,7 +75,4 @@ public class SchoolApi implements SchoolApiSpec {
 		return ApiResponse.ok(response);
 	}
 
-
-
-
 }

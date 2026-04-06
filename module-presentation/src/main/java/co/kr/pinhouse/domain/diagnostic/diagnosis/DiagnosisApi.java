@@ -32,7 +32,7 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 	 */
 	@PostMapping()
 	public ApiResponse<DiagnosisResponse> diagnosis(@CurrentUserId(required = true) UUID userId,
-												@RequestBody DiagnosisRequest request) {
+		@RequestBody DiagnosisRequest request) {
 
 		/// 서비스
 		DiagnosisResponse response = service.diagnose(userId, request);
@@ -46,7 +46,7 @@ public class DiagnosisApi implements DiagnosisApiSpec {
 	 */
 	@PostMapping(path = "", params = "v=2")
 	public ApiResponse<DiagnosisResponseV2> diagnosisV2(@CurrentUserId(required = true) UUID userId,
-												@RequestBody DiagnosisRequest request) {
+		@RequestBody DiagnosisRequest request) {
 
 		/// 서비스
 		DiagnosisResponseV2 response = service.diagnoseV2(userId, request);

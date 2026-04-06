@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "search_keywords")
 @CompoundIndexes({
-		@CompoundIndex(name = "idx_scope_keyword_unique", def = "{'scope': 1, 'keyword': 1}", unique = true)
+	@CompoundIndex(name = "idx_scope_keyword_unique", def = "{'scope': 1, 'keyword': 1}", unique = true)
 })
 public class SearchKeyword {
 
@@ -57,7 +57,8 @@ public class SearchKeyword {
 	private Instant firstSearchedAt;
 
 	@Builder
-	public SearchKeyword(String keyword, SearchKeywordScope scope, Long count, Instant lastSearchedAt, Instant firstSearchedAt) {
+	public SearchKeyword(String keyword, SearchKeywordScope scope, Long count, Instant lastSearchedAt,
+		Instant firstSearchedAt) {
 		this.keyword = keyword;
 		this.scope = scope;
 		this.count = count;
@@ -71,20 +72,12 @@ public class SearchKeyword {
 	public static SearchKeyword create(String keyword, SearchKeywordScope scope) {
 		Instant now = Instant.now();
 		return SearchKeyword.builder()
-				.keyword(normalizeKeyword(keyword))
-				.scope(scope)
-				.count(1L)
-				.lastSearchedAt(now)
-				.firstSearchedAt(now)
-				.build();
-	}
-
-	/**
-	 * 검색 횟수 증가
-	 */
-	public void incrementCount() {
-		this.count++;
-		this.lastSearchedAt = Instant.now();
+			.keyword(normalizeKeyword(keyword))
+			.scope(scope)
+			.count(1L)
+			.lastSearchedAt(now)
+			.firstSearchedAt(now)
+			.build();
 	}
 
 	/**
@@ -95,5 +88,13 @@ public class SearchKeyword {
 			return "";
 		}
 		return keyword.trim().toLowerCase();
+	}
+
+	/**
+	 * 검색 횟수 증가
+	 */
+	public void incrementCount() {
+		this.count++;
+		this.lastSearchedAt = Instant.now();
 	}
 }

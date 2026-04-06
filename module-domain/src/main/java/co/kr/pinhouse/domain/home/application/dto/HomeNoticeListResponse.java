@@ -9,20 +9,20 @@ import lombok.Builder;
 @Builder
 public record HomeNoticeListResponse(
 
-		@Schema(description = "공통 지역", example = "성남시")
-		String region,
+	@Schema(description = "공통 지역", example = "성남시")
+	String region,
 
-		@Schema(description = "목록 설명/출처", example = "진단 기반 추천")
-		String title,
+	@Schema(description = "목록 설명/출처", example = "진단 기반 추천")
+	String title,
 
-		@Schema(description = "공고 목록")
-		List<HomeNoticeResponse> content,
+	@Schema(description = "공고 목록")
+	List<HomeNoticeResponse> content,
 
-		@Schema(description = "다음 페이지 존재 여부", example = "true")
-		boolean hasNext,
+	@Schema(description = "다음 페이지 존재 여부", example = "true")
+	boolean hasNext,
 
-		@Schema(description = "전체 공고 개수", example = "100")
-		long totalElements
+	@Schema(description = "전체 공고 개수", example = "100")
+	long totalElements
 
 ) {
 }

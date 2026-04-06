@@ -41,7 +41,8 @@ public class NoticeSearchService implements NoticeSearchUseCase {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public SliceResponse<NoticeSearchResultResponse> searchNotices(String keyword, int page, int size, NoticeSearchSortType sortType, NoticeSearchFilterType status, UUID userId) {
+	public SliceResponse<NoticeSearchResultResponse> searchNotices(String keyword, int page, int size,
+		NoticeSearchSortType sortType, NoticeSearchFilterType status, UUID userId) {
 		// 검색 키워드 기록 (비동기로 처리 가능)
 		if (keyword != null && !keyword.trim().isEmpty()) {
 			searchKeywordService.recordSearch(keyword);
@@ -66,39 +67,39 @@ public class NoticeSearchService implements NoticeSearchUseCase {
 
 		// MongoDB text search 실행 (Slice 방식)
 		Slice<NoticeDocument> noticeSlice = noticeRepository.searchByTitleSlice(
-				keyword,
-				pageable,
-				filterRecruiting,
-				now
+			keyword,
+			pageable,
+			filterRecruiting,
+			now
 		);
 
 		// 검색 결과 총 개수 조회
 		long totalCount = noticeRepository.countByTitle(
-				keyword,
-				filterRecruiting,
-				now
+			keyword,
+			filterRecruiting,
+			now
 		);
 
 		// 좋아요 정보 조회 (userId가 있는 경우)
 		List<String> likedNoticeIds = (userId != null)
-				? likeService.getLikeNoticeIds(userId)
-				: List.of();
+			? likeService.getLikeNoticeIds(userId)
+			: List.of();
 
 		// DTO 변환
 		List<NoticeSearchResultResponse> content = noticeSlice.getContent().stream()
-				.map(notice -> {
-					boolean isLiked = likedNoticeIds.contains(notice.getId());
-					return NoticeSearchResultResponse.from(notice, isLiked);
-				})
-				.collect(Collectors.toList());
+			.map(notice -> {
+				boolean isLiked = likedNoticeIds.contains(notice.getId());
+				return NoticeSearchResultResponse.from(notice, isLiked);
+			})
+			.collect(Collectors.toList());
 
 		// SliceResponse 생성
 		return SliceResponse.<NoticeSearchResultResponse>builder()
-				.totalCount(totalCount)
-				.content(content)
-				.hasNext(noticeSlice.hasNext())
-				.page(page)
-				.build();
+			.totalCount(totalCount)
+			.content(content)
+			.hasNext(noticeSlice.hasNext())
+			.page(page)
+			.build();
 	}
 
 	/**
@@ -112,11 +113,11 @@ public class NoticeSearchService implements NoticeSearchUseCase {
 		// 정렬 방식 결정
 		Sort sortOrder = switch (sortType) {
 			case END ->
-					// 마감임박순: applyEnd 오름차순
-					Sort.by(Sort.Direction.ASC, "applyEnd");
+				// 마감임박순: applyEnd 오름차순
+				Sort.by(Sort.Direction.ASC, "applyEnd");
 			case LATEST ->
-					// 최신공고순: announceDate 내림차순
-					Sort.by(Sort.Direction.DESC, "announceDate");
+				// 최신공고순: announceDate 내림차순
+				Sort.by(Sort.Direction.DESC, "announceDate");
 		};
 
 		return PageRequest.of(validPage, validSize, sortOrder);

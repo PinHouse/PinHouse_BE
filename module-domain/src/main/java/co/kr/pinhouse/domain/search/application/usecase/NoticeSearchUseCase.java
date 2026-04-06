@@ -22,5 +22,6 @@ public interface NoticeSearchUseCase {
 	 * @param userId 사용자 ID (좋아요 정보 조회용, null 가능)
 	 * @return 검색 결과 (무한 스크롤 응답)
 	 */
-	SliceResponse<NoticeSearchResultResponse> searchNotices(String keyword, int page, int size, NoticeSearchSortType sortType, NoticeSearchFilterType status, UUID userId);
+	SliceResponse<NoticeSearchResultResponse> searchNotices(String keyword, int page, int size,
+		NoticeSearchSortType sortType, NoticeSearchFilterType status, UUID userId);
 }

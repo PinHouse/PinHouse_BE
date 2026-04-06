@@ -10,5 +10,4 @@ public interface LocationUtil {
 	/// 주소명을 넣으면 좌표로 변환
 	Location getLocation(String address);
 
-
 }

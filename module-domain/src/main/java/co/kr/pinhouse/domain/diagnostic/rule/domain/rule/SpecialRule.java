@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Order(10)
 @Component
 @RequiredArgsConstructor
-public class SpecialRule implements Rule{
+public class SpecialRule implements Rule {
 
 	/// 임대주택 로직
 	private final PolicyUseCase policyUseCase;
@@ -42,19 +42,19 @@ public class SpecialRule implements Rule{
 
 			/// 사용자가 가진 특수계층을 SupplyType으로 매핑
 			List<SupplyType> ownedTypes = specialCategory.stream()
-					.map(SpecialCategory::toSupplyType)
-					.toList();
+				.map(SpecialCategory::toSupplyType)
+				.toList();
 
 			/// 존재하는 계층은 냅두고, 없는 것은 삭제하기
 			candidates.removeIf(c ->
-					specialTypes.contains(c.supplyType())
-							&& !ownedTypes.contains(c.supplyType()));
+				specialTypes.contains(c.supplyType())
+					&& !ownedTypes.contains(c.supplyType()));
 
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.pass(code(),
-					"특수계층 공급 후보",
-					Map.of("candidate", candidates));
+				"특수계층 공급 후보",
+				Map.of("candidate", candidates));
 
 		}
 
@@ -64,14 +64,14 @@ public class SpecialRule implements Rule{
 			/// 모든 특별계층이 있는 것 삭제
 			specialTypes.forEach(supplyType -> {
 				candidates.removeIf(c ->
-						c.supplyType() == supplyType);
+					c.supplyType() == supplyType);
 
 			});
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),
-					"특수계층 공급 후보 없음",
-					Map.of("candidate", candidates));
+				"특수계층 공급 후보 없음",
+				Map.of("candidate", candidates));
 		}
 	}
 

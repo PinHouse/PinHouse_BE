@@ -33,10 +33,10 @@ public class ComplexFilterService {
 	 * 필터 조건에 따라 단지를 filtered와 nonFiltered로 분리
 	 */
 	public FilterResult filterComplexes(
-			List<ComplexDocument> complexes,
-			Map<String, NoticeFacilityListResponse> facilityMap,
-			NoticeDetailFilterRequest request,
-			Map<String, Integer> totalTimeMap
+		List<ComplexDocument> complexes,
+		Map<String, NoticeFacilityListResponse> facilityMap,
+		NoticeDetailFilterRequest request,
+		Map<String, Integer> totalTimeMap
 	) {
 		List<ComplexDocument> filteredComplexes = new ArrayList<>();
 		List<ComplexDocument> nonFilteredComplexes = new ArrayList<>();
@@ -71,17 +71,17 @@ public class ComplexFilterService {
 			// 필터를 통과한 UnitType이 있으면 filtered에, 아니면 nonFiltered에
 			if (!filteredUnits.isEmpty()) {
 				ComplexDocument filteredComplex = ComplexDocument.builder()
-						.src(complex)
-						.unitTypes(filteredUnits)
-						.build();
+					.src(complex)
+					.unitTypes(filteredUnits)
+					.build();
 				filteredComplexes.add(filteredComplex);
 			}
 
 			if (!nonFilteredUnits.isEmpty()) {
 				ComplexDocument nonFilteredComplex = ComplexDocument.builder()
-						.src(complex)
-						.unitTypes(nonFilteredUnits)
-						.build();
+					.src(complex)
+					.unitTypes(nonFilteredUnits)
+					.build();
 				nonFilteredComplexes.add(nonFilteredComplex);
 			}
 		}
@@ -94,9 +94,9 @@ public class ComplexFilterService {
 	 * totalTimeMap의 totalTime을 사용하여 transitTime 이내의 단지만 통과
 	 */
 	private boolean passesDistanceFilter(
-			ComplexDocument complex,
-			int transitTime,
-			Map<String, Integer> totalTimeMap
+		ComplexDocument complex,
+		int transitTime,
+		Map<String, Integer> totalTimeMap
 	) {
 		// transitTime이 0이면 필터링 안함
 		if (transitTime <= 0) {
@@ -125,9 +125,9 @@ public class ComplexFilterService {
 	 * Complex 레벨 필터 체크 (지역, 인프라)
 	 */
 	private boolean passesComplexLevelFilters(
-			ComplexDocument complex,
-			NoticeFacilityListResponse facilities,
-			NoticeDetailFilterRequest request
+		ComplexDocument complex,
+		NoticeFacilityListResponse facilities,
+		NoticeDetailFilterRequest request
 	) {
 		// 1. 지역 필터 (county 사용: "성남시 분당구" 형식)
 		if (request.region() != null && !request.region().isEmpty()) {
@@ -195,10 +195,10 @@ public class ComplexFilterService {
 		ComplexFilterResponse.AreaFilter areaFilter = calculateAreaFilter(complexes);
 
 		return ComplexFilterResponse.builder()
-				.districtFilter(districtFilter)
-				.costFilter(costFilter)
-				.areaFilter(areaFilter)
-				.build();
+			.districtFilter(districtFilter)
+			.costFilter(costFilter)
+			.areaFilter(areaFilter)
+			.build();
 	}
 
 	/**
@@ -207,41 +207,36 @@ public class ComplexFilterService {
 	public ComplexFilterResponse.DistrictFilter calculateDistrictFilter(List<ComplexDocument> complexes) {
 		// 1. 각 complex에서 city와 district 추출
 		List<TempDistrictInfo> tempDistricts = complexes.stream()
-				.map(this::parseAddress)
-				.filter(Objects::nonNull)
-				.toList();
+			.map(this::parseAddress)
+			.filter(Objects::nonNull)
+			.toList();
 
 		// 2. city별로 그룹화하여 district 목록 생성
 		Map<String, List<String>> cityToDistricts = tempDistricts.stream()
-				.collect(Collectors.groupingBy(
-						TempDistrictInfo::city,
-						Collectors.mapping(
-								TempDistrictInfo::district,
-								Collectors.collectingAndThen(
-										Collectors.toList(),
-										list -> list.stream().distinct().sorted().toList()
-								)
-						)
-				));
+			.collect(Collectors.groupingBy(
+				TempDistrictInfo::city,
+				Collectors.mapping(
+					TempDistrictInfo::district,
+					Collectors.collectingAndThen(
+						Collectors.toList(),
+						list -> list.stream().distinct().sorted().toList()
+					)
+				)
+			));
 
 		// 3. 최종 District 리스트 생성
 		List<ComplexFilterResponse.District> groupedDistricts = cityToDistricts.entrySet().stream()
-				.map(entry -> ComplexFilterResponse.District.builder()
-						.city(entry.getKey())
-						.districts(entry.getValue())
-						.build())
-				.sorted(Comparator.comparing(ComplexFilterResponse.District::city))
-				.toList();
+			.map(entry -> ComplexFilterResponse.District.builder()
+				.city(entry.getKey())
+				.districts(entry.getValue())
+				.build())
+			.sorted(Comparator.comparing(ComplexFilterResponse.District::city))
+			.toList();
 
 		return ComplexFilterResponse.DistrictFilter.builder()
-				.districts(groupedDistricts)
-				.build();
+			.districts(groupedDistricts)
+			.build();
 	}
-
-	/**
-	 * 임시 District 정보 (그룹화 전)
-	 */
-	private record TempDistrictInfo(String city, String district) {}
 
 	/**
 	 * ComplexDocument의 주소 정보를 파싱하여 TempDistrictInfo로 변환
@@ -261,7 +256,7 @@ public class ComplexFilterService {
 
 		// 광역시 및 특별시 목록
 		final Set<String> METRO_CITIES = Set.of(
-				"서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
+			"서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
 		);
 
 		// county를 공백으로 분리
@@ -387,32 +382,32 @@ public class ComplexFilterService {
 	public ComplexFilterResponse.CostFilter calculateCostFilter(List<ComplexDocument> complexes) {
 		// 모든 unitType의 보증금(deposit.total) 수집
 		List<Long> allPrices = complexes.stream()
-				.flatMap(complex -> complex.getUnitTypes().stream())
-				.map(UnitType::getDeposit)
-				.filter(Objects::nonNull)
-				.map(Deposit::getTotal)
-				.filter(price -> price > 0)
-				.toList();
+			.flatMap(complex -> complex.getUnitTypes().stream())
+			.map(UnitType::getDeposit)
+			.filter(Objects::nonNull)
+			.map(Deposit::getTotal)
+			.filter(price -> price > 0)
+			.toList();
 
 		if (allPrices.isEmpty()) {
 			return ComplexFilterResponse.CostFilter.builder()
-					.minPrice(0)
-					.maxPrice(0)
-					.avgPrice(0)
-					.build();
+				.minPrice(0)
+				.maxPrice(0)
+				.avgPrice(0)
+				.build();
 		}
 
 		// 통계 계산 (원 단위)
 		long minPrice = allPrices.stream().min(Long::compareTo).orElse(0L);
 		long maxPrice = allPrices.stream().max(Long::compareTo).orElse(0L);
-		long avgPrice = (long) allPrices.stream().mapToLong(Long::longValue).average().orElse(0.0);
+		long avgPrice = (long)allPrices.stream().mapToLong(Long::longValue).average().orElse(0.0);
 
 		// 만 단위로 변환하여 반환
 		return ComplexFilterResponse.CostFilter.builder()
-				.minPrice(minPrice / 10000)
-				.maxPrice(maxPrice / 10000)
-				.avgPrice(avgPrice / 10000)
-				.build();
+			.minPrice(minPrice / 10000)
+			.maxPrice(maxPrice / 10000)
+			.avgPrice(avgPrice / 10000)
+			.build();
 	}
 
 	/**
@@ -420,27 +415,27 @@ public class ComplexFilterService {
 	 */
 	public ComplexFilterResponse.AreaFilter calculateAreaFilter(List<ComplexDocument> complexes) {
 		List<String> uniqueTypeCodes = complexes.stream()
-				.flatMap(complex -> complex.getUnitTypes().stream())
-				.map(UnitType::getTypeCode)
-				.filter(Objects::nonNull)
-				.filter(code -> !code.isBlank())
-				.distinct()
-				.sorted()
-				.toList();
+			.flatMap(complex -> complex.getUnitTypes().stream())
+			.map(UnitType::getTypeCode)
+			.filter(Objects::nonNull)
+			.filter(code -> !code.isBlank())
+			.distinct()
+			.sorted()
+			.toList();
 
 		return ComplexFilterResponse.AreaFilter.builder()
-				.typeCodes(uniqueTypeCodes)
-				.build();
+			.typeCodes(uniqueTypeCodes)
+			.build();
 	}
 
 	/**
 	 * 필터 조건에 맞는 단지 개수를 반환
 	 */
 	public int countMatchingComplexes(
-			List<ComplexDocument> complexes,
-			Map<String, NoticeFacilityListResponse> facilityMap,
-			NoticeDetailFilterRequest request,
-			Map<String, Integer> totalTimeMap
+		List<ComplexDocument> complexes,
+		Map<String, NoticeFacilityListResponse> facilityMap,
+		NoticeDetailFilterRequest request,
+		Map<String, Integer> totalTimeMap
 	) {
 		int count = 0;
 
@@ -458,7 +453,7 @@ public class ComplexFilterService {
 
 			// 3. UnitType 레벨 필터 체크 - 하나라도 통과하면 카운트
 			boolean hasMatchingUnit = complex.getUnitTypes().stream()
-					.anyMatch(unit -> passesUnitTypeFilters(unit, request));
+				.anyMatch(unit -> passesUnitTypeFilters(unit, request));
 
 			if (hasMatchingUnit) {
 				count++;
@@ -469,10 +464,17 @@ public class ComplexFilterService {
 	}
 
 	/**
+	 * 임시 District 정보 (그룹화 전)
+	 */
+	private record TempDistrictInfo(String city, String district) {
+	}
+
+	/**
 	 * 필터링 결과를 담는 레코드
 	 */
 	public record FilterResult(
-			List<ComplexDocument> filtered,
-			List<ComplexDocument> nonFiltered
-	) {}
+		List<ComplexDocument> filtered,
+		List<ComplexDocument> nonFiltered
+	) {
+	}
 }

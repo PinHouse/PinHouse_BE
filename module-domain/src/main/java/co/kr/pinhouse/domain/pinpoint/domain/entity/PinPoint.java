@@ -51,15 +51,16 @@ public class PinPoint {
 	}
 
 	/// 생성자
-	public static PinPoint of (String userId, String address, String name, double latitude, double longitude, boolean isFirst) {
+	public static PinPoint of(String userId, String address, String name, double latitude, double longitude,
+		boolean isFirst) {
 		return PinPoint.builder()
-				.userId(userId)
-				.address(address)
-				.name(name)
-				.latitude(latitude)
-				.longitude(longitude)
-				.isFirst(isFirst)
-				.build();
+			.userId(userId)
+			.address(address)
+			.name(name)
+			.latitude(latitude)
+			.longitude(longitude)
+			.isFirst(isFirst)
+			.build();
 	}
 
 	/// 비즈니스 로직
@@ -68,7 +69,6 @@ public class PinPoint {
 		if (newName != null && !newName.isEmpty()) {
 			this.name = newName;
 		}
-
 
 	}
 

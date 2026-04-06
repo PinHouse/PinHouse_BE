@@ -14,11 +14,6 @@ public enum Provider {
 
 	private final String label;
 
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-
 	@JsonCreator
 	public static Provider fromLabel(String label) {
 		for (Provider provider : Provider.values()) {
@@ -27,6 +22,11 @@ public enum Provider {
 			}
 		}
 		throw new CustomException(SecurityErrorCode.BAD_REQUEST_OAUTH2);
+	}
+
+	@JsonValue
+	public String getLabel() {
+		return label;
 	}
 
 }

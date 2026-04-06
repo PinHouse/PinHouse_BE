@@ -9,14 +9,14 @@ import lombok.Builder;
 @Builder
 public record UnityTypeLikeResponse(
 
-		String id,              // 아이디
-		String complexId,       // 주택 아이디
-		String typeCode,        // 공급유형 (예: 26A)
-		Integer quota,          // 모집호수 정보
-		Double exclusiveAreaM2, // 전용면적
-		Long deposit,           // 임대보증금 (만원 단위)
-		Integer monthlyRent,    // 월임대료 (원)
-		boolean liked
+	String id,              // 아이디
+	String complexId,       // 주택 아이디
+	String typeCode,        // 공급유형 (예: 26A)
+	Integer quota,          // 모집호수 정보
+	Double exclusiveAreaM2, // 전용면적
+	Long deposit,           // 임대보증금 (만원 단위)
+	Integer monthlyRent,    // 월임대료 (원)
+	boolean liked
 ) {
 
 	/// 정적 팩토리 메서드
@@ -26,21 +26,21 @@ public record UnityTypeLikeResponse(
 		UnitType unitType = document.getUnitTypes().getFirst();
 
 		return UnityTypeLikeResponse.builder()
-				.id(unitType.getTypeId())
-				.complexId(document.getId())
-				.typeCode(unitType.getTypeCode())
-				.quota(unitType.getQuota().getTotal())
-				.exclusiveAreaM2(unitType.getExclusiveAreaM2())
-				.deposit(unitType.getDeposit().getTotal() / 10000)
-				.monthlyRent(unitType.getMonthlyRent())
-				.liked(true) // 여기는 나의 좋아요만 보는 곳이기 때문
-				.build();
+			.id(unitType.getTypeId())
+			.complexId(document.getId())
+			.typeCode(unitType.getTypeCode())
+			.quota(unitType.getQuota().getTotal())
+			.exclusiveAreaM2(unitType.getExclusiveAreaM2())
+			.deposit(unitType.getDeposit().getTotal() / 10000)
+			.monthlyRent(unitType.getMonthlyRent())
+			.liked(true) // 여기는 나의 좋아요만 보는 곳이기 때문
+			.build();
 	}
 
 	/// 정적 팩토리 메서드
 	public static List<UnityTypeLikeResponse> from(List<ComplexDocument> complexDocuments) {
 		return complexDocuments.stream()
-				.map(UnityTypeLikeResponse::from)
-				.toList();
+			.map(UnityTypeLikeResponse::from)
+			.toList();
 	}
 }

@@ -60,24 +60,23 @@ public class Sport implements Facility {
 	@Field("NATION_ALSFC_AT")
 	private String nationPublicFacilityAt;
 
-
 	/// toDomain
 	public Sport toDomain() {
 		return Sport.builder()
-				.id(id)
-				.name(name)
-				.industryName(industryName)
-				.facilityTypeName(facilityTypeName)
-				.facilityStateValue(facilityStateValue)
-				.address(address)
-				.location(Location.builder()
-						.type(location.getType())
-						.coordinates(location.getCoordinates())
-						.build())
-				.facilityOperStyleValue(facilityOperStyleValue)
-				.facilityCreationStandardDate(facilityCreationStandardDate)
-				.nationPublicFacilityAt(nationPublicFacilityAt)
-				.build();
+			.id(id)
+			.name(name)
+			.industryName(industryName)
+			.facilityTypeName(facilityTypeName)
+			.facilityStateValue(facilityStateValue)
+			.address(address)
+			.location(Location.builder()
+				.type(location.getType())
+				.coordinates(location.getCoordinates())
+				.build())
+			.facilityOperStyleValue(facilityOperStyleValue)
+			.facilityCreationStandardDate(facilityCreationStandardDate)
+			.nationPublicFacilityAt(nationPublicFacilityAt)
+			.build();
 
 	}
 }

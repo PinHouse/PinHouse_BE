@@ -11,23 +11,23 @@ import lombok.Builder;
 @Builder
 public record PinPointResponse(
 
-		@Schema(description = "아이디", example = "1")
-		String id,
+	@Schema(description = "아이디", example = "1")
+	String id,
 
-		@Schema(description = "저장한 이름", example = "회사 본사")
-		String name,
+	@Schema(description = "저장한 이름", example = "회사 본사")
+	String name,
 
-		@Schema(description = "주소명", example = "서울특별시 강남구 테헤란로 123")
-		String address,
+	@Schema(description = "주소명", example = "서울특별시 강남구 테헤란로 123")
+	String address,
 
-		@Schema(description = "경도", example = "127.027637")
-		double longitude,
+	@Schema(description = "경도", example = "127.027637")
+	double longitude,
 
-		@Schema(description = "위도", example = "37.497942")
-		double latitude,
+	@Schema(description = "위도", example = "37.497942")
+	double latitude,
 
-		@Schema(description = "우선순위 여부", example = "true")
-		boolean isFirst
+	@Schema(description = "우선순위 여부", example = "true")
+	boolean isFirst
 ) {
 
 	/// 정적 팩토리 메서드
@@ -37,20 +37,20 @@ public record PinPointResponse(
 		Location location = pinPoint.getLocation();
 
 		return PinPointResponse.builder()
-				.id(pinPoint.getId())
-				.name(pinPoint.getName())
-				.address(pinPoint.getAddress())
-				.longitude(location.getLongitude())
-				.latitude(location.getLatitude())
-				.isFirst(pinPoint.isFirst())
-				.build();
+			.id(pinPoint.getId())
+			.name(pinPoint.getName())
+			.address(pinPoint.getAddress())
+			.longitude(location.getLongitude())
+			.latitude(location.getLatitude())
+			.isFirst(pinPoint.isFirst())
+			.build();
 	}
 
 	/// 정적 팩토리 메서드 (List)
-	public static List<PinPointResponse> from(List<PinPoint> pinPoints){
+	public static List<PinPointResponse> from(List<PinPoint> pinPoints) {
 		return pinPoints.stream()
-				.map(PinPointResponse::from)
-				.toList();
+			.map(PinPointResponse::from)
+			.toList();
 	}
 
 }

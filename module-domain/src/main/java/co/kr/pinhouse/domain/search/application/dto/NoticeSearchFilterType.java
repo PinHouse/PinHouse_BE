@@ -15,11 +15,6 @@ public enum NoticeSearchFilterType {
 
 	private final String label;
 
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-
 	/**
 	 * String을 NoticeSearchFilterType으로 변환
 	 * Enum 이름 또는 한글 라벨 모두 지원
@@ -51,5 +46,10 @@ public enum NoticeSearchFilterType {
 
 	private static String normalize(String x) {
 		return x.trim().replaceAll("\\s+", "");
+	}
+
+	@JsonValue
+	public String getLabel() {
+		return label;
 	}
 }

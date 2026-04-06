@@ -16,11 +16,6 @@ public enum Gender {
 
 	private final String value;
 
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
-
 	/**
 	 * value로 값 얻기
 	 * @param value 밸류
@@ -35,5 +30,9 @@ public enum Gender {
 		return Gender.Other;
 	}
 
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
 }

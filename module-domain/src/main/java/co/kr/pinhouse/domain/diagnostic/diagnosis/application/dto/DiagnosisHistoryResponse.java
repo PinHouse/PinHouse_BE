@@ -15,26 +15,26 @@ import lombok.Builder;
 @Builder
 public record DiagnosisHistoryResponse(
 
-		@Schema(description = "진단 기록 ID", example = "101")
-		Long id,
+	@Schema(description = "진단 기록 ID", example = "101")
+	Long id,
 
-		@Schema(description = "진단 일시", example = "2025-12-01T10:30:00")
-		LocalDateTime createdAt,
+	@Schema(description = "진단 일시", example = "2025-12-01T10:30:00")
+	LocalDateTime createdAt,
 
-		@Schema(description = "나이", example = "38")
-		int age,
+	@Schema(description = "나이", example = "38")
+	int age,
 
-		@Schema(description = "결혼 여부", example = "true")
-		boolean maritalStatus,
+	@Schema(description = "결혼 여부", example = "true")
+	boolean maritalStatus,
 
-		@Schema(description = "세대주 여부", example = "true")
-		boolean isHouseholdHead,
+	@Schema(description = "세대주 여부", example = "true")
+	boolean isHouseholdHead,
 
-		@Schema(description = "가구 소득 수준", example = "4구간")
-		String incomeLevel,
+	@Schema(description = "가구 소득 수준", example = "4구간")
+	String incomeLevel,
 
-		@Schema(description = "주택 소유 상태", example = "우리집 가구원 모두 주택을 소유하고 있지 않아요")
-		String housingStatus
+	@Schema(description = "주택 소유 상태", example = "우리집 가구원 모두 주택을 소유하고 있지 않아요")
+	String housingStatus
 
 ) {
 
@@ -43,14 +43,14 @@ public record DiagnosisHistoryResponse(
 	 */
 	public static DiagnosisHistoryResponse from(Diagnosis diagnosis) {
 		return DiagnosisHistoryResponse.builder()
-				.id(diagnosis.getId())
-				.createdAt(diagnosis.getCreatedAt())
-				.age(diagnosis.getAge())
-				.maritalStatus(diagnosis.isMaritalStatus())
-				.isHouseholdHead(diagnosis.isHouseholdHead())
-				.incomeLevel(diagnosis.getIncomeLevel() != null ? diagnosis.getIncomeLevel().getValue() : "미입력")
-				.housingStatus(diagnosis.getHousingStatus() != null ? diagnosis.getHousingStatus().getDescription() : "미입력")
-				.build();
+			.id(diagnosis.getId())
+			.createdAt(diagnosis.getCreatedAt())
+			.age(diagnosis.getAge())
+			.maritalStatus(diagnosis.isMaritalStatus())
+			.isHouseholdHead(diagnosis.isHouseholdHead())
+			.incomeLevel(diagnosis.getIncomeLevel() != null ? diagnosis.getIncomeLevel().getValue() : "미입력")
+			.housingStatus(diagnosis.getHousingStatus() != null ? diagnosis.getHousingStatus().getDescription() : "미입력")
+			.build();
 	}
 
 	/**
@@ -58,7 +58,7 @@ public record DiagnosisHistoryResponse(
 	 */
 	public static List<DiagnosisHistoryResponse> fromList(List<Diagnosis> diagnoses) {
 		return diagnoses.stream()
-				.map(DiagnosisHistoryResponse::from)
-				.toList();
+			.map(DiagnosisHistoryResponse::from)
+			.toList();
 	}
 }

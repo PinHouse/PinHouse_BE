@@ -23,13 +23,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class KakaoApi implements LocationUtil {
 
+	private static final String KAKAO_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	@Value("${kakao.rest-api-key}")
 	private String kakaoRestApiKey;
-
-	private static final String KAKAO_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
 	/**
 	 * 좌표 변환 로직
@@ -47,7 +45,7 @@ public class KakaoApi implements LocationUtil {
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		ResponseEntity<String> response = restTemplate.exchange(
-				url, HttpMethod.GET, entity, String.class
+			url, HttpMethod.GET, entity, String.class
 		);
 
 		try {

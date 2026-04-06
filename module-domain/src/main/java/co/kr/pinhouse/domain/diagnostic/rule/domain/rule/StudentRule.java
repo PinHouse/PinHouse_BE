@@ -50,17 +50,17 @@ public class StudentRule implements Rule {
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),
-					"대학생 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReasons
-					));
+				"대학생 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReasons
+				));
 		}
 
 		// 모든 조건 만족
 		return RuleResult.pass(code(),
-				"대학생 특별공급 후보",
-				Map.of("candidate", candidates));
+			"대학생 특별공급 후보",
+			Map.of("candidate", candidates));
 	}
 
 	@Override

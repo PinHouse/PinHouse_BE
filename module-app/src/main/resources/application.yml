@@ -28,10 +28,10 @@ spring:
     defer-datasource-initialization: true
     open-in-view: false
 
-#  sql:
-#    init:
-#      mode: always
-#      platform: mysql
+  #  sql:
+  #    init:
+  #      mode: always
+  #      platform: mysql
 
   data:
     # REDIS

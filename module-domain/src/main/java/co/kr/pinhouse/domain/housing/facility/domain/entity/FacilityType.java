@@ -34,13 +34,9 @@ public enum FacilityType {
 
 	CULTURE_CENTER("문화센터", Set.of("문화센터"));
 
+	private static final Set<FacilityType> CULTURE_TYPES = EnumSet.of(LIBRARY, PARK, ANIMAL, EXHIBITION);
 	private final String value;
 	private final Set<String> aliases;
-
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
 
 	@JsonCreator
 	public static FacilityType fromValue(String value) {
@@ -51,12 +47,13 @@ public enum FacilityType {
 		String normalized = normalize(value);
 
 		if (CULTURE_CENTER.matches(normalized) ||
-				FacilityType.cultureCenterMembers().stream().anyMatch(t -> t.matches(normalized))) {
+			FacilityType.cultureCenterMembers().stream().anyMatch(t -> t.matches(normalized))) {
 			return CULTURE_CENTER;
 		}
 
 		for (FacilityType facilityType : FacilityType.values()) {
-			if (facilityType == CULTURE_CENTER) continue;
+			if (facilityType == CULTURE_CENTER)
+				continue;
 			if (facilityType.matches(normalized)) {
 				return facilityType;
 			}
@@ -64,19 +61,10 @@ public enum FacilityType {
 
 		try {
 			return FacilityType.valueOf(normalized.toUpperCase(Locale.ROOT));
-		} catch (IllegalArgumentException ignore) { }
+		} catch (IllegalArgumentException ignore) {
+		}
 
 		throw new CustomException(FacilityErrorCode.BAD_REQUEST_INPUT_FACILITY);
-	}
-
-	public FacilityType displayType() {
-		return isCultureCenterMember(this) ? CULTURE_CENTER : this;
-	}
-
-	private boolean matches(String source) {
-		String normalized = normalize(source);
-		return aliases.stream().anyMatch(alias -> normalize(alias).equals(normalized))
-				|| normalize(getValue()).equals(normalized);
 	}
 
 	private static String normalize(String input) {
@@ -91,6 +79,19 @@ public enum FacilityType {
 		return CULTURE_TYPES;
 	}
 
-	private static final Set<FacilityType> CULTURE_TYPES = EnumSet.of(LIBRARY, PARK, ANIMAL, EXHIBITION);
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
+
+	public FacilityType displayType() {
+		return isCultureCenterMember(this) ? CULTURE_CENTER : this;
+	}
+
+	private boolean matches(String source) {
+		String normalized = normalize(source);
+		return aliases.stream().anyMatch(alias -> normalize(alias).equals(normalized))
+			|| normalize(getValue()).equals(normalized);
+	}
 
 }

@@ -18,11 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DistanceCacheService {
 
-	private final RedisTemplate<String, Object> redisTemplate;
-
 	private static final String CACHE_PREFIX = "distance:";
 	private static final String ROOT_RESULT_PREFIX = "rootresult:";
 	private static final long CACHE_TTL_HOURS = 24;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	/**
 	 * 캐시 키 생성
@@ -63,7 +62,7 @@ public class DistanceCacheService {
 
 			if (cached instanceof DistanceResponse) {
 				log.debug("Cache hit for complexId={}, pinPointId={}", complexId, pinPointId);
-				return (DistanceResponse) cached;
+				return (DistanceResponse)cached;
 			}
 
 			log.debug("Cache miss for complexId={}, pinPointId={}", complexId, pinPointId);
@@ -132,7 +131,7 @@ public class DistanceCacheService {
 
 			if (cached instanceof RootResult) {
 				log.debug("RootResult cache hit for complexId={}, pinPointId={}", complexId, pinPointId);
-				return (RootResult) cached;
+				return (RootResult)cached;
 			}
 
 			log.debug("RootResult cache miss for complexId={}, pinPointId={}", complexId, pinPointId);

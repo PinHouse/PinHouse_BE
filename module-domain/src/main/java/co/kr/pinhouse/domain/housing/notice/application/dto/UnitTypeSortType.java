@@ -16,16 +16,12 @@ public enum UnitTypeSortType {
 
 	private final String label;
 
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-
 	/**
 	 * 문자열로부터 UnitTypeSortType 생성
 	 */
 	public static UnitTypeSortType from(String source) {
-		if (source == null) return DEPOSIT_ASC; // 기본값
+		if (source == null)
+			return DEPOSIT_ASC; // 기본값
 
 		String normalized = normalize(source);
 
@@ -48,5 +44,10 @@ public enum UnitTypeSortType {
 
 	private static String normalize(String x) {
 		return x.trim().replaceAll("\\s+", "");
+	}
+
+	@JsonValue
+	public String getLabel() {
+		return label;
 	}
 }

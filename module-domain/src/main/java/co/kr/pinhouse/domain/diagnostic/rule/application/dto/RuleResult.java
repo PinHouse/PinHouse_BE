@@ -13,10 +13,10 @@ import lombok.Builder;
  */
 @Builder
 public record RuleResult(
-		boolean pass,
-		String code,
-		String message,
-		Map<String, Object> details
+	boolean pass,
+	String code,
+	String message,
+	Map<String, Object> details
 ) {
 
 	/// 정적 팩토리 메서드

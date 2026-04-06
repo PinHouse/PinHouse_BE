@@ -50,9 +50,9 @@ public class UserApi implements UserApiSpec {
 
 	/// 회원가입 (JWT 토큰 발급은 security 모듈/app 모듈에서 처리 필요)
 	@PostMapping()
-	public ApiResponse<Void> signUp(HttpServletResponse httpServletResponse ,
-									@RequestParam String tempKey,
-									@RequestBody @Valid UserRequest request) {
+	public ApiResponse<Void> signUp(HttpServletResponse httpServletResponse,
+		@RequestParam String tempKey,
+		@RequestBody @Valid UserRequest request) {
 
 		/// 서비스 - User 엔티티 반환
 		var user = service.saveUser(tempKey, request);
@@ -70,7 +70,7 @@ public class UserApi implements UserApiSpec {
 	@GetMapping("/mypage")
 	@CheckLogin
 	public ApiResponse<MyPageResponse> getMyPage(
-			@CurrentUserId(required = true) UUID userId) {
+		@CurrentUserId(required = true) UUID userId) {
 
 		/// 서비스
 		var response = service.getMyPage(userId);
@@ -82,7 +82,7 @@ public class UserApi implements UserApiSpec {
 	/// 다른 유저 정보 조회하기
 	@GetMapping("/{userId}")
 	public ApiResponse<UserResponse> getOthetUser(
-			@PathVariable UUID userId) {
+		@PathVariable UUID userId) {
 
 		/// 서비스
 		var response = service.getOtherUser(userId);
@@ -95,8 +95,8 @@ public class UserApi implements UserApiSpec {
 	@PatchMapping("/mypage")
 	@CheckLogin
 	public ApiResponse<Void> updateUser(
-			@RequestBody @Valid UpdateUserRequest request,
-			@CurrentUserId(required = true) UUID userId) {
+		@RequestBody @Valid UpdateUserRequest request,
+		@CurrentUserId(required = true) UUID userId) {
 
 		/// 서비스
 		service.updateUser(request, userId);
@@ -109,8 +109,8 @@ public class UserApi implements UserApiSpec {
 	@PatchMapping("/facility")
 	@CheckLogin
 	public ApiResponse<Void> updateFacilityTypes(
-			@RequestBody @Valid UpdateFacilityTypesRequest request,
-			@CurrentUserId(required = true) UUID userId) {
+		@RequestBody @Valid UpdateFacilityTypesRequest request,
+		@CurrentUserId(required = true) UUID userId) {
 
 		/// 서비스
 		service.updateFacilityTypes(request, userId);
@@ -123,9 +123,9 @@ public class UserApi implements UserApiSpec {
 	@DeleteMapping()
 	@CheckLogin
 	public ApiResponse<Void> delete(
-			@RequestBody WithdrawRequest request,
-			HttpServletResponse httpServletResponse,
-			@CurrentUserId(required = true) UUID userId
+		@RequestBody WithdrawRequest request,
+		HttpServletResponse httpServletResponse,
+		@CurrentUserId(required = true) UUID userId
 	) {
 
 		/// 서비스

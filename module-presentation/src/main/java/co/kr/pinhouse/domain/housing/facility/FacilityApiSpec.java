@@ -18,21 +18,19 @@ public interface FacilityApiSpec {
 
 	/// 공고 주변 인프라 조회
 	@Operation(
-			summary = "공고 주변 인프라 조회 API",
-			description = "공고 주변 3KM내 존재하는 인프라를 확인하는 API입니다."
+		summary = "공고 주변 인프라 조회 API",
+		description = "공고 주변 3KM내 존재하는 인프라를 확인하는 API입니다."
 	)
 	ApiResponse<NoticeFacilityListResponse> showNotice(
-			@Parameter(example = "19413#1")
-			@PathVariable String complexId);
-
-
+		@Parameter(example = "19413#1")
+		@PathVariable String complexId);
 
 	/// 인프라 많은 공고 조회
 	@Operation(
-			summary = "인프라에 따른 공고 조회 API",
-			description = "해당 인프라가 2개 이상 존재하는 공고를 조회하는 API입니다."
+		summary = "인프라에 따른 공고 조회 API",
+		description = "해당 인프라가 2개 이상 존재하는 공고를 조회하는 API입니다."
 	)
 	ApiResponse<List<ComplexDocument>> showNoticeList(
-			@RequestParam List<FacilityType> facilityTypes
+		@RequestParam List<FacilityType> facilityTypes
 	);
 }

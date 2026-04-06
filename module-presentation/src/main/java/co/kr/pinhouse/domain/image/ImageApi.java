@@ -33,8 +33,8 @@ public class ImageApi implements ImageApiSpec {
 	@CheckLogin
 	@Override
 	public ApiResponse<PresignedUrlResponse> generatePresignedUrl(
-			@RequestBody @Valid PresignedUrlRequest request,
-			@CurrentUserId(required = true) UUID userId) {
+		@RequestBody @Valid PresignedUrlRequest request,
+		@CurrentUserId(required = true) UUID userId) {
 
 		var response = imageUseCase.generatePresignedUrl(request, userId);
 		return ApiResponse.ok(response);

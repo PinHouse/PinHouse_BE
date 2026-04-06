@@ -23,20 +23,20 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.hasParameterAnnotation(CurrentUserId.class)
-				&& UUID.class.equals(parameter.getParameterType());
+			&& UUID.class.equals(parameter.getParameterType());
 	}
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter,
-								ModelAndViewContainer mavContainer,
-								NativeWebRequest webRequest,
-								WebDataBinderFactory binderFactory) {
+		ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest,
+		WebDataBinderFactory binderFactory) {
 		CurrentUserId annotation = parameter.getParameterAnnotation(CurrentUserId.class);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if (authentication == null ||
-				!authentication.isAuthenticated() ||
-				authentication instanceof AnonymousAuthenticationToken) {
+			!authentication.isAuthenticated() ||
+			authentication instanceof AnonymousAuthenticationToken) {
 			return handleMissingPrincipal(annotation);
 		}
 

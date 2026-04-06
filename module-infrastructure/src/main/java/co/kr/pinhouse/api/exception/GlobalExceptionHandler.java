@@ -45,8 +45,8 @@ public class GlobalExceptionHandler {
 
 		/// 응답
 		return ResponseEntity
-				.status(errorCode.getHttpStatus())
-				.body(ApiResponse.fail(e));
+			.status(errorCode.getHttpStatus())
+			.body(ApiResponse.fail(e));
 	}
 
 	// JWT 관련 에러 처리는 security 모듈로 이동됨
@@ -65,9 +65,9 @@ public class GlobalExceptionHandler {
 
 		/// 기본 에러 코드로 응답 생성 및 파라미터 담기
 		List<FieldErrorResponse> errors = e.getBindingResult().getFieldErrors()
-				.stream()
-				.map(error -> FieldErrorResponse.of(error.getField(), error.getDefaultMessage()))
-				.toList();
+			.stream()
+			.map(error -> FieldErrorResponse.of(error.getField(), error.getDefaultMessage()))
+			.toList();
 
 		CustomException exception = new CustomException(errorCode, errors);
 
@@ -90,7 +90,6 @@ public class GlobalExceptionHandler {
 		/// 응답
 		return ApiResponse.fail(exception);
 	}
-
 
 	/// 몽고디비 에러 처리 핸들러
 	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
@@ -188,7 +187,6 @@ public class GlobalExceptionHandler {
 		return ApiResponse.fail(exception);
 	}
 
-
 	/// DB 문법 등 관련 문제 발생
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(InvalidDataAccessResourceUsageException.class)
@@ -252,7 +250,5 @@ public class GlobalExceptionHandler {
 		/// 응답
 		return ApiResponse.fail(exception);
 	}
-
-
 
 }

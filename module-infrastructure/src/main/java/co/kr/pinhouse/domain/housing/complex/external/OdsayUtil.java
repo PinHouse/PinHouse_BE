@@ -22,11 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OdsayUtil implements DistanceUtil {
 
+	private static final ObjectMapper OM = new ObjectMapper();
+	private final WebClient webClient;
 	@Value("${odsay.apiKey}")
 	private String apiKey;
-
-	private final WebClient webClient;
-	private static final ObjectMapper OM = new ObjectMapper();
 
 	// =================
 	//  퍼블릭 로직
@@ -36,22 +35,22 @@ public class OdsayUtil implements DistanceUtil {
 	public PathResult findPathResult(double startY, double startX, double endY, double endX) {
 
 		String uri = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
-				.queryParam("SX", startX)
-				.queryParam("SY", startY)
-				.queryParam("EX", endX)
-				.queryParam("EY", endY)
-				.queryParam("apiKey", apiKey)
-				.build()
-				.toUriString();
+			.queryParam("SX", startX)
+			.queryParam("SY", startY)
+			.queryParam("EX", endX)
+			.queryParam("EY", endY)
+			.queryParam("apiKey", apiKey)
+			.build()
+			.toUriString();
 
 		/// 값 호출
 		try {
 			String response = webClient.get()
-					.uri(uri)
-					.retrieve()
-					.bodyToMono(String.class)
-					.onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
-					.block(); // 동기
+				.uri(uri)
+				.retrieve()
+				.bodyToMono(String.class)
+				.onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
+				.block(); // 동기
 
 			/// 자동 판별
 			JsonNode root = OM.readTree(response);
@@ -88,7 +87,7 @@ public class OdsayUtil implements DistanceUtil {
 
 		/// searchType 없을때, trainCount/airCount/mixedCount 있으면 도시간
 		boolean hasIntercityHints =
-				result.has("trainCount") || result.has("airCount") || result.has("mixedCount");
+			result.has("trainCount") || result.has("airCount") || result.has("mixedCount");
 		return hasIntercityHints ? 1 : 0;
 	}
 

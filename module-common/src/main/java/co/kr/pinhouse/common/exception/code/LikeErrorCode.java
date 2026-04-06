@@ -28,7 +28,6 @@ public enum LikeErrorCode implements ErrorCode {
 	// ========================
 	NOT_FOUND_LIKE(404_000, HttpStatus.NOT_FOUND, "취소할 좋아요가 없습니다."),
 
-
 	// ========================
 	// 409 Conflict
 	// ========================

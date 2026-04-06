@@ -61,7 +61,6 @@ public class ComplexDocument {
 	@Field("unitTypes")
 	private List<UnitType> unitTypes;
 
-
 	/// 빌더 생성자
 	@Builder
 	public ComplexDocument(ComplexDocument src, List<UnitType> unitTypes) {
@@ -83,6 +82,5 @@ public class ComplexDocument {
 		// 필터링된 리스트만 교체
 		this.unitTypes = unitTypes;
 	}
-
 
 }

@@ -47,11 +47,11 @@ public interface NoticeUseCase {
 
 	/// 유닛타입(방) 비교
 	UnitTypeCompareResponse compareUnitTypes(
-			String noticeId,
-			String pinPointId,
-			UnitTypeSortType sortType,
-			java.util.List<co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
-			UUID userId
+		String noticeId,
+		String pinPointId,
+		UnitTypeSortType sortType,
+		java.util.List<co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
+		UUID userId
 	);
 
 	/// 나의 좋아요 공고 목록 조회

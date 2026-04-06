@@ -27,10 +27,10 @@ public class IntraCityResultParser {
 		JsonNode result = root.path("result");
 
 		/// 기본 값 추출
-		int searchType       = result.path("searchType").asInt(0); // 0-도시내
-		int busCount         = result.path("busCount").asInt(0);
-		int subwayCount      = result.path("subwayCount").asInt(0);
-		int subwayBusCount   = result.path("subwayBusCount").asInt(0);
+		int searchType = result.path("searchType").asInt(0); // 0-도시내
+		int busCount = result.path("busCount").asInt(0);
+		int subwayCount = result.path("subwayCount").asInt(0);
+		int subwayBusCount = result.path("subwayBusCount").asInt(0);
 		double pointDistance = result.path("pointDistance").asDouble(0d);
 
 		/// 루트 생성
@@ -43,12 +43,12 @@ public class IntraCityResultParser {
 				JsonNode info = pathNode.path("info");
 
 				/// 기본 값 추출
-				int totalTime          = info.path("totalTime").asInt(0);
-				int totalPayment       = info.path("payment").asInt(0);
+				int totalTime = info.path("totalTime").asInt(0);
+				int totalPayment = info.path("payment").asInt(0);
 
 				/// 거리
 				double totalDistance = info.path("totalDistance")
-						.asDouble(info.path("trafficDistance").asDouble(0d));
+					.asDouble(info.path("trafficDistance").asDouble(0d));
 
 				List<RootResult.DistanceStep> steps = new ArrayList<>();
 				JsonNode subPaths = pathNode.path("subPath");
@@ -72,8 +72,9 @@ public class IntraCityResultParser {
 							if (type == RootResult.TransportType.SUBWAY) {
 								lineInfo = joinField(lane, "name");
 								if (lineInfo != null
-										&& !lineInfo.endsWith("호선")
-										&& lineInfo.chars().allMatch(ch -> Character.isDigit(ch) || ch == ',' || ch == ' ')) {
+									&& !lineInfo.endsWith("호선")
+									&& lineInfo.chars()
+									.allMatch(ch -> Character.isDigit(ch) || ch == ',' || ch == ' ')) {
 									lineInfo = addSuffixForEachNumber(lineInfo, "호선");
 								}
 
@@ -99,37 +100,37 @@ public class IntraCityResultParser {
 						}
 
 						steps.add(RootResult.DistanceStep.builder()
-								.type(type)
-								.time(sub.path("sectionTime").asInt(0))
-								.startName(safeText(sub, "startName"))
-								.endName(safeText(sub, "endName"))
-								.lineInfo(lineInfo)
-								.line(line)
-								.subwayLine(subwayLine)
-								.busRouteType(busRouteType)
-								.trainType(null)
-								.expressBusType(null)
-								.build());
+							.type(type)
+							.time(sub.path("sectionTime").asInt(0))
+							.startName(safeText(sub, "startName"))
+							.endName(safeText(sub, "endName"))
+							.lineInfo(lineInfo)
+							.line(line)
+							.subwayLine(subwayLine)
+							.busRouteType(busRouteType)
+							.trainType(null)
+							.expressBusType(null)
+							.build());
 					}
 				}
 
 				routes.add(RootResult.builder()
-						.totalTime(totalTime)
-						.totalPayment(totalPayment)
-						.totalDistance(totalDistance)
-						.steps(List.copyOf(steps))
-						.build());
+					.totalTime(totalTime)
+					.totalPayment(totalPayment)
+					.totalDistance(totalDistance)
+					.steps(List.copyOf(steps))
+					.build());
 			}
 		}
 
 		return IntraCityResult.builder()
-				.searchType(searchType)
-				.busCount(busCount)
-				.subwayCount(subwayCount)
-				.subwayBusCount(subwayBusCount)
-				.distance(pointDistance)
-				.routes(List.copyOf(routes))
-				.build();
+			.searchType(searchType)
+			.busCount(busCount)
+			.subwayCount(subwayCount)
+			.subwayBusCount(subwayBusCount)
+			.distance(pointDistance)
+			.routes(List.copyOf(routes))
+			.build();
 	}
 
 	// =================
@@ -140,9 +141,11 @@ public class IntraCityResultParser {
 		var list = new ArrayList<String>();
 		arrayNode.forEach(n -> {
 			String v = n.path(field).asText(null);
-			if (v != null && !v.isBlank()) list.add(v);
+			if (v != null && !v.isBlank())
+				list.add(v);
 		});
-		if (list.isEmpty()) return null;
+		if (list.isEmpty())
+			return null;
 		return list.stream().filter(Objects::nonNull).distinct().collect(Collectors.joining(", "));
 	}
 
@@ -150,14 +153,17 @@ public class IntraCityResultParser {
 		var parts = text.split(",");
 		for (int i = 0; i < parts.length; i++) {
 			String p = parts[i].trim();
-			if (p.chars().allMatch(Character::isDigit)) parts[i] = p + suffix;
-			else parts[i] = p;
+			if (p.chars().allMatch(Character::isDigit))
+				parts[i] = p + suffix;
+			else
+				parts[i] = p;
 		}
 		return String.join(", ", parts);
 	}
 
 	private static String safeText(JsonNode node, String field) {
-		if (node == null || !node.has(field)) return null;
+		if (node == null || !node.has(field))
+			return null;
 		String v = node.path(field).asText(null);
 		return (v == null || v.isBlank()) ? null : v;
 	}

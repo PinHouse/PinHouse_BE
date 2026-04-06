@@ -13,25 +13,32 @@ import lombok.RequiredArgsConstructor;
 @Schema(name = "[요청][공고] 공고 목록 조회 Request", description = "공고 목록 조회를 위한 요청 DTO입니다.")
 public record NoticeListRequest(
 
-		@Schema(description = "지역 유형 목록", example = "[\"서울특별시\", \"경기도\"]")
-		List<Region> regionType,
+	@Schema(description = "지역 유형 목록", example = "[\"서울특별시\", \"경기도\"]")
+	List<Region> regionType,
 
-		@Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
-		List<TargetType> rentalTypes,
+	@Schema(description = "대상 유형 목록", example = "[\"청년\", \"신혼부부\"]")
+	List<TargetType> rentalTypes,
 
-		@Schema(description = "임대 유형 목록", example = "[\"국민임대\", \"행복주택\"]")
-		List<LeaseType> supplyTypes,
+	@Schema(description = "임대 유형 목록", example = "[\"국민임대\", \"행복주택\"]")
+	List<LeaseType> supplyTypes,
 
-		@Schema(description = "주택 유형 목록", example = "[\"아파트\", \"오피스텔\"]")
-		List<HouseType> houseTypes,
+	@Schema(description = "주택 유형 목록", example = "[\"아파트\", \"오피스텔\"]")
+	List<HouseType> houseTypes,
 
-		@Schema(description = "공고 마감 여부", example = "모집중")
-		NoticeStatus status,
+	@Schema(description = "공고 마감 여부", example = "모집중")
+	NoticeStatus status,
 
-		@Schema(description = "정렬 유형", example = "최신공고순")
-		ListSortType sortType
+	@Schema(description = "정렬 유형", example = "최신공고순")
+	ListSortType sortType
 
 ) {
+
+	// =================
+	//  내부 로직
+	// =================
+	private static String normalize(String x) {
+		return x.trim().replaceAll("\\s+", "");
+	}
 
 	@Getter
 	@RequiredArgsConstructor
@@ -65,11 +72,6 @@ public record NoticeListRequest(
 
 		private final String fullName;
 
-		@JsonValue
-		public String getFullName() {
-			return fullName;
-		}
-
 		@JsonCreator
 		public static Region fromFullName(String fullName) {
 			for (Region region : values()) {
@@ -78,6 +80,11 @@ public record NoticeListRequest(
 				}
 			}
 			throw new IllegalArgumentException("Unknown region name: " + fullName);
+		}
+
+		@JsonValue
+		public String getFullName() {
+			return fullName;
 		}
 	}
 
@@ -104,11 +111,6 @@ public record NoticeListRequest(
 
 		private final String displayName;
 
-		@JsonValue
-		public String getDisplayName() {
-			return displayName;
-		}
-
 		@JsonCreator
 		public static LeaseType fromDisplayName(String name) {
 			for (LeaseType type : values()) {
@@ -117,6 +119,11 @@ public record NoticeListRequest(
 				}
 			}
 			throw new IllegalArgumentException("Unknown lease type: " + name);
+		}
+
+		@JsonValue
+		public String getDisplayName() {
+			return displayName;
 		}
 	}
 
@@ -133,11 +140,6 @@ public record NoticeListRequest(
 
 		private final String displayName;
 
-		@JsonValue
-		public String getDisplayName() {
-			return displayName;
-		}
-
 		@JsonCreator
 		public static HouseType fromDisplayName(String name) {
 			for (HouseType type : values()) {
@@ -147,7 +149,16 @@ public record NoticeListRequest(
 			}
 			throw new IllegalArgumentException("Unknown house type: " + name);
 		}
+
+		@JsonValue
+		public String getDisplayName() {
+			return displayName;
+		}
 	}
+
+	// =================
+	//  ListSortType 퍼블릭 로직
+	// =================
 
 	@Getter
 	@RequiredArgsConstructor
@@ -190,11 +201,6 @@ public record NoticeListRequest(
 
 		private final String displayName;
 
-		@JsonValue
-		public String getDisplayName() {
-			return displayName;
-		}
-
 		@JsonCreator
 		public static TargetType fromDisplayName(String name) {
 			for (TargetType type : values()) {
@@ -204,10 +210,15 @@ public record NoticeListRequest(
 			}
 			throw new IllegalArgumentException("Unknown target type: " + name);
 		}
+
+		@JsonValue
+		public String getDisplayName() {
+			return displayName;
+		}
 	}
 
 	// =================
-	//  ListSortType 퍼블릭 로직
+	//  모집대상 로직
 	// =================
 
 	/// 목록 조회를 위한 정렬 파라미터
@@ -219,31 +230,29 @@ public record NoticeListRequest(
 
 		private final String label;
 
-		@JsonValue
-		public String getLabel() {
-			return label;
-		}
-
 		public static ListSortType from(String source) {
-			if (source == null) return null;
+			if (source == null)
+				return null;
 			String s = normalize(source);
 
 			/// Enum.name() 매칭 허용 (LATEST, DEADLINE_ASC ...)
 			for (ListSortType t : values()) {
-				if (t.name().equalsIgnoreCase(s)) return t;
+				if (t.name().equalsIgnoreCase(s))
+					return t;
 			}
 			/// 한글 라벨 매칭 허용
 			for (ListSortType t : values()) {
-				if (normalize(t.label).equalsIgnoreCase(s)) return t;
+				if (normalize(t.label).equalsIgnoreCase(s))
+					return t;
 			}
 			throw new IllegalArgumentException("Invalid ListSortType: " + source);
 		}
+
+		@JsonValue
+		public String getLabel() {
+			return label;
+		}
 	}
-
-
-	// =================
-	//  모집대상 로직
-	// =================
 
 	/// 상세 조회를 위한 정렬 파라미터
 	@RequiredArgsConstructor
@@ -253,11 +262,6 @@ public record NoticeListRequest(
 		RECRUITING("모집중");
 
 		private final String label;
-
-		@JsonValue
-		public String getLabel() {
-			return label;
-		}
 
 		@JsonCreator
 		public static NoticeStatus fromLabel(String label) {
@@ -271,17 +275,11 @@ public record NoticeListRequest(
 			}
 			throw new IllegalArgumentException("Unknown NoticeStatus label: " + label);
 		}
+
+		@JsonValue
+		public String getLabel() {
+			return label;
+		}
 	}
-
-	// =================
-	//  내부 로직
-	// =================
-	private static String normalize(String x) {
-		return x.trim().replaceAll("\\s+", "");
-	}
-
-
-
-
 
 }

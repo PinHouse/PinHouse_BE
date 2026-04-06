@@ -50,7 +50,7 @@ public final class DistanceCalculator {
 		double radLat2 = Math.toRadians(lat2);
 
 		double h = Math.pow(Math.sin(dLat / 2), 2)
-				+ Math.pow(Math.sin(dLon / 2), 2) * Math.cos(radLat1) * Math.cos(radLat2);
+			+ Math.pow(Math.sin(dLon / 2), 2) * Math.cos(radLat1) * Math.cos(radLat2);
 
 		return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
 	}

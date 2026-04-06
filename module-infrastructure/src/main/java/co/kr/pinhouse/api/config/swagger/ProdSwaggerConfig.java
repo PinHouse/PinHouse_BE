@@ -28,15 +28,14 @@ public class ProdSwaggerConfig {
 	@Bean
 	public OpenAPI openAPI() {
 		return new OpenAPI()
-				.info(apiInfo());
+			.info(apiInfo());
 	}
-
 
 	private Info apiInfo() {
 		return new Info()
-				.title("PinHouse Swagger")
-				.description("핀하우스 스웨거입니다.")
-				.version("1.0.0");
+			.title("PinHouse Swagger")
+			.description("핀하우스 스웨거입니다.")
+			.version("1.0.0");
 	}
 
 	/// 스키마 이름 기준 오름차순

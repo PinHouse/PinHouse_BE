@@ -35,5 +35,4 @@ public interface PinPointUseCase {
 	/// 상세 조회
 	PinPoint loadPinPoint(String pinPointId);
 
-
 }

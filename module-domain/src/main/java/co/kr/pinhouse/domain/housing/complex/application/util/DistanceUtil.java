@@ -11,6 +11,6 @@ public interface DistanceUtil {
 
 	/// 응답
 	PathResult findPathResult(double startY, double startX, double endY, double endX)
-			throws UnsupportedEncodingException;
+		throws UnsupportedEncodingException;
 
 }

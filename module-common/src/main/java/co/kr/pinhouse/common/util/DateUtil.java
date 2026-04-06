@@ -7,7 +7,7 @@ import java.util.Locale;
 public class DateUtil {
 
 	private static final DateTimeFormatter FORMATTER =
-			DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN);
+		DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN);
 
 	/**
 	 * 시작일과 종료일을 yyyy년 MM월 dd일 포맷으로 반환합니다.

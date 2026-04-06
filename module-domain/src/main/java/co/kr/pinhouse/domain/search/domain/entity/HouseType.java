@@ -21,11 +21,6 @@ public enum HouseType {
 
 	private final String value;
 
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
-
 	@JsonCreator
 	public static HouseType fromValue(String value) {
 		for (HouseType type : values()) {
@@ -34,5 +29,10 @@ public enum HouseType {
 			}
 		}
 		throw new CustomException(CommonErrorCode.BAD_PARAMETER);
+	}
+
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }

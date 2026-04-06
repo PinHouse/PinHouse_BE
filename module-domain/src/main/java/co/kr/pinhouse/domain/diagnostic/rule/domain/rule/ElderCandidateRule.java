@@ -35,25 +35,26 @@ public class ElderCandidateRule implements Rule {
 
 			/// 고령자 관련 특별공급 모두 제거
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.ELDER_SPECIAL ||
+				c.supplyType() == SupplyType.ELDER_SPECIAL ||
 					c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),
-					"고령자 해당 없음 (만 65세 미만)",
-					Map.of("candidate", candidates, "age", diagnosis.getAge()));
+				"고령자 해당 없음 (만 65세 미만)",
+				Map.of("candidate", candidates, "age", diagnosis.getAge()));
 		}
 
 		/// 나이가 고령자이기에 그대로 후보로 지정
 		return RuleResult.pass(code(),
-				"고령자 특별공급 후보 (만 65세 이상)",
-				Map.of("candidate", candidates, "age", diagnosis.getAge()));
+			"고령자 특별공급 후보 (만 65세 이상)",
+			Map.of("candidate", candidates, "age", diagnosis.getAge()));
 
 	}
 
-	@Override public String code() {
+	@Override
+	public String code() {
 		return "CANDIDATE_ELDER_SPECIAL";
 	}
 

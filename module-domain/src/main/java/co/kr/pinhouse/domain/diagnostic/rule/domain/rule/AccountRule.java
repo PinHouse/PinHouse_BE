@@ -30,56 +30,18 @@ public class AccountRule implements Rule {
 
 	/// 청약통장이 없으면 불가능한 목록들
 	private static final List<NoticeType> NO_ACCOUNT_ALLOWED = List.of(
-			NATIONAL_RENTAL,
-			PUBLIC_INTEGRATED,
-			LONG_TERM_JEONSE,
-			PUBLIC_RENTAL
+		NATIONAL_RENTAL,
+		PUBLIC_INTEGRATED,
+		LONG_TERM_JEONSE,
+		PUBLIC_RENTAL
 	);
 
-
-	@Override
-	public RuleResult evaluate(EvaluationContext ctx) {
-
-		/// 진단 도메인 정보 가져오기
-		Diagnosis diagnosis = ctx.getDiagnosis();
-
-		/// 가능한 리스트 추출하기
-		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
-
-		/// 규칙 돌기
-		if (!diagnosis.isHasAccount()) {
-
-			/// 청약통장 없는 경우, NO_ACCOUNT_ALLOWED에 해당하는 RentalType 제거
-			candidates.removeIf(c -> NO_ACCOUNT_ALLOWED.contains(c.noticeType()));
-
-			return RuleResult.pass(code(),
-					"청약통장 미보유로 인한 유형 제거 완료",
-					Map.of("candidate", candidates));
-		}
-
-		//TODO! 추후 가입기간에 따른 가산점으로 변경
-		/// 가입 기간 체크
-		SubscriptionPeriod accountYears = diagnosis.getAccountYears();
-		double years = accountYears.getYears(); // 실제 연도 값
-
-		/// 공공임대 내부에서, 가입기간에 따른 불가능 제거
-		removePUBLIC_RENTAL(candidates, years, diagnosis);
-
-		String message = String.format("청약통장 가입기간 %.1f년, 가입기간이 길수록 우선순위가 높습니다.", years);
-
-		///후보군은 그대로 유지
-		ctx.setCurrentCandidates(candidates);
-
-		// 조건 통과
-		return RuleResult.pass(code(),
-				message,
-				Map.of("accountYears", diagnosis.getAccountYears()));
-	}
-
-	private static void removePUBLIC_RENTAL(ArrayList<SupplyRentalCandidate> candidates, double years, Diagnosis diagnosis) {
+	private static void removePUBLIC_RENTAL(ArrayList<SupplyRentalCandidate> candidates, double years,
+		Diagnosis diagnosis) {
 
 		for (SupplyRentalCandidate c : new ArrayList<>(candidates)) { // 반복 중 수정 방지
-			if (c.noticeType() != PUBLIC_RENTAL) continue;
+			if (c.noticeType() != PUBLIC_RENTAL)
+				continue;
 
 			switch (c.supplyType()) {
 				case FIRST_SPECIAL -> {
@@ -106,9 +68,48 @@ public class AccountRule implements Rule {
 		}
 	}
 
-	@Override public String code() {
-		return "ACCOUNT_REQUIREMENT";
+	@Override
+	public RuleResult evaluate(EvaluationContext ctx) {
+
+		/// 진단 도메인 정보 가져오기
+		Diagnosis diagnosis = ctx.getDiagnosis();
+
+		/// 가능한 리스트 추출하기
+		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
+
+		/// 규칙 돌기
+		if (!diagnosis.isHasAccount()) {
+
+			/// 청약통장 없는 경우, NO_ACCOUNT_ALLOWED에 해당하는 RentalType 제거
+			candidates.removeIf(c -> NO_ACCOUNT_ALLOWED.contains(c.noticeType()));
+
+			return RuleResult.pass(code(),
+				"청약통장 미보유로 인한 유형 제거 완료",
+				Map.of("candidate", candidates));
+		}
+
+		//TODO! 추후 가입기간에 따른 가산점으로 변경
+		/// 가입 기간 체크
+		SubscriptionPeriod accountYears = diagnosis.getAccountYears();
+		double years = accountYears.getYears(); // 실제 연도 값
+
+		/// 공공임대 내부에서, 가입기간에 따른 불가능 제거
+		removePUBLIC_RENTAL(candidates, years, diagnosis);
+
+		String message = String.format("청약통장 가입기간 %.1f년, 가입기간이 길수록 우선순위가 높습니다.", years);
+
+		///후보군은 그대로 유지
+		ctx.setCurrentCandidates(candidates);
+
+		// 조건 통과
+		return RuleResult.pass(code(),
+			message,
+			Map.of("accountYears", diagnosis.getAccountYears()));
 	}
 
+	@Override
+	public String code() {
+		return "ACCOUNT_REQUIREMENT";
+	}
 
 }

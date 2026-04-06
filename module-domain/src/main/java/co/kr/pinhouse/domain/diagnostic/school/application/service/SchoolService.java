@@ -22,7 +22,6 @@ public class SchoolService implements SchoolUseCase {
 	private final SchoolJpaRepository schoolJpaRepository;
 	private final UniversityJpaRepository universityRepository;
 
-
 	/**
 	 * 학교 이름 부분 검색
 	 * @param schoolName    검색할 이름
@@ -50,7 +49,7 @@ public class SchoolService implements SchoolUseCase {
 		if (!existed) {
 			Optional<School> school = schoolJpaRepository.findById(schoolName);
 
-			if(school.isEmpty()){
+			if (school.isEmpty()) {
 				return schoolName + "는 조회되지 않아요";
 			}
 		}
@@ -88,7 +87,7 @@ public class SchoolService implements SchoolUseCase {
 		if (!existed) {
 			Optional<University> univ = universityRepository.findBySchoolName(schoolName);
 
-			if(univ.isEmpty()){
+			if (univ.isEmpty()) {
 				return schoolName + "는 조회되지 않아요";
 			}
 		}

@@ -25,9 +25,9 @@ public class InterCityResultParser {
 		JsonNode result = root.path("result");
 
 		int searchType = result.path("searchType").asInt(1);
-		int busCount   = result.path("busCount").asInt(0);
+		int busCount = result.path("busCount").asInt(0);
 		int trainCount = result.path("trainCount").asInt(0);
-		int airCount   = result.path("airCount").asInt(0);
+		int airCount = result.path("airCount").asInt(0);
 		int mixedCount = result.path("mixedCount").asInt(0);
 
 		List<RootResult> routes = new ArrayList<>();
@@ -43,11 +43,11 @@ public class InterCityResultParser {
 
 				// ✅ 도시간 응답은 totalPayment 사용
 				int totalPayment = info.path("totalPayment")
-						.asInt(info.path("payment").asInt(0));
+					.asInt(info.path("payment").asInt(0));
 
 				// ✅ 이 경로의 총 이동 거리(없으면 trafficDistance로 fallback)
 				double totalDistance = info.path("totalDistance")
-						.asDouble(info.path("trafficDistance").asDouble(0d));
+					.asDouble(info.path("trafficDistance").asDouble(0d));
 
 				if (totalDistance > 0 && totalDistance < minDistance) {
 					minDistance = totalDistance;
@@ -81,26 +81,26 @@ public class InterCityResultParser {
 						}
 
 						steps.add(RootResult.DistanceStep.builder()
-								.type(t)
-								.time(sub.path("sectionTime").asInt(0))
-								.startName(sub.path("startName").asText(null))
-								.endName(sub.path("endName").asText(null))
-								.lineInfo(lineInfo)
-								.line(line)
-								.subwayLine(null)
-								.busRouteType(null)
-								.trainType(trainTypeEnum)
-								.expressBusType(null) // TODO: 필요 시 고속/시외버스 좌석 등급 파싱 추가
-								.build());
+							.type(t)
+							.time(sub.path("sectionTime").asInt(0))
+							.startName(sub.path("startName").asText(null))
+							.endName(sub.path("endName").asText(null))
+							.lineInfo(lineInfo)
+							.line(line)
+							.subwayLine(null)
+							.busRouteType(null)
+							.trainType(trainTypeEnum)
+							.expressBusType(null) // TODO: 필요 시 고속/시외버스 좌석 등급 파싱 추가
+							.build());
 					}
 				}
 
 				routes.add(RootResult.builder()
-						.totalTime(totalTime)
-						.totalPayment(totalPayment)
-						.totalDistance(totalDistance)
-						.steps(List.copyOf(steps))
-						.build());
+					.totalTime(totalTime)
+					.totalPayment(totalPayment)
+					.totalDistance(totalDistance)
+					.steps(List.copyOf(steps))
+					.build());
 			}
 		}
 
@@ -110,17 +110,15 @@ public class InterCityResultParser {
 		}
 
 		return InterCityResult.builder()
-				.searchType(searchType)
-				.busCount(busCount)
-				.trainCount(trainCount)
-				.airCount(airCount)
-				.mixedCount(mixedCount)
-				.distance(minDistance)
-				.routes(List.copyOf(routes))
-				.build();
+			.searchType(searchType)
+			.busCount(busCount)
+			.trainCount(trainCount)
+			.airCount(airCount)
+			.mixedCount(mixedCount)
+			.distance(minDistance)
+			.routes(List.copyOf(routes))
+			.build();
 	}
-
-
 
 	// =================
 	//  내부 로직

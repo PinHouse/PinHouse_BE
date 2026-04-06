@@ -13,10 +13,12 @@ public class LogAspect {
 
 	/// 서비스 계층
 	@Pointcut("execution(* co.kr.pinhouse.domain..application..*Service*.*(..))")
-	private void applicationLayer() {}
+	private void applicationLayer() {
+	}
 
 	/// 인증 계층
 	@Pointcut("execution(* co.kr.pinhouse.security..application..*Service*.*(..))")
-	private void authLayer() {}
+	private void authLayer() {
+	}
 
 }

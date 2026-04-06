@@ -20,12 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FacilityStatService {
 
-	private final FacilityStatDocumentRepository countsRepo;
-
 	// === 상수 ===
 	private static final double RADIUS_KM = 3;
-	private static final double RADIUS_M  = RADIUS_KM * 1000.0;
+	private static final double RADIUS_M = RADIUS_KM * 1000.0;
 	private static final Duration TTL = Duration.ofDays(7);
+	private final FacilityStatDocumentRepository countsRepo;
 
 	/// 특정 인프라가 존재하는 내용 가져오기
 	public List<FacilityStatDocument> findByAllTypesOver(Collection<FacilityType> types, int min) {
@@ -54,14 +53,13 @@ public class FacilityStatService {
 		return withDerivedCounts(existing.getCounts());
 	}
 
-
 	private void upsertCounts(String complexId, Map<FacilityType, Integer> counts) {
 		FacilityStatDocument doc = FacilityStatDocument.builder()
-				.id(complexId)
-				.radiusKm(RADIUS_KM)
-				.counts(withDerivedCounts(counts))
-				.updatedAt(Instant.now())
-				.build();
+			.id(complexId)
+			.radiusKm(RADIUS_KM)
+			.counts(withDerivedCounts(counts))
+			.updatedAt(Instant.now())
+			.build();
 		countsRepo.save(doc);
 	}
 
@@ -84,7 +82,7 @@ public class FacilityStatService {
 
 	private int computeCultureCenterCount(Map<FacilityType, Integer> map) {
 		return FacilityType.cultureCenterMembers().stream()
-				.mapToInt(t -> map.getOrDefault(t, 0))
-				.sum();
+			.mapToInt(t -> map.getOrDefault(t, 0))
+			.sum();
 	}
 }

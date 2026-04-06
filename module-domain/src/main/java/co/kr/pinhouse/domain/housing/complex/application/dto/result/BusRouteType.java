@@ -36,7 +36,6 @@ public enum BusRouteType {
 
 	UNKNOWN(-1, "UNKNOWN", "#BBBBBB");
 
-
 	private final int code;
 	private final String label;
 
@@ -80,9 +79,9 @@ public enum BusRouteType {
 	 */
 	public LineInfo toLineInfo() {
 		return LineInfo.builder()
-				.code(this.code)
-				.label(this.label)
-				.bgColorHex(this.colorHex)
-				.build();
+			.code(this.code)
+			.label(this.label)
+			.bgColorHex(this.colorHex)
+			.build();
 	}
 }

@@ -82,13 +82,15 @@ public class FastSearchService implements FastSearchUseCase {
 		SearchHistory searchHistory;
 
 		/// 만약 기록으로 들어왔다면,
-		if (request.historyId() == null){
+		if (request.historyId() == null) {
 			/// 기록 저장하기
-			var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(), request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(), request.rentalTypes(), request.supplyTypes(), request.houseTypes());
+			var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(),
+				request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(),
+				request.rentalTypes(), request.supplyTypes(), request.houseTypes());
 			searchHistory = repository.save(reqHistory);
 		} else {
 			searchHistory = repository.findById(request.historyId())
-					.orElseThrow(() -> new CustomException(CommonErrorCode.NOT_FOUND));
+				.orElseThrow(() -> new CustomException(CommonErrorCode.NOT_FOUND));
 		}
 
 		/// 핀포인트 조회 및 예외처리
@@ -101,7 +103,8 @@ public class FastSearchService implements FastSearchUseCase {
 		List<NoticeDocument> notices = noticeService.filterNotices(searchHistory);
 
 		/// 해당하는 인프라가 존재하는 친구로 조회
-		List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, searchHistory.getFacilities());
+		List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices,
+			searchHistory.getFacilities());
 
 		/// 거리 필터링
 		List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, searchHistory);
@@ -119,13 +122,13 @@ public class FastSearchService implements FastSearchUseCase {
 
 		/// DTO 변환
 		List<FastUnitTypeResponse> responses = filtered.stream()
-				.map(c -> {
-					ComplexDocument complex = c.complex();
-					UnitType unitType = complex.getUnitTypes().getFirst();
-					boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
-					return FastUnitTypeResponse.from(c, facilityService.getFacilities(complex.getId()), isLiked);
-				})
-				.toList();
+			.map(c -> {
+				ComplexDocument complex = c.complex();
+				UnitType unitType = complex.getUnitTypes().getFirst();
+				boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
+				return FastUnitTypeResponse.from(c, facilityService.getFacilities(complex.getId()), isLiked);
+			})
+			.toList();
 
 		/// DTO 변환 리턴
 		return FastSearchResponse.from(responses);

@@ -20,7 +20,9 @@ public interface ComplexUseCase {
 	// =================
 
 	/// 상세 조회
-	ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException;;
+	ComplexDetailResponse getComplex(String id, String pinPointId) throws UnsupportedEncodingException;
+
+	;
 
 	/// 상세 조회
 	List<UnitTypeResponse> getComplexUnitTypes(String id, UUID userId);
@@ -34,10 +36,10 @@ public interface ComplexUseCase {
 	/// 나의 좋아요 방 목록 조회
 	List<UnityTypeLikeResponse> getComplexesLikes(UUID userId);
 
-
 	// =================
 	//  외부 로직
 	// =================
+
 	/// 상세 조회
 	ComplexDocument loadComplex(String id);
 
@@ -47,7 +49,8 @@ public interface ComplexUseCase {
 	List<ComplexDocument> loadComplexes(String noticeId);
 
 	/// 공고 내부 목록 조회 (정렬된 유닛타입 포함)
-	List<ComplexDocument> loadSortedComplexes(String noticeId, co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType sortType);
+	List<ComplexDocument> loadSortedComplexes(String noticeId,
+		co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType sortType);
 
 	/// 유닛타입 ID 목록으로 단지 목록 조회
 	List<ComplexDocument> findComplexesByUnitTypeIds(List<String> typeIds);
@@ -57,6 +60,5 @@ public interface ComplexUseCase {
 
 	/// 필터링
 	List<ComplexDistanceResponse> filterUnitTypesOnly(List<ComplexDistanceResponse> filter, SearchHistory request);
-
 
 }

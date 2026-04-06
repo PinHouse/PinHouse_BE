@@ -30,9 +30,9 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 
 		/// 모집중 필터링을 위한 오늘의 시작 시각 계산 (오늘까지 포함되도록)
 		Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
-				.toLocalDate()
-				.atStartOfDay(ZoneId.of("Asia/Seoul"))
-				.toInstant();
+			.toLocalDate()
+			.atStartOfDay(ZoneId.of("Asia/Seoul"))
+			.toInstant();
 
 		/// 모집 상태 필터링 (현재 날짜 기준)
 		boolean applyEndFiltered = false;
@@ -60,32 +60,32 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 		/// 지역 필터링
 		if (request.regionType() != null && !request.regionType().isEmpty()) {
 			List<String> cities = request.regionType().stream()
-					.map(NoticeListRequest.Region::getFullName)
-					.toList();
+				.map(NoticeListRequest.Region::getFullName)
+				.toList();
 			criteria.and("city").in(cities);
 		}
 
 		/// 모집 대상 필터링
 		if (request.rentalTypes() != null && !request.rentalTypes().isEmpty()) {
 			List<String> targetDisplayNames = request.rentalTypes().stream()
-					.map(NoticeListRequest.TargetType::getDisplayName)
-					.toList();
+				.map(NoticeListRequest.TargetType::getDisplayName)
+				.toList();
 			criteria.and("targetGroup").in(targetDisplayNames);
 		}
 
 		/// 임대 유형 필터링
 		if (request.supplyTypes() != null && !request.supplyTypes().isEmpty()) {
 			List<String> leaseTypes = request.supplyTypes().stream()
-					.map(NoticeListRequest.LeaseType::getDisplayName)
-					.toList();
+				.map(NoticeListRequest.LeaseType::getDisplayName)
+				.toList();
 			criteria.and("supplyType").in(leaseTypes);
 		}
 
 		/// 주택 유형 필터링
 		if (request.houseTypes() != null && !request.houseTypes().isEmpty()) {
 			List<String> houseTypes = request.houseTypes().stream()
-					.map(NoticeListRequest.HouseType::getDisplayName)
-					.toList();
+				.map(NoticeListRequest.HouseType::getDisplayName)
+				.toList();
 			criteria.and("houseType").in(houseTypes);
 		}
 
@@ -108,9 +108,9 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 		// 모집중 필터 적용 (오늘까지 포함되도록)
 		if (filterOpen) {
 			Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
-					.toLocalDate()
-					.atStartOfDay(ZoneId.of("Asia/Seoul"))
-					.toInstant();
+				.toLocalDate()
+				.atStartOfDay(ZoneId.of("Asia/Seoul"))
+				.toInstant();
 			query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
 		}
 
@@ -122,7 +122,8 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 	}
 
 	@Override
-	public org.springframework.data.domain.Slice<NoticeDocument> searchByTitleSlice(String keyword, Pageable pageable, boolean filterOpen, Instant now) {
+	public org.springframework.data.domain.Slice<NoticeDocument> searchByTitleSlice(String keyword, Pageable pageable,
+		boolean filterOpen, Instant now) {
 		// 부분 문자열 검색을 위한 regex 사용 (대소문자 무시)
 		Criteria criteria = Criteria.where("title").regex(keyword, "i");
 
@@ -131,9 +132,9 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 		// 모집중 필터 적용 (오늘까지 포함되도록)
 		if (filterOpen) {
 			Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
-					.toLocalDate()
-					.atStartOfDay(ZoneId.of("Asia/Seoul"))
-					.toInstant();
+				.toLocalDate()
+				.atStartOfDay(ZoneId.of("Asia/Seoul"))
+				.toInstant();
 			query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
 		}
 
@@ -163,9 +164,9 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 		// 모집중 필터 적용 (오늘까지 포함되도록)
 		if (filterOpen) {
 			Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
-					.toLocalDate()
-					.atStartOfDay(ZoneId.of("Asia/Seoul"))
-					.toInstant();
+				.toLocalDate()
+				.atStartOfDay(ZoneId.of("Asia/Seoul"))
+				.toInstant();
 			query.addCriteria(Criteria.where("applyEnd").gte(todayStart));
 		}
 
@@ -174,18 +175,18 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 
 	@Override
 	public Page<NoticeDocument> findDeadlineApproachingNoticesByRegionAndCounty(
-			String region,
-			String county,
-			Pageable pageable,
-			Instant now
+		String region,
+		String county,
+		Pageable pageable,
+		Instant now
 	) {
 		Criteria criteria = new Criteria();
 
 		/// 오늘의 시작 시각 계산 (오늘까지 포함되도록)
 		Instant todayStart = ZonedDateTime.ofInstant(now, ZoneId.of("Asia/Seoul"))
-				.toLocalDate()
-				.atStartOfDay(ZoneId.of("Asia/Seoul"))
-				.toInstant();
+			.toLocalDate()
+			.atStartOfDay(ZoneId.of("Asia/Seoul"))
+			.toInstant();
 
 		/// 모집중인 공고만 조회 (마감일이 오늘 이후)
 		criteria.and("applyEnd").gte(todayStart);
@@ -211,8 +212,8 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 
 	@Override
 	public Page<NoticeDocument> findRecommendedNoticesByDiagnosis(
-			java.util.List<String> supplyTypes,
-			Pageable pageable
+		java.util.List<String> supplyTypes,
+		Pageable pageable
 	) {
 		Criteria criteria = new Criteria();
 
@@ -236,20 +237,20 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 	@Override
 	public org.springframework.data.domain.Slice<String> searchTargetGroups(String keyword, Pageable pageable) {
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
-				Aggregation.unwind("targetGroup"),
-				Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
-				Aggregation.group("targetGroup"),
-				Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
-				Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
-				Aggregation.limit(pageable.getPageSize() + 1)
+			Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
+			Aggregation.unwind("targetGroup"),
+			Aggregation.match(Criteria.where("targetGroup").regex(keyword, "i")),
+			Aggregation.group("targetGroup"),
+			Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+			Aggregation.skip((long)pageable.getPageNumber() * pageable.getPageSize()),
+			Aggregation.limit(pageable.getPageSize() + 1)
 		);
 
 		List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
-				.getMappedResults()
-				.stream()
-				.map(StringAggregationResult::getId)
-				.toList();
+			.getMappedResults()
+			.stream()
+			.map(StringAggregationResult::getId)
+			.toList();
 
 		return toSlice(results, pageable);
 	}
@@ -257,23 +258,23 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 	@Override
 	public org.springframework.data.domain.Slice<String> searchRegions(String keyword, Pageable pageable) {
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.match(new Criteria().orOperator(
-						Criteria.where("city").regex(keyword, "i"),
-						Criteria.where("county").regex(keyword, "i")
-				)),
-				Aggregation.project("city", "county")
-						.andExpression("concat(city, ' ', county)").as("region"),
-				Aggregation.group("region"),
-				Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
-				Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
-				Aggregation.limit(pageable.getPageSize() + 1)
+			Aggregation.match(new Criteria().orOperator(
+				Criteria.where("city").regex(keyword, "i"),
+				Criteria.where("county").regex(keyword, "i")
+			)),
+			Aggregation.project("city", "county")
+				.andExpression("concat(city, ' ', county)").as("region"),
+			Aggregation.group("region"),
+			Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+			Aggregation.skip((long)pageable.getPageNumber() * pageable.getPageSize()),
+			Aggregation.limit(pageable.getPageSize() + 1)
 		);
 
 		List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
-				.getMappedResults()
-				.stream()
-				.map(StringAggregationResult::getId)
-				.toList();
+			.getMappedResults()
+			.stream()
+			.map(StringAggregationResult::getId)
+			.toList();
 
 		return toSlice(results, pageable);
 	}
@@ -281,44 +282,48 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 	@Override
 	public org.springframework.data.domain.Slice<String> searchHouseTypes(String keyword, Pageable pageable) {
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria.where("houseType").regex(keyword, "i")),
-				Aggregation.group("houseType"),
-				Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
-				Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
-				Aggregation.limit(pageable.getPageSize() + 1)
+			Aggregation.match(Criteria.where("houseType").regex(keyword, "i")),
+			Aggregation.group("houseType"),
+			Aggregation.sort(Sort.by(Sort.Order.asc("_id"))),
+			Aggregation.skip((long)pageable.getPageNumber() * pageable.getPageSize()),
+			Aggregation.limit(pageable.getPageSize() + 1)
 		);
 
 		List<String> results = mongoTemplate.aggregate(aggregation, "notices", StringAggregationResult.class)
-				.getMappedResults()
-				.stream()
-				.map(StringAggregationResult::getId)
-				.toList();
+			.getMappedResults()
+			.stream()
+			.map(StringAggregationResult::getId)
+			.toList();
 
 		return toSlice(results, pageable);
 	}
 
 	@Override
-	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByTargetGroup(String keyword, Pageable pageable) {
+	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByTargetGroup(String keyword,
+		Pageable pageable) {
 		Criteria criteria = Criteria.where("targetGroup").regex(keyword, "i");
 		return findNoticeSlice(criteria, pageable);
 	}
 
 	@Override
-	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByRegion(String keyword, Pageable pageable) {
+	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByRegion(String keyword,
+		Pageable pageable) {
 		Criteria criteria = new Criteria().orOperator(
-				Criteria.where("city").regex(keyword, "i"),
-				Criteria.where("county").regex(keyword, "i")
+			Criteria.where("city").regex(keyword, "i"),
+			Criteria.where("county").regex(keyword, "i")
 		);
 		return findNoticeSlice(criteria, pageable);
 	}
 
 	@Override
-	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword, Pageable pageable) {
+	public org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword,
+		Pageable pageable) {
 		Criteria criteria = Criteria.where("houseType").regex(keyword, "i");
 		return findNoticeSlice(criteria, pageable);
 	}
 
-	private org.springframework.data.domain.Slice<NoticeDocument> findNoticeSlice(Criteria criteria, Pageable pageable) {
+	private org.springframework.data.domain.Slice<NoticeDocument> findNoticeSlice(Criteria criteria,
+		Pageable pageable) {
 		Query query = new Query(criteria).with(pageable);
 		int limit = pageable.getPageSize();
 		query.limit(limit + 1);

@@ -50,11 +50,10 @@ public class Like extends BaseTimeEntity {
 	/// 정적 팩토리 메서드
 	public static Like of(User user, String targetId, LikeType type) {
 		return Like.builder()
-				.user(user)
-				.targetId(targetId)
-				.type(type)
-				.build();
+			.user(user)
+			.targetId(targetId)
+			.type(type)
+			.build();
 	}
-
 
 }

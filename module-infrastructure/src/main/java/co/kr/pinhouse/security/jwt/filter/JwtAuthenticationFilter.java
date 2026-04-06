@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	/// 필터 작동
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
 
 		/// OPTIONS 필터에서 타지않도록 넣는다.
 		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {

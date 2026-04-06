@@ -27,5 +27,6 @@ public interface CustomComplexDocumentRepository {
 	 * @param pageable 페이징 정보
 	 * @return 단지 결과 슬라이스
 	 */
-	org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword, org.springframework.data.domain.Pageable pageable);
+	org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword,
+		org.springframework.data.domain.Pageable pageable);
 }

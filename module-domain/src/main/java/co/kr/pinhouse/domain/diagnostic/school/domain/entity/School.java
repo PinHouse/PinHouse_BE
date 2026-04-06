@@ -40,7 +40,8 @@ public class School {
 
 	/// 빌더 생성자
 	@Builder
-	public School(String schoolName, String schoolType, String schoolCategory, String sidoCode, String sidoName, String sigunguName) {
+	public School(String schoolName, String schoolType, String schoolCategory, String sidoCode, String sidoName,
+		String sigunguName) {
 		this.id = UUID.randomUUID().toString();
 		this.schoolName = schoolName;
 		this.schoolType = schoolType;

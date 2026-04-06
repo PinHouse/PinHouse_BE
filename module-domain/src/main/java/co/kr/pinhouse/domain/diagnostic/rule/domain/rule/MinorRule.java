@@ -38,25 +38,24 @@ public class MinorRule implements Rule {
 
 			/// 삭제
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.MINOR_SPECIAL);
+				c.supplyType() == SupplyType.MINOR_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.fail(code(),
-					"신생아 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", "신생아의 자녀가 없음"
-					));
+				"신생아 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", "신생아의 자녀가 없음"
+				));
 		}
 
 		return RuleResult.pass(code(),
-				"신생아 특별공급 후보",
-				Map.of(
-						"candidate", candidates));
+			"신생아 특별공급 후보",
+			Map.of(
+				"candidate", candidates));
 	}
-
 
 	@Override
 	public String code() {

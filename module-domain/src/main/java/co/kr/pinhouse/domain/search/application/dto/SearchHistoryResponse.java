@@ -7,11 +7,11 @@ import lombok.Builder;
 @Builder
 public record SearchHistoryResponse(
 
-		@Schema(description = "존재 여부", example = "true")
-		boolean existed,
+	@Schema(description = "존재 여부", example = "true")
+	boolean existed,
 
-		@Schema(description = "검색 ID", example = "1")
-		String id
+	@Schema(description = "검색 ID", example = "1")
+	String id
 
 ) {
 
@@ -19,18 +19,18 @@ public record SearchHistoryResponse(
 
 		/// 존재한다면
 		return SearchHistoryResponse.builder()
-				.existed(true)
-				.id(searchHistory.getId())
-				.build();
+			.existed(true)
+			.id(searchHistory.getId())
+			.build();
 	}
 
 	public static SearchHistoryResponse of() {
 
 		/// 존재한다면
 		return SearchHistoryResponse.builder()
-				.existed(false)
-				.id(null)
-				.build();
+			.existed(false)
+			.id(null)
+			.build();
 	}
 
 }

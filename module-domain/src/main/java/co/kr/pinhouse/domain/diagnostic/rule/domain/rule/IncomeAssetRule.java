@@ -54,7 +54,7 @@ public class IncomeAssetRule implements Rule {
 
 			/// 2. 소득 비율 체크
 			boolean incomeOk = incomeLevel.getPercent() <=
-					policyUseCase.maxIncomeRatio(supplyType, noticeType, familyCount);
+				policyUseCase.maxIncomeRatio(supplyType, noticeType, familyCount);
 
 			/// 3. 자산 체크 (임대 유형에 따라 총자산 또는 부동산 자산)
 			boolean assetOk;
@@ -79,12 +79,12 @@ public class IncomeAssetRule implements Rule {
 
 		/// 결과 리턴
 		return RuleResult.pass(code(),
-				"소득/자산 요건 충족 후보",
-				Map.of("candidate", candidates,
-					"totalAsset", totalAsset,
-					"propertyAsset", propertyAsset,
-					"carValue", carValue,
-					"incomePercent", incomeLevel.getPercent()));
+			"소득/자산 요건 충족 후보",
+			Map.of("candidate", candidates,
+				"totalAsset", totalAsset,
+				"propertyAsset", propertyAsset,
+				"carValue", carValue,
+				"incomePercent", incomeLevel.getPercent()));
 	}
 
 	@Override

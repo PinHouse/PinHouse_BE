@@ -7,14 +7,14 @@ import lombok.Builder;
 @Builder
 public record NoticeCountResponse(
 
-		@Schema(description = "공고 개수", example = "15")
-		long count
+	@Schema(description = "공고 개수", example = "15")
+	long count
 
 ) {
 
 	public static NoticeCountResponse from(long count) {
 		return NoticeCountResponse.builder()
-				.count(count)
-				.build();
+			.count(count)
+			.build();
 	}
 }

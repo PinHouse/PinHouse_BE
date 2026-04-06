@@ -35,10 +35,9 @@ public class LikeQueryService implements LikeQueryUseCase {
 
 		/// 목록 조회한 아이디 한번에 조회하기
 		return likes.stream()
-				.map(Like::getTargetId)
-				.toList();
+			.map(Like::getTargetId)
+			.toList();
 	}
-
 
 	/// 나의 좋아요 방 목록 Id 조회
 	@Override
@@ -52,7 +51,7 @@ public class LikeQueryService implements LikeQueryUseCase {
 
 		/// 목록 조회한 아이디 한번에 조회하기
 		return likes.stream()
-				.map(Like::getTargetId)
-				.toList();
+			.map(Like::getTargetId)
+			.toList();
 	}
 }

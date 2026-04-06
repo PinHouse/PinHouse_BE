@@ -36,11 +36,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	 */
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+	public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+		Authentication authentication) throws IOException, ServletException {
 
 		try {
 			/// 인증객체에서 User 가져오기
-			PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+			PrincipalDetails principal = (PrincipalDetails)authentication.getPrincipal();
 			User user = principal.getUser();
 
 			/// Access, Refresh 토큰 생성

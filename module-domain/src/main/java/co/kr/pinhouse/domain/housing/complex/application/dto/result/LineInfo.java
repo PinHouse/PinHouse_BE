@@ -12,16 +12,16 @@ import lombok.Builder;
 @Builder
 @Schema(name = "교통수단 노선 정보", description = "교통수단의 코드, 이름, 색상 정보")
 public record LineInfo(
-		@Schema(description = "노선 코드", example = "1")
-		@JsonIgnore
-		Integer code,
+	@Schema(description = "노선 코드", example = "1")
+	@JsonIgnore
+	Integer code,
 
-		@Schema(description = "노선명", example = "KTX")
-		String label,
+	@Schema(description = "노선명", example = "KTX")
+	String label,
 
-		@Schema(description = "배경 색상 (Hex 코드)", example = "#3356B4")
-		@JsonIgnore
-		String bgColorHex
+	@Schema(description = "배경 색상 (Hex 코드)", example = "#3356B4")
+	@JsonIgnore
+	String bgColorHex
 ) {
 	/**
 	 * null safe builder - 모든 필드가 null인 경우 null 반환

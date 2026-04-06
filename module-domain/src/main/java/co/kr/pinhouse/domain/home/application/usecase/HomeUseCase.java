@@ -24,9 +24,9 @@ public interface HomeUseCase {
 	 * @return 해당 지역의 마감임박순으로 정렬된 공고 목록 (region + notices 배열)
 	 */
 	HomeNoticeListResponse getDeadlineApproachingNotices(
-			String pinpointId,
-			SliceRequest sliceRequest,
-			UUID userId
+		String pinpointId,
+		SliceRequest sliceRequest,
+		UUID userId
 	);
 
 	/**
@@ -47,8 +47,8 @@ public interface HomeUseCase {
 	 * @return 진단 기반 추천 공고 목록 (마감임박순 정렬, 모든 공고 상태 포함)
 	 */
 	HomeNoticeListResponse getRecommendedNoticesByDiagnosis(
-			SliceRequest sliceRequest,
-			UUID userId
+		SliceRequest sliceRequest,
+		UUID userId
 	);
 
 	/**
@@ -60,10 +60,10 @@ public interface HomeUseCase {
 	 * 홈 통합 검색 카테고리별 조회
 	 */
 	HomeSearchCategoryPageResponse searchHomeByCategory(
-			HomeSearchCategoryType category,
-			String keyword,
-			int page,
-			UUID userId
+		HomeSearchCategoryType category,
+		String keyword,
+		int page,
+		UUID userId
 	);
 
 	/**

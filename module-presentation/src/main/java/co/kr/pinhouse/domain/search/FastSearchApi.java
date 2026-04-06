@@ -45,8 +45,8 @@ public class FastSearchApi implements FastSearchApiSpec {
 	 */
 	@PostMapping
 	public ApiResponse<FastSearchResponse> search(
-			@CurrentUserId(required = true) UUID userId,
-			@RequestBody @Valid FastSearchRequest request) {
+		@CurrentUserId(required = true) UUID userId,
+		@RequestBody @Valid FastSearchRequest request) {
 
 		/// 서비스
 		var response = service.search(userId, request);
@@ -54,6 +54,5 @@ public class FastSearchApi implements FastSearchApiSpec {
 		/// 응답
 		return ApiResponse.ok(response);
 	}
-
 
 }

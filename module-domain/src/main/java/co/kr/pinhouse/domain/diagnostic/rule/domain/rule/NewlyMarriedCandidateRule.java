@@ -34,8 +34,8 @@ public class NewlyMarriedCandidateRule implements Rule {
 		/// 무주택 세대주 또는 예비 세대주 여부
 		boolean isHouseholdHead = diagnosis.isHouseholdHead();
 		boolean isNoHouse = diagnosis.getHousingStatus().equals(
-				co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.NO_ONE_OWNS_HOUSE) ||
-				diagnosis.getHousingStatus().equals(
+			co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.NO_ONE_OWNS_HOUSE) ||
+			diagnosis.getHousingStatus().equals(
 				co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
 
 		/// 결혼했는지 체크
@@ -57,7 +57,7 @@ public class NewlyMarriedCandidateRule implements Rule {
 
 			/// 있다면 삭제
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL);
+				c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
@@ -79,20 +79,20 @@ public class NewlyMarriedCandidateRule implements Rule {
 			}
 
 			return RuleResult.fail(code(),
-					"신혼부부 조건 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReason
-					));
+				"신혼부부 조건 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReason
+				));
 		}
 
-
 		return RuleResult.pass(code(),
-				"신혼부부 해당 조건 충족",
-				Map.of("candidate", candidates));
+			"신혼부부 해당 조건 충족",
+			Map.of("candidate", candidates));
 	}
 
-	@Override public String code() {
+	@Override
+	public String code() {
 		return "CANDIDATE_NEWCOUPLE_SPECIAL";
 	}
 }

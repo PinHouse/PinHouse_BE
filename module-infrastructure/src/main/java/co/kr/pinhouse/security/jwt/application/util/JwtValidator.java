@@ -35,7 +35,6 @@ public class JwtValidator {
 	/// 레디스 저장소
 	private final JwtRefreshTokenRepository repository;
 
-
 	// =================
 	//  퍼블릭 로직
 	// =================
@@ -52,13 +51,11 @@ public class JwtValidator {
 
 			/// 유저 예외처리
 			User user = userRepository.findById(userId)
-					.orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_NOT_USER));
-
+				.orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_NOT_USER));
 
 			/// 시큐리티에 넣을 인증 객체 생성
 			PrincipalDetails principalDetails = PrincipalDetails.of(user);
 			return new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-
 
 		} catch (ExpiredJwtException e) {
 			/// 만료된 토큰
@@ -102,11 +99,11 @@ public class JwtValidator {
 
 			/// 유저 예외처리
 			User user = userRepository.findById(userId)
-					.orElseThrow(() -> new CustomException(SecurityErrorCode.REFRESH_TOKEN_NOT_USER));
+				.orElseThrow(() -> new CustomException(SecurityErrorCode.REFRESH_TOKEN_NOT_USER));
 
 			/// 리턴
 			return repository.findByUserIdAndRefreshToken(user.getId(), refreshToken)
-					.orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_NOT_FOUND));
+				.orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
 		} catch (ExpiredJwtException e) {
 			// 토큰이 '만료'된 경우의 처리
@@ -148,20 +145,19 @@ public class JwtValidator {
 	/// 비밀키로 해석 가능한지 검증
 	private void assertJwtValid(String token) {
 		Jwts.parserBuilder()
-					.setSigningKey(secretKey)
-					.build()
-					.parseClaimsJws(token);
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token);
 	}
-
 
 	/// 토큰에서 유저ID 추출하기
 	private String getUserIdFromToken(String token) {
 		return Jwts.parserBuilder()
-				.setSigningKey(secretKey)
-				.build()
-				.parseClaimsJws(token)
-				.getBody()
-				.get(ID_CLAIM, String.class);
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.get(ID_CLAIM, String.class);
 	}
 
 }

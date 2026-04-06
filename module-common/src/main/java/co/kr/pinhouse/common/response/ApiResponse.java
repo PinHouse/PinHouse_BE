@@ -16,13 +16,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(name = "API 공통응답")
 public record ApiResponse<T>(
-		@JsonIgnore
-		HttpStatus httpStatus,
-		boolean success,
-		Integer code,
-		String message,
-		@Nullable T data,
-		@Nullable List<FieldErrorResponse> error
+	@JsonIgnore
+	HttpStatus httpStatus,
+	boolean success,
+	Integer code,
+	String message,
+	@Nullable T data,
+	@Nullable List<FieldErrorResponse> error
 ) {
 
 	// 성공 응답 생성 (200 OK)
@@ -37,16 +37,19 @@ public record ApiResponse<T>(
 
 	// 수정 성공 응답 (204 No Content)
 	public static <T> ApiResponse<T> updated() {
-		return new ApiResponse<>(HttpStatus.NO_CONTENT, true, HttpStatus.NO_CONTENT.value(), "성공적으로 수정되었습니다.", null, null);
+		return new ApiResponse<>(HttpStatus.NO_CONTENT, true, HttpStatus.NO_CONTENT.value(), "성공적으로 수정되었습니다.", null,
+			null);
 	}
 
 	// 삭제 성공 응답 (204 No Content)
 	public static <T> ApiResponse<T> deleted() {
-		return new ApiResponse<>(HttpStatus.NO_CONTENT, true, HttpStatus.NO_CONTENT.value(), "성공적으로 삭제 되었습니다.", null, null);
+		return new ApiResponse<>(HttpStatus.NO_CONTENT, true, HttpStatus.NO_CONTENT.value(), "성공적으로 삭제 되었습니다.", null,
+			null);
 	}
 
 	// 실패 응답 생성
 	public static <T> ApiResponse<T> fail(final CustomException e) {
-		return new ApiResponse<>(e.getErrorCode().getHttpStatus(), false, e.getErrorCode().getCode(), e.getErrorCode().getMessage(), null, e.getFieldErrorResponses());
+		return new ApiResponse<>(e.getErrorCode().getHttpStatus(), false, e.getErrorCode().getCode(),
+			e.getErrorCode().getMessage(), null, e.getFieldErrorResponses());
 	}
 }

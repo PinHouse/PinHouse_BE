@@ -56,6 +56,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class HomeService implements HomeUseCase {
 
+	/**
+	 * 홈 통합 검색 (섹션별 5개 미리보기)
+	 */
+	private static final int HOME_SEARCH_PREVIEW_LIMIT = 5;
+	private static final int HOME_SEARCH_CATEGORY_PAGE_SIZE = 5;
 	private final NoticeDocumentRepository noticeRepository;
 	private final ComplexDocumentRepository complexRepository;
 	private final LikeQueryUseCase likeService;
@@ -70,9 +75,9 @@ public class HomeService implements HomeUseCase {
 	 */
 	@Override
 	public HomeNoticeListResponse getDeadlineApproachingNotices(
-			String pinpointId,
-			SliceRequest sliceRequest,
-			UUID userId
+		String pinpointId,
+		SliceRequest sliceRequest,
+		UUID userId
 	) {
 		// PinPoint 소유자 검증
 		boolean isOwner = pinPointService.checkPinPoint(pinpointId, userId);
@@ -97,10 +102,10 @@ public class HomeService implements HomeUseCase {
 
 		// Repository에서 직접 조회
 		Page<NoticeDocument> page = noticeRepository.findDeadlineApproachingNoticesByRegionAndCounty(
-				region.getFullName(),
-				county,
-				pageable,
-				now
+			region.getFullName(),
+			county,
+			pageable,
+			now
 		);
 
 		// 좋아요 상태 조회
@@ -108,11 +113,11 @@ public class HomeService implements HomeUseCase {
 
 		// DTO 변환 (개별 공고 정보)
 		List<HomeNoticeResponse> content = page.getContent().stream()
-				.map(notice -> {
-					boolean isLiked = likedNoticeIds.contains(notice.getId());
-					return HomeNoticeResponse.from(notice, isLiked);
-				})
-				.toList();
+			.map(notice -> {
+				boolean isLiked = likedNoticeIds.contains(notice.getId());
+				return HomeNoticeResponse.from(notice, isLiked);
+			})
+			.toList();
 
 		// 최종 응답 생성 (region + content + 페이징 정보)
 		return HomeNoticeListResponse.builder()
@@ -169,34 +174,45 @@ public class HomeService implements HomeUseCase {
 		}
 
 		// 2차: 약칭으로 매칭 시도 (예: "서울" -> "서울특별시")
-		if (address.startsWith("서울")) return NoticeListRequest.Region.SEOUL;
-		if (address.startsWith("부산")) return NoticeListRequest.Region.BUSAN;
-		if (address.startsWith("대구")) return NoticeListRequest.Region.DAEGU;
-		if (address.startsWith("인천")) return NoticeListRequest.Region.INCHEON;
-		if (address.startsWith("광주")) return NoticeListRequest.Region.GWANGJU;
-		if (address.startsWith("대전")) return NoticeListRequest.Region.DAEJEON;
-		if (address.startsWith("울산")) return NoticeListRequest.Region.ULSAN;
-		if (address.startsWith("세종")) return NoticeListRequest.Region.SEJONG;
-		if (address.startsWith("경기")) return NoticeListRequest.Region.GYEONGGI;
-		if (address.startsWith("강원")) return NoticeListRequest.Region.GANGWON;
-		if (address.startsWith("충북") || address.startsWith("충청북")) return NoticeListRequest.Region.CHUNGBUK;
-		if (address.startsWith("충남") || address.startsWith("충청남")) return NoticeListRequest.Region.CHUNGNAM;
-		if (address.startsWith("전북") || address.startsWith("전라북")) return NoticeListRequest.Region.JEONBUK;
-		if (address.startsWith("전남") || address.startsWith("전라남")) return NoticeListRequest.Region.JEONNAM;
-		if (address.startsWith("경북") || address.startsWith("경상북")) return NoticeListRequest.Region.GYEONGBUK;
-		if (address.startsWith("경남") || address.startsWith("경상남")) return NoticeListRequest.Region.GYEONGNAM;
-		if (address.startsWith("제주")) return NoticeListRequest.Region.JEJU;
+		if (address.startsWith("서울"))
+			return NoticeListRequest.Region.SEOUL;
+		if (address.startsWith("부산"))
+			return NoticeListRequest.Region.BUSAN;
+		if (address.startsWith("대구"))
+			return NoticeListRequest.Region.DAEGU;
+		if (address.startsWith("인천"))
+			return NoticeListRequest.Region.INCHEON;
+		if (address.startsWith("광주"))
+			return NoticeListRequest.Region.GWANGJU;
+		if (address.startsWith("대전"))
+			return NoticeListRequest.Region.DAEJEON;
+		if (address.startsWith("울산"))
+			return NoticeListRequest.Region.ULSAN;
+		if (address.startsWith("세종"))
+			return NoticeListRequest.Region.SEJONG;
+		if (address.startsWith("경기"))
+			return NoticeListRequest.Region.GYEONGGI;
+		if (address.startsWith("강원"))
+			return NoticeListRequest.Region.GANGWON;
+		if (address.startsWith("충북") || address.startsWith("충청북"))
+			return NoticeListRequest.Region.CHUNGBUK;
+		if (address.startsWith("충남") || address.startsWith("충청남"))
+			return NoticeListRequest.Region.CHUNGNAM;
+		if (address.startsWith("전북") || address.startsWith("전라북"))
+			return NoticeListRequest.Region.JEONBUK;
+		if (address.startsWith("전남") || address.startsWith("전라남"))
+			return NoticeListRequest.Region.JEONNAM;
+		if (address.startsWith("경북") || address.startsWith("경상북"))
+			return NoticeListRequest.Region.GYEONGBUK;
+		if (address.startsWith("경남") || address.startsWith("경상남"))
+			return NoticeListRequest.Region.GYEONGNAM;
+		if (address.startsWith("제주"))
+			return NoticeListRequest.Region.JEJU;
 
 		// 매칭되는 Region을 찾지 못한 경우
 		log.warn("주소에서 광역 단위를 추출할 수 없습니다. address={}", address);
 		throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
 	}
-
-	/**
-	 * 홈 통합 검색 (섹션별 5개 미리보기)
-	 */
-	private static final int HOME_SEARCH_PREVIEW_LIMIT = 5;
-	private static final int HOME_SEARCH_CATEGORY_PAGE_SIZE = 5;
 
 	@Override
 	public HomeSearchOverviewResponse searchHomeOverview(String keyword, UUID userId) {
@@ -207,12 +223,12 @@ public class HomeService implements HomeUseCase {
 
 		// 공고 검색 (기존 검색 로직 재사용)
 		SliceResponse<NoticeSearchResultResponse> notices = noticeSearchService.searchNotices(
-				keyword,
-				1,
-				HOME_SEARCH_PREVIEW_LIMIT,
-				NoticeSearchSortType.LATEST,
-				NoticeSearchFilterType.ALL,
-				userId
+			keyword,
+			1,
+			HOME_SEARCH_PREVIEW_LIMIT,
+			NoticeSearchSortType.LATEST,
+			NoticeSearchFilterType.ALL,
+			userId
 		);
 
 		Pageable pageable = PageRequest.of(0, HOME_SEARCH_PREVIEW_LIMIT);
@@ -234,20 +250,20 @@ public class HomeService implements HomeUseCase {
 		var houseTypeNotices = toNoticeResponses(houseTypeSlice.getContent(), likedIds);
 
 		return HomeSearchOverviewResponse.builder()
-				.notices(HomeSearchSectionResponse.of(notices.content(), notices.hasNext()))
-				.complexes(HomeSearchSectionResponse.of(complexNotices, complexSlice.hasNext()))
-				.targetGroups(HomeSearchSectionResponse.of(targetNotices, targetGroupSlice.hasNext()))
-				.regions(HomeSearchSectionResponse.of(regionNotices, regionSlice.hasNext()))
-				.houseTypes(HomeSearchSectionResponse.of(houseTypeNotices, houseTypeSlice.hasNext()))
-				.build();
+			.notices(HomeSearchSectionResponse.of(notices.content(), notices.hasNext()))
+			.complexes(HomeSearchSectionResponse.of(complexNotices, complexSlice.hasNext()))
+			.targetGroups(HomeSearchSectionResponse.of(targetNotices, targetGroupSlice.hasNext()))
+			.regions(HomeSearchSectionResponse.of(regionNotices, regionSlice.hasNext()))
+			.houseTypes(HomeSearchSectionResponse.of(houseTypeNotices, houseTypeSlice.hasNext()))
+			.build();
 	}
 
 	@Override
 	public HomeSearchCategoryPageResponse searchHomeByCategory(
-			HomeSearchCategoryType category,
-			String keyword,
-			int page,
-			UUID userId
+		HomeSearchCategoryType category,
+		String keyword,
+		int page,
+		UUID userId
 	) {
 		searchKeywordService.recordSearch(keyword, SearchKeywordScope.HOME);
 		Pageable pageable = PageRequest.of(page - 1, HOME_SEARCH_CATEGORY_PAGE_SIZE);
@@ -267,23 +283,28 @@ public class HomeService implements HomeUseCase {
 			}
 			case COMPLEX -> {
 				var complexes = complexRepository.searchByName(keyword, pageable);
-				List<NoticeSearchResultResponse> content = toNoticeResponsesFromComplexes(complexes.getContent(), likedIds);
-				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.COMPLEX, page, content, complexes.hasNext());
+				List<NoticeSearchResultResponse> content = toNoticeResponsesFromComplexes(complexes.getContent(),
+					likedIds);
+				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.COMPLEX, page, content,
+					complexes.hasNext());
 			}
 			case TARGET_GROUP -> {
 				var targets = noticeRepository.searchNoticesByTargetGroup(keyword, pageable);
 				List<NoticeSearchResultResponse> content = toNoticeResponses(targets.getContent(), likedIds);
-				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.TARGET_GROUP, page, content, targets.hasNext());
+				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.TARGET_GROUP, page, content,
+					targets.hasNext());
 			}
 			case REGION -> {
 				var regions = noticeRepository.searchNoticesByRegion(keyword, pageable);
 				List<NoticeSearchResultResponse> content = toNoticeResponses(regions.getContent(), likedIds);
-				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.REGION, page, content, regions.hasNext());
+				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.REGION, page, content,
+					regions.hasNext());
 			}
 			case HOUSE_TYPE -> {
 				var houseTypes = noticeRepository.searchNoticesByHouseType(keyword, pageable);
 				List<NoticeSearchResultResponse> content = toNoticeResponses(houseTypes.getContent(), likedIds);
-				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.HOUSE_TYPE, page, content, houseTypes.hasNext());
+				return HomeSearchCategoryPageResponse.of(HomeSearchCategoryType.HOUSE_TYPE, page, content,
+					houseTypes.hasNext());
 			}
 			default -> throw new IllegalStateException("Unexpected value: " + category);
 		}
@@ -293,7 +314,6 @@ public class HomeService implements HomeUseCase {
 	public List<PopularKeywordResponse> getHomePopularKeywords(int limit) {
 		return searchKeywordService.getPopularKeywords(limit, SearchKeywordScope.HOME);
 	}
-
 
 	/**
 	 * 핀포인트 기준 최대 이동 시간 내 공고 개수 조회
@@ -329,20 +349,20 @@ public class HomeService implements HomeUseCase {
 
 		// 반경 내 단지 조회
 		List<ComplexDocument> nearbyComplexes = complexRepository.findByLocation(
-				pinPointLocation.getLongitude(),
-				pinPointLocation.getLatitude(),
-				radiusInRadians
+			pinPointLocation.getLongitude(),
+			pinPointLocation.getLatitude(),
+			radiusInRadians
 		);
 
 		// 단지들의 고유한 공고 ID 추출 및 개수 계산
 		long uniqueNoticeCount = nearbyComplexes.stream()
-				.map(ComplexDocument::getNoticeId)
-				.filter(noticeId -> noticeId != null && !noticeId.isBlank())
-				.distinct()
-				.count();
+			.map(ComplexDocument::getNoticeId)
+			.filter(noticeId -> noticeId != null && !noticeId.isBlank())
+			.distinct()
+			.count();
 
 		log.debug("핀포인트 {} 기준 {}분 내 공고 개수: {} (반경: {}km)",
-				pinPointId, maxTime, uniqueNoticeCount, distanceKm);
+			pinPointId, maxTime, uniqueNoticeCount, distanceKm);
 
 		return NoticeCountResponse.from(uniqueNoticeCount);
 	}
@@ -356,8 +376,8 @@ public class HomeService implements HomeUseCase {
 	 */
 	@Override
 	public HomeNoticeListResponse getRecommendedNoticesByDiagnosis(
-			SliceRequest sliceRequest,
-			UUID userId
+		SliceRequest sliceRequest,
+		UUID userId
 	) {
 		// 1. 진단 결과 조회
 		DiagnosisDetailResponse diagnosis = diagnosisService.getDiagnoseDetail(userId);
@@ -443,32 +463,36 @@ public class HomeService implements HomeUseCase {
 
 	private List<NoticeSearchResultResponse> toNoticeResponses(List<NoticeDocument> notices, List<String> likedIds) {
 		return notices.stream()
-				.map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
-				.toList();
+			.map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
+			.toList();
 	}
 
-	private List<NoticeSearchResultResponse> toNoticeResponsesFromComplexes(List<ComplexDocument> complexes, List<String> likedIds) {
+	private List<NoticeSearchResultResponse> toNoticeResponsesFromComplexes(List<ComplexDocument> complexes,
+		List<String> likedIds) {
 		List<String> noticeIds = complexes.stream()
-				.map(ComplexDocument::getNoticeId)
-				.filter(id -> id != null && !id.isBlank())
-				.distinct()
-				.limit(HOME_SEARCH_PREVIEW_LIMIT + 1L)
-				.toList();
+			.map(ComplexDocument::getNoticeId)
+			.filter(id -> id != null && !id.isBlank())
+			.distinct()
+			.limit(HOME_SEARCH_PREVIEW_LIMIT + 1L)
+			.toList();
 
 		List<NoticeDocument> notices = noticeRepository.findByIdIn(noticeIds);
 
 		return noticeIds.stream()
-				.map(id -> notices.stream().filter(n -> id.equals(n.getId())).findFirst().orElse(null))
-				.filter(n -> n != null)
-				.limit(HOME_SEARCH_PREVIEW_LIMIT)
-				.map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
-				.toList();
+			.map(id -> notices.stream().filter(n -> id.equals(n.getId())).findFirst().orElse(null))
+			.filter(n -> n != null)
+			.limit(HOME_SEARCH_PREVIEW_LIMIT)
+			.map(n -> NoticeSearchResultResponse.from(n, likedIds != null && likedIds.contains(n.getId())))
+			.toList();
 	}
 
 	private String buildAddress(String city, String county) {
-		if (city == null && county == null) return null;
-		if (city == null) return county;
-		if (county == null) return city;
+		if (city == null && county == null)
+			return null;
+		if (city == null)
+			return county;
+		if (county == null)
+			return city;
 		return city + " " + county;
 	}
 }

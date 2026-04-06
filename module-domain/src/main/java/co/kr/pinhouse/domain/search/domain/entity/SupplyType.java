@@ -22,11 +22,6 @@ public enum SupplyType {
 	private final String value;
 	private final List<String> includedTypes;
 
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
-
 	public static SupplyType fromValue(String value) {
 		for (SupplyType type : values()) {
 			if (type.value.equals(value)) {
@@ -35,5 +30,10 @@ public enum SupplyType {
 		}
 		throw new CustomException(CommonErrorCode.BAD_PARAMETER);
 
+	}
+
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }

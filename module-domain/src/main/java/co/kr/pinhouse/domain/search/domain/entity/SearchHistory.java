@@ -43,20 +43,19 @@ public class SearchHistory {
 
 	private List<HouseType> houseType;
 
-
 	@Builder
 	protected SearchHistory(
-			String userId,
-			String pinPointId,
-			int transitTime,
-			double minSize,
-			double maxSize,
-			int maxDeposit,
-			int maxMonthPay,
-			List<FacilityType> facilities,
-			List<RentalType> rentalTypes,
-			List<SupplyType> supplyTypes,
-			List<HouseType> houseType
+		String userId,
+		String pinPointId,
+		int transitTime,
+		double minSize,
+		double maxSize,
+		int maxDeposit,
+		int maxMonthPay,
+		List<FacilityType> facilities,
+		List<RentalType> rentalTypes,
+		List<SupplyType> supplyTypes,
+		List<HouseType> houseType
 	) {
 		this.userId = userId;
 		this.pinPointId = pinPointId;
@@ -71,34 +70,33 @@ public class SearchHistory {
 		this.houseType = houseType;
 	}
 
-
 	/// 정적 팩토리 메서드
 	public static SearchHistory of(
-			String userId,
-			String pinPointId,
-			int transitTime,
-			double minSize,
-			double maxSize,
-			int maxDeposit,
-			int maxMonthPay,
-			List<FacilityType> facilities,
-			List<RentalType> rentalTypes,
-			List<SupplyType> supplyTypes,
-			List<HouseType> houseType
+		String userId,
+		String pinPointId,
+		int transitTime,
+		double minSize,
+		double maxSize,
+		int maxDeposit,
+		int maxMonthPay,
+		List<FacilityType> facilities,
+		List<RentalType> rentalTypes,
+		List<SupplyType> supplyTypes,
+		List<HouseType> houseType
 	) {
 		return SearchHistory.builder()
-				.userId(userId)
-				.pinPointId(pinPointId)
-				.transitTime(transitTime)
-				.minSize(minSize)
-				.maxSize(maxSize)
-				.maxDeposit(maxDeposit)
-				.maxMonthPay(maxMonthPay)
-				.facilities(facilities)
-				.rentalTypes(rentalTypes)
-				.supplyTypes(supplyTypes)
-				.houseType(houseType)
-				.build();
+			.userId(userId)
+			.pinPointId(pinPointId)
+			.transitTime(transitTime)
+			.minSize(minSize)
+			.maxSize(maxSize)
+			.maxDeposit(maxDeposit)
+			.maxMonthPay(maxMonthPay)
+			.facilities(facilities)
+			.rentalTypes(rentalTypes)
+			.supplyTypes(supplyTypes)
+			.houseType(houseType)
+			.build();
 	}
 
 }

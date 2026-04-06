@@ -36,7 +36,6 @@ public enum ComplexErrorCode implements ErrorCode {
 	ODSAY_SERVER_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "ODsay API 호출 실패"),
 	ODSAY_PARSING_ERROR(500_002, HttpStatus.INTERNAL_SERVER_ERROR, "ODsay API 응답 처리 실패");
 
-
 	/**
 	 * 에러 코드 (고유값)
 	 */

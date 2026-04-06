@@ -33,8 +33,8 @@ public class PinPointApi implements PinPointApiSpec {
 	@CheckLogin
 	@PostMapping()
 	public ApiResponse<Void> addPinPoint(
-			@CurrentUserId(required = true) UUID userId,
-			@RequestBody @Valid PinPointRequest request) {
+		@CurrentUserId(required = true) UUID userId,
+		@RequestBody @Valid PinPointRequest request) {
 
 		/// 서비스
 		service.savePinPoint(userId, request);
@@ -47,9 +47,9 @@ public class PinPointApi implements PinPointApiSpec {
 	@CheckLogin
 	@PatchMapping("{id}")
 	public ApiResponse<Void> updatePinPoint(
-			@PathVariable String id,
-			@CurrentUserId(required = true) UUID userId,
-			@RequestBody @Valid UpdatePinPointRequest request) {
+		@PathVariable String id,
+		@CurrentUserId(required = true) UUID userId,
+		@RequestBody @Valid UpdatePinPointRequest request) {
 
 		/// 서비스
 		service.update(id, userId, request);
@@ -58,12 +58,11 @@ public class PinPointApi implements PinPointApiSpec {
 		return ApiResponse.created();
 	}
 
-
 	/// 나의 핀포인트 목록 조회하기
 	@CheckLogin
 	@GetMapping()
 	public ApiResponse<PinPointListResponse> getPinPoints(
-			@CurrentUserId(required = true) UUID userId
+		@CurrentUserId(required = true) UUID userId
 	) {
 
 		/// 서비스
@@ -77,8 +76,8 @@ public class PinPointApi implements PinPointApiSpec {
 	@DeleteMapping()
 	@CheckLogin
 	public ApiResponse<Void> deletePinPoint(
-			@RequestParam String id,
-			@CurrentUserId(required = true) UUID userId
+		@RequestParam String id,
+		@CurrentUserId(required = true) UUID userId
 	) {
 
 		/// 서비스

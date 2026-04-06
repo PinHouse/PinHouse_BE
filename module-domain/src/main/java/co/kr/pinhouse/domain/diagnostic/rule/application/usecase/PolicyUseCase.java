@@ -5,7 +5,6 @@ import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType;
 
 public interface PolicyUseCase {
 
-
 	/// 소득 비율
 	double maxIncomeRatio(SupplyType supply, NoticeType rental, int familyCount);
 

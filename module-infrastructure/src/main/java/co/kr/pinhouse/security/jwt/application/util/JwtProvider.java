@@ -25,26 +25,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtProvider {
 
-	@Value("${auth.jwt.access.expiration}")
-	private long accessExpiration;
-
-	@Value("${auth.jwt.access.dev_expiration}")
-	private long devExpiration;
-
-	@Value("${auth.jwt.refresh.expiration}")
-	private long refreshExpiration;
-
 	/// 비밀키
 	private final SecretKey secretKey;
-
 	/// 레디스 저장소
 	private final JwtRefreshTokenRepository repository;
-
+	@Value("${auth.jwt.access.expiration}")
+	private long accessExpiration;
+	@Value("${auth.jwt.access.dev_expiration}")
+	private long devExpiration;
+	@Value("${auth.jwt.refresh.expiration}")
+	private long refreshExpiration;
 
 	// =================
 	//  퍼블릭 로직
 	// =================
-
 
 	/// 액세스 토큰 발급
 	public String createAccessToken(JwtTokenRequest userInfo) {
@@ -71,9 +65,8 @@ public class JwtProvider {
 
 		/// 레디스에 저장하기
 		return repository.save(token)
-				.getRefreshToken();
+			.getRefreshToken();
 	}
-
 
 	// =================
 	//  내부 공통 로직
@@ -94,11 +87,11 @@ public class JwtProvider {
 		claims.put(ROLE_CLAIM, tokenInfo.role());
 
 		return Jwts.builder()
-				.setIssuer("pinhouse") // 작성자
-				.setClaims(claims)  // 페이로드
-				.setIssuedAt(Date.from(now)) // 발급 시간
-				.setExpiration(expiredAt) // 만료 시간
-				.signWith(secretKey, SignatureAlgorithm.HS256)  // 비밀키 서명
-				.compact();
+			.setIssuer("pinhouse") // 작성자
+			.setClaims(claims)  // 페이로드
+			.setIssuedAt(Date.from(now)) // 발급 시간
+			.setExpiration(expiredAt) // 만료 시간
+			.signWith(secretKey, SignatureAlgorithm.HS256)  // 비밀키 서명
+			.compact();
 	}
 }

@@ -40,11 +40,11 @@ public class SearchMongoIndexConfig {
 	private void createNoticeTextIndex() {
 		try {
 			TextIndexDefinition textIndex = TextIndexDefinition.builder()
-					.onField("title")  // 공고 제목 필드
-					.build();
+				.onField("title")  // 공고 제목 필드
+				.build();
 
 			mongoTemplate.indexOps(NoticeDocument.class)
-					.ensureIndex(textIndex);
+				.ensureIndex(textIndex);
 
 			log.info("Created text index on NoticeDocument.title");
 		} catch (Exception e) {
@@ -62,37 +62,37 @@ public class SearchMongoIndexConfig {
 		try {
 			// keyword 필드에 unique index (이미 @Indexed(unique=true) 어노테이션이 있지만 명시적으로 생성)
 			Index keywordIndex = new Index()
-					.named("idx_keyword")
-					.on("keyword", Sort.Direction.ASC)
-					.unique();
+				.named("idx_keyword")
+				.on("keyword", Sort.Direction.ASC)
+				.unique();
 
 			mongoTemplate.indexOps(SearchKeyword.class)
-					.ensureIndex(keywordIndex);
+				.ensureIndex(keywordIndex);
 
 			// count 필드에 descending index (인기 검색어 조회 성능 향상)
 			Index countIndex = new Index()
-					.named("idx_count")
-					.on("count", Sort.Direction.DESC);
+				.named("idx_count")
+				.on("count", Sort.Direction.DESC);
 
 			mongoTemplate.indexOps(SearchKeyword.class)
-					.ensureIndex(countIndex);
+				.ensureIndex(countIndex);
 
 			// lastSearchedAt 필드에 descending index
 			Index lastSearchedIndex = new Index()
-					.named("idx_last_searched")
-					.on("lastSearchedAt", Sort.Direction.DESC);
+				.named("idx_last_searched")
+				.on("lastSearchedAt", Sort.Direction.DESC);
 
 			mongoTemplate.indexOps(SearchKeyword.class)
-					.ensureIndex(lastSearchedIndex);
+				.ensureIndex(lastSearchedIndex);
 
 			// 복합 인덱스: count(desc) + lastSearchedAt(desc) - 인기 검색어 조회 최적화
 			Index compoundIndex = new Index()
-					.named("idx_popular")
-					.on("count", Sort.Direction.DESC)
-					.on("lastSearchedAt", Sort.Direction.DESC);
+				.named("idx_popular")
+				.on("count", Sort.Direction.DESC)
+				.on("lastSearchedAt", Sort.Direction.DESC);
 
 			mongoTemplate.indexOps(SearchKeyword.class)
-					.ensureIndex(compoundIndex);
+				.ensureIndex(compoundIndex);
 
 			log.info("Created indexes on SearchKeyword collection");
 		} catch (Exception e) {

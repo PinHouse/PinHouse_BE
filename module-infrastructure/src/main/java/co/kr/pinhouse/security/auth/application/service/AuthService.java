@@ -56,7 +56,7 @@ public class AuthService implements AuthUseCase {
 
 		/// DB 검증
 		User user = repository.findById(userId)
-				.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
+			.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
 		/// 없다면 예외처리
 		if (refreshToken.isEmpty()) {
@@ -84,7 +84,6 @@ public class AuthService implements AuthUseCase {
 		return true;
 	}
 
-
 	/// 토큰 재발급
 	@Override
 	@Transactional
@@ -100,7 +99,7 @@ public class AuthService implements AuthUseCase {
 
 		/// 리프레쉬 토큰 바탕으로 조회
 		User user = repository.findById(token.getUserId())
-				.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
+			.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
 		/// 기존 리프레쉬 토큰 무효화하기 (RDB)
 		jwtValidator.removeRefreshToken(user.getId(), token.getRefreshToken());

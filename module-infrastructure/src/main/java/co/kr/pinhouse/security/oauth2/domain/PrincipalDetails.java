@@ -26,16 +26,16 @@ public class PrincipalDetails implements OAuth2User, AuthenticatedUser {
 	// 생성자
 	public static PrincipalDetails of(User user, Map<String, Object> attributes) {
 		return PrincipalDetails.builder()
-				.user(user)
-				.attributes(attributes)
-				.build();
+			.user(user)
+			.attributes(attributes)
+			.build();
 	}
 
 	public static PrincipalDetails of(User user) {
 		return PrincipalDetails.builder()
-				.user(user)
-				.attributes(null)
-				.build();
+			.user(user)
+			.attributes(null)
+			.build();
 	}
 
 	/// 로직

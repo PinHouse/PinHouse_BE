@@ -39,7 +39,8 @@ public class UnitType {
 
 	/// 빌더 생성자
 	@Builder
-	public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent, Deposit deposit, Quota quota, List<String> group) {
+	public UnitType(String typeId, String typeCode, String complexId, double exclusiveAreaM2, int monthlyRent,
+		Deposit deposit, Quota quota, List<String> group) {
 		this.typeId = typeId;
 		this.typeCode = typeCode;
 		this.complexId = complexId;

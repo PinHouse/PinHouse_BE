@@ -49,46 +49,52 @@
 ## ✨ 주요 기능
 
 ### 🔐 인증 및 사용자 관리
+
 - **소셜 로그인**: Kakao, Naver OAuth2 인증
 - **JWT 기반 인증**: Access/Refresh Token을 통한 보안 강화
 - **마이페이지**: 프로필 관리, 좋아요 목록, 진단 이력 조회
 
 ### 🏘️ 주택 정보 관리
+
 - **단지 정보**: 임대주택 단지의 상세 정보 제공
-  - 난방방식, 총세대수, 공급호수
-  - 방 타입별 정보 (면적, 임대료, 관리비)
-  - 주변 인프라 정보 (카페, 편의점, 병원, 학교 등)
+    - 난방방식, 총세대수, 공급호수
+    - 방 타입별 정보 (면적, 임대료, 관리비)
+    - 주변 인프라 정보 (카페, 편의점, 병원, 학교 등)
 
 - **공고 검색**: 다양한 필터링 및 정렬 옵션
-  - 지역, 공급 유형, 가격 범위, 면적별 검색
-  - 커서 기반 무한 스크롤 페이지네이션
-  - 인기순, 최신순 정렬
+    - 지역, 공급 유형, 가격 범위, 면적별 검색
+    - 커서 기반 무한 스크롤 페이지네이션
+    - 인기순, 최신순 정렬
 
 - **방 비교 기능**: 여러 방 타입을 한눈에 비교
 
 ### 📍 위치 기반 서비스
+
 - **핀포인트**: 사용자의 관심 위치 등록 (직장, 학교, 부모 집 등)
 - **거리 시뮬레이터**: Odsay API를 활용한 대중교통 경로 계산
-  - 총 소요 시간, 거리, 요금 정보
-  - 구간별 상세 경로 (승차/하차 정보, 노선 색상)
-  - 최대 3개 경로 제공
+    - 총 소요 시간, 거리, 요금 정보
+    - 구간별 상세 경로 (승차/하차 정보, 노선 색상)
+    - 최대 3개 경로 제공
 
 ### 🎓 청약 진단 시스템
+
 - **자격 진단**: 사용자의 소득, 자산, 가족 구성원 정보 기반 청약 가능 여부 판단
 - **규칙 엔진**: 공급 유형별 복잡한 청약 자격 규칙 자동 적용
-  - 신혼부부 특별공급
-  - 다자녀 가구 특별공급
-  - 생애최초 특별공급
-  - 청년 특별공급
+    - 신혼부부 특별공급
+    - 다자녀 가구 특별공급
+    - 생애최초 특별공급
+    - 청년 특별공급
 - **진단 이력 관리**: 과거 진단 결과 저장 및 조회
 
 ### 🔍 검색 및 필터링
+
 - **빠른 검색**: 지역, 방 타입, 임대료 범위로 간편 검색
 - **고급 검색**: 키워드 기반 검색 및 다양한 필터 조합
 - **인기 검색어**: 실시간 인기 검색어 제공
 - **검색 기록**: MongoDB 기반 사용자별 검색 이력 추적
 
 ### ❤️ 좋아요 및 북마크
+
 - 공고, 단지, 방 타입에 대한 좋아요 기능
 - 로그인 사용자별 좋아요 목록 관리
 
@@ -97,36 +103,43 @@
 ## 🛠 기술 스택
 
 ### Backend
+
 - **Language**: Java 21
 - **Framework**: Spring Boot 3.4.3
 - **Build Tool**: Gradle 8.x
 - **Architecture**: Clean Architecture (4-Layer)
 
 ### Database
+
 - **MySQL 8.0**: 관계형 데이터 (사용자, 공고, 단지, 진단 결과)
 - **MongoDB**: 문서 기반 데이터 (핀포인트, 검색 이력, 주변시설)
 - **Redis 7.2.5**: 세션 관리 (JWT Refresh Token, 임시 사용자 정보)
 
 ### Security & Auth
+
 - **Spring Security**: 보안 프레임워크
 - **OAuth2 Client**: 소셜 로그인 (Kakao, Naver)
 - **JWT**: `io.jsonwebtoken:jjwt-api:0.11.5`
 
 ### Infrastructure
+
 - **Docker & Docker Compose**: 컨테이너화
 - **Nginx**: 리버스 프록시
 - **Certbot**: SSL/TLS 인증서 관리
 
 ### DevOps
+
 - **GitHub Actions**: CI/CD 자동화
 - **JUnit 5**: 단위 및 통합 테스트
 
 ### External APIs
+
 - **Odsay API**: 대중교통 경로 및 시간 계산
 - **Kakao Local API**: 주소-좌표 변환
 - **OAuth2 Providers**: Kakao, Naver
 
 ### Documentation & Monitoring
+
 - **Swagger/OpenAPI**: `springdoc-openapi-starter-webmvc-ui:2.8.6`
 - **Spring Actuator**: 애플리케이션 모니터링
 
@@ -353,39 +366,47 @@ erDiagram
 ### MySQL (Relational Data)
 
 **User 테이블**
+
 - 사용자 기본 정보 (이름, 프로필 이미지, OAuth 정보)
 - 진단 결과와 1:N 관계
 - 좋아요와 1:N 관계
 
 **Complex 테이블**
+
 - 임대주택 단지 정보
 - Notice와 N:M 관계 (하나의 공고에 여러 단지)
 - UnitType과 1:N 관계
 
 **Notice 테이블**
+
 - 청약 공고 정보
 - 모집 기간, 당첨자 발표일, 계약일 등
 
 **Diagnosis 테이블**
+
 - 청약 진단 결과 저장
 - 사용자 소득, 자산, 가족 구성원 정보
 
 **Like 테이블**
+
 - 사용자별 좋아요 정보
 - 공고, 단지, 방 타입 구분
 
 ### MongoDB (Document-based Data)
 
 **PinPoint Collection**
+
 - 사용자의 관심 위치 정보
 - Kakao Local API를 통한 좌표 데이터
 - 즐겨찾기(first) 여부
 
 **SearchHistory Collection**
+
 - 사용자별 검색 기록
 - 검색 키워드, 필터 조건, 타임스탬프
 
 **Facility Collection**
+
 - 단지 주변 시설 정보
 - 카테고리별 시설 목록
 
@@ -479,6 +500,7 @@ sequenceDiagram
 ### 1. Clean Architecture 적용
 
 **의존성 역전 원칙 (DIP) 준수**
+
 ```java
 // UseCase Interface (Application Layer)
 public interface ComplexUseCase {
@@ -521,6 +543,7 @@ public ApiResponse<MyPageResponse> getMyPage(
 ### 3. 다층 데이터베이스 전략
 
 **MySQL** - 정형 데이터 (JPA)
+
 ```java
 @Entity
 @Table(name = "users")
@@ -535,6 +558,7 @@ public class User extends BaseTimeEntity {
 ```
 
 **MongoDB** - 비정형 데이터
+
 ```java
 @Document(collection = "pinpoints")
 public class PinPointDocument {
@@ -547,6 +571,7 @@ public class PinPointDocument {
 ```
 
 **Redis** - 세션 및 캐싱
+
 ```java
 @RedirectAttributes
 public void saveRefreshToken(UUID userId, String refreshToken) {
@@ -582,6 +607,7 @@ public class RuleChain {
 ### 5. 효율적인 페이지네이션
 
 **Cursor 기반 무한 스크롤**
+
 ```java
 public record SliceRequest(
     int page,
@@ -628,6 +654,7 @@ public record ApiResponse<T>(
 ### 7. 대중교통 경로 정보 최적화
 
 **TransitInfoResponse** - 전체 경로 정보와 구간별 정보 분리
+
 ```java
 public record TransitInfoResponse(
     String totalTime,              // "약 1시간 23분"
@@ -644,23 +671,28 @@ public record TransitInfoResponse(
 ## ⚡️ 성능 최적화
 
 ### 1. 다층 데이터베이스 전략
+
 - **MySQL**: 정형화된 트랜잭션 데이터
 - **MongoDB**: 복잡한 검색 쿼리 및 유연한 스키마
 - **Redis**: 세션 캐싱으로 DB 부하 감소
 
 ### 2. 커서 기반 페이지네이션
+
 - Offset 방식 대신 Cursor 기반 무한 스크롤 구현
 - 대량 데이터 조회 시 성능 최적화 (O(n) → O(1))
 
 ### 3. DTO 최적화
+
 - Java Record 타입으로 불변 객체 생성
 - 중복 데이터 제거 (TransitInfoResponse 구조 개선)
 
 ### 4. N+1 문제 해결
+
 - JPA Fetch Join 및 EntityGraph 활용
 - 연관 관계 데이터 한 번에 조회
 
 ### 5. AOP를 통한 횡단 관심사 분리
+
 - `@CheckLogin` 어노테이션으로 인증 로직 중복 제거
 - 비즈니스 로직에 집중 가능
 
@@ -669,11 +701,13 @@ public record TransitInfoResponse(
 ## 🔒 보안
 
 ### 인증 및 인가
+
 - **JWT 기반 인증**: Stateless 인증으로 확장성 확보
 - **Refresh Token**: Redis에 저장하여 보안 강화
 - **OAuth2**: 소셜 로그인으로 패스워드 관리 부담 제거
 
 ### 보안 설정
+
 - **CORS 설정**: 허용된 도메인만 API 접근 가능
 - **HTTPS**: Nginx + Certbot으로 SSL/TLS 적용
 - **SQL Injection 방지**: JPA Prepared Statement 사용
@@ -685,17 +719,19 @@ public record TransitInfoResponse(
 ### GitHub Actions Workflows
 
 **1. CI Test (`ci-test.yml`)**
+
 - **트리거**: Pull Request to `develop`
 - **작업**:
-  - MySQL, Redis, MongoDB 서비스 컨테이너 실행
-  - `./gradlew clean build` 실행 (테스트 포함)
-  - JUnit 테스트 결과 발행
+    - MySQL, Redis, MongoDB 서비스 컨테이너 실행
+    - `./gradlew clean build` 실행 (테스트 포함)
+    - JUnit 테스트 결과 발행
 
 **2. Dev Deployment (`dev-ci-cd.yml`)**
+
 - **트리거**: Push to `develop`
 - **작업**:
-  - Docker 이미지 빌드
-  - Dev 서버 배포
+    - Docker 이미지 빌드
+    - Dev 서버 배포
 
 ### 개발 워크플로우
 
@@ -718,6 +754,7 @@ feature/* → PR → develop (CI Test) → merge → develop (Deploy to Dev)
 ## 👥 개발 팀
 
 **Backend Team**
+
 - Spring Boot, Clean Architecture, Multi-Database Design
 - OAuth2, JWT 인증/인가 구현
 - 복잡한 비즈니스 로직 설계 (청약 진단 규칙 엔진)

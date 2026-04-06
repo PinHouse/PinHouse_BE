@@ -37,7 +37,6 @@ public class HttpUtil {
 	@Value("${auth.cookie.PathOption}")
 	private String cookiePathOption;
 
-
 	/// 액세스 토큰 쿠키 가져오기
 	public Optional<String> getAccessToken(HttpServletRequest request) {
 		return extractToken(request, ACCESS_TOKEN);
@@ -99,30 +98,24 @@ public class HttpUtil {
 		return new HeaderInfo(ip, httpMethod, uri, username);
 	}
 
-	/// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
-	public record HeaderInfo(String ip, String httpMethod, String uri, String userName) {
-
-	}
-
-
-	// =================
-	//  내부 공통 함수
-	// =================
-
 	/// 쿠키 생성하기
 	private void createCookie(HttpServletResponse response, String cookieName, String cookieValue, long maxAge) {
 
 		ResponseCookie cookie = ResponseCookie.from(cookieName, cookieValue)
-				.maxAge(maxAge)
-				.path(cookiePathOption)
-				.httpOnly(true)
-				.secure(secureOption)  // Dev/Prod 환경에 따라 설정됨
-				.sameSite(sameSiteOption)
-				.build();
+			.maxAge(maxAge)
+			.path(cookiePathOption)
+			.httpOnly(true)
+			.secure(secureOption)  // Dev/Prod 환경에 따라 설정됨
+			.sameSite(sameSiteOption)
+			.build();
 
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
 	}
+
+	// =================
+	//  내부 공통 함수
+	// =================
 
 	/// 쿠키에서 토큰 가져오기
 	private Optional<String> extractToken(HttpServletRequest httpServletRequest, String type) {
@@ -146,12 +139,12 @@ public class HttpUtil {
 	/// 공통 쿠키 삭제 메서드
 	private void deleteCookie(HttpServletResponse response, String cookieName) {
 		ResponseCookie cookie = ResponseCookie.from(cookieName, "")
-				.maxAge(0)
-				.path(cookiePathOption)
-				.secure(secureOption)
-				.httpOnly(true)
-				.sameSite(sameSiteOption)
-				.build();
+			.maxAge(0)
+			.path(cookiePathOption)
+			.secure(secureOption)
+			.httpOnly(true)
+			.sameSite(sameSiteOption)
+			.build();
 
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 	}
@@ -172,5 +165,10 @@ public class HttpUtil {
 			return ip;
 		}
 		return request.getRemoteAddr();
+	}
+
+	/// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
+	public record HeaderInfo(String ip, String httpMethod, String uri, String userName) {
+
 	}
 }

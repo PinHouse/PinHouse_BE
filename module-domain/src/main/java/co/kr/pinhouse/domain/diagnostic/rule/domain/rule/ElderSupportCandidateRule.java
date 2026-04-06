@@ -15,7 +15,6 @@ import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyType;
 import lombok.RequiredArgsConstructor;
 
-
 /** 8) 노부모 부양 지원 */
 @Order(4)
 @Component
@@ -37,24 +36,25 @@ public class ElderSupportCandidateRule implements Rule {
 
 			/// 만약 있다면 삭제 (고령자 부양 특별공급만 제거)
 			candidates.removeIf(c ->
-					c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
+				c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
 
 			/// 조건이 없으므로 넘어간다.
 			return RuleResult.fail(code(),
-					"노부모 부양 특별공급 해당 없음",
-					Map.of("candidate", candidates));
+				"노부모 부양 특별공급 해당 없음",
+				Map.of("candidate", candidates));
 		}
 
 		/// 조건 충족으로 넘어간다.
 		return RuleResult.pass(code(),
-				"노부모 부양 특별공급 후보",
-				Map.of("candidate", candidates));
+			"노부모 부양 특별공급 후보",
+			Map.of("candidate", candidates));
 	}
 
-	@Override public String code() {
+	@Override
+	public String code() {
 		return "CANDIDATE_ELDER_SUPPORT_SPECIAL";
 	}
 

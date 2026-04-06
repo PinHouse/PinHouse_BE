@@ -15,11 +15,6 @@ public enum NoticeSearchSortType {
 
 	private final String label;
 
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-
 	/**
 	 * String을 NoticeSearchSortType으로 변환
 	 * Enum 이름 또는 한글 라벨 모두 지원
@@ -51,5 +46,10 @@ public enum NoticeSearchSortType {
 
 	private static String normalize(String x) {
 		return x.trim().replaceAll("\\s+", "");
+	}
+
+	@JsonValue
+	public String getLabel() {
+		return label;
 	}
 }

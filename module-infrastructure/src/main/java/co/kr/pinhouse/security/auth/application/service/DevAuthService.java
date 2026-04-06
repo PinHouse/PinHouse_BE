@@ -45,7 +45,7 @@ public class DevAuthService {
 		/// 유저 생성하기
 		if (repository.existsById(id)) {
 			user = repository.findById(id)
-					.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
+				.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 		} else {
 			User dev = User.devOf(id);
 			user = repository.save(dev);
@@ -53,7 +53,8 @@ public class DevAuthService {
 
 		/// 인증필터에 적용
 		PrincipalDetails principalDetails = PrincipalDetails.of(user);
-		Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+		Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
+			principalDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		/// 토큰 발급하기

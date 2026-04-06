@@ -42,17 +42,17 @@ public class HomeApi implements HomeApiSpec {
 	@CheckLogin
 	@GetMapping("/notice")
 	public ApiResponse<HomeNoticeListResponse> getDeadlineApproachingNotices(
-			@RequestParam String pinpointId,
-			SliceRequest sliceRequest,
-			@CurrentUserId(required = true) UUID userId
+		@RequestParam String pinpointId,
+		SliceRequest sliceRequest,
+		@CurrentUserId(required = true) UUID userId
 	) {
 		// @CheckLogin에 의해 principalDetails는 항상 non-null
 
 		// 서비스 호출
 		HomeNoticeListResponse response = homeService.getDeadlineApproachingNotices(
-				pinpointId,
-				sliceRequest,
-				userId
+			pinpointId,
+			sliceRequest,
+			userId
 		);
 
 		return ApiResponse.ok(response);
@@ -65,8 +65,8 @@ public class HomeApi implements HomeApiSpec {
 	@Override
 	@GetMapping("/search/overview")
 	public ApiResponse<HomeSearchOverviewResponse> searchOverview(
-			@RequestParam String q,
-			@CurrentUserId UUID userId
+		@RequestParam String q,
+		@CurrentUserId UUID userId
 	) {
 		HomeSearchOverviewResponse response = homeService.searchHomeOverview(q, userId);
 		return ApiResponse.ok(response);
@@ -79,16 +79,16 @@ public class HomeApi implements HomeApiSpec {
 	@Override
 	@GetMapping("/search/category")
 	public ApiResponse<HomeSearchCategoryPageResponse> searchByCategory(
-			@RequestParam HomeSearchCategoryType type,
-			@RequestParam String q,
-			@RequestParam(defaultValue = "1") int page,
-			@CurrentUserId UUID userId
+		@RequestParam HomeSearchCategoryType type,
+		@RequestParam String q,
+		@RequestParam(defaultValue = "1") int page,
+		@CurrentUserId UUID userId
 	) {
 		HomeSearchCategoryPageResponse response = homeService.searchHomeByCategory(
-				type,
-				q,
-				page,
-				userId
+			type,
+			q,
+			page,
+			userId
 		);
 		return ApiResponse.ok(response);
 	}
@@ -100,7 +100,7 @@ public class HomeApi implements HomeApiSpec {
 	@Override
 	@GetMapping("/search/popular")
 	public ApiResponse<List<PopularKeywordResponse>> getHomePopularKeywords(
-			@RequestParam(defaultValue = "10") int limit
+		@RequestParam(defaultValue = "10") int limit
 	) {
 		List<PopularKeywordResponse> response = homeService.getHomePopularKeywords(limit);
 		return ApiResponse.ok(response);
@@ -115,17 +115,17 @@ public class HomeApi implements HomeApiSpec {
 	@CheckLogin
 	@GetMapping("/notice-count")
 	public ApiResponse<NoticeCountResponse> getNoticeCountWithinTravelTime(
-			@RequestParam String pinPointId,
-			@RequestParam int maxTime,
-			@CurrentUserId(required = true) UUID userId
+		@RequestParam String pinPointId,
+		@RequestParam int maxTime,
+		@CurrentUserId(required = true) UUID userId
 	) {
 		// @CheckLogin에 의해 principalDetails는 항상 non-null
 
 		// 서비스 호출
 		NoticeCountResponse response = homeService.getNoticeCountWithinTravelTime(
-				pinPointId,
-				maxTime,
-				userId
+			pinPointId,
+			maxTime,
+			userId
 		);
 
 		return ApiResponse.ok(response);
@@ -140,15 +140,15 @@ public class HomeApi implements HomeApiSpec {
 	@CheckLogin
 	@GetMapping("/recommended-notices")
 	public ApiResponse<HomeNoticeListResponse> getRecommendedNoticesByDiagnosis(
-			SliceRequest sliceRequest,
-			@CurrentUserId(required = true) UUID userId
+		SliceRequest sliceRequest,
+		@CurrentUserId(required = true) UUID userId
 	) {
 		// @CheckLogin에 의해 principalDetails는 항상 non-null
 
 		// 서비스 호출
 		HomeNoticeListResponse response = homeService.getRecommendedNoticesByDiagnosis(
-				sliceRequest,
-				userId
+			sliceRequest,
+			userId
 		);
 
 		return ApiResponse.ok(response);

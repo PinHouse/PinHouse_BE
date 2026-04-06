@@ -34,7 +34,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	/**
 	 * 소셜 로그인 유저 가져오기
 	 * @param userRequest   정보 요청
-	 * @return              유저
+	 * @return 유저
 	 */
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -62,20 +62,19 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 		} else {
 			/// 기존에 유저가 없다면, 실패 핸들러로 예외 던지기
 			TempUserInfo temp = TempUserInfo.builder()
-					.social(userInfo.getProvider())
-					.socialId(userInfo.getProviderId())
-					.email(userInfo.getEmail())
-					.username(userInfo.getUserName())
-					.gender(userInfo.getGender() == null ? Gender.Other.name() : userInfo.getGender())
-					.birthyear(userInfo.getBirthYear())
-					.birthday(userInfo.getBirthday())
-					.imageUrl(userInfo.getImageUrl())
-					.build();
+				.social(userInfo.getProvider())
+				.socialId(userInfo.getProviderId())
+				.email(userInfo.getEmail())
+				.username(userInfo.getUserName())
+				.gender(userInfo.getGender() == null ? Gender.Other.name() : userInfo.getGender())
+				.birthyear(userInfo.getBirthYear())
+				.birthday(userInfo.getBirthday())
+				.imageUrl(userInfo.getImageUrl())
+				.build();
 			throw new SignupRequiredException(temp);
 		}
 
 	}
-
 
 	/**
 	 * 소셜로그인 유저 생성

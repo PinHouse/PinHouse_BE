@@ -51,6 +51,4 @@ public class BirthDayUtil {
 		return Period.between(birthday, today).getYears();
 	}
 
-
-
 }

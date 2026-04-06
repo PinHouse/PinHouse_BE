@@ -12,13 +12,13 @@ scrape_configs:
   # Prometheus
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['prometheus:9090']
+      - targets: [ 'prometheus:9090' ]
 
   # Spring Boot
   - job_name: 'spring-boot-app'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8080']
+      - targets: [ 'host.docker.internal:8080' ]
         # 라벨
         labels:
           application: 'pinhouse-server'
@@ -28,10 +28,10 @@ scrape_configs:
   # Node Exporter
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: [ 'node-exporter:9100' ]
 
 # 알러트 설정
 alerting:
   alertmanagers:
     - static_configs:
-        - targets: ['alertmanager:9093']
+        - targets: [ 'alertmanager:9093' ]

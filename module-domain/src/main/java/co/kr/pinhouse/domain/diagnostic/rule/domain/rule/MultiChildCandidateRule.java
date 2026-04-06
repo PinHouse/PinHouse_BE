@@ -33,8 +33,8 @@ public class MultiChildCandidateRule implements Rule {
 
 		/// 미성년 자녀 수 계산 (태아 + 6세 이하 + 7세 이상 미성년)
 		int minorChildCount = diagnosis.getUnbornChildrenCount() +
-							diagnosis.getUnder6ChildrenCount() +
-							diagnosis.getOver7MinorChildrenCount();
+			diagnosis.getUnder6ChildrenCount() +
+			diagnosis.getOver7MinorChildrenCount();
 
 		/// 다자녀 특별공급 자격 요건:
 		/// - 통합공공임대/국민임대/장기전세: 미성년 자녀 2명 이상
@@ -68,23 +68,24 @@ public class MultiChildCandidateRule implements Rule {
 
 		/// 다자녀 특별공급 후보가 남아있는지 확인
 		boolean hasMultiChildCandidate = candidates.stream()
-				.anyMatch(c -> c.supplyType() == SupplyType.MULTICHILD_SPECIAL);
+			.anyMatch(c -> c.supplyType() == SupplyType.MULTICHILD_SPECIAL);
 
 		if (!hasMultiChildCandidate) {
 			return RuleResult.fail(code(),
-					"다자녀 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", "미성년 자녀 수 요건 미충족 (현재: " + minorChildCount + "명)"
-					));
+				"다자녀 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", "미성년 자녀 수 요건 미충족 (현재: " + minorChildCount + "명)"
+				));
 		}
 
 		return RuleResult.pass(code(),
-				"다자녀 특별공급 후보",
-				Map.of("candidate", candidates, "minorChildCount", minorChildCount));
+			"다자녀 특별공급 후보",
+			Map.of("candidate", candidates, "minorChildCount", minorChildCount));
 	}
 
-	@Override public String code() {
+	@Override
+	public String code() {
 		return "CANDIDATE_MULTICHILD_SPECIAL";
 	}
 }

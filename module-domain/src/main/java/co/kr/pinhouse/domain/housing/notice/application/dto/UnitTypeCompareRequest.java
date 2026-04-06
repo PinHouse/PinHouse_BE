@@ -11,12 +11,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Schema(name = "[요청][공고] 유닛타입 비교", description = "공고의 모든 유닛타입을 비교하기 위한 요청")
 public record UnitTypeCompareRequest(
-		@Schema(description = "공고 ID", example = "19362")
-		@NotBlank(message = "공고 ID는 필수입니다")
-		String noticeId,
+	@Schema(description = "공고 ID", example = "19362")
+	@NotBlank(message = "공고 ID는 필수입니다")
+	String noticeId,
 
-		@Schema(description = "정렬 기준 (기본값: DEPOSIT_ASC)", example = "DEPOSIT_ASC")
-		UnitTypeSortType sortType
+	@Schema(description = "정렬 기준 (기본값: DEPOSIT_ASC)", example = "DEPOSIT_ASC")
+	UnitTypeSortType sortType
 ) {
 
 	/**
@@ -29,16 +29,12 @@ public record UnitTypeCompareRequest(
 
 		private final String label;
 
-		@JsonValue
-		public String getLabel() {
-			return label;
-		}
-
 		/**
 		 * 문자열로부터 UnitTypeSortType 생성
 		 */
 		public static UnitTypeSortType from(String source) {
-			if (source == null) return DEPOSIT_ASC; // 기본값
+			if (source == null)
+				return DEPOSIT_ASC; // 기본값
 
 			String normalized = normalize(source);
 
@@ -61,6 +57,11 @@ public record UnitTypeCompareRequest(
 
 		private static String normalize(String x) {
 			return x.trim().replaceAll("\\s+", "");
+		}
+
+		@JsonValue
+		public String getLabel() {
+			return label;
 		}
 	}
 }

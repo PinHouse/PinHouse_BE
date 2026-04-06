@@ -42,7 +42,7 @@ public class YouthCandidateRule implements Rule {
 		/// 무주택 세대주 또는 예비 세대주 여부
 		boolean isHouseholdHead = diagnosis.isHouseholdHead();
 		boolean isNoHouse = diagnosis.getHousingStatus().equals(HousingOwnershipStatus.NO_ONE_OWNS_HOUSE) ||
-				diagnosis.getHousingStatus().equals(HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
+			diagnosis.getHousingStatus().equals(HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
 
 		/// 1인 가구 또는 세대주인 경우 청년 특별공급 가능
 		boolean qualifies = ageOk && (isHouseholdHead || diagnosis.isSingle()) && isNoHouse;
@@ -66,17 +66,17 @@ public class YouthCandidateRule implements Rule {
 			}
 
 			return RuleResult.fail(code(),
-					"청년 특별공급 해당 없음",
-					Map.of(
-							"candidate", candidates,
-							"failReason", failReason
-					));
+				"청년 특별공급 해당 없음",
+				Map.of(
+					"candidate", candidates,
+					"failReason", failReason
+				));
 		}
 
 		/// 청년 특별공급 후보
 		return RuleResult.pass(code(),
-				"청년 특별공급 후보",
-				Map.of("candidate", candidates));
+			"청년 특별공급 후보",
+			Map.of("candidate", candidates));
 	}
 
 	@Override

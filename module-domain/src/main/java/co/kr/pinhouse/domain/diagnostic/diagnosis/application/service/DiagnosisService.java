@@ -41,7 +41,7 @@ public class DiagnosisService implements DiagnosisUseCase {
 	 * 임대주택 진단하기
 	 * @param userId    진단할 유저
 	 * @param request   요청 DTO
-	 * @return          진단 DTO
+	 * @return 진단 DTO
 	 */
 	@Override
 	public DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request) {
@@ -74,7 +74,7 @@ public class DiagnosisService implements DiagnosisUseCase {
 	/**
 	 * 나의 최근 청약진단 상세 조회 (입력 정보 + 결과)
 	 * @param userId    유저ID
-	 * @return          청약진단 상세 DTO
+	 * @return 청약진단 상세 DTO
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -85,7 +85,7 @@ public class DiagnosisService implements DiagnosisUseCase {
 
 		/// DB에서 최근 진단 1개 조회
 		Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
-				.orElse(null);
+			.orElse(null);
 
 		/// 진단 기록이 없는 경우
 		if (diagnosis == null) {
@@ -105,7 +105,7 @@ public class DiagnosisService implements DiagnosisUseCase {
 		User user = userService.loadUser(userId);
 
 		Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
-				.orElse(null);
+			.orElse(null);
 
 		if (diagnosis == null) {
 			return null;

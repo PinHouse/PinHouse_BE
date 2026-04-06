@@ -16,17 +16,6 @@ public enum Role {
 
 	private final String label;
 
-	/// ROLE 가져올 때
-	public String getRole() {
-		return "ROLE_" + name();
-	}
-
-	/// JSON에서 응답
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-
 	/// JSON에서 생성
 	@JsonCreator
 	public static Role fromLabel(String label) {
@@ -36,6 +25,17 @@ public enum Role {
 			}
 		}
 		throw new CustomException(UserErrorCode.BAD_REQUEST_ROLE);
+	}
+
+	/// ROLE 가져올 때
+	public String getRole() {
+		return "ROLE_" + name();
+	}
+
+	/// JSON에서 응답
+	@JsonValue
+	public String getLabel() {
+		return label;
 	}
 
 }

@@ -38,19 +38,19 @@ public class S3PresignedUrlGenerator implements PresignedUrlGenerator {
 	@Override
 	public String generatePutPresignedUrl(String objectKey, String contentType) {
 		try (S3Presigner presigner = S3Presigner.builder()
-				.region(s3Client.serviceClientConfiguration().region())
-				.build()) {
+			.region(s3Client.serviceClientConfiguration().region())
+			.build()) {
 
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-					.bucket(bucketName)
-					.key(objectKey)
-					.contentType(contentType)
-					.build();
+				.bucket(bucketName)
+				.key(objectKey)
+				.contentType(contentType)
+				.build();
 
 			PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-					.putObjectRequest(putObjectRequest)
-					.signatureDuration(Duration.ofMinutes(expirationMinutes))
-					.build();
+				.putObjectRequest(putObjectRequest)
+				.signatureDuration(Duration.ofMinutes(expirationMinutes))
+				.build();
 
 			PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
 
@@ -75,8 +75,8 @@ public class S3PresignedUrlGenerator implements PresignedUrlGenerator {
 	@Override
 	public String getPublicUrl(String objectKey) {
 		return String.format("https://%s.s3.%s.amazonaws.com/%s",
-				bucketName,
-				s3Client.serviceClientConfiguration().region().id(),
-				objectKey);
+			bucketName,
+			s3Client.serviceClientConfiguration().region().id(),
+			objectKey);
 	}
 }

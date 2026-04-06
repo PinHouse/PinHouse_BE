@@ -33,7 +33,8 @@ public class University {
 
 	/// 빌더 생성자
 	@Builder
-	public University(String schoolName, String campusType, String collegeType, Integer sidoCode, String sidoName, String sigunguName) {
+	public University(String schoolName, String campusType, String collegeType, Integer sidoCode, String sidoName,
+		String sigunguName) {
 		this.id = UUID.randomUUID().toString();
 		this.schoolName = schoolName;
 		this.campusType = campusType;

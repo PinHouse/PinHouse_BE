@@ -30,7 +30,6 @@ public class FacilityService implements FacilityUseCase {
 	/// 인프라 의존성
 	private final FacilityStatService statsService;
 
-
 	// =================
 	//  퍼블릭 로직
 	// =================
@@ -60,8 +59,8 @@ public class FacilityService implements FacilityUseCase {
 
 		/// 임대주택 아이디 모음
 		List<String> complexIds = types.stream()
-				.map(FacilityStatDocument::getId)
-				.toList();
+			.map(FacilityStatDocument::getId)
+			.toList();
 
 		/// 임대주택 체크
 		return loadComplexes(complexIds);
@@ -70,32 +69,33 @@ public class FacilityService implements FacilityUseCase {
 	// =================
 	//  외부 함수
 	// =================
+
 	/// 특정 인프라가 많은 곳 조회
 	@Override
-	public List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments, List<FacilityType> facilityTypes) {
+	public List<ComplexDocument> filterComplexesByFacility(List<NoticeDocument> noticeDocuments,
+		List<FacilityType> facilityTypes) {
 
 		/// 공고 ID 추출
 		List<String> noticeIds = noticeDocuments.stream()
-				.map(NoticeDocument::getId)
-				.toList();
+			.map(NoticeDocument::getId)
+			.toList();
 
 		/// 시설 통계 조회 (예: 주변 3개 이상)
 		List<FacilityStatDocument> types = statsService.findByAllTypesOver(facilityTypes, 3);
 
 		/// 시설 통계 → 단지 ID 리스트 추출
 		List<String> complexIds = types.stream()
-				.map(FacilityStatDocument::getId)
-				.toList();
+			.map(FacilityStatDocument::getId)
+			.toList();
 
 		/// 단지 조회
 		List<ComplexDocument> complexes = loadComplexes(complexIds);
 
 		/// noticeId가 일치하는 단지만 필터링
 		return complexes.stream()
-				.filter(c -> noticeIds.contains(c.getNoticeId()))
-				.toList();
+			.filter(c -> noticeIds.contains(c.getNoticeId()))
+			.toList();
 	}
-
 
 	@Override
 	public List<FacilityType> getFacilities(String complexId) {
@@ -110,12 +110,11 @@ public class FacilityService implements FacilityUseCase {
 
 		/// 3개 이상인 FacilityType
 		return response.entrySet().stream()
-				.filter(entry -> entry.getValue() != null && entry.getValue() >= 3)
-				.map(Map.Entry::getKey)
-				.distinct()
-				.toList();
+			.filter(entry -> entry.getValue() != null && entry.getValue() >= 3)
+			.map(Map.Entry::getKey)
+			.distinct()
+			.toList();
 	}
-
 
 	private List<ComplexDocument> loadComplexes(List<String> ids) {
 		return complexRepository.findByIdIsIn(ids);
@@ -123,9 +122,7 @@ public class FacilityService implements FacilityUseCase {
 
 	private ComplexDocument loadComplex(String id) {
 		return complexRepository.findById(id)
-				.orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
+			.orElseThrow(() -> new CustomException(ComplexErrorCode.NOT_FOUND_COMPLEX));
 	}
-
-
 
 }

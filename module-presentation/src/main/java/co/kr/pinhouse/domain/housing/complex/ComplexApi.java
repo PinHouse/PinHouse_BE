@@ -34,7 +34,7 @@ public class ComplexApi implements ComplexApiSpec {
 	@CheckLogin
 	@GetMapping("/likes")
 	public ApiResponse<List<UnityTypeLikeResponse>> getLikeComplexes(
-			@CurrentUserId(required = true) UUID userId
+		@CurrentUserId(required = true) UUID userId
 	) {
 
 		/// 서비스 호출
@@ -47,8 +47,8 @@ public class ComplexApi implements ComplexApiSpec {
 	/// 상세 조회
 	@GetMapping("/{complexId}")
 	public ApiResponse<ComplexDetailResponse> getComplex(
-			@PathVariable String complexId,
-			@RequestParam String pinPointId) throws UnsupportedEncodingException {
+		@PathVariable String complexId,
+		@RequestParam String pinPointId) throws UnsupportedEncodingException {
 
 		/// 서비스 호출
 		var response = service.getComplex(complexId, pinPointId);
@@ -60,8 +60,8 @@ public class ComplexApi implements ComplexApiSpec {
 	/// 방 타입 목록 조회
 	@GetMapping("/unit/{complexId}")
 	public ApiResponse<List<UnitTypeResponse>> getComplexUnitTypes(
-			@PathVariable String complexId,
-			@CurrentUserId UUID userId
+		@PathVariable String complexId,
+		@CurrentUserId UUID userId
 	) {
 
 		/// 서비스 호출 (로그인하지 않은 경우 userId는 null)
@@ -74,8 +74,8 @@ public class ComplexApi implements ComplexApiSpec {
 	/// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
 	@GetMapping("/transit/{complexId}")
 	public ApiResponse<TransitRoutesResponse> distance(
-			@PathVariable String complexId,
-			@RequestParam String pinPointId) throws UnsupportedEncodingException {
+		@PathVariable String complexId,
+		@RequestParam String pinPointId) throws UnsupportedEncodingException {
 
 		/// 서비스 호출 (새 스키마)
 		var response = service.getDistanceV2(complexId, pinPointId);

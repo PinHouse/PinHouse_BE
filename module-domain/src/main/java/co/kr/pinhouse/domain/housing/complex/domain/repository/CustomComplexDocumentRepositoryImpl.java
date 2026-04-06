@@ -63,52 +63,52 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
 
 		// Aggregation Pipeline 구성
 		Aggregation aggregation = newAggregation(
-				// 1. noticeId로 필터링
-				match(Criteria.where("noticeId").is(noticeId)),
+			// 1. noticeId로 필터링
+			match(Criteria.where("noticeId").is(noticeId)),
 
-				// 2. unitTypes 배열을 개별 문서로 펼침
-				unwind("unitTypes"),
+			// 2. unitTypes 배열을 개별 문서로 펼침
+			unwind("unitTypes"),
 
-				// 3. 정렬 적용 (DB 레벨 정렬)
-				sort(sort),
+			// 3. 정렬 적용 (DB 레벨 정렬)
+			sort(sort),
 
-				// 4. 단지별로 다시 그룹화
-				// group("$_id")로 원본 _id로 그룹화하면, 그룹화 키가 결과의 _id가 됨
-				// ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로 complexId도 포함 필요
-				group("$_id")
-						.first("$complexId").as("complexId")
-						.first("$noticeId").as("noticeId")
-						.first("$houseSn").as("houseSn")
-						.first("$name").as("name")
-						.first("$address").as("address")
-						.first("$pnu").as("pnu")
-						.first("$city").as("city")
-						.first("$county").as("county")
-						.first("$heating").as("heating")
-						.first("$totalHouseholds").as("totalHouseholds")
-						.first("$totalSupplyInNotice").as("totalSupplyInNotice")
-						.first("$applyStart").as("applyStart")
-						.first("$applyEnd").as("applyEnd")
-						.first("$location").as("location")
-						.push("$unitTypes").as("unitTypes"),
+			// 4. 단지별로 다시 그룹화
+			// group("$_id")로 원본 _id로 그룹화하면, 그룹화 키가 결과의 _id가 됨
+			// ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로 complexId도 포함 필요
+			group("$_id")
+				.first("$complexId").as("complexId")
+				.first("$noticeId").as("noticeId")
+				.first("$houseSn").as("houseSn")
+				.first("$name").as("name")
+				.first("$address").as("address")
+				.first("$pnu").as("pnu")
+				.first("$city").as("city")
+				.first("$county").as("county")
+				.first("$heating").as("heating")
+				.first("$totalHouseholds").as("totalHouseholds")
+				.first("$totalSupplyInNotice").as("totalSupplyInNotice")
+				.first("$applyStart").as("applyStart")
+				.first("$applyEnd").as("applyEnd")
+				.first("$location").as("location")
+				.push("$unitTypes").as("unitTypes"),
 
-				// 5. ComplexDocument 형태로 매핑을 위한 projection
-				// ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로
-				// complexId를 그대로 사용 (Spring Data가 자동으로 매핑)
-				project()
-						.andInclude(
-								"complexId", "noticeId", "houseSn", "name", "address",
-								"pnu", "city", "county", "heating",
-								"totalHouseholds", "totalSupplyInNotice",
-								"applyStart", "applyEnd", "location", "unitTypes"
-						)
+			// 5. ComplexDocument 형태로 매핑을 위한 projection
+			// ComplexDocument의 id 필드는 @Field("complexId")로 매핑되므로
+			// complexId를 그대로 사용 (Spring Data가 자동으로 매핑)
+			project()
+				.andInclude(
+					"complexId", "noticeId", "houseSn", "name", "address",
+					"pnu", "city", "county", "heating",
+					"totalHouseholds", "totalSupplyInNotice",
+					"applyStart", "applyEnd", "location", "unitTypes"
+				)
 		);
 
 		// 실행
 		AggregationResults<ComplexDocument> results = mongoTemplate.aggregate(
-				aggregation,
-				"complexes",  // collection name
-				ComplexDocument.class
+			aggregation,
+			"complexes",  // collection name
+			ComplexDocument.class
 		);
 
 		List<ComplexDocument> complexes = results.getMappedResults();
@@ -118,7 +118,8 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
 	}
 
 	@Override
-	public org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword, org.springframework.data.domain.Pageable pageable) {
+	public org.springframework.data.domain.Slice<ComplexDocument> searchByName(String keyword,
+		org.springframework.data.domain.Pageable pageable) {
 		Criteria criteria = Criteria.where("name").regex(keyword, "i");
 		Query query = new Query(criteria).with(pageable);
 
@@ -151,18 +152,18 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
 		if (sortType == UnitTypeSortType.AREA_DESC) {
 			// 평수 넓은 순
 			return Sort.by(
-					Sort.Order.desc("unitTypes.exclusiveAreaM2"),  // 1차: 면적 큰 순
-					Sort.Order.asc("address.county"),              // 2차: 지역
-					Sort.Order.asc("name"),                        // 3차: 단지명
-					Sort.Order.asc("unitTypes.typeCode")           // 4차: 방 이름
+				Sort.Order.desc("unitTypes.exclusiveAreaM2"),  // 1차: 면적 큰 순
+				Sort.Order.asc("address.county"),              // 2차: 지역
+				Sort.Order.asc("name"),                        // 3차: 단지명
+				Sort.Order.asc("unitTypes.typeCode")           // 4차: 방 이름
 			);
 		} else {
 			// 보증금 낮은 순 (기본값)
 			return Sort.by(
-					Sort.Order.asc("unitTypes.deposit.total"),     // 1차: 보증금 낮은 순
-					Sort.Order.asc("address.county"),              // 2차: 지역
-					Sort.Order.asc("name"),                        // 3차: 단지명
-					Sort.Order.asc("unitTypes.typeCode")           // 4차: 방 이름
+				Sort.Order.asc("unitTypes.deposit.total"),     // 1차: 보증금 낮은 순
+				Sort.Order.asc("address.county"),              // 2차: 지역
+				Sort.Order.asc("name"),                        // 3차: 단지명
+				Sort.Order.asc("unitTypes.typeCode")           // 4차: 방 이름
 			);
 		}
 	}

@@ -26,7 +26,7 @@ public class FacilityApi implements FacilityApiSpec {
 	/// 주변 인프라 조회
 	@GetMapping("/{complexId}")
 	public ApiResponse<NoticeFacilityListResponse> showNotice(
-			@PathVariable String complexId) {
+		@PathVariable String complexId) {
 
 		/// 서비스 계층
 		var response = service.getNearFacilities(complexId);
@@ -38,7 +38,7 @@ public class FacilityApi implements FacilityApiSpec {
 	/// 원하는 인프라를 바탕으로 많이 존재하는 지역을 설정
 	@GetMapping()
 	public ApiResponse<List<ComplexDocument>> showNoticeList(
-			@RequestParam List<FacilityType> facilityTypes
+		@RequestParam List<FacilityType> facilityTypes
 	) {
 
 		/// 서비스 계층

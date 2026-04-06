@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(name = "파라미터 필드 오류")
 public record FieldErrorResponse(
-		String field,
-		String message) {
+	String field,
+	String message) {
 
 	public static FieldErrorResponse of(String field, String message) {
 		return new FieldErrorResponse(field, message);

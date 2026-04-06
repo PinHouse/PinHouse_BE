@@ -8,7 +8,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 
-public interface NoticeDocumentRepository extends MongoRepository<NoticeDocument, String>, NoticeDocumentRepositoryCustom {
+public interface NoticeDocumentRepository
+	extends MongoRepository<NoticeDocument, String>, NoticeDocumentRepositoryCustom {
 
 	// 아이디 조회
 	@Query("{ 'noticeId' : ?0}")

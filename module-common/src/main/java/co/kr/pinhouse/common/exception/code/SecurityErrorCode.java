@@ -37,7 +37,6 @@ public enum SecurityErrorCode implements ErrorCode {
 	REFRESH_TOKEN_NOT_FOUND(401_112, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
 	REFRESH_TOKEN_LOGOUT(401_113, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰을 사용한 로그아웃에 유저가 다릅니다."),
 
-
 	// ========================
 	// 403 Forbidden
 	// ========================
@@ -55,7 +54,6 @@ public enum SecurityErrorCode implements ErrorCode {
 	// ========================
 	// 500 Internal Server Error
 	// ========================
-
 
 	/**
 	 * 에러 코드 (고유값)

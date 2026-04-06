@@ -59,8 +59,6 @@ public class LikeCommandService implements LikeCommandUseCase {
 		repository.save(like);
 	}
 
-
-
 	/// 좋아요 취소
 	@Override
 	@Transactional
@@ -71,7 +69,7 @@ public class LikeCommandService implements LikeCommandUseCase {
 
 		/// 존재 여부 체크 (영속성 컨테이너)
 		Like like = repository.findByUser_IdAndTargetIdAndType(userId, request.targetId(), request.type())
-				.orElseThrow(() -> new CustomException(LikeErrorCode.NOT_FOUND_LIKE));
+			.orElseThrow(() -> new CustomException(LikeErrorCode.NOT_FOUND_LIKE));
 
 		/// DB에서 삭제
 		repository.delete(like);

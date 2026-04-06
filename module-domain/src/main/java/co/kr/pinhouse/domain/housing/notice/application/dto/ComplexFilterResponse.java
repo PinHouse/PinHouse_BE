@@ -12,14 +12,14 @@ import lombok.Builder;
 @Builder
 @Schema(name = "[응답][공고] 단지 필터링 정보", description = "공고에 포함된 단지들의 지역, 가격, 면적 필터링 정보")
 public record ComplexFilterResponse(
-		@Schema(description = "지역 필터 정보")
-		DistrictFilter districtFilter,
+	@Schema(description = "지역 필터 정보")
+	DistrictFilter districtFilter,
 
-		@Schema(description = "가격 필터 정보")
-		CostFilter costFilter,
+	@Schema(description = "가격 필터 정보")
+	CostFilter costFilter,
 
-		@Schema(description = "면적(타입코드) 필터 정보")
-		AreaFilter areaFilter
+	@Schema(description = "면적(타입코드) 필터 정보")
+	AreaFilter areaFilter
 ) {
 
 	/**
@@ -28,9 +28,10 @@ public record ComplexFilterResponse(
 	@Builder
 	@Schema(name = "지역 필터", description = "단지가 속한 지역(구) 목록")
 	public record DistrictFilter(
-			@Schema(description = "고유한 지역 목록")
-			List<District> districts
-	) {}
+		@Schema(description = "고유한 지역 목록")
+		List<District> districts
+	) {
+	}
 
 	/**
 	 * 지역 정보 (city별로 그룹화된 districts)
@@ -38,12 +39,13 @@ public record ComplexFilterResponse(
 	@Builder
 	@Schema(name = "지역 정보", description = "city별로 그룹화된 district 목록")
 	public record District(
-			@Schema(description = "시/도", example = "경기")
-			String city,
+		@Schema(description = "시/도", example = "경기")
+		String city,
 
-			@Schema(description = "구/시 목록", example = "[\"동두천시\", \"양주시\"]")
-			List<String> districts
-	) {}
+		@Schema(description = "구/시 목록", example = "[\"동두천시\", \"양주시\"]")
+		List<String> districts
+	) {
+	}
 
 	/**
 	 * 가격 필터 정보
@@ -51,15 +53,16 @@ public record ComplexFilterResponse(
 	@Builder
 	@Schema(name = "가격 필터", description = "단지의 가격 범위 정보")
 	public record CostFilter(
-			@Schema(description = "최소 가격 (보증금, 만원 단위)", example = "500")
-			long minPrice,
+		@Schema(description = "최소 가격 (보증금, 만원 단위)", example = "500")
+		long minPrice,
 
-			@Schema(description = "최대 가격 (보증금, 만원 단위)", example = "15000")
-			long maxPrice,
+		@Schema(description = "최대 가격 (보증금, 만원 단위)", example = "15000")
+		long maxPrice,
 
-			@Schema(description = "평균 가격 (보증금, 만원 단위)", example = "4500")
-			long avgPrice
-	) {}
+		@Schema(description = "평균 가격 (보증금, 만원 단위)", example = "4500")
+		long avgPrice
+	) {
+	}
 
 	/**
 	 * 면적(타입코드) 필터 정보
@@ -67,7 +70,8 @@ public record ComplexFilterResponse(
 	@Builder
 	@Schema(name = "면적 필터", description = "단지의 고유 타입코드 목록")
 	public record AreaFilter(
-			@Schema(description = "고유한 타입코드 목록", example = "[\"84A\", \"59B\", \"101C\"]")
-			List<String> typeCodes
-	) {}
+		@Schema(description = "고유한 타입코드 목록", example = "[\"84A\", \"59B\", \"101C\"]")
+		List<String> typeCodes
+	) {
+	}
 }

@@ -58,12 +58,12 @@ public class SearchKeywordService implements SearchKeywordUseCase {
 		try {
 			// MongoDB atomic upsert를 사용한 카운트 증가
 			Query query = new Query(Criteria.where("keyword").is(normalizedKeyword)
-					.and("scope").is(scope));
+				.and("scope").is(scope));
 			Update update = new Update()
-					.inc("count", 1)
-					.set("lastSearchedAt", Instant.now())
-					.set("scope", scope)
-					.setOnInsert("firstSearchedAt", Instant.now());
+				.inc("count", 1)
+				.set("lastSearchedAt", Instant.now())
+				.set("scope", scope)
+				.setOnInsert("firstSearchedAt", Instant.now());
 
 			mongoTemplate.upsert(query, update, SearchKeyword.class);
 

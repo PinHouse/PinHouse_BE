@@ -110,9 +110,9 @@ public class ImageService implements ImageUseCase {
 	private String generateObjectKey(ImageType imageType, UUID userId, String extension) {
 		String uniqueId = UUID.randomUUID().toString();
 		return String.format("%s/%s/%s.%s",
-				imageType.getPath(),
-				userId.toString(),
-				uniqueId,
-				extension);
+			imageType.getPath(),
+			userId.toString(),
+			uniqueId,
+			extension);
 	}
 }

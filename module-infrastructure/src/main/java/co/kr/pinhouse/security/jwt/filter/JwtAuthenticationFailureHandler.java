@@ -33,8 +33,8 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
 
 	@Override
 	public void commence(HttpServletRequest request,
-						HttpServletResponse response,
-						AuthenticationException authException) throws IOException {
+		HttpServletResponse response,
+		AuthenticationException authException) throws IOException {
 
 		/// 인증 문제 발생시, 401 Error 발생
 		CustomException exception = new CustomException(CommonErrorCode.UNAUTHORIZED);

@@ -24,7 +24,8 @@ public class HttpLogUtil {
 		var clientInfo = httpUtil.getClientInfo(httpServletRequest);
 
 		/// 로그
-		log.info("{} : {}, [{}], {}, {} ,{}", type, clientInfo.ip(), clientInfo.httpMethod(), clientInfo.uri(), clientInfo.userName(), body);
+		log.info("{} : {}, [{}], {}, {} ,{}", type, clientInfo.ip(), clientInfo.httpMethod(), clientInfo.uri(),
+			clientInfo.userName(), body);
 
 	}
 

@@ -33,7 +33,8 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 	 * 실패 핸들러 예외 처리
 	 */
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+		AuthenticationException exception) throws IOException, ServletException {
 
 		/// SignupRequiredException 예외처리 받았으면 실행
 		if (exception instanceof SignupRequiredException) {
@@ -42,7 +43,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 			String tempUserKey = keyUtil.generateOAuth2TempUserKey();
 
 			/// 임시 유저 처리
-			TempUserInfo userInfo = ((SignupRequiredException) exception).getUserInfo();
+			TempUserInfo userInfo = ((SignupRequiredException)exception).getUserInfo();
 
 			/// 레디스에 값 추가( 유효시간 5분 )
 			redisTemplate.opsForValue().set(tempUserKey, userInfo, Duration.ofMinutes(5));

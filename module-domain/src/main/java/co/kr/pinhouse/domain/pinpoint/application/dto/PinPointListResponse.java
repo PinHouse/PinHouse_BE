@@ -10,11 +10,11 @@ import lombok.Builder;
 @Builder
 public record PinPointListResponse(
 
-		@Schema(description = "유저 이름", example = "홍길동")
-		String userName,
+	@Schema(description = "유저 이름", example = "홍길동")
+	String userName,
 
-		@Schema(description = "핀포인트 목록")
-		List<PinPointResponse> pinPoints
+	@Schema(description = "핀포인트 목록")
+	List<PinPointResponse> pinPoints
 
 ) {
 
@@ -22,9 +22,9 @@ public record PinPointListResponse(
 	public static PinPointListResponse of(String userName, List<PinPoint> pinPoints) {
 
 		return PinPointListResponse.builder()
-				.userName(userName)
-				.pinPoints(PinPointResponse.from(pinPoints))
-				.build();
+			.userName(userName)
+			.pinPoints(PinPointResponse.from(pinPoints))
+			.build();
 	}
 
 }

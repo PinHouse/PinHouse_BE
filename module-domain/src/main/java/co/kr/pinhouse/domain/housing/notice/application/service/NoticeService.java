@@ -72,15 +72,16 @@ public class NoticeService implements NoticeUseCase {
 	//  퍼블릭 로직
 	// =================
 	@Override
-	public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId) {
+	public SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest,
+		UUID userId) {
 
 		/// 오늘(한국) 기준 Instant
 		Instant now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant();
 
 		/// 정렬 조건 및 pageable 설정 (동적 쿼리에 포함)
 		Sort sort = (request.sortType() == NoticeListRequest.ListSortType.END)
-				? Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"))
-				: Sort.by(Sort.Order.desc("announceDate"), Sort.Order.desc("noticeId"));
+			? Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"))
+			: Sort.by(Sort.Order.desc("announceDate"), Sort.Order.desc("noticeId"));
 		Pageable pageable = PageRequest.of(sliceRequest.page() - 1, sliceRequest.offSet(), sort);
 
 		/// DB 레벨 필터링을 위한 커스텀 Repository 호출
@@ -88,15 +89,15 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 좋아요 상태 조회 (userId가 null이면 빈 목록)
 		List<String> likedNoticeIds = (userId != null)
-				? likeService.getLikeNoticeIds(userId)
-				: List.of();
+			? likeService.getLikeNoticeIds(userId)
+			: List.of();
 
 		List<NoticeListResponse> content = page.getContent().stream()
-				.map(notice -> {
-					boolean isLiked = likedNoticeIds.contains(notice.getId());
-					return NoticeListResponse.from(notice, isLiked);
-				})
-				.toList();
+			.map(notice -> {
+				boolean isLiked = likedNoticeIds.contains(notice.getId());
+				return NoticeListResponse.from(notice, isLiked);
+			})
+			.toList();
 
 		return SliceResponse.from(new SliceImpl<>(content, pageable, page.hasNext()), page.getTotalElements());
 	}
@@ -119,17 +120,17 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 단지별 인프라 정보 조회
 		Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
-				.map(ComplexDocument::getId)
-				.collect(Collectors.toMap(
-						id -> id,
-						facilityService::getNearFacilities
-				));
+			.map(ComplexDocument::getId)
+			.collect(Collectors.toMap(
+				id -> id,
+				facilityService::getNearFacilities
+			));
 
 		/// pinPointId가 있는 경우, 모든 Complex에 대해 거리 정보를 미리 계산하고 totalTime만 저장
 		Map<String, Integer> totalTimeMap = new HashMap<>();
 		if (request.pinPointId() != null && !request.pinPointId().isBlank()) {
 			log.info("공고 상세조회: 모든 단지에 대한 거리 계산 시작 - noticeId={}, pinPointId={}, 단지 개수={}",
-					noticeId, request.pinPointId(), complexes.size());
+				noticeId, request.pinPointId(), complexes.size());
 
 			int successCount = 0;
 			int failCount = 0;
@@ -137,16 +138,16 @@ public class NoticeService implements NoticeUseCase {
 			for (ComplexDocument complex : complexes) {
 				try {
 					co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceResponse distance =
-							complexService.getEasyDistance(complex.getId(), request.pinPointId());
+						complexService.getEasyDistance(complex.getId(), request.pinPointId());
 					totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
 					successCount++;
 					log.debug("거리 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}분",
-							complex.getId(), distance.totalTimeMinutes());
+						complex.getId(), distance.totalTimeMinutes());
 				} catch (Exception e) {
 					failCount++;
 					totalTimeMap.put(complex.getId(), 0);
 					log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
-							complex.getId(), request.pinPointId(), e.getMessage(), e);
+						complex.getId(), request.pinPointId(), e.getMessage(), e);
 				}
 			}
 
@@ -155,23 +156,23 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 서비스 레이어에서 필터링 수행 (totalTimeMap 전달)
 		ComplexFilterService.FilterResult filterResult =
-				complexFilterService.filterComplexes(complexes, facilityMap, request, totalTimeMap);
+			complexFilterService.filterComplexes(complexes, facilityMap, request, totalTimeMap);
 
 		/// DTO 정적 팩토리 메서드로 응답 생성 (이미 필터링된 데이터 전달)
 		if (!totalTimeMap.isEmpty()) {
 			return NoticeDetailFilteredResponse.from(
-					notice,
-					filterResult.filtered(),
-					filterResult.nonFiltered(),
-					facilityMap,
-					totalTimeMap
+				notice,
+				filterResult.filtered(),
+				filterResult.nonFiltered(),
+				facilityMap,
+				totalTimeMap
 			);
 		} else {
 			return NoticeDetailFilteredResponse.from(
-					notice,
-					filterResult.filtered(),
-					filterResult.nonFiltered(),
-					facilityMap
+				notice,
+				filterResult.filtered(),
+				filterResult.nonFiltered(),
+				facilityMap
 			);
 		}
 	}
@@ -249,11 +250,11 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 단지별 인프라 정보 조회
 		Map<String, NoticeFacilityListResponse> facilityMap = complexes.stream()
-				.map(ComplexDocument::getId)
-				.collect(Collectors.toMap(
-						id -> id,
-						facilityService::getNearFacilities
-				));
+			.map(ComplexDocument::getId)
+			.collect(Collectors.toMap(
+				id -> id,
+				facilityService::getNearFacilities
+			));
 
 		/// pinPointId가 있는 경우, 거리 정보 계산하고 totalTime만 저장
 		Map<String, Integer> totalTimeMap = new HashMap<>();
@@ -261,12 +262,12 @@ public class NoticeService implements NoticeUseCase {
 			for (ComplexDocument complex : complexes) {
 				try {
 					co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceResponse distance =
-							complexService.getEasyDistance(complex.getId(), request.pinPointId());
+						complexService.getEasyDistance(complex.getId(), request.pinPointId());
 					totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
 				} catch (Exception e) {
 					totalTimeMap.put(complex.getId(), 0);
 					log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
-							complex.getId(), request.pinPointId(), e.getMessage());
+						complex.getId(), request.pinPointId(), e.getMessage());
 				}
 			}
 		}
@@ -279,11 +280,11 @@ public class NoticeService implements NoticeUseCase {
 	@Override
 	@Transactional(readOnly = true)
 	public UnitTypeCompareResponse compareUnitTypes(
-			String noticeId,
-			String pinPointId,
-			UnitTypeSortType sortType,
-			List<FacilityType> nearbyFacilities,
-			UUID userId
+		String noticeId,
+		String pinPointId,
+		UnitTypeSortType sortType,
+		List<FacilityType> nearbyFacilities,
+		UUID userId
 	) {
 
 		/// 공고 존재 확인
@@ -299,7 +300,8 @@ public class NoticeService implements NoticeUseCase {
 		}
 
 		/// FACILITY_MATCH 정렬은 nearbyFacilities 필수
-		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && (nearbyFacilities == null || nearbyFacilities.isEmpty())) {
+		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && (nearbyFacilities == null
+			|| nearbyFacilities.isEmpty())) {
 			log.error("주변환경매칭순 정렬 요청이지만 nearbyFacilities가 없음 - noticeId={}", noticeId);
 			throw new CustomException(NoticeErrorCode.MISSING_NEARBY_FACILITIES);
 		}
@@ -328,24 +330,24 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 좋아요 상태 조회 (userId가 null이면 빈 목록)
 		List<String> likedUnitTypeIds = (userId != null)
-				? likeService.getLikeUnitTypeIds(userId)
-				: List.of();
+			? likeService.getLikeUnitTypeIds(userId)
+			: List.of();
 
 		/// 각 단지의 시설 정보 조회
 		Map<String, List<FacilityType>> facilityMap = complexes.stream()
-				.collect(Collectors.toMap(
-						ComplexDocument::getId,
-						complex -> {
-							NoticeFacilityListResponse facilityResponse = facilityService.getNearFacilities(complex.getId());
-							return facilityResponse != null ? facilityResponse.infra() : List.of();
-						}
-				));
+			.collect(Collectors.toMap(
+				ComplexDocument::getId,
+				complex -> {
+					NoticeFacilityListResponse facilityResponse = facilityService.getNearFacilities(complex.getId());
+					return facilityResponse != null ? facilityResponse.infra() : List.of();
+				}
+			));
 
 		/// 각 단지의 대중교통 소요 시간 계산 (pinPointId가 있는 경우에만)
 		Map<String, String> totalTimeMap = new HashMap<>();
 		if (pinPointId != null && !pinPointId.isBlank()) {
 			log.info("방 비교: 모든 단지에 대한 대중교통 소요 시간 계산 시작 - pinPointId={}, 단지 개수={}",
-					pinPointId, complexes.size());
+				pinPointId, complexes.size());
 
 			int successCount = 0;
 			int failCount = 0;
@@ -353,17 +355,17 @@ public class NoticeService implements NoticeUseCase {
 			for (ComplexDocument complex : complexes) {
 				try {
 					co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceResponse distance =
-							complexService.getEasyDistance(complex.getId(), pinPointId);
+						complexService.getEasyDistance(complex.getId(), pinPointId);
 					String formattedTime = TimeFormatter.formatTime(distance.totalTimeMinutes());
 					totalTimeMap.put(complex.getId(), formattedTime);
 					successCount++;
 					log.debug("대중교통 시간 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}",
-							complex.getId(), formattedTime);
+						complex.getId(), formattedTime);
 				} catch (Exception e) {
 					failCount++;
 					totalTimeMap.put(complex.getId(), null);
 					log.error("대중교통 시간 계산 실패 (null로 설정) - complexId={}, pinPointId={}, error={}",
-							complex.getId(), pinPointId, e.getMessage(), e);
+						complex.getId(), pinPointId, e.getMessage(), e);
 				}
 			}
 
@@ -375,23 +377,24 @@ public class NoticeService implements NoticeUseCase {
 
 		/// 모든 단지의 유닛타입을 수집하여 비교 항목 생성
 		List<UnitTypeCompareResponse.UnitTypeComparisonItem> comparisonItems = complexes.stream()
-				.flatMap(complex -> {
-					String complexId = complex.getId();
-					List<FacilityType> facilities = facilityMap.getOrDefault(complexId, List.of());
-					String totalTime = finalTotalTimeMap.getOrDefault(complexId, null);
+			.flatMap(complex -> {
+				String complexId = complex.getId();
+				List<FacilityType> facilities = facilityMap.getOrDefault(complexId, List.of());
+				String totalTime = finalTotalTimeMap.getOrDefault(complexId, null);
 
-					return complex.getUnitTypes().stream()
-							.map(unitType -> {
-								boolean isLiked = likedUnitTypeIds.contains(unitType.getTypeId());
-								return UnitTypeCompareResponse.UnitTypeComparisonItem.from(
-										complex, unitType, facilities, totalTime, isLiked
-								);
-							});
-				})
-				.collect(Collectors.toList());
+				return complex.getUnitTypes().stream()
+					.map(unitType -> {
+						boolean isLiked = likedUnitTypeIds.contains(unitType.getTypeId());
+						return UnitTypeCompareResponse.UnitTypeComparisonItem.from(
+							complex, unitType, facilities, totalTime, isLiked
+						);
+					});
+			})
+			.collect(Collectors.toList());
 
 		/// ⭐️ 애플리케이션 레벨 정렬 수행
-		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && nearbyFacilities != null && !nearbyFacilities.isEmpty()) {
+		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && nearbyFacilities != null
+			&& !nearbyFacilities.isEmpty()) {
 			// 시설 매칭 기반 정렬
 			sortByFacilityMatch(comparisonItems, nearbyFacilities);
 			log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", nearbyFacilities);
@@ -417,41 +420,41 @@ public class NoticeService implements NoticeUseCase {
 	 * 5. 방 이름 (오름차순)
 	 */
 	private void sortByFacilityMatch(
-			List<UnitTypeCompareResponse.UnitTypeComparisonItem> items,
-			List<FacilityType> targetFacilities
+		List<UnitTypeCompareResponse.UnitTypeComparisonItem> items,
+		List<FacilityType> targetFacilities
 	) {
 		items.sort(Comparator
-				// 1차: 시설 매칭 개수 (많은 순 = 내림차순)
-				.comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
-					List<FacilityType> itemFacilities = item.nearbyFacilities();
-					if (itemFacilities == null || itemFacilities.isEmpty()) {
-						return 0;
-					}
-					// targetFacilities와 itemFacilities의 교집합 개수 계산
-					return (int) targetFacilities.stream()
-							.filter(itemFacilities::contains)
-							.count();
-				}).reversed()
-				// 2차: 보증금 (낮은 순 = 오름차순)
-				.thenComparing(item ->
-						item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
-				)
-				// 3차: 지역 (오름차순)
-				.thenComparing(item ->
-						item.complex() != null && item.complex().address() != null
-								? item.complex().address()
-								: ""
-				)
-				// 4차: 단지명 (오름차순)
-				.thenComparing(item ->
-						item.complex() != null && item.complex().name() != null
-								? item.complex().name()
-								: ""
-				)
-				// 5차: 방 이름 (오름차순)
-				.thenComparing(item ->
-						item.typeCode() != null ? item.typeCode() : ""
-				)
+			// 1차: 시설 매칭 개수 (많은 순 = 내림차순)
+			.comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
+				List<FacilityType> itemFacilities = item.nearbyFacilities();
+				if (itemFacilities == null || itemFacilities.isEmpty()) {
+					return 0;
+				}
+				// targetFacilities와 itemFacilities의 교집합 개수 계산
+				return (int)targetFacilities.stream()
+					.filter(itemFacilities::contains)
+					.count();
+			}).reversed()
+			// 2차: 보증금 (낮은 순 = 오름차순)
+			.thenComparing(item ->
+				item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
+			)
+			// 3차: 지역 (오름차순)
+			.thenComparing(item ->
+				item.complex() != null && item.complex().address() != null
+					? item.complex().address()
+					: ""
+			)
+			// 4차: 단지명 (오름차순)
+			.thenComparing(item ->
+				item.complex() != null && item.complex().name() != null
+					? item.complex().name()
+					: ""
+			)
+			// 5차: 방 이름 (오름차순)
+			.thenComparing(item ->
+				item.typeCode() != null ? item.typeCode() : ""
+			)
 		);
 	}
 
@@ -467,35 +470,35 @@ public class NoticeService implements NoticeUseCase {
 	 */
 	private void sortByDistance(List<UnitTypeCompareResponse.UnitTypeComparisonItem> items) {
 		items.sort(Comparator
-				// 1차: 대중교통 소요 시간 (짧은 순 = 오름차순)
-				.comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
-					String totalTimeStr = item.totalTime();
-					if (totalTimeStr == null || totalTimeStr.isBlank()) {
-						return Integer.MAX_VALUE;
-					}
-					// "1시간 30분" 또는 "45분" 형식을 분 단위 int로 변환
-					return parseTimeToMinutes(totalTimeStr);
-				})
-				// 2차: 보증금 (낮은 순)
-				.thenComparing(item ->
-						item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
-				)
-				// 3차: 지역 (오름차순)
-				.thenComparing(item ->
-						item.complex() != null && item.complex().address() != null
-								? item.complex().address()
-								: ""
-				)
-				// 4차: 단지명 (오름차순)
-				.thenComparing(item ->
-						item.complex() != null && item.complex().name() != null
-								? item.complex().name()
-								: ""
-				)
-				// 5차: 방 이름 (오름차순)
-				.thenComparing(item ->
-						item.typeCode() != null ? item.typeCode() : ""
-				)
+			// 1차: 대중교통 소요 시간 (짧은 순 = 오름차순)
+			.comparing((UnitTypeCompareResponse.UnitTypeComparisonItem item) -> {
+				String totalTimeStr = item.totalTime();
+				if (totalTimeStr == null || totalTimeStr.isBlank()) {
+					return Integer.MAX_VALUE;
+				}
+				// "1시간 30분" 또는 "45분" 형식을 분 단위 int로 변환
+				return parseTimeToMinutes(totalTimeStr);
+			})
+			// 2차: 보증금 (낮은 순)
+			.thenComparing(item ->
+				item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
+			)
+			// 3차: 지역 (오름차순)
+			.thenComparing(item ->
+				item.complex() != null && item.complex().address() != null
+					? item.complex().address()
+					: ""
+			)
+			// 4차: 단지명 (오름차순)
+			.thenComparing(item ->
+				item.complex() != null && item.complex().name() != null
+					? item.complex().name()
+					: ""
+			)
+			// 5차: 방 이름 (오름차순)
+			.thenComparing(item ->
+				item.typeCode() != null ? item.typeCode() : ""
+			)
 		);
 	}
 
@@ -556,7 +559,6 @@ public class NoticeService implements NoticeUseCase {
 		}
 	}
 
-
 	/**
 	 * 두 지점 간 거리 계산 (Haversine formula)
 	 * @return 거리 (km)
@@ -577,8 +579,8 @@ public class NoticeService implements NoticeUseCase {
 		double dLon = Math.toRadians(lon2 - lon1);
 
 		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-				Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-						Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+				Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -593,7 +595,7 @@ public class NoticeService implements NoticeUseCase {
 	private String formatDistance(double distanceKm) {
 		if (distanceKm < 1.0) {
 			// 1km 미만은 미터 단위로 표시
-			int meters = (int) Math.round(distanceKm * 1000);
+			int meters = (int)Math.round(distanceKm * 1000);
 			return meters + "m";
 		} else {
 			// 1km 이상은 km 단위로 표시 (소수점 1자리)
@@ -614,8 +616,8 @@ public class NoticeService implements NoticeUseCase {
 
 		/// DTO 변환
 		return notices.stream()
-				.map(n -> NoticeListResponse.from(n, true))
-				.toList();
+			.map(n -> NoticeListResponse.from(n, true))
+			.toList();
 	}
 
 	// =================
@@ -626,7 +628,7 @@ public class NoticeService implements NoticeUseCase {
 	@Transactional
 	public NoticeDocument loadNotice(String id) {
 		return repository.findById(id)
-				.orElseThrow(() -> new CustomException(NoticeErrorCode.NOT_FOUND_NOTICE));
+			.orElseThrow(() -> new CustomException(NoticeErrorCode.NOT_FOUND_NOTICE));
 	}
 
 	/// 타입에 따라서 필터링 하기
@@ -635,39 +637,39 @@ public class NoticeService implements NoticeUseCase {
 
 		// 공급 유형 집합 (한글 기준)
 		Set<String> includedSubTypes = request.getSupplyTypes().stream()
-				.flatMap(rt -> rt.getIncludedTypes().stream())
-				.collect(Collectors.toSet());
+			.flatMap(rt -> rt.getIncludedTypes().stream())
+			.collect(Collectors.toSet());
 
 		// 타겟 유형 집합
 		Set<String> rentalValues = request.getRentalTypes().stream()
-				.map(RentalType::getValue)
-				.collect(Collectors.toSet());
+			.map(RentalType::getValue)
+			.collect(Collectors.toSet());
 
 		// 주택 유형 집합 (한글 기준)
 		Set<String> houseTypeValues = request.getHouseType().stream()
-				.map(HouseType::getValue)
-				.collect(Collectors.toSet());
+			.map(HouseType::getValue)
+			.collect(Collectors.toSet());
 
 		return repository.findAll().stream()
-				.filter(n -> {
-					String ht = Optional.ofNullable(n.getHouseType()).orElse("").trim();
-					return houseTypeValues.contains(ht);
-				})
-				.filter(n -> {
-					String st = Optional.ofNullable(n.getSupplyType()).orElse("").trim();
-					return includedSubTypes.contains(st);
-				})
-				.filter(n -> {
-					List<String> tgList = Optional.ofNullable(n.getTargetGroups()).orElse(List.of());
-					return tgList.stream().anyMatch(rentalValues::contains);
-				})
-				.toList();
+			.filter(n -> {
+				String ht = Optional.ofNullable(n.getHouseType()).orElse("").trim();
+				return houseTypeValues.contains(ht);
+			})
+			.filter(n -> {
+				String st = Optional.ofNullable(n.getSupplyType()).orElse("").trim();
+				return includedSubTypes.contains(st);
+			})
+			.filter(n -> {
+				List<String> tgList = Optional.ofNullable(n.getTargetGroups()).orElse(List.of());
+				return tgList.stream().anyMatch(rentalValues::contains);
+			})
+			.toList();
 	}
-
 
 	// =================
 	//  내부 로직
 	// =================
+
 	/// 아이디 목록에 따른 한번에 엔티티 가져오기
 	protected List<NoticeDocument> loadNotices(List<String> noticeIds) {
 		return repository.findByIdIn(noticeIds);
