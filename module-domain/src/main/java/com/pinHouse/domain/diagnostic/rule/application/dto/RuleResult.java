@@ -1,9 +1,9 @@
 package com.pinHouse.domain.diagnostic.rule.application.dto;
 
-import lombok.Builder;
-
 import java.util.Collections;
 import java.util.Map;
+
+import lombok.Builder;
 
 /**
  * @param pass     통과 여부
@@ -13,19 +13,19 @@ import java.util.Map;
  */
 @Builder
 public record RuleResult(
-        boolean pass,
-        String code,
-        String message,
-        Map<String, Object> details
+		boolean pass,
+		String code,
+		String message,
+		Map<String, Object> details
 ) {
 
-    /// 정적 팩토리 메서드
-    public static RuleResult pass(String code, String msg, Map<String, Object> details) {
-        return new RuleResult(true, code, msg, details == null ? Collections.emptyMap() : details);
-    }
+	/// 정적 팩토리 메서드
+	public static RuleResult pass(String code, String msg, Map<String, Object> details) {
+		return new RuleResult(true, code, msg, details == null ? Collections.emptyMap() : details);
+	}
 
-    /// 정적 팩토리 메서드, 불가능한 임대주택에 fail 부여
-    public static RuleResult fail(String code, String msg, Map<String, Object> details) {
-        return new RuleResult(false, code, msg, details == null ? Collections.emptyMap() : details);
-    }
+	/// 정적 팩토리 메서드, 불가능한 임대주택에 fail 부여
+	public static RuleResult fail(String code, String msg, Map<String, Object> details) {
+		return new RuleResult(false, code, msg, details == null ? Collections.emptyMap() : details);
+	}
 }

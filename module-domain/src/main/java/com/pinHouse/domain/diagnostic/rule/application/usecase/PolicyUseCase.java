@@ -1,33 +1,32 @@
 package com.pinHouse.domain.diagnostic.rule.application.usecase;
 
-import com.pinHouse.domain.housing.notice.domain.entity.NoticeType;
 import com.pinHouse.domain.diagnostic.rule.domain.entity.SupplyType;
+import com.pinHouse.domain.housing.notice.domain.entity.NoticeType;
 
 public interface PolicyUseCase {
 
 
-    /// 소득 비율
-    double maxIncomeRatio(SupplyType supply, NoticeType rental, int familyCount);
+	/// 소득 비율
+	double maxIncomeRatio(SupplyType supply, NoticeType rental, int familyCount);
 
-    /// 전체 재산 관련 부분
-    long maxTotalAsset(SupplyType supply, NoticeType rental, int familyCount);
+	/// 전체 재산 관련 부분
+	long maxTotalAsset(SupplyType supply, NoticeType rental, int familyCount);
 
-    /// 자동차 재산 관련 부분
-    long checkMaxCarValue();
+	/// 자동차 재산 관련 부분
+	long checkMaxCarValue();
 
-    /// 자녀 나이 관련
-    int youthAgeMin();
+	/// 자녀 나이 관련
+	int youthAgeMin();
 
-    /// 신혼부부 관련
-    int newlyMarriedMaxYears();
+	/// 신혼부부 관련
+	int newlyMarriedMaxYears();
 
-    /// 미성년자 관련
-    int marriedYouthAgeMin();
+	/// 미성년자 관련
+	int marriedYouthAgeMin();
 
-    /// 고령자 관련
-    int elderAge();
+	/// 고령자 관련
+	int elderAge();
 
-    /// 무주택 기간
-    int reApplyBanMonths(NoticeType rental);
+	/// 무주택 기간
+	int reApplyBanMonths(NoticeType rental);
 }
-

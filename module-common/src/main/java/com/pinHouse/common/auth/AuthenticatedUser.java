@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface AuthenticatedUser {
 
-    UUID getId();
+	UUID getId();
 }

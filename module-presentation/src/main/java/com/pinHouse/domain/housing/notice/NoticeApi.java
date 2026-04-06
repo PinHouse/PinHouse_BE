@@ -1,6 +1,13 @@
 package com.pinHouse.domain.housing.notice;
 
+import java.util.List;
 import java.util.UUID;
+
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.pinHouse.common.aop.CheckLogin;
 import com.pinHouse.common.auth.CurrentUserId;
@@ -18,139 +25,133 @@ import com.pinHouse.domain.housing.notice.application.usecase.NoticeUseCase;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/notices")
 @RequiredArgsConstructor
 public class NoticeApi implements NoticeApiSpec {
 
-    /// 의존성 주입
-    private final NoticeUseCase service;
+	/// 의존성 주입
+	private final NoticeUseCase service;
 
-    /// 공고 목록 조회
-    @PostMapping
-    public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
-            @RequestBody NoticeListRequest request,
-            SliceRequest sliceRequest,
-            @CurrentUserId UUID userId
-    ) {
+	/// 공고 목록 조회
+	@PostMapping
+	public ApiResponse<SliceResponse<NoticeListResponse>> getNotices(
+			@RequestBody NoticeListRequest request,
+			SliceRequest sliceRequest,
+			@CurrentUserId UUID userId
+	) {
 
-        /// 서비스 계층 (로그인하지 않은 경우 userId는 null)
-        var response = service.getNotices(request, sliceRequest, userId);
+		/// 서비스 계층 (로그인하지 않은 경우 userId는 null)
+		var response = service.getNotices(request, sliceRequest, userId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 나의 좋아요 공고 목록 조회
-    @CheckLogin
-    @GetMapping("/likes")
-    public ApiResponse<List<NoticeListResponse>> getLikeNotices(
-            @CurrentUserId(required = true) UUID userId
-    ) {
+	/// 나의 좋아요 공고 목록 조회
+	@CheckLogin
+	@GetMapping("/likes")
+	public ApiResponse<List<NoticeListResponse>> getLikeNotices(
+			@CurrentUserId(required = true) UUID userId
+	) {
 
-        /// 서비스 호출
-        var response = service.getNoticesLike(userId);
+		/// 서비스 호출
+		var response = service.getNoticesLike(userId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
-    @PostMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailFilteredResponse> getNotice(
-            @PathVariable String noticeId,
-            @Valid @RequestBody NoticeDetailFilterRequest request) {
+	/// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
+	@PostMapping("/{noticeId}")
+	public ApiResponse<NoticeDetailFilteredResponse> getNotice(
+			@PathVariable String noticeId,
+			@Valid @RequestBody NoticeDetailFilterRequest request) {
 
-        /// 서비스 계층
-        var response = service.getNotice(noticeId, request);
+		/// 서비스 계층
+		var response = service.getNotice(noticeId, request);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고의 단지 필터링 정보 조회
-    @GetMapping("/{noticeId}/filter")
-    public ApiResponse<ComplexFilterResponse> getComplexFilters(
-            @PathVariable String noticeId) {
+	/// 공고의 단지 필터링 정보 조회
+	@GetMapping("/{noticeId}/filter")
+	public ApiResponse<ComplexFilterResponse> getComplexFilters(
+			@PathVariable String noticeId) {
 
-        /// 서비스 계층
-        var response = service.getComplexFilters(noticeId);
+		/// 서비스 계층
+		var response = service.getComplexFilters(noticeId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고의 단지 지역 필터 정보 조회
-    @GetMapping("/{noticeId}/filter/districts")
-    public ApiResponse<ComplexFilterResponse.DistrictFilter> getDistrictFilter(
-            @PathVariable String noticeId) {
+	/// 공고의 단지 지역 필터 정보 조회
+	@GetMapping("/{noticeId}/filter/districts")
+	public ApiResponse<ComplexFilterResponse.DistrictFilter> getDistrictFilter(
+			@PathVariable String noticeId) {
 
-        /// 서비스 계층
-        var response = service.getDistrictFilter(noticeId);
+		/// 서비스 계층
+		var response = service.getDistrictFilter(noticeId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고의 단지 비용 필터 정보 조회
-    @GetMapping("/{noticeId}/filter/cost")
-    public ApiResponse<ComplexFilterResponse.CostFilter> getCostFilter(
-            @PathVariable String noticeId) {
+	/// 공고의 단지 비용 필터 정보 조회
+	@GetMapping("/{noticeId}/filter/cost")
+	public ApiResponse<ComplexFilterResponse.CostFilter> getCostFilter(
+			@PathVariable String noticeId) {
 
-        /// 서비스 계층
-        var response = service.getCostFilter(noticeId);
+		/// 서비스 계층
+		var response = service.getCostFilter(noticeId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고의 단지 방타입 필터 정보 조회
-    @GetMapping("/{noticeId}/filter/area")
-    public ApiResponse<ComplexFilterResponse.AreaFilter> getAreaFilter(
-            @PathVariable String noticeId) {
+	/// 공고의 단지 방타입 필터 정보 조회
+	@GetMapping("/{noticeId}/filter/area")
+	public ApiResponse<ComplexFilterResponse.AreaFilter> getAreaFilter(
+			@PathVariable String noticeId) {
 
-        /// 서비스 계층
-        var response = service.getAreaFilter(noticeId);
+		/// 서비스 계층
+		var response = service.getAreaFilter(noticeId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 
-    /// 공고의 필터 조건에 맞는 단지 개수 조회
-    @PostMapping("/{noticeId}/filter/count")
-    public ApiResponse<Integer> countFilteredComplexes(
-            @PathVariable String noticeId,
-            @RequestBody NoticeDetailFilterRequest request) {
+	/// 공고의 필터 조건에 맞는 단지 개수 조회
+	@PostMapping("/{noticeId}/filter/count")
+	public ApiResponse<Integer> countFilteredComplexes(
+			@PathVariable String noticeId,
+			@RequestBody NoticeDetailFilterRequest request) {
 
-        /// 서비스 계층
-        int count = service.countFilteredComplexes(noticeId, request);
+		/// 서비스 계층
+		int count = service.countFilteredComplexes(noticeId, request);
 
-        /// 리턴
-        return ApiResponse.ok(count);
-    }
+		/// 리턴
+		return ApiResponse.ok(count);
+	}
 
-    /// 유닛타입(방) 비교
-    @GetMapping("/{noticeId}/compare")
-    public ApiResponse<UnitTypeCompareResponse> compareUnitTypes(
-            @PathVariable String noticeId,
-            @RequestParam(required = false) String pinPointId,
-            @RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType,
-            @RequestParam(required = false) List<com.pinHouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
-            @CurrentUserId UUID userId) {
+	/// 유닛타입(방) 비교
+	@GetMapping("/{noticeId}/compare")
+	public ApiResponse<UnitTypeCompareResponse> compareUnitTypes(
+			@PathVariable String noticeId,
+			@RequestParam(required = false) String pinPointId,
+			@RequestParam(required = false, defaultValue = "DEPOSIT_ASC") UnitTypeSortType sortType,
+			@RequestParam(required = false) List<com.pinHouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
+			@CurrentUserId UUID userId) {
 
-        /// 로그인하지 않은 경우 userId는 null
+		/// 로그인하지 않은 경우 userId는 null
 
-        /// 서비스 계층
-        var response = service.compareUnitTypes(noticeId, pinPointId, sortType, nearbyFacilities, userId);
+		/// 서비스 계층
+		var response = service.compareUnitTypes(noticeId, pinPointId, sortType, nearbyFacilities, userId);
 
-        /// 리턴
-        return ApiResponse.ok(response);
-    }
+		/// 리턴
+		return ApiResponse.ok(response);
+	}
 }

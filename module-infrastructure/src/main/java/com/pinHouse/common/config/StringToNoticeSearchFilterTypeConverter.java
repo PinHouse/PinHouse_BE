@@ -1,8 +1,9 @@
 package com.pinHouse.common.config;
 
-import com.pinHouse.domain.search.application.dto.NoticeSearchFilterType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+
+import com.pinHouse.domain.search.application.dto.NoticeSearchFilterType;
 
 /**
  * String을 NoticeSearchFilterType으로 변환하는 커스텀 컨버터
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class StringToNoticeSearchFilterTypeConverter implements Converter<String, NoticeSearchFilterType> {
 
-    @Override
-    public NoticeSearchFilterType convert(String source) {
-        return NoticeSearchFilterType.from(source);
-    }
+	@Override
+	public NoticeSearchFilterType convert(String source) {
+		return NoticeSearchFilterType.from(source);
+	}
 }

@@ -1,8 +1,8 @@
 package com.pinHouse.common.auth;
 
-import io.swagger.v3.oas.annotations.Parameter;
-
 import java.lang.annotation.*;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Parameter(hidden = true)
 public @interface CurrentUserId {
 
-    boolean required() default false;
+	boolean required() default false;
 }

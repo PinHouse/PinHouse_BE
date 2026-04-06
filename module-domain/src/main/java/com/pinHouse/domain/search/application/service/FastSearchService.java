@@ -1,5 +1,10 @@
 package com.pinHouse.domain.search.application.service;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.pinHouse.common.exception.code.CommonErrorCode;
 import com.pinHouse.common.exception.code.PinPointErrorCode;
 import com.pinHouse.common.response.CustomException;
@@ -16,13 +21,10 @@ import com.pinHouse.domain.search.domain.entity.SearchHistory;
 import com.pinHouse.domain.search.domain.repository.SearchHistoryMongoRepository;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.domain.user.domain.entity.User;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * 빠른 검색을 위한 로직
@@ -33,101 +35,101 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FastSearchService implements FastSearchUseCase {
 
-    private final SearchHistoryMongoRepository repository;
+	private final SearchHistoryMongoRepository repository;
 
-    /// 의존성
-    private final ComplexUseCase complexService;
-    private final UserUseCase userService;
-    private final PinPointUseCase pinPointService;
-    private final FacilityUseCase facilityService;
-    private final NoticeUseCase noticeService;
-    private final com.pinHouse.domain.like.application.usecase.LikeQueryUseCase likeService;
+	/// 의존성
+	private final ComplexUseCase complexService;
+	private final UserUseCase userService;
+	private final PinPointUseCase pinPointService;
+	private final FacilityUseCase facilityService;
+	private final NoticeUseCase noticeService;
+	private final com.pinHouse.domain.like.application.usecase.LikeQueryUseCase likeService;
 
-    // =================
-    //  퍼블릭 로직
-    // =================
+	// =================
+	//  퍼블릭 로직
+	// =================
 
-    @Override
-    public SearchHistoryResponse searchHistory(UUID userId) {
+	@Override
+	public SearchHistoryResponse searchHistory(UUID userId) {
 
-        /// 유저/핀포인트 검증
-        User user = userService.loadUser(userId);
+		/// 유저/핀포인트 검증
+		User user = userService.loadUser(userId);
 
-        /// DB에서 리스트로 가져오기
-        List<SearchHistory> histories = repository.findByUserId(user.getId().toString());
+		/// DB에서 리스트로 가져오기
+		List<SearchHistory> histories = repository.findByUserId(user.getId().toString());
 
-        /// 없으면 빈 응답
-        if (histories == null || histories.isEmpty()) {
-            return SearchHistoryResponse.of();
-        }
+		/// 없으면 빈 응답
+		if (histories == null || histories.isEmpty()) {
+			return SearchHistoryResponse.of();
+		}
 
-        /// 있으면 첫 번째 사용
-        SearchHistory first = histories.getFirst();
+		/// 있으면 첫 번째 사용
+		SearchHistory first = histories.getFirst();
 
-        return SearchHistoryResponse.of(first);
-    }
+		return SearchHistoryResponse.of(first);
+	}
 
-    /// 검색
-    @Override
-    public FastSearchResponse search(UUID userId, FastSearchRequest request) {
+	/// 검색
+	@Override
+	public FastSearchResponse search(UUID userId, FastSearchRequest request) {
 
-        /// 유저/핀포인트 검증
-        User user = userService.loadUser(userId);
+		/// 유저/핀포인트 검증
+		User user = userService.loadUser(userId);
 
-        SearchHistory searchHistory;
+		SearchHistory searchHistory;
 
-        /// 만약 기록으로 들어왔다면,
-        if (request.historyId() == null){
-            /// 기록 저장하기
-            var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(), request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(), request.rentalTypes(), request.supplyTypes(), request.houseTypes());
-            searchHistory = repository.save(reqHistory);
-        } else {
-            searchHistory = repository.findById(request.historyId())
-                    .orElseThrow(() -> new CustomException(CommonErrorCode.NOT_FOUND));
-        }
+		/// 만약 기록으로 들어왔다면,
+		if (request.historyId() == null){
+			/// 기록 저장하기
+			var reqHistory = SearchHistory.of(String.valueOf(userId), request.pinPointId(), request.transitTime(), request.minSize(), request.maxSize(), request.maxDeposit(), request.maxMonthPay(), request.facilities(), request.rentalTypes(), request.supplyTypes(), request.houseTypes());
+			searchHistory = repository.save(reqHistory);
+		} else {
+			searchHistory = repository.findById(request.historyId())
+					.orElseThrow(() -> new CustomException(CommonErrorCode.NOT_FOUND));
+		}
 
-        /// 핀포인트 조회 및 예외처리
-        var pinPoint = pinPointService.loadPinPoint(searchHistory.getPinPointId());
-        if (!pinPointService.checkPinPoint(pinPoint.getId(), user.getId())) {
-            throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
-        }
+		/// 핀포인트 조회 및 예외처리
+		var pinPoint = pinPointService.loadPinPoint(searchHistory.getPinPointId());
+		if (!pinPointService.checkPinPoint(pinPoint.getId(), user.getId())) {
+			throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
+		}
 
-        /// 공고 타입 & 주택 유형 분류하기
-        List<NoticeDocument> notices = noticeService.filterNotices(searchHistory);
+		/// 공고 타입 & 주택 유형 분류하기
+		List<NoticeDocument> notices = noticeService.filterNotices(searchHistory);
 
-        /// 해당하는 인프라가 존재하는 친구로 조회
-        List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, searchHistory.getFacilities());
+		/// 해당하는 인프라가 존재하는 친구로 조회
+		List<ComplexDocument> facilityDocuments = facilityService.filterComplexesByFacility(notices, searchHistory.getFacilities());
 
-        /// 거리 필터링
-        List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, searchHistory);
+		/// 거리 필터링
+		List<ComplexDistanceResponse> documents = complexService.filterDistanceOnly(facilityDocuments, searchHistory);
 
-        /// 전용면적/보증금/월임대료 필터링
-        List<ComplexDistanceResponse> filtered = complexService.filterUnitTypesOnly(documents, searchHistory);
+		/// 전용면적/보증금/월임대료 필터링
+		List<ComplexDistanceResponse> filtered = complexService.filterUnitTypesOnly(documents, searchHistory);
 
-        /// 없다면 빈 리스트 제공
-        if (filtered.isEmpty()) {
-            FastSearchResponse.from(List.of());
-        }
+		/// 없다면 빈 리스트 제공
+		if (filtered.isEmpty()) {
+			FastSearchResponse.from(List.of());
+		}
 
-        /// 좋아요 상태 조회
-        List<String> likedTypeIds = likeService.getLikeUnitTypeIds(userId);
+		/// 좋아요 상태 조회
+		List<String> likedTypeIds = likeService.getLikeUnitTypeIds(userId);
 
-        /// DTO 변환
-        List<FastUnitTypeResponse> responses = filtered.stream()
-                .map(c -> {
-                    ComplexDocument complex = c.complex();
-                    UnitType unitType = complex.getUnitTypes().getFirst();
-                    boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
-                    return FastUnitTypeResponse.from(c, facilityService.getFacilities(complex.getId()), isLiked);
-                })
-                .toList();
+		/// DTO 변환
+		List<FastUnitTypeResponse> responses = filtered.stream()
+				.map(c -> {
+					ComplexDocument complex = c.complex();
+					UnitType unitType = complex.getUnitTypes().getFirst();
+					boolean isLiked = likedTypeIds.contains(unitType.getTypeId());
+					return FastUnitTypeResponse.from(c, facilityService.getFacilities(complex.getId()), isLiked);
+				})
+				.toList();
 
-        /// DTO 변환 리턴
-        return FastSearchResponse.from(responses);
-    }
+		/// DTO 변환 리턴
+		return FastSearchResponse.from(responses);
+	}
 
-    // =================
-    //  내부 로직
-    // =================
+	// =================
+	//  내부 로직
+	// =================
 
 }

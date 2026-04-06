@@ -10,13 +10,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ImageType {
 
-    /**
-     * 프로필 이미지
-     */
-    PROFILE("profile");
+	/**
+	 * 프로필 이미지
+	 */
+	PROFILE("profile");
 
-    /**
-     * S3 Object Key의 prefix로 사용되는 경로
-     */
-    private final String path;
+	/**
+	 * S3 Object Key의 prefix로 사용되는 경로
+	 */
+	private final String path;
 }

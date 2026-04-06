@@ -1,8 +1,8 @@
 package com.pinHouse.common.dto;
 
-import lombok.*;
-
 import java.io.Serializable;
+
+import lombok.*;
 
 /**
  * 회원가입을 위한 임시 사용자 정보
@@ -13,12 +13,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class TempUserInfo implements Serializable {
-    private String socialId;
-    private String social;
-    private String email;
-    private String username;
-    private String gender;
-    private String birthyear;
-    private String birthday;
-    private String imageUrl;
+	private String socialId;
+	private String social;
+	private String email;
+	private String username;
+	private String gender;
+	private String birthyear;
+	private String birthday;
+	private String imageUrl;
 }

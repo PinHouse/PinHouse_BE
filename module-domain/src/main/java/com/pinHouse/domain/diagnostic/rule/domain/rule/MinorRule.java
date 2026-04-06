@@ -1,64 +1,66 @@
 package com.pinHouse.domain.diagnostic.rule.domain.rule;
 
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
 import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import com.pinHouse.domain.diagnostic.rule.application.dto.RuleResult;
 import com.pinHouse.domain.diagnostic.rule.application.usecase.PolicyUseCase;
 import com.pinHouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import com.pinHouse.domain.diagnostic.rule.domain.entity.SupplyType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Order(6)
 @Component
 @RequiredArgsConstructor
 public class MinorRule implements Rule {
 
-    /// 임대주택 유형 검증기 도입
-    private final PolicyUseCase policyUseCase;
+	/// 임대주택 유형 검증기 도입
+	private final PolicyUseCase policyUseCase;
 
-    @Override
-    public RuleResult evaluate(EvaluationContext ctx) {
+	@Override
+	public RuleResult evaluate(EvaluationContext ctx) {
 
-        /// 진단 정보 가져오기
-        Diagnosis diagnosis = ctx.getDiagnosis();
+		/// 진단 정보 가져오기
+		Diagnosis diagnosis = ctx.getDiagnosis();
 
-        /// 현재 후보 리스트 복사
-        var candidates = new ArrayList<>(ctx.getCurrentCandidates());
+		/// 현재 후보 리스트 복사
+		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-        /// 결혼 여부 & 신생아 여부
-        boolean minorOk = diagnosis.getUnbornChildrenCount() >= 1;
+		/// 결혼 여부 & 신생아 여부
+		boolean minorOk = diagnosis.getUnbornChildrenCount() >= 1;
 
-        /// 신생아가 1명이상 없다면, 제거한다.
-        if (!minorOk) {
+		/// 신생아가 1명이상 없다면, 제거한다.
+		if (!minorOk) {
 
-            /// 삭제
-            candidates.removeIf(c ->
-                    c.supplyType() == SupplyType.MINOR_SPECIAL);
+			/// 삭제
+			candidates.removeIf(c ->
+					c.supplyType() == SupplyType.MINOR_SPECIAL);
 
-            /// 결과 저장하기
-            ctx.setCurrentCandidates(candidates);
+			/// 결과 저장하기
+			ctx.setCurrentCandidates(candidates);
 
-            return RuleResult.fail(code(),
-                    "신생아 특별공급 해당 없음",
-                    Map.of(
-                            "candidate", candidates,
-                            "failReason", "신생아의 자녀가 없음"
-                    ));
-        }
+			return RuleResult.fail(code(),
+					"신생아 특별공급 해당 없음",
+					Map.of(
+							"candidate", candidates,
+							"failReason", "신생아의 자녀가 없음"
+					));
+		}
 
-        return RuleResult.pass(code(),
-                "신생아 특별공급 후보",
-                Map.of(
-                        "candidate", candidates));
-    }
+		return RuleResult.pass(code(),
+				"신생아 특별공급 후보",
+				Map.of(
+						"candidate", candidates));
+	}
 
 
-    @Override
-    public String code() {
-        return "MINOR_SPECIAL";
-    }
+	@Override
+	public String code() {
+		return "MINOR_SPECIAL";
+	}
 }

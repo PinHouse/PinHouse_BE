@@ -6,20 +6,20 @@ package com.pinHouse.domain.image.external;
  */
 public interface PresignedUrlGenerator {
 
-    /**
-     * PUT 요청을 위한 Presigned URL 생성
-     *
-     * @param objectKey S3 Object Key (예: profile/{userId}/{uuid}.jpg)
-     * @param contentType Content-Type (예: image/jpeg)
-     * @return Presigned URL (클라이언트가 PUT 요청할 URL)
-     */
-    String generatePutPresignedUrl(String objectKey, String contentType);
+	/**
+	 * PUT 요청을 위한 Presigned URL 생성
+	 *
+	 * @param objectKey S3 Object Key (예: profile/{userId}/{uuid}.jpg)
+	 * @param contentType Content-Type (예: image/jpeg)
+	 * @return Presigned URL (클라이언트가 PUT 요청할 URL)
+	 */
+	String generatePutPresignedUrl(String objectKey, String contentType);
 
-    /**
-     * Public URL 생성
-     *
-     * @param objectKey S3 Object Key
-     * @return Public URL (User.profileImage에 저장할 최종 URL)
-     */
-    String getPublicUrl(String objectKey);
+	/**
+	 * Public URL 생성
+	 *
+	 * @param objectKey S3 Object Key
+	 * @return Public URL (User.profileImage에 저장할 최종 URL)
+	 */
+	String getPublicUrl(String objectKey);
 }

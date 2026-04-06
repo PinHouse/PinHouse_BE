@@ -1,21 +1,23 @@
 package com.pinHouse.domain.diagnostic.diagnosis.application.service;
 
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pinHouse.domain.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
 import com.pinHouse.domain.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import com.pinHouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import com.pinHouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponseV2;
 import com.pinHouse.domain.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
-import com.pinHouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
-import com.pinHouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import com.pinHouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
+import com.pinHouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import com.pinHouse.domain.diagnostic.rule.application.usecase.RuleChainUseCase;
+import com.pinHouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import com.pinHouse.domain.user.application.usecase.UserUseCase;
 import com.pinHouse.domain.user.domain.entity.User;
-import lombok.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import lombok.*;
 
 /**
  * 청약 진단 서비스
@@ -29,89 +31,89 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DiagnosisService implements DiagnosisUseCase {
 
-    /// 의존성
-    private final DiagnosisJpaRepository repository;
+	/// 의존성
+	private final DiagnosisJpaRepository repository;
 
-    /// 외부 의존성
-    private final UserUseCase userService;
-    private final RuleChainUseCase ruleChain;
+	/// 외부 의존성
+	private final UserUseCase userService;
+	private final RuleChainUseCase ruleChain;
 
-    /**
-     * 임대주택 진단하기
-     * @param userId    진단할 유저
-     * @param request   요청 DTO
-     * @return          진단 DTO
-     */
-    @Override
-    public DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request) {
+	/**
+	 * 임대주택 진단하기
+	 * @param userId    진단할 유저
+	 * @param request   요청 DTO
+	 * @return          진단 DTO
+	 */
+	@Override
+	public DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request) {
 
-        /// 유저 예외 처리
-        User user = userService.loadUser(userId);
+		/// 유저 예외 처리
+		User user = userService.loadUser(userId);
 
-        /// 진단 도메인 생성
-        var diagnosis = Diagnosis.of(user, request);
-        Diagnosis entity = repository.save(diagnosis);
+		/// 진단 도메인 생성
+		var diagnosis = Diagnosis.of(user, request);
+		Diagnosis entity = repository.save(diagnosis);
 
-        /// 작성한 내용을 바탕으로 진단 실행
-        EvaluationContext context = ruleChain.evaluateAll(entity);
+		/// 작성한 내용을 바탕으로 진단 실행
+		EvaluationContext context = ruleChain.evaluateAll(entity);
 
-        /// DTO 생성
-        return DiagnosisResponse.from(context);
-    }
+		/// DTO 생성
+		return DiagnosisResponse.from(context);
+	}
 
-    @Override
-    @Transactional
-    public DiagnosisResponseV2 diagnoseV2(UUID userId, DiagnosisRequest request) {
-        User user = userService.loadUser(userId);
-        var diagnosis = Diagnosis.of(user, request);
-        Diagnosis entity = repository.save(diagnosis);
+	@Override
+	@Transactional
+	public DiagnosisResponseV2 diagnoseV2(UUID userId, DiagnosisRequest request) {
+		User user = userService.loadUser(userId);
+		var diagnosis = Diagnosis.of(user, request);
+		Diagnosis entity = repository.save(diagnosis);
 
-        EvaluationContext context = ruleChain.evaluateAll(entity);
-        return DiagnosisResponseV2.from(context);
-    }
+		EvaluationContext context = ruleChain.evaluateAll(entity);
+		return DiagnosisResponseV2.from(context);
+	}
 
-    /**
-     * 나의 최근 청약진단 상세 조회 (입력 정보 + 결과)
-     * @param userId    유저ID
-     * @return          청약진단 상세 DTO
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public DiagnosisDetailResponse getDiagnoseDetail(UUID userId) {
+	/**
+	 * 나의 최근 청약진단 상세 조회 (입력 정보 + 결과)
+	 * @param userId    유저ID
+	 * @return          청약진단 상세 DTO
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisDetailResponse getDiagnoseDetail(UUID userId) {
 
-        /// 유저 예외 처리
-        User user = userService.loadUser(userId);
+		/// 유저 예외 처리
+		User user = userService.loadUser(userId);
 
-        /// DB에서 최근 진단 1개 조회
-        Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
-                .orElse(null);
+		/// DB에서 최근 진단 1개 조회
+		Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
+				.orElse(null);
 
-        /// 진단 기록이 없는 경우
-        if (diagnosis == null) {
-            return null;
-        }
+		/// 진단 기록이 없는 경우
+		if (diagnosis == null) {
+			return null;
+		}
 
-        /// 작성한 내용을 바탕으로 진단 실행 (규칙에 따라서 바뀔 수 있기에 매번 실행하도록 수정)
-        EvaluationContext context = ruleChain.evaluateAll(diagnosis);
+		/// 작성한 내용을 바탕으로 진단 실행 (규칙에 따라서 바뀔 수 있기에 매번 실행하도록 수정)
+		EvaluationContext context = ruleChain.evaluateAll(diagnosis);
 
-        /// DTO 생성
-        return DiagnosisDetailResponse.from(context);
-    }
+		/// DTO 생성
+		return DiagnosisDetailResponse.from(context);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public DiagnosisResponseV2 getDiagnoseSummaryV2(UUID userId) {
-        User user = userService.loadUser(userId);
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisResponseV2 getDiagnoseSummaryV2(UUID userId) {
+		User user = userService.loadUser(userId);
 
-        Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
-                .orElse(null);
+		Diagnosis diagnosis = repository.findTopByUserOrderByCreatedAtDesc(user)
+				.orElse(null);
 
-        if (diagnosis == null) {
-            return null;
-        }
+		if (diagnosis == null) {
+			return null;
+		}
 
-        EvaluationContext context = ruleChain.evaluateAll(diagnosis);
-        return DiagnosisResponseV2.from(context);
-    }
+		EvaluationContext context = ruleChain.evaluateAll(diagnosis);
+		return DiagnosisResponseV2.from(context);
+	}
 
 }

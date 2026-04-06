@@ -1,5 +1,8 @@
 package com.pinHouse.domain.housing.notice.application.usecase;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.pinHouse.common.response.pageable.SliceRequest;
 import com.pinHouse.common.response.pageable.SliceResponse;
 import com.pinHouse.domain.housing.notice.application.dto.ComplexFilterResponse;
@@ -12,59 +15,56 @@ import com.pinHouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import com.pinHouse.domain.housing.notice.domain.entity.NoticeDocument;
 import com.pinHouse.domain.search.domain.entity.SearchHistory;
 
-import java.util.List;
-import java.util.UUID;
-
 public interface NoticeUseCase {
 
-    // =================
-    //  퍼블릭 로직
-    // =================
+	// =================
+	//  퍼블릭 로직
+	// =================
 
-    /// 공고 목록 조회 (필터링과 함께)
-    SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId);
+	/// 공고 목록 조회 (필터링과 함께)
+	SliceResponse<NoticeListResponse> getNotices(NoticeListRequest request, SliceRequest sliceRequest, UUID userId);
 
-    /// 개수 파악하기
-    Long countNotices(NoticeListRequest request);
+	/// 개수 파악하기
+	Long countNotices(NoticeListRequest request);
 
-    /// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
-    NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request);
+	/// 공고 상세 조회 (필터 적용 - filtered/nonFiltered 분리)
+	NoticeDetailFilteredResponse getNotice(String noticeId, NoticeDetailFilterRequest request);
 
-    /// 공고의 단지 필터링 정보 조회 (지역, 가격, 면적)
-    ComplexFilterResponse getComplexFilters(String noticeId);
+	/// 공고의 단지 필터링 정보 조회 (지역, 가격, 면적)
+	ComplexFilterResponse getComplexFilters(String noticeId);
 
-    /// 공고의 단지 지역 필터 정보 조회
-    ComplexFilterResponse.DistrictFilter getDistrictFilter(String noticeId);
+	/// 공고의 단지 지역 필터 정보 조회
+	ComplexFilterResponse.DistrictFilter getDistrictFilter(String noticeId);
 
-    /// 공고의 단지 비용 필터 정보 조회
-    ComplexFilterResponse.CostFilter getCostFilter(String noticeId);
+	/// 공고의 단지 비용 필터 정보 조회
+	ComplexFilterResponse.CostFilter getCostFilter(String noticeId);
 
-    /// 공고의 단지 방타입 필터 정보 조회
-    ComplexFilterResponse.AreaFilter getAreaFilter(String noticeId);
+	/// 공고의 단지 방타입 필터 정보 조회
+	ComplexFilterResponse.AreaFilter getAreaFilter(String noticeId);
 
-    /// 공고의 필터 조건에 맞는 단지 개수 조회
-    int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request);
+	/// 공고의 필터 조건에 맞는 단지 개수 조회
+	int countFilteredComplexes(String noticeId, NoticeDetailFilterRequest request);
 
-    /// 유닛타입(방) 비교
-    UnitTypeCompareResponse compareUnitTypes(
-            String noticeId,
-            String pinPointId,
-            UnitTypeSortType sortType,
-            java.util.List<com.pinHouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
-            UUID userId
-    );
+	/// 유닛타입(방) 비교
+	UnitTypeCompareResponse compareUnitTypes(
+			String noticeId,
+			String pinPointId,
+			UnitTypeSortType sortType,
+			java.util.List<com.pinHouse.domain.housing.facility.domain.entity.FacilityType> nearbyFacilities,
+			UUID userId
+	);
 
-    /// 나의 좋아요 공고 목록 조회
-    List<NoticeListResponse> getNoticesLike(UUID userId);
+	/// 나의 좋아요 공고 목록 조회
+	List<NoticeListResponse> getNoticesLike(UUID userId);
 
-    // =================
-    //  외부 로직
-    // =================
+	// =================
+	//  외부 로직
+	// =================
 
-    /// 상세 조회
-    NoticeDocument loadNotice(String id);
+	/// 상세 조회
+	NoticeDocument loadNotice(String id);
 
-    /// 필터링을 위한 함수
-    List<NoticeDocument> filterNotices(SearchHistory request);
+	/// 필터링을 위한 함수
+	List<NoticeDocument> filterNotices(SearchHistory request);
 
 }

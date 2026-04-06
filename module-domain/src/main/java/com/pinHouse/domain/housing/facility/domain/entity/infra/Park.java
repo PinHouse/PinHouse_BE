@@ -1,12 +1,14 @@
 package com.pinHouse.domain.housing.facility.domain.entity.infra;
 
-import com.pinHouse.domain.Location;
-import com.pinHouse.domain.housing.facility.domain.entity.Facility;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.pinHouse.domain.Location;
+import com.pinHouse.domain.housing.facility.domain.entity.Facility;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,27 +25,27 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Park implements Facility {
 
-    @Id
-    @Field("_id")
-    private String id;
+	@Id
+	@Field("_id")
+	private String id;
 
-    /** 공원 시스템 ID */
-    @Field("ID")
-    private String parkId;
+	/** 공원 시스템 ID */
+	@Field("ID")
+	private String parkId;
 
-    /** POI 명칭 */
-    @Field("POI_NM")
-    private String name;
+	/** POI 명칭 */
+	@Field("POI_NM")
+	private String name;
 
-    /** 공원 분류 명칭 */
-    @Field("CL_NM")
-    private String category;
+	/** 공원 분류 명칭 */
+	@Field("CL_NM")
+	private String category;
 
-    /** PNU (법정동+지번코드) */
-    @Field("PNU")
-    private String pnu;
+	/** PNU (법정동+지번코드) */
+	@Field("PNU")
+	private String pnu;
 
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private Location location;
+	@GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+	private Location location;
 
 }

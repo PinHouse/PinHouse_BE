@@ -8,25 +8,25 @@ import lombok.Builder;
 @Builder
 public record DepositResponse(
 
-        @Schema(description = "최소 보증금 및 월세 정보")
-        DepositMinMaxResponse min,
+		@Schema(description = "최소 보증금 및 월세 정보")
+		DepositMinMaxResponse min,
 
-        @Schema(description = "보통 보증금 및 월세 정보")
-        DepositMinMaxResponse normal,
+		@Schema(description = "보통 보증금 및 월세 정보")
+		DepositMinMaxResponse normal,
 
-        @Schema(description = "최대 보증금 및 월세 정보")
-        DepositMinMaxResponse max
+		@Schema(description = "최대 보증금 및 월세 정보")
+		DepositMinMaxResponse max
 
 ) {
 
-    /// 정적 팩토리 메서드
-    public static DepositResponse from(DepositMinMaxResponse min, DepositMinMaxResponse normal,DepositMinMaxResponse max) {
+	/// 정적 팩토리 메서드
+	public static DepositResponse from(DepositMinMaxResponse min, DepositMinMaxResponse normal,DepositMinMaxResponse max) {
 
-        return DepositResponse.builder()
-                .min(min)
-                .normal(normal)
-                .max(max)
-                .build();
-    }
+		return DepositResponse.builder()
+				.min(min)
+				.normal(normal)
+				.max(max)
+				.build();
+	}
 
 }

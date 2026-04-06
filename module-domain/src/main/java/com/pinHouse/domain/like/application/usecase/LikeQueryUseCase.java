@@ -5,13 +5,13 @@ import java.util.UUID;
 
 public interface LikeQueryUseCase {
 
-    // =================
-    //  퍼블릭 로직
-    // =================
+	// =================
+	//  퍼블릭 로직
+	// =================
 
-    List<String> getLikeNoticeIds(UUID userId);
+	List<String> getLikeNoticeIds(UUID userId);
 
-    List<String> getLikeUnitTypeIds(UUID userId);
+	List<String> getLikeUnitTypeIds(UUID userId);
 
 
 }

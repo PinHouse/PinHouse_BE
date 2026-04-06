@@ -11,6 +11,10 @@ build/
 .env.stg
 .env.prod
 
+## 파이프라인
+.github/scripts
+.github/workflows/sync-issue-to-notion.yml
+
 ### Local Setting ###
 !local/
 local/**

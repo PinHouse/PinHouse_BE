@@ -1,15 +1,17 @@
 package com.pinHouse.domain.pinPoint.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pinHouse.common.exception.code.PinPointErrorCode;
 import com.pinHouse.common.response.CustomException;
 import com.pinHouse.domain.Location;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * 카카오API 좌표변환 활용 컴포넌트
@@ -18,47 +20,47 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class KakaoApi implements LocationUtil {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${kakao.rest-api-key}")
-    private String kakaoRestApiKey;
+	@Value("${kakao.rest-api-key}")
+	private String kakaoRestApiKey;
 
-    private static final String KAKAO_URL = "https://dapi.kakao.com/v2/local/search/address.json";
+	private static final String KAKAO_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
-    /**
-     * 좌표 변환 로직
-     * @param address   변환할 주소
-     */
-    @Override
-    public Location getLocation(String address) {
-        // 헤더 생성
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
+	/**
+	 * 좌표 변환 로직
+	 * @param address   변환할 주소
+	 */
+	@Override
+	public Location getLocation(String address) {
+		// 헤더 생성
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
 
-        // 파라미터 포함
-        String url = KAKAO_URL + "?query=" + address;
+		// 파라미터 포함
+		String url = KAKAO_URL + "?query=" + address;
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                url, HttpMethod.GET, entity, String.class
-        );
+		ResponseEntity<String> response = restTemplate.exchange(
+				url, HttpMethod.GET, entity, String.class
+		);
 
-        try {
-            JsonNode root = objectMapper.readTree(response.getBody());
-            JsonNode documents = root.path("documents");
-            if (documents.isArray() && documents.size() > 0) {
-                JsonNode first = documents.get(0);
-                double latitude = first.path("y").asDouble();  // 위도
-                double longitude = first.path("x").asDouble(); // 경도
+		try {
+			JsonNode root = objectMapper.readTree(response.getBody());
+			JsonNode documents = root.path("documents");
+			if (documents.isArray() && documents.size() > 0) {
+				JsonNode first = documents.get(0);
+				double latitude = first.path("y").asDouble();  // 위도
+				double longitude = first.path("x").asDouble(); // 경도
 
-                return Location.of(longitude, latitude);
-            }
-        } catch (Exception e) {
-            throw new CustomException(PinPointErrorCode.KAKAO_SERVER_ERROR);
-        }
+				return Location.of(longitude, latitude);
+			}
+		} catch (Exception e) {
+			throw new CustomException(PinPointErrorCode.KAKAO_SERVER_ERROR);
+		}
 
-        return null;
-    }
+		return null;
+	}
 }
