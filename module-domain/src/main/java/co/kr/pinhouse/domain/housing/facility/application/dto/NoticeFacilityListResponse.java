@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

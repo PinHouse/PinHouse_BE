@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import co.kr.pinhouse.domain.diagnostic.school.domain.entity.School;
 import co.kr.pinhouse.domain.diagnostic.school.domain.entity.University;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

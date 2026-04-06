@@ -1,7 +1,6 @@
 package co.kr.pinhouse.domain.housing.complex.application.util;
 
 import co.kr.pinhouse.domain.Location;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

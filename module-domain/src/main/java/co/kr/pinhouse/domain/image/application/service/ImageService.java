@@ -13,7 +13,6 @@ import co.kr.pinhouse.domain.image.application.dto.PresignedUrlResponse;
 import co.kr.pinhouse.domain.image.application.usecase.ImageUseCase;
 import co.kr.pinhouse.domain.image.domain.entity.ImageType;
 import co.kr.pinhouse.domain.image.external.PresignedUrlGenerator;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

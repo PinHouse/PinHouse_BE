@@ -19,7 +19,6 @@ import co.kr.pinhouse.domain.pinpoint.domain.repository.PinPointMongoRepository;
 import co.kr.pinhouse.domain.pinpoint.util.LocationUtil;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

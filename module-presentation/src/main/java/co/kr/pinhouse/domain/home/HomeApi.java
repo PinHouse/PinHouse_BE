@@ -19,7 +19,6 @@ import co.kr.pinhouse.domain.home.application.dto.HomeSearchOverviewResponse;
 import co.kr.pinhouse.domain.home.application.dto.NoticeCountResponse;
 import co.kr.pinhouse.domain.home.application.usecase.HomeUseCase;
 import co.kr.pinhouse.domain.search.application.dto.PopularKeywordResponse;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -25,7 +25,6 @@ import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;
 import co.kr.pinhouse.domain.search.domain.repository.SearchHistoryMongoRepository;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -2,9 +2,9 @@ package co.kr.pinhouse.domain.search.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+
 import co.kr.pinhouse.common.exception.code.CommonErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-
 import lombok.RequiredArgsConstructor;
 
 /// 조건

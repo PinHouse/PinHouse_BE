@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeyword;
-
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

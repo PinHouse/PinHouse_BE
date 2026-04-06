@@ -11,7 +11,6 @@ import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.IncomeLevel;
 import co.kr.pinhouse.domain.diagnostic.rule.application.dto.RuleResult;
 import co.kr.pinhouse.domain.diagnostic.rule.application.usecase.PolicyUseCase;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
-
 import lombok.RequiredArgsConstructor;
 
 /** 10) 가능한 후보에서 소득/자산 한번에 체크 총량 요건 */

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
 
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

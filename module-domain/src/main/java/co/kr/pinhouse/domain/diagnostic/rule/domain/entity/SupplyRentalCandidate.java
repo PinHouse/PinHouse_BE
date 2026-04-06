@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType;
-
 import lombok.Builder;
 
 /**

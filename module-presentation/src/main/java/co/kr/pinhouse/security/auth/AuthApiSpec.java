@@ -4,7 +4,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

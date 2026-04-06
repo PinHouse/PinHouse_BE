@@ -12,7 +12,6 @@ import co.kr.pinhouse.domain.diagnostic.rule.application.dto.RuleResult;
 import co.kr.pinhouse.domain.diagnostic.rule.application.usecase.PolicyUseCase;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyType;
-
 import lombok.RequiredArgsConstructor;
 
 @Order(11)

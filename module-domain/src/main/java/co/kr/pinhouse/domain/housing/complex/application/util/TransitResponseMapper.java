@@ -13,7 +13,6 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitInf
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.PathResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

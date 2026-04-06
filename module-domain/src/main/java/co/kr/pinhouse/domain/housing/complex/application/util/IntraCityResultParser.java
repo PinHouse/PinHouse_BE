@@ -6,12 +6,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.BusRouteType;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.IntraCityResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.SubwayLineType;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

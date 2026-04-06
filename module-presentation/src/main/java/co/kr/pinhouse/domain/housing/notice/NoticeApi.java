@@ -24,7 +24,6 @@ import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeCompareResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.application.usecase.NoticeUseCase;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

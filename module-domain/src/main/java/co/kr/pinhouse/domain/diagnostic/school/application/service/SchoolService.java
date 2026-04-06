@@ -11,7 +11,6 @@ import co.kr.pinhouse.domain.diagnostic.school.domain.entity.School;
 import co.kr.pinhouse.domain.diagnostic.school.domain.entity.University;
 import co.kr.pinhouse.domain.diagnostic.school.domain.repository.SchoolJpaRepository;
 import co.kr.pinhouse.domain.diagnostic.school.domain.repository.UniversityJpaRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 

@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import co.kr.pinhouse.common.auth.AuthenticatedUser;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

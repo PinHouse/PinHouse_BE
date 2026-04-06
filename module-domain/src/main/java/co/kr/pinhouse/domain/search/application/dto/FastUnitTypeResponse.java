@@ -5,7 +5,6 @@ import java.util.List;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

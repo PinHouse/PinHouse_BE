@@ -10,7 +10,6 @@ import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisDetai
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponseV2;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

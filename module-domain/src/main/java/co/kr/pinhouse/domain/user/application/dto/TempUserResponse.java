@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.user.application.dto;
 import java.util.Map;
 
 import co.kr.pinhouse.common.dto.TempUserInfo;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

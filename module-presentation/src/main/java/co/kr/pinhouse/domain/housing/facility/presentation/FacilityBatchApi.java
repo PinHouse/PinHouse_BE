@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.housing.facility.application.service.FacilityBatch;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController

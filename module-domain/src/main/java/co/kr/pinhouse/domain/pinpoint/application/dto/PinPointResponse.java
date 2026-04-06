@@ -4,7 +4,6 @@ import java.util.List;
 
 import co.kr.pinhouse.domain.Location;
 import co.kr.pinhouse.domain.pinpoint.domain.entity.PinPoint;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

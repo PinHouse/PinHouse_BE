@@ -8,7 +8,6 @@ import java.util.UUID;
 import co.kr.pinhouse.common.util.NicknameUtil;
 import co.kr.pinhouse.domain.BaseTimeEntity;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

@@ -20,7 +20,6 @@ import co.kr.pinhouse.domain.diagnostic.rule.application.dto.RuleResult;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyRentalCandidate;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType;
-
 import lombok.RequiredArgsConstructor;
 
 /** 3) 청약통장 요건(가입기간/예치금/상품유형) */

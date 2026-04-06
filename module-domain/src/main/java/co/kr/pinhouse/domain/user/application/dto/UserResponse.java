@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.user.application.dto;
 import java.util.UUID;
 
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

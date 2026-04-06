@@ -13,7 +13,6 @@ import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
 import co.kr.pinhouse.domain.home.application.dto.HomeSearchOverviewResponse;
 import co.kr.pinhouse.domain.home.application.dto.NoticeCountResponse;
 import co.kr.pinhouse.domain.search.application.dto.PopularKeywordResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -3,8 +3,8 @@ package co.kr.pinhouse.domain.housing.complex.application.dto.response;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
 
+import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import co.kr.pinhouse.domain.Location;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;

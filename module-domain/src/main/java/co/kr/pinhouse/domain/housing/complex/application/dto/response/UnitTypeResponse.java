@@ -4,7 +4,6 @@ import java.util.List;
 
 import co.kr.pinhouse.domain.housing.complex.domain.entity.Quota;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

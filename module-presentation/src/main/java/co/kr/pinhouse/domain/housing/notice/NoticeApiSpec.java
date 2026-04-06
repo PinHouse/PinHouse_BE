@@ -18,7 +18,6 @@ import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListRequest;
 import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeCompareResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

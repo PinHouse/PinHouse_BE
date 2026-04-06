@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import co.kr.pinhouse.security.oauth2.domain.OAuth2UserInfo;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

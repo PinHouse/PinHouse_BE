@@ -8,7 +8,6 @@ import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import co.kr.pinhouse.domain.diagnostic.rule.application.usecase.RuleChainUseCase;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.rule.Rule;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

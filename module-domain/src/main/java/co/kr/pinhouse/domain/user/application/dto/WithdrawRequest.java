@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.user.application.dto;
 import java.util.List;
 
 import co.kr.pinhouse.domain.user.domain.entity.WithdrawReason;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**

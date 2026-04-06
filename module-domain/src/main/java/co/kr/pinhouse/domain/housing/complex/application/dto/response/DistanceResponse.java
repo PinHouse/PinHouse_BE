@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import co.kr.pinhouse.common.util.TimeFormatter;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.BusRouteType;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.ExpressBusType;
@@ -11,7 +12,6 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.SubwayLineType;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.TrainType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

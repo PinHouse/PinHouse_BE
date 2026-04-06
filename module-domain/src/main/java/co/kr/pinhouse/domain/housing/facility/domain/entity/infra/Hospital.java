@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import co.kr.pinhouse.domain.Location;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.Facility;
-
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

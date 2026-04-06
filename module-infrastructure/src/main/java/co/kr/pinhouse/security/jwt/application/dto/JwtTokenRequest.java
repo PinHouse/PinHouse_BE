@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import co.kr.pinhouse.domain.user.domain.entity.Role;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.Builder;
 
 @Builder

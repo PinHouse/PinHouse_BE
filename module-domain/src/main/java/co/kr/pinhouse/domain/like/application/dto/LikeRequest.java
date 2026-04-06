@@ -1,7 +1,6 @@
 package co.kr.pinhouse.domain.like.application.dto;
 
 import co.kr.pinhouse.domain.like.domain.LikeType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "[요청][좋아요] 좋아요 등록/취소", description = "공고 또는 유닛타입에 대한 좋아요를 등록하거나 취소하는 요청 DTO")

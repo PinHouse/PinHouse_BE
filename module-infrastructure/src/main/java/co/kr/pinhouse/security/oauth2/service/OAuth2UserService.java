@@ -22,7 +22,6 @@ import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
 import co.kr.pinhouse.security.oauth2.domain.kakao.KakaoUserInfo;
 import co.kr.pinhouse.security.oauth2.domain.naver.NaverUserInfo;
 import co.kr.pinhouse.security.oauth2.handler.SignupRequiredException;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

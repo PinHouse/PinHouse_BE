@@ -9,7 +9,6 @@ import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.image.application.dto.PresignedUrlRequest;
 import co.kr.pinhouse.domain.image.application.dto.PresignedUrlResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

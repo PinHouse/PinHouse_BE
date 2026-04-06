@@ -17,7 +17,6 @@ import co.kr.pinhouse.domain.search.application.usecase.SearchKeywordUseCase;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeyword;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeywordScope;
 import co.kr.pinhouse.domain.search.domain.repository.SearchKeywordRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

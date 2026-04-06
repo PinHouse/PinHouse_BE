@@ -19,7 +19,6 @@ import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointListResponse;
 import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointRequest;
 import co.kr.pinhouse.domain.pinpoint.application.dto.UpdatePinPointRequest;
 import co.kr.pinhouse.domain.pinpoint.application.usecase.PinPointUseCase;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

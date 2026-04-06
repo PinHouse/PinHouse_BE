@@ -5,7 +5,6 @@ import java.util.List;
 
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import co.kr.pinhouse.domain.diagnostic.rule.application.dto.RuleResult;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

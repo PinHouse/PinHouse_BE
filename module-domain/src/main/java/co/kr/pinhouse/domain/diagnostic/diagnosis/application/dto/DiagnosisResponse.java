@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto;
 import java.util.List;
 
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

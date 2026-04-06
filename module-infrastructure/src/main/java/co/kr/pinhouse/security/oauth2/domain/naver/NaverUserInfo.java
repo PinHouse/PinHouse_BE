@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import co.kr.pinhouse.security.oauth2.domain.OAuth2UserInfo;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

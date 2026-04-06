@@ -14,7 +14,6 @@ import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
 import co.kr.pinhouse.security.jwt.application.dto.JwtTokenResponse;
 import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

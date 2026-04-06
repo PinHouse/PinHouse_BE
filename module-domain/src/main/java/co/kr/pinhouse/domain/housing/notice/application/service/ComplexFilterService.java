@@ -17,7 +17,6 @@ import co.kr.pinhouse.domain.housing.facility.application.dto.NoticeFacilityList
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import co.kr.pinhouse.domain.housing.notice.application.dto.ComplexFilterResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeDetailFilterRequest;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

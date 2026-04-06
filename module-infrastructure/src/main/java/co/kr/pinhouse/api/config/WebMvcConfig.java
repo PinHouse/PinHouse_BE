@@ -7,7 +7,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import co.kr.pinhouse.api.auth.CurrentUserIdArgumentResolver;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration

@@ -9,7 +9,6 @@ import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.search.application.dto.FastSearchRequest;
 import co.kr.pinhouse.domain.search.application.dto.FastSearchResponse;
 import co.kr.pinhouse.domain.search.application.dto.SearchHistoryResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

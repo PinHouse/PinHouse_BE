@@ -1,9 +1,8 @@
 package co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonValue;
-import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyType;
 
+import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

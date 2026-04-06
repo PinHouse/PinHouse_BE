@@ -25,7 +25,6 @@ import co.kr.pinhouse.domain.user.application.dto.UserResponse;
 import co.kr.pinhouse.domain.user.application.dto.WithdrawRequest;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

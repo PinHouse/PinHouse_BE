@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.user.application.dto;
 import java.util.List;
 
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 

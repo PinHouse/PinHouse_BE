@@ -21,7 +21,6 @@ import co.kr.pinhouse.domain.search.application.dto.NoticeSearchResultResponse;
 import co.kr.pinhouse.domain.search.application.dto.NoticeSearchSortType;
 import co.kr.pinhouse.domain.search.application.usecase.NoticeSearchUseCase;
 import co.kr.pinhouse.domain.search.application.usecase.SearchKeywordUseCase;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import co.kr.pinhouse.common.exception.code.CommonErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Aspect

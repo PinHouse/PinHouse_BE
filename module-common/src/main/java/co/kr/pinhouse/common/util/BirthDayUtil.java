@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.exception.code.UserErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

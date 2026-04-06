@@ -14,7 +14,6 @@ import co.kr.pinhouse.domain.user.application.dto.UpdateUserRequest;
 import co.kr.pinhouse.domain.user.application.dto.UserRequest;
 import co.kr.pinhouse.domain.user.application.dto.UserResponse;
 import co.kr.pinhouse.domain.user.application.dto.WithdrawRequest;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.InterCityResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.TrainType;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

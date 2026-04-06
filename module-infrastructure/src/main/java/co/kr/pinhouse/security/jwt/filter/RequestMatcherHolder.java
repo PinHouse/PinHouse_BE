@@ -17,7 +17,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.domain.user.domain.entity.Role;
-
 import io.micrometer.common.lang.Nullable;
 
 @Component

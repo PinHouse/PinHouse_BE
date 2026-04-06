@@ -12,7 +12,6 @@ import co.kr.pinhouse.domain.like.domain.LikeJpaRepository;
 import co.kr.pinhouse.domain.like.domain.LikeType;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

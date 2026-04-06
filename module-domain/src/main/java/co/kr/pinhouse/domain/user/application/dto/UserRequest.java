@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.user.application.dto;
 import java.util.List;
 
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "[요청][사용자] 사용자 요청", description = "사용자 요청을 위한 DTO입니다.")

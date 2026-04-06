@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityStatDocument;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import co.kr.pinhouse.domain.housing.facility.domain.repository.FacilityStatDocumentRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -2,7 +2,6 @@ package co.kr.pinhouse.domain.like.domain;
 
 import co.kr.pinhouse.domain.BaseTimeEntity;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

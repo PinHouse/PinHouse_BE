@@ -3,7 +3,6 @@ package co.kr.pinhouse.common.exception.code;
 import org.springframework.http.HttpStatus;
 
 import co.kr.pinhouse.common.response.ErrorCode;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -11,7 +11,6 @@ import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionAcco
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionCount;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.SubscriptionPeriod;
 import co.kr.pinhouse.domain.user.domain.entity.Gender;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

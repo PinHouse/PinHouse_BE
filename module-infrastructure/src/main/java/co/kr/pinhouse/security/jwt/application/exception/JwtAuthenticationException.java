@@ -3,7 +3,6 @@ package co.kr.pinhouse.security.jwt.application.exception;
 import org.springframework.security.core.AuthenticationException;
 
 import co.kr.pinhouse.common.response.ErrorCode;
-
 import lombok.Getter;
 
 @Getter

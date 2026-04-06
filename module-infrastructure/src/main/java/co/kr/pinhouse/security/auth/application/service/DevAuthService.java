@@ -16,7 +16,6 @@ import co.kr.pinhouse.security.jwt.application.dto.JwtTokenRequest;
 import co.kr.pinhouse.security.jwt.application.dto.JwtTokenResponse;
 import co.kr.pinhouse.security.jwt.application.util.JwtProvider;
 import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

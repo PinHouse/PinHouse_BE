@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

@@ -6,7 +6,6 @@ import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import co.kr.pinhouse.domain.search.domain.entity.HouseType;
 import co.kr.pinhouse.domain.search.domain.entity.RentalType;
 import co.kr.pinhouse.domain.search.domain.entity.SupplyType;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 

@@ -5,7 +5,6 @@ import java.util.List;
 
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

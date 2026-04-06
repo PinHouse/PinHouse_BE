@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityStatDocument;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

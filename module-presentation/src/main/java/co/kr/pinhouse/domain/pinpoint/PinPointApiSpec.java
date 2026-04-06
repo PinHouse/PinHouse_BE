@@ -12,7 +12,6 @@ import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointListResponse;
 import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointRequest;
 import co.kr.pinhouse.domain.pinpoint.application.dto.UpdatePinPointRequest;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

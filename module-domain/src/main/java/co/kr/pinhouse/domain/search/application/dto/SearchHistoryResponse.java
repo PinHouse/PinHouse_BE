@@ -1,7 +1,6 @@
 package co.kr.pinhouse.domain.search.application.dto;
 
 import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

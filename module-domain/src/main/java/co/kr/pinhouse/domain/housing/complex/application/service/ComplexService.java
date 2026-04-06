@@ -37,7 +37,6 @@ import co.kr.pinhouse.domain.pinpoint.application.usecase.PinPointUseCase;
 import co.kr.pinhouse.domain.pinpoint.domain.entity.PinPoint;
 import co.kr.pinhouse.domain.search.application.dto.ComplexDistanceResponse;
 import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

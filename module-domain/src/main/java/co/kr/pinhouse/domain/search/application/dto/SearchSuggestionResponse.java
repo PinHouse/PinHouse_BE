@@ -3,7 +3,6 @@ package co.kr.pinhouse.domain.search.application.dto;
 import java.util.List;
 
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeyword;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

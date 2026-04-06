@@ -14,7 +14,6 @@ import co.kr.pinhouse.domain.search.application.dto.FastSearchRequest;
 import co.kr.pinhouse.domain.search.application.dto.FastSearchResponse;
 import co.kr.pinhouse.domain.search.application.dto.SearchHistoryResponse;
 import co.kr.pinhouse.domain.search.application.usecase.FastSearchUseCase;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

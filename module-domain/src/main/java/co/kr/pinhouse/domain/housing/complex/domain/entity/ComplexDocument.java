@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import co.kr.pinhouse.domain.Location;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListRequest;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

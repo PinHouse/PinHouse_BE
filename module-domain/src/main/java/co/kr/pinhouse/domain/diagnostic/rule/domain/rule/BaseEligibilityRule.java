@@ -12,7 +12,6 @@ import co.kr.pinhouse.domain.diagnostic.rule.application.usecase.PolicyUseCase;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyRentalCandidate;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyType;
-
 import lombok.RequiredArgsConstructor;
 
 /** 1) 기초 자격: 나이 + 세대주 + 무주택  */

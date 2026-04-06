@@ -11,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.security.jwt.application.exception.JwtAuthenticationException;
 import co.kr.pinhouse.security.jwt.application.util.JwtValidator;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

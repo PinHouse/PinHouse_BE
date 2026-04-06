@@ -3,9 +3,9 @@ package co.kr.pinhouse.domain.search.domain.entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+
 import co.kr.pinhouse.common.exception.code.CommonErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

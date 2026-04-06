@@ -3,8 +3,8 @@ package co.kr.pinhouse.domain.housing.notice.application.dto;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 
+import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

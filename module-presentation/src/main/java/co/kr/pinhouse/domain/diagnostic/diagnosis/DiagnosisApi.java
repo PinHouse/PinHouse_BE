@@ -16,7 +16,6 @@ import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisReque
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponseV2;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController

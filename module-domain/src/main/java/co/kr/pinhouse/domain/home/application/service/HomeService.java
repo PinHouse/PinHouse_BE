@@ -44,7 +44,6 @@ import co.kr.pinhouse.domain.search.application.dto.PopularKeywordResponse;
 import co.kr.pinhouse.domain.search.application.usecase.NoticeSearchUseCase;
 import co.kr.pinhouse.domain.search.application.usecase.SearchKeywordUseCase;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeywordScope;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

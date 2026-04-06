@@ -7,7 +7,6 @@ import java.util.Map;
 
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.SupplyRentalCandidate;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

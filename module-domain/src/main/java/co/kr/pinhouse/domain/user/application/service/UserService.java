@@ -28,7 +28,6 @@ import co.kr.pinhouse.domain.user.domain.entity.Provider;
 import co.kr.pinhouse.domain.user.domain.entity.Role;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

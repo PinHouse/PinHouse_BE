@@ -6,7 +6,6 @@ import java.util.UUID;
 import co.kr.pinhouse.common.util.BirthDayUtil;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.Builder;
 
 @Builder

@@ -4,7 +4,6 @@ import java.util.List;
 
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
-
 import lombok.Builder;
 
 @Builder

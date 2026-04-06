@@ -19,7 +19,6 @@ import co.kr.pinhouse.security.jwt.filter.RequestMatcherHolder;
 import co.kr.pinhouse.security.oauth2.handler.OAuth2FailureHandler;
 import co.kr.pinhouse.security.oauth2.handler.OAuth2SuccessHandler;
 import co.kr.pinhouse.security.oauth2.service.OAuth2UserService;
-
 import lombok.RequiredArgsConstructor;
 
 /**

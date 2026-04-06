@@ -16,7 +16,6 @@ import co.kr.pinhouse.domain.diagnostic.rule.application.usecase.RuleChainUseCas
 import co.kr.pinhouse.domain.diagnostic.rule.domain.entity.EvaluationContext;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import lombok.RequiredArgsConstructor;
 
 /**

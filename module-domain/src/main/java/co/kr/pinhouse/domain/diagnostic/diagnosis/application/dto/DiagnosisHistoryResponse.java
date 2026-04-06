@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

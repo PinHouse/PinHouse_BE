@@ -13,7 +13,6 @@ import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.image.application.dto.PresignedUrlRequest;
 import co.kr.pinhouse.domain.image.application.dto.PresignedUrlResponse;
 import co.kr.pinhouse.domain.image.application.usecase.ImageUseCase;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

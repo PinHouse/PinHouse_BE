@@ -8,7 +8,6 @@ import co.kr.pinhouse.domain.BaseTimeEntity;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisRequest;
 import co.kr.pinhouse.domain.user.domain.entity.Gender;
 import co.kr.pinhouse.domain.user.domain.entity.User;
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
