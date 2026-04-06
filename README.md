@@ -504,37 +504,38 @@ sequenceDiagram
 ```java
 // UseCase Interface (Application Layer)
 public interface ComplexUseCase {
-    ComplexDetailResponse getComplex(String id, String pinPointId);
+	ComplexDetailResponse getComplex(String id, String pinPointId);
 }
 
 // Service Implementation
 @Service
 @RequiredArgsConstructor
 public class ComplexService implements ComplexUseCase {
-    @Override
-    public ComplexDetailResponse getComplex(String id, String pinPointId) {
-        // 구현
-    }
+	@Override
+	public ComplexDetailResponse getComplex(String id, String pinPointId) {
+		// 구현
+	}
 }
 
 // Controller는 UseCase 인터페이스에 의존
 @RestController
 @RequiredArgsConstructor
 public class ComplexApi {
-    private final ComplexUseCase complexUseCase;  // 구현이 아닌 인터페이스에 의존
+	private final ComplexUseCase complexUseCase;  // 구현이 아닌 인터페이스에 의존
 }
 ```
 
 ### 2. AOP를 통한 인증 처리
 
 ```java
+
 @CheckLogin  // 커스텀 어노테이션
 @GetMapping("/mypage")
 public ApiResponse<MyPageResponse> getMyPage(
-    @AuthenticationPrincipal PrincipalDetails principalDetails
+	@AuthenticationPrincipal PrincipalDetails principalDetails
 ) {
-    UUID userId = principalDetails.getId();
-    // 비즈니스 로직
+	UUID userId = principalDetails.getId();
+	// 비즈니스 로직
 }
 ```
 
@@ -545,38 +546,41 @@ public ApiResponse<MyPageResponse> getMyPage(
 **MySQL** - 정형 데이터 (JPA)
 
 ```java
+
 @Entity
 @Table(name = "users")
 public class User extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private UUID id;
 
-    @OneToMany(mappedBy = "user")
-    private List<Diagnosis> diagnoses;
+	@OneToMany(mappedBy = "user")
+	private List<Diagnosis> diagnoses;
 }
 ```
 
 **MongoDB** - 비정형 데이터
 
 ```java
+
 @Document(collection = "pinpoints")
 public class PinPointDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    private Coordinate coordinate;  // Nested Document
-    private List<String> tags;      // 유연한 스키마
+	private Coordinate coordinate;  // Nested Document
+	private List<String> tags;      // 유연한 스키마
 }
 ```
 
 **Redis** - 세션 및 캐싱
 
 ```java
+
 @RedirectAttributes
 public void saveRefreshToken(UUID userId, String refreshToken) {
-    redisTemplate.opsForValue()
-        .set("RT:" + userId, refreshToken, 7, TimeUnit.DAYS);
+	redisTemplate.opsForValue()
+		.set("RT:" + userId, refreshToken, 7, TimeUnit.DAYS);
 }
 ```
 
@@ -586,21 +590,22 @@ public void saveRefreshToken(UUID userId, String refreshToken) {
 
 ```java
 public interface DiagnosisRule {
-    boolean matches(RuleCriteria criteria);
-    DiagnosisResult apply(UserInfo userInfo);
+	boolean matches(RuleCriteria criteria);
+
+	DiagnosisResult apply(UserInfo userInfo);
 }
 
 @Component
 public class RuleChain {
-    private final List<DiagnosisRule> rules;
+	private final List<DiagnosisRule> rules;
 
-    public DiagnosisResult diagnose(UserInfo userInfo, RuleCriteria criteria) {
-        return rules.stream()
-            .filter(rule -> rule.matches(criteria))
-            .findFirst()
-            .map(rule -> rule.apply(userInfo))
-            .orElse(DiagnosisResult.notEligible());
-    }
+	public DiagnosisResult diagnose(UserInfo userInfo, RuleCriteria criteria) {
+		return rules.stream()
+			.filter(rule -> rule.matches(criteria))
+			.findFirst()
+			.map(rule -> rule.apply(userInfo))
+			.orElse(DiagnosisResult.notEligible());
+	}
 }
 ```
 
@@ -610,25 +615,25 @@ public class RuleChain {
 
 ```java
 public record SliceRequest(
-    int page,
-    int size
+	int page,
+	int size
 ) {
-    public Pageable toPageable() {
-        return PageRequest.of(page, size + 1);  // N+1 조회
-    }
+	public Pageable toPageable() {
+		return PageRequest.of(page, size + 1);  // N+1 조회
+	}
 }
 
 public record SliceResponse<T>(
-    List<T> content,
-    boolean hasNext
+	List<T> content,
+	boolean hasNext
 ) {
-    public static <T> SliceResponse<T> from(Page<T> page) {
-        boolean hasNext = page.getContent().size() > page.getSize();
-        List<T> content = hasNext
-            ? page.getContent().subList(0, page.getSize())
-            : page.getContent();
-        return new SliceResponse<>(content, hasNext);
-    }
+	public static <T> SliceResponse<T> from(Page<T> page) {
+		boolean hasNext = page.getContent().size() > page.getSize();
+		List<T> content = hasNext
+			? page.getContent().subList(0, page.getSize())
+			: page.getContent();
+		return new SliceResponse<>(content, hasNext);
+	}
 }
 ```
 
@@ -636,18 +641,18 @@ public record SliceResponse<T>(
 
 ```java
 public record ApiResponse<T>(
-    boolean success,
-    T data,
-    ErrorResponse error
+	boolean success,
+	T data,
+	ErrorResponse error
 ) {
-    public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(true, data, null);
-    }
+	public static <T> ApiResponse<T> ok(T data) {
+		return new ApiResponse<>(true, data, null);
+	}
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
-        return new ApiResponse<>(false, null,
-            new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
-    }
+	public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+		return new ApiResponse<>(false, null,
+			new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
+	}
 }
 ```
 
@@ -657,11 +662,12 @@ public record ApiResponse<T>(
 
 ```java
 public record TransitInfoResponse(
-    String totalTime,              // "약 1시간 23분"
-    Integer totalTimeMinutes,      // 83
-    Double totalDistance,          // 39.6 (km)
-    List<SegmentResponse> segments // 구간별 상세 정보
-) {}
+	String totalTime,              // "약 1시간 23분"
+	Integer totalTimeMinutes,      // 83
+	Double totalDistance,          // 39.6 (km)
+	List<SegmentResponse> segments // 구간별 상세 정보
+) {
+}
 ```
 
 이를 통해 중복 데이터를 제거하고 API 응답 크기를 최적화했습니다.
