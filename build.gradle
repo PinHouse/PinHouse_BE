@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '3.4.3' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'com.diffplug.spotless' version '8.3.0' apply false
     id 'checkstyle'
 }
 
@@ -18,6 +19,7 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'checkstyle'
+    apply plugin: 'com.diffplug.spotless'
 
     java {
         toolchain {
@@ -67,6 +69,24 @@ subprojects {
             html.required = true
         }
     }
+
+    spotless {
+        java {
+            target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+            importOrder('java', 'javax', 'org', 'net', 'com', '')
+            trimTrailingWhitespace()
+            indentWithTabs()
+            endWithNewline()
+        }
+    }
+}
+
+tasks.register('spotlessApplyAll') {
+    dependsOn subprojects.collect { "${it.path}:spotlessApply" }
+}
+
+tasks.register('spotlessCheckAll') {
+    dependsOn subprojects.collect { "${it.path}:spotlessCheck" }
 }
 
 // module-app 모듈만 실행 가능한 bootJar 생성
