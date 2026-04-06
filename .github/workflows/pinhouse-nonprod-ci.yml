@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 # 동시성 제어: 동일한 브랜치에 새로운 커밋이 오면 이전 워크플로우 취소
 concurrency:

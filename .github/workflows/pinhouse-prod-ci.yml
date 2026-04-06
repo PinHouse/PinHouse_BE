@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 # 동시에 하나만 진행
 concurrency:
