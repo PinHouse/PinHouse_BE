@@ -3,6 +3,7 @@ dependencies {
     implementation project(':module-common')
     implementation project(':module-domain')
     implementation project(':module-infrastructure')
+    implementation project(':module-security')
     implementation project(':module-presentation')
 
     // module-app 모듈에서 직접 사용하는 Spring Data 어노테이션
