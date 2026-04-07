@@ -1,43 +1,72 @@
+# 서버 설정: Tempo 서비스의 통신 포트
 server:
-  http_listen_port: 3200
-  grpc_listen_port: 9095
+  http_listen_port: 3200   # HTTP 인터페이스 (관리 및 모니터링용)
+  grpc_listen_port: 9095   # gRPC 내부 통신용
 
+# 디스트리뷰터: 외부 트레이스 데이터를 수신하는 입구
 distributor:
   receivers:
-    otlp:
+    otlp: # OpenTelemetry 프로토콜 수신 설정
       protocols:
-        grpc:
+        grpc: # gRPC 프로토콜 주소 (기본 4317)
           endpoint: 0.0.0.0:4317
-        http:
+        http: # HTTP 프로토콜 주소 (기본 4318)
           endpoint: 0.0.0.0:4318
 
+# 인제스터: 수신한 데이터를 가공하여 임시 저장
 ingester:
-  max_block_duration: 5m
+  max_block_duration: 5m   # 데이터 블록 생성 주기 (5분 단위로 저장소 전송)
 
+# 콤팩터: 저장된 데이터 블록을 압축 및 정리
 compactor:
   compaction:
-    block_retention: 24h
+    block_retention: 24h   # 전체 데이터 보관 기간 (24시간)
 
+# 스토리지: 데이터 실제 저장 위치 및 백엔드 설정
 storage:
   trace:
-    backend: local
+    backend: local         # 로컬 디스크 사용
     wal:
-      path: /tmp/tempo/wal
+      path: /tmp/tempo/wal # 쓰기 지연 로그(WAL) 저장 경로
     local:
-      path: /tmp/tempo/blocks
+      path: /tmp/tempo/blocks # 실제 트레이스 데이터 저장 경로
 
+# 쿼리어: 저장된 트레이스 데이터를 검색 및 조회
 querier:
   frontend_worker:
-    frontend_address: 127.0.0.1:9095
+    frontend_address: 127.0.0.1:9095 # 쿼리 프론트엔드 연결 주소
 
+# 쿼리 프론트엔드: 쿼리 요청의 스케줄링 및 가속화
 query_frontend:
   search:
-    duration_slo: 5s
+    duration_slo: 5s       # 전체 검색 응답 목표 시간
   trace_by_id:
-    duration_slo: 5s
+    duration_slo: 5s       # ID별 조회 응답 목표 시간
 
+# 멤버리스트: 단일 노드에서도 metrics-generator ring 구성을 안정적으로 사용
+memberlist:
+  abort_if_cluster_join_fails: false
+
+# 메트릭 제너레이터: TraceQL metrics(rate, histogram_over_time 등) 실행용 로컬 블록 생성
+metrics_generator:
+  ring:
+    kvstore:
+      store: memberlist
+  storage:
+    path: /tmp/tempo/generator/wal
+  traces_storage:
+    path: /tmp/tempo/generator/traces
+  processor:
+    local_blocks:
+      filter_server_spans: false
+      flush_to_storage: true
+
+# 오버라이드: 수집량 제한 및 기본 정책 덮어쓰기
 overrides:
   defaults:
-    ingestion:
-      rate_limit_bytes: 20000000
-      burst_size_bytes: 20000000
+    ingestion: # 데이터 수집량(Ingestion) 제한
+      rate_limit_bytes: 20000000 # 초당 최대 수집 제한 (약 20MB)
+      burst_size_bytes: 20000000  # 일시적 허용 최대 버스트 크기
+    metrics_generator:
+      processors:
+        - local-blocks

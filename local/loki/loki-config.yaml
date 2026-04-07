@@ -37,15 +37,39 @@ schema_config:
         prefix: index_
         period: 24h
 
+# Logs Drilldown 패턴 분석 활성화
+pattern_ingester:
+  enabled: true
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+
 # 알러트
 ruler:
   alertmanager_url: http://alertmanager:9093
 
 # 로컬 개발 환경에서는 제한을 완화
 limits_config:
-  enforce_metric_name: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
+  allow_structured_metadata: true
+  volume_enabled: true
+  discover_service_name:
+    - service_name
+    - service
+    - app
+    - application
+    - app_name
+    - name
+    - app_kubernetes_io_name
+    - container
+    - container_name
+    - k8s_container_name
+    - component
+    - workload
+    - job
+    - k8s_job_name
   max_cache_freshness_per_query: 10m
   split_queries_by_interval: 15m
   ingestion_rate_mb: 10

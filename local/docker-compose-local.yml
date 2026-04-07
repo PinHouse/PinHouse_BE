@@ -105,7 +105,7 @@ services:
 
   # Loki
   loki:
-    image: grafana/loki:2.9.0
+    image: grafana/loki:3.5.0
     container_name: pinhouse-loki
     ports:
       - "3100:3100"

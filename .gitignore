@@ -60,3 +60,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### log 폴더
+log
