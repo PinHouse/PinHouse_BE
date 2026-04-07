@@ -10,6 +10,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-oauth2-core'
+    compileOnly 'org.springframework:spring-tx'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-redis'
     compileOnly 'jakarta.persistence:jakarta.persistence-api'
 }
 

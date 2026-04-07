@@ -1,4 +1,4 @@
-package co.kr.pinhouse.api.config.swagger;
+package co.kr.pinhouse.common.config.swagger;
 
 import java.util.Map;
 import java.util.TreeMap;

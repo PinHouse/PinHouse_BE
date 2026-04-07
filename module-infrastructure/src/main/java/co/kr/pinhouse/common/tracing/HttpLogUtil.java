@@ -1,4 +1,4 @@
-package co.kr.pinhouse.common.logging;
+package co.kr.pinhouse.common.tracing;
 
 import org.springframework.stereotype.Component;
 

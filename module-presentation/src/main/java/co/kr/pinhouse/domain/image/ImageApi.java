@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.pinhouse.common.aop.CheckLogin;
+import co.kr.pinhouse.security.aop.CheckLogin;
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.image.application.dto.request.PresignedUrlRequest;

@@ -1,4 +1,4 @@
-package co.kr.pinhouse.common.auth;
+package co.kr.pinhouse.security.auth;
 
 import java.util.UUID;
 

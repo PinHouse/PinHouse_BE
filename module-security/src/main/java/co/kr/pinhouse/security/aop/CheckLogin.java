@@ -1,4 +1,4 @@
-package co.kr.pinhouse.common.aop;
+package co.kr.pinhouse.security.aop;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import co.kr.pinhouse.common.auth.AuthenticatedUser;
+import co.kr.pinhouse.security.auth.AuthenticatedUser;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;

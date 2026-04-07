@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginCheckAspect {
 
 	/// 한번 더 체크하는 AOP
-	@Around("@annotation(co.kr.pinhouse.common.aop.CheckLogin)")
+	@Around("@annotation(co.kr.pinhouse.security.aop.CheckLogin)")
 	public Object checkLogin(ProceedingJoinPoint pjp) throws Throwable {
 
 		/// 먼저 인증 객체가 있는지 체크

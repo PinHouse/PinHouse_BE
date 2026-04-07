@@ -1,4 +1,4 @@
-package co.kr.pinhouse.api.logging;
+package co.kr.pinhouse.common.tracing;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;

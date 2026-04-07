@@ -1,4 +1,4 @@
-package co.kr.pinhouse.api.exception;
+package co.kr.pinhouse.common.exception;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -190,7 +190,8 @@ public class GlobalExceptionHandler {
 	/// DB 문법 등 관련 문제 발생
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(InvalidDataAccessResourceUsageException.class)
-	public ApiResponse<?> handleInvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException exception) {
+	public ApiResponse<?> handleInvalidDataAccessResourceUsageException(
+		InvalidDataAccessResourceUsageException exception) {
 
 		/// 에러 이유 로그 찍기
 		log.error(exception.getMessage());
