@@ -8,6 +8,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import io.micrometer.observation.aop.ObservedAspect;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
 import io.opentelemetry.instrumentation.lettuce.v5_1.LettuceTelemetry;
+import io.opentelemetry.instrumentation.mongo.v3_1.MongoTelemetry;
 import jakarta.annotation.PostConstruct;
 import reactor.core.publisher.Hooks;
 
@@ -90,6 +92,17 @@ public class TracingConfig {
 			ClientResources.builder()
 				.tracing(LettuceTelemetry.create(openTelemetry).newTracing())
 				.build()
+		);
+	}
+
+	/**
+	 * MongoDB 커맨드를 OpenTelemetry로 계측하여 Mongo 쿼리/명령 추적
+	 */
+	@Bean
+	@ConditionalOnClass(name = "io.opentelemetry.instrumentation.mongo.v3_1.MongoTelemetry")
+	public MongoClientSettingsBuilderCustomizer mongoTracingCustomizer(OpenTelemetry openTelemetry) {
+		return builder -> builder.addCommandListener(
+			MongoTelemetry.create(openTelemetry).newCommandListener()
 		);
 	}
 }
