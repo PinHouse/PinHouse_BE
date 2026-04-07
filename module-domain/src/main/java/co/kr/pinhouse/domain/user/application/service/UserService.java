@@ -9,13 +9,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.common.dto.TempUserInfo;
 import co.kr.pinhouse.common.exception.code.UserErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import co.kr.pinhouse.domain.like.domain.LikeJpaRepository;
 import co.kr.pinhouse.domain.pinpoint.domain.repository.PinPointMongoRepository;
 import co.kr.pinhouse.domain.user.application.dto.MyPageResponse;
+import co.kr.pinhouse.domain.user.application.dto.TempUserInfo;
 import co.kr.pinhouse.domain.user.application.dto.TempUserResponse;
 import co.kr.pinhouse.domain.user.application.dto.UpdateFacilityTypesRequest;
 import co.kr.pinhouse.domain.user.application.dto.UpdateUserRequest;

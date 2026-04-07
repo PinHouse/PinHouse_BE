@@ -1,4 +1,4 @@
-package co.kr.pinhouse.common.config;
+package co.kr.pinhouse.presentation.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,6 @@ import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 public class FacilityTypeConverter implements Converter<String, FacilityType> {
 	@Override
 	public FacilityType convert(String source) {
-		// null/trim 처리
 		if (source == null) {
 			throw new CustomException(FacilityErrorCode.BAD_REQUEST_INPUT_FACILITY);
 		}

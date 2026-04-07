@@ -10,9 +10,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.common.dto.TempUserInfo;
 import co.kr.pinhouse.common.exception.code.SecurityErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
+import co.kr.pinhouse.domain.user.application.dto.TempUserInfo;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.Gender;
 import co.kr.pinhouse.domain.user.domain.entity.Provider;

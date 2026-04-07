@@ -1,14 +1,14 @@
-package co.kr.pinhouse.domain.infrastructure.config;
+package co.kr.pinhouse.common.config;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,9 +27,6 @@ public class RedisConfig {
 	@Value("${spring.data.redis.ssl.enabled:false}")
 	private boolean sslEnabled;
 
-	/**
-	 * 레디스 커넥트 팩토리 설정
-	 */
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory(
 		Environment environment,
@@ -49,9 +46,6 @@ public class RedisConfig {
 		return new LettuceConnectionFactory(redisConfiguration, clientConfigBuilder.build());
 	}
 
-	/**
-	 * 레디스 템플릿 설정
-	 */
 	@Bean
 	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -60,5 +54,4 @@ public class RedisConfig {
 		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return template;
 	}
-
 }

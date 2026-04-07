@@ -1,4 +1,4 @@
-package co.kr.pinhouse.common.dto;
+package co.kr.pinhouse.domain.user.application.dto;
 
 import java.io.Serializable;
 
