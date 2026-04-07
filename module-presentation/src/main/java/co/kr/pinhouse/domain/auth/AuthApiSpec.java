@@ -1,4 +1,4 @@
-package co.kr.pinhouse.security.auth;
+package co.kr.pinhouse.domain.auth;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

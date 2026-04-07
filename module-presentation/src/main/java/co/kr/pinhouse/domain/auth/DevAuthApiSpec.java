@@ -1,4 +1,4 @@
-package co.kr.pinhouse.security.auth;
+package co.kr.pinhouse.domain.auth;
 
 import co.kr.pinhouse.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

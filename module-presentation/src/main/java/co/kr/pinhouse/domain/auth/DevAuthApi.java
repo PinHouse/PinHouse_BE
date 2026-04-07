@@ -1,4 +1,4 @@
-package co.kr.pinhouse.security.auth;
+package co.kr.pinhouse.domain.auth;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
