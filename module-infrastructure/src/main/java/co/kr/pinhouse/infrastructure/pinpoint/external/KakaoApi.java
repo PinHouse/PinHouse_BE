@@ -1,4 +1,4 @@
-package co.kr.pinhouse.domain.pinpoint.external;
+package co.kr.pinhouse.infrastructure.pinpoint.external;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

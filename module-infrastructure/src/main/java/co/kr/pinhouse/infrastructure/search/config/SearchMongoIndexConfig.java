@@ -1,4 +1,4 @@
-package co.kr.pinhouse.domain.search.config;
+package co.kr.pinhouse.infrastructure.search.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;

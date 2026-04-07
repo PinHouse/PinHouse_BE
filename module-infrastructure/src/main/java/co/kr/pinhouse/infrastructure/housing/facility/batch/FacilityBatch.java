@@ -1,4 +1,4 @@
-package co.kr.pinhouse.domain.housing.facility.application.service;
+package co.kr.pinhouse.infrastructure.housing.facility.batch;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.repository.ComplexDocumentRepository;
+import co.kr.pinhouse.domain.housing.facility.application.service.FacilityStatService;
 import lombok.RequiredArgsConstructor;
 
 @Service

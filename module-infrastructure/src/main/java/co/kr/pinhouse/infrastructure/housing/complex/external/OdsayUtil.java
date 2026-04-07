@@ -1,4 +1,4 @@
-package co.kr.pinhouse.domain.housing.complex.external;
+package co.kr.pinhouse.infrastructure.housing.complex.external;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package co.kr.pinhouse.domain.image.external;
+package co.kr.pinhouse.infrastructure.image.external;
 
 import java.time.Duration;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.exception.code.ImageErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
+import co.kr.pinhouse.domain.image.external.PresignedUrlGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.s3.S3Client;
