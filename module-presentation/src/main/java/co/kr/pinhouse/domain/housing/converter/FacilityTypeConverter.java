@@ -1,4 +1,4 @@
-package co.kr.pinhouse.presentation.converter;
+package co.kr.pinhouse.domain.housing.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
