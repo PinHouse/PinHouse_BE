@@ -15,7 +15,7 @@ import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
 import co.kr.pinhouse.security.jwt.application.dto.request.JwtTokenRequest;
 import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 import co.kr.pinhouse.security.jwt.application.util.JwtProvider;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 
 @Service

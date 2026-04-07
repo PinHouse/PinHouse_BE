@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.exception.code.CommonErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Aspect
@@ -29,7 +29,7 @@ public class LoginCheckAspect {
 		if (auth == null
 			|| !auth.isAuthenticated()
 			|| auth instanceof AnonymousAuthenticationToken
-			|| !(auth.getPrincipal() instanceof PrincipalDetails principal)) {
+			|| !(auth.getPrincipal() instanceof AuthenticatedUser)) {
 
 			/// 401 매핑
 			throw new CustomException(CommonErrorCode.UNAUTHORIZED);

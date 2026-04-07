@@ -17,7 +17,7 @@ import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
 import co.kr.pinhouse.security.jwt.application.exception.JwtAuthenticationException;
 import co.kr.pinhouse.security.jwt.domain.entity.JwtRefreshToken;
 import co.kr.pinhouse.security.jwt.domain.repository.JwtRefreshTokenRepository;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.PrincipalDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

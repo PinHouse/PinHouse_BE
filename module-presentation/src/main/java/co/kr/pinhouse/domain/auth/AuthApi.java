@@ -13,7 +13,7 @@ import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
 import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.AuthenticatedUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class AuthApi implements AuthApiSpec {
 	public ApiResponse<Void> logout(
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse,
-		@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		@AuthenticationPrincipal AuthenticatedUser principalDetails) {
 
 		/// 리프레쉬 토큰 까보기
 		Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);

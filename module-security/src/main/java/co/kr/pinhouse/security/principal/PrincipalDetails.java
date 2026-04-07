@@ -1,4 +1,4 @@
-package co.kr.pinhouse.security.oauth2.domain;
+package co.kr.pinhouse.security.principal;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import co.kr.pinhouse.security.auth.AuthenticatedUser;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;

@@ -18,7 +18,7 @@ import co.kr.pinhouse.domain.user.domain.entity.Gender;
 import co.kr.pinhouse.domain.user.domain.entity.Provider;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.security.oauth2.domain.OAuth2UserInfo;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.PrincipalDetails;
 import co.kr.pinhouse.security.oauth2.domain.kakao.KakaoUserInfo;
 import co.kr.pinhouse.security.oauth2.domain.naver.NaverUserInfo;
 import co.kr.pinhouse.security.oauth2.handler.SignupRequiredException;

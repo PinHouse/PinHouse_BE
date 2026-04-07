@@ -3,7 +3,7 @@ package co.kr.pinhouse.domain.auth;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
+import co.kr.pinhouse.security.principal.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public interface AuthApiSpec {
 	ApiResponse<Void> logout(
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse,
-		@AuthenticationPrincipal PrincipalDetails customUserDetails);
+		@AuthenticationPrincipal AuthenticatedUser customUserDetails);
 
 	/// 토큰 재발급
 	@Operation(
