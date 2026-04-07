@@ -1,7 +1,7 @@
 package co.kr.pinhouse.domain.housing.complex.application.util;
 
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.ChipType;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

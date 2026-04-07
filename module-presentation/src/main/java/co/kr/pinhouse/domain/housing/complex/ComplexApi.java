@@ -17,7 +17,7 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.ComplexDet
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
 import co.kr.pinhouse.domain.housing.complex.application.usecase.ComplexUseCase;
-import co.kr.pinhouse.domain.like.application.dto.UnityTypeLikeResponse;
+import co.kr.pinhouse.domain.like.application.dto.response.UnityTypeLikeResponse;
 import lombok.RequiredArgsConstructor;
 
 /**

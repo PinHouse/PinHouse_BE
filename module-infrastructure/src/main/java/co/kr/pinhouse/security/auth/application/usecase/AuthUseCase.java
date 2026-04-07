@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import co.kr.pinhouse.domain.user.domain.entity.User;
-import co.kr.pinhouse.security.jwt.application.dto.JwtTokenResponse;
+import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 
 public interface AuthUseCase {
 

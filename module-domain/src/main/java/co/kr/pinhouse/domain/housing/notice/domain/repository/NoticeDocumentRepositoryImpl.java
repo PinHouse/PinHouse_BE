@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeListRequest;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import lombok.RequiredArgsConstructor;
 

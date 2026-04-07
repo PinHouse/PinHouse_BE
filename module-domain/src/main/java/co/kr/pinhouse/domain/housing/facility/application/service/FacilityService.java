@@ -10,7 +10,7 @@ import co.kr.pinhouse.common.exception.code.ComplexErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.repository.ComplexDocumentRepository;
-import co.kr.pinhouse.domain.housing.facility.application.dto.NoticeFacilityListResponse;
+import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.application.usecase.FacilityUseCase;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityStatDocument;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;

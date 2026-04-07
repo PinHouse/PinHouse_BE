@@ -2,9 +2,9 @@ package co.kr.pinhouse.domain.pinpoint.application.usecase;
 
 import java.util.UUID;
 
-import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointListResponse;
-import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointRequest;
-import co.kr.pinhouse.domain.pinpoint.application.dto.UpdatePinPointRequest;
+import co.kr.pinhouse.domain.pinpoint.application.dto.response.PinPointListResponse;
+import co.kr.pinhouse.domain.pinpoint.application.dto.request.PinPointRequest;
+import co.kr.pinhouse.domain.pinpoint.application.dto.request.UpdatePinPointRequest;
 import co.kr.pinhouse.domain.pinpoint.domain.entity.PinPoint;
 
 public interface PinPointUseCase {

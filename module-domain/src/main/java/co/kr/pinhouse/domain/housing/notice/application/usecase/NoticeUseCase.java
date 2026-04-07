@@ -5,12 +5,12 @@ import java.util.UUID;
 
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.ComplexFilterResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeDetailFilterRequest;
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeDetailFilteredResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListRequest;
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeCompareResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeDetailFilterRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeDetailFilteredResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeListRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeListResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.UnitTypeCompareResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;

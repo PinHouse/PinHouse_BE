@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.domain.search.application.dto.PopularKeywordResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.PopularKeywordResponse;
 import co.kr.pinhouse.domain.search.application.usecase.SearchKeywordUseCase;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeyword;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeywordScope;

@@ -12,7 +12,7 @@ import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.ComplexDetailResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
-import co.kr.pinhouse.domain.like.application.dto.UnityTypeLikeResponse;
+import co.kr.pinhouse.domain.like.application.dto.response.UnityTypeLikeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -2,7 +2,7 @@ package co.kr.pinhouse.domain.like.application.usecase;
 
 import java.util.UUID;
 
-import co.kr.pinhouse.domain.like.application.dto.LikeRequest;
+import co.kr.pinhouse.domain.like.application.dto.request.LikeRequest;
 
 public interface LikeCommandUseCase {
 

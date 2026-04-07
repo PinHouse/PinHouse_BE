@@ -5,7 +5,7 @@ import java.util.List;
 
 import co.kr.pinhouse.common.util.BirthDayUtil;
 import co.kr.pinhouse.domain.BaseTimeEntity;
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
 import co.kr.pinhouse.domain.user.domain.entity.Gender;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import jakarta.persistence.ElementCollection;

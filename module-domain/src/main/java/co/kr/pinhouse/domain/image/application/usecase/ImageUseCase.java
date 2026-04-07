@@ -2,8 +2,8 @@ package co.kr.pinhouse.domain.image.application.usecase;
 
 import java.util.UUID;
 
-import co.kr.pinhouse.domain.image.application.dto.PresignedUrlRequest;
-import co.kr.pinhouse.domain.image.application.dto.PresignedUrlResponse;
+import co.kr.pinhouse.domain.image.application.dto.request.PresignedUrlRequest;
+import co.kr.pinhouse.domain.image.application.dto.response.PresignedUrlResponse;
 
 /**
  * 이미지 업로드 UseCase 인터페이스

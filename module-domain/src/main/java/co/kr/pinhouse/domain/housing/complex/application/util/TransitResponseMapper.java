@@ -11,8 +11,8 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.ChipType;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitInfoResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.PathResult;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

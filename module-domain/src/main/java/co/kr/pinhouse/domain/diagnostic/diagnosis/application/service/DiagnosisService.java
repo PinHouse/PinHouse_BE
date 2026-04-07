@@ -5,10 +5,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisDetailResponse;
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisRequest;
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponse;
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.DiagnosisResponseV2;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponseV2;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;

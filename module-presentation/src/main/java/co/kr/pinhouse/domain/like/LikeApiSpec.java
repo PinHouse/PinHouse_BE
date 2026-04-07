@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.like.application.dto.LikeRequest;
+import co.kr.pinhouse.domain.like.application.dto.request.LikeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

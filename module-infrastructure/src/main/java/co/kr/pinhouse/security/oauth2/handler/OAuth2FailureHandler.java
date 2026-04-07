@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.util.KeyUtil;
-import co.kr.pinhouse.domain.user.application.dto.TempUserInfo;
+import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

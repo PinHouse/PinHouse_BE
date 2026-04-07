@@ -19,8 +19,8 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceRe
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitInfoResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.PathResult;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import co.kr.pinhouse.domain.housing.complex.application.usecase.ComplexUseCase;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceCalculator;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceUtil;
@@ -29,13 +29,13 @@ import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.Deposit;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
 import co.kr.pinhouse.domain.housing.complex.domain.repository.ComplexDocumentRepository;
-import co.kr.pinhouse.domain.housing.facility.application.dto.NoticeFacilityListResponse;
+import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.application.usecase.FacilityUseCase;
-import co.kr.pinhouse.domain.like.application.dto.UnityTypeLikeResponse;
+import co.kr.pinhouse.domain.like.application.dto.response.UnityTypeLikeResponse;
 import co.kr.pinhouse.domain.like.application.usecase.LikeQueryUseCase;
 import co.kr.pinhouse.domain.pinpoint.application.usecase.PinPointUseCase;
 import co.kr.pinhouse.domain.pinpoint.domain.entity.PinPoint;
-import co.kr.pinhouse.domain.search.application.dto.ComplexDistanceResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.ComplexDistanceResponse;
 import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -496,7 +496,7 @@ public class ComplexService implements ComplexUseCase {
 	public TransitInfoResponse getTransitInfo(String id, String pinPointId) throws UnsupportedEncodingException {
 
 		/// Redis 캐시에서 RootResult 먼저 확인
-		co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult cachedRootResult =
+		co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult cachedRootResult =
 			distanceCacheService.getRootResult(id, pinPointId);
 
 		if (cachedRootResult != null) {
@@ -532,7 +532,7 @@ public class ComplexService implements ComplexUseCase {
 	public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
 		/// Redis 캐시에서 RootResult 먼저 확인
-		co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult cachedRootResult =
+		co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult cachedRootResult =
 			distanceCacheService.getRootResult(id, pinPointId);
 
 		if (cachedRootResult != null) {

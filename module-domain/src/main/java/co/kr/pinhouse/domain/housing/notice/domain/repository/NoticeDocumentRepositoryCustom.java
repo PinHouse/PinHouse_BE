@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeListRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeListRequest;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 
 public interface NoticeDocumentRepositoryCustom {

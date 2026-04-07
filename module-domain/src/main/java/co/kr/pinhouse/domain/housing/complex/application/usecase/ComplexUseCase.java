@@ -9,8 +9,8 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceRe
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
-import co.kr.pinhouse.domain.like.application.dto.UnityTypeLikeResponse;
-import co.kr.pinhouse.domain.search.application.dto.ComplexDistanceResponse;
+import co.kr.pinhouse.domain.like.application.dto.response.UnityTypeLikeResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.ComplexDistanceResponse;
 import co.kr.pinhouse.domain.search.domain.entity.SearchHistory;
 
 public interface ComplexUseCase {

@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import co.kr.pinhouse.common.util.TimeFormatter;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.BusRouteType;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.ExpressBusType;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.SubwayLineType;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.TrainType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.BusRouteType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.ExpressBusType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.LineInfo;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.SubwayLineType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.TrainType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

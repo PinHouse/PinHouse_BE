@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.like.application.dto.LikeRequest;
+import co.kr.pinhouse.domain.like.application.dto.request.LikeRequest;
 import co.kr.pinhouse.domain.like.application.usecase.LikeCommandUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

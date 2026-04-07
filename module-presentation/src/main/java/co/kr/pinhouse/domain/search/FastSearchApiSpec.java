@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.search.application.dto.FastSearchRequest;
-import co.kr.pinhouse.domain.search.application.dto.FastSearchResponse;
-import co.kr.pinhouse.domain.search.application.dto.SearchHistoryResponse;
+import co.kr.pinhouse.domain.search.application.dto.request.FastSearchRequest;
+import co.kr.pinhouse.domain.search.application.dto.response.FastSearchResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.SearchHistoryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

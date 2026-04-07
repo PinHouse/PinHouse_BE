@@ -17,7 +17,7 @@ import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import co.kr.pinhouse.domain.housing.notice.domain.repository.NoticeDocumentRepository;
 import co.kr.pinhouse.domain.like.application.usecase.LikeQueryUseCase;
 import co.kr.pinhouse.domain.search.application.dto.NoticeSearchFilterType;
-import co.kr.pinhouse.domain.search.application.dto.NoticeSearchResultResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.NoticeSearchResultResponse;
 import co.kr.pinhouse.domain.search.application.dto.NoticeSearchSortType;
 import co.kr.pinhouse.domain.search.application.usecase.NoticeSearchUseCase;
 import co.kr.pinhouse.domain.search.application.usecase.SearchKeywordUseCase;

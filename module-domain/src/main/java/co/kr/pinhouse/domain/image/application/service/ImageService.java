@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import co.kr.pinhouse.common.exception.code.ImageErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-import co.kr.pinhouse.domain.image.application.dto.PresignedUrlRequest;
-import co.kr.pinhouse.domain.image.application.dto.PresignedUrlResponse;
+import co.kr.pinhouse.domain.image.application.dto.request.PresignedUrlRequest;
+import co.kr.pinhouse.domain.image.application.dto.response.PresignedUrlResponse;
 import co.kr.pinhouse.domain.image.application.usecase.ImageUseCase;
 import co.kr.pinhouse.domain.image.domain.entity.ImageType;
 import co.kr.pinhouse.domain.image.external.PresignedUrlGenerator;

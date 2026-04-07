@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.BusRouteType;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.IntraCityResult;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.LineInfo;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.RootResult;
-import co.kr.pinhouse.domain.housing.complex.application.dto.result.SubwayLineType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.BusRouteType;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.IntraCityResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.LineInfo;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.SubwayLineType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.diagnostic.school.application.dto.SchoolResponse;
+import co.kr.pinhouse.domain.diagnostic.school.application.dto.response.SchoolResponse;
 import co.kr.pinhouse.domain.diagnostic.school.application.usecase.SchoolUseCase;
 import lombok.RequiredArgsConstructor;
 

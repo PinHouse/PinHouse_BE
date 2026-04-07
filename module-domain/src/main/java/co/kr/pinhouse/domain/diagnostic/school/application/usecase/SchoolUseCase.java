@@ -2,7 +2,7 @@ package co.kr.pinhouse.domain.diagnostic.school.application.usecase;
 
 import java.util.List;
 
-import co.kr.pinhouse.domain.diagnostic.school.application.dto.SchoolResponse;
+import co.kr.pinhouse.domain.diagnostic.school.application.dto.response.SchoolResponse;
 
 public interface SchoolUseCase {
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.security.auth.application.service.DevAuthService;
-import co.kr.pinhouse.security.jwt.application.dto.JwtTokenResponse;
+import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 

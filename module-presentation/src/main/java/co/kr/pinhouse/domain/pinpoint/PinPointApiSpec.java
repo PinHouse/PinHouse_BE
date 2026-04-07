@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointListResponse;
-import co.kr.pinhouse.domain.pinpoint.application.dto.PinPointRequest;
-import co.kr.pinhouse.domain.pinpoint.application.dto.UpdatePinPointRequest;
+import co.kr.pinhouse.domain.pinpoint.application.dto.response.PinPointListResponse;
+import co.kr.pinhouse.domain.pinpoint.application.dto.request.PinPointRequest;
+import co.kr.pinhouse.domain.pinpoint.application.dto.request.UpdatePinPointRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

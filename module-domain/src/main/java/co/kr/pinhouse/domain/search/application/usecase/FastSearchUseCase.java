@@ -2,9 +2,9 @@ package co.kr.pinhouse.domain.search.application.usecase;
 
 import java.util.UUID;
 
-import co.kr.pinhouse.domain.search.application.dto.FastSearchRequest;
-import co.kr.pinhouse.domain.search.application.dto.FastSearchResponse;
-import co.kr.pinhouse.domain.search.application.dto.SearchHistoryResponse;
+import co.kr.pinhouse.domain.search.application.dto.request.FastSearchRequest;
+import co.kr.pinhouse.domain.search.application.dto.response.FastSearchResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.SearchHistoryResponse;
 
 public interface FastSearchUseCase {
 

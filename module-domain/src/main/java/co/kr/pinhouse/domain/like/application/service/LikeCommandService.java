@@ -9,7 +9,7 @@ import co.kr.pinhouse.common.exception.code.LikeErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.domain.housing.complex.application.usecase.ComplexUseCase;
 import co.kr.pinhouse.domain.housing.notice.application.usecase.NoticeUseCase;
-import co.kr.pinhouse.domain.like.application.dto.LikeRequest;
+import co.kr.pinhouse.domain.like.application.dto.request.LikeRequest;
 import co.kr.pinhouse.domain.like.application.usecase.LikeCommandUseCase;
 import co.kr.pinhouse.domain.like.domain.Like;
 import co.kr.pinhouse.domain.like.domain.LikeJpaRepository;

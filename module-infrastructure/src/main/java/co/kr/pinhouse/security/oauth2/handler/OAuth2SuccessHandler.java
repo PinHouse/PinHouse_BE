@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
-import co.kr.pinhouse.security.jwt.application.dto.JwtTokenResponse;
+import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 import co.kr.pinhouse.security.oauth2.domain.PrincipalDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

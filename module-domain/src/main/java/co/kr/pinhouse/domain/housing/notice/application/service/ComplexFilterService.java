@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.Deposit;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
-import co.kr.pinhouse.domain.housing.facility.application.dto.NoticeFacilityListResponse;
+import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-import co.kr.pinhouse.domain.housing.notice.application.dto.ComplexFilterResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.NoticeDetailFilterRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeDetailFilterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

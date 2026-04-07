@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import co.kr.pinhouse.domain.diagnostic.school.application.dto.SchoolResponse;
+import co.kr.pinhouse.domain.diagnostic.school.application.dto.response.SchoolResponse;
 import co.kr.pinhouse.domain.diagnostic.school.application.usecase.SchoolUseCase;
 import co.kr.pinhouse.domain.diagnostic.school.domain.entity.School;
 import co.kr.pinhouse.domain.diagnostic.school.domain.entity.University;

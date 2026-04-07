@@ -2,7 +2,7 @@ package co.kr.pinhouse.domain.search.application.usecase;
 
 import java.util.List;
 
-import co.kr.pinhouse.domain.search.application.dto.PopularKeywordResponse;
+import co.kr.pinhouse.domain.search.application.dto.response.PopularKeywordResponse;
 import co.kr.pinhouse.domain.search.domain.entity.SearchKeywordScope;
 
 /**

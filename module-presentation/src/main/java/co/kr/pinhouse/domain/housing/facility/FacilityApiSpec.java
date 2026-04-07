@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
-import co.kr.pinhouse.domain.housing.facility.application.dto.NoticeFacilityListResponse;
+import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
