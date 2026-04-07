@@ -14,10 +14,21 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
     implementation 'org.springframework:spring-tx'
 
+    // Observation
+    implementation enforcedPlatform('io.opentelemetry:opentelemetry-bom:1.43.0')
+    implementation enforcedPlatform('io.opentelemetry:opentelemetry-bom-alpha:1.43.0-alpha')
+    implementation enforcedPlatform('io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:2.9.0-alpha')
+    implementation 'io.opentelemetry:opentelemetry-api'
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-jdbc'
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-lettuce-5.1'
+    compileOnly 'org.springframework.boot:spring-boot-actuator-autoconfigure'
+
+    // 이미지 저장소
     implementation platform('software.amazon.awssdk:bom:2.21.0')
     implementation 'software.amazon.awssdk:s3'
     implementation 'software.amazon.awssdk:auth'
 
+    // JWT 의존성
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
