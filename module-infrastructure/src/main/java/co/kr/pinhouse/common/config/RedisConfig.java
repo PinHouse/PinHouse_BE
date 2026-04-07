@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
@@ -38,8 +37,8 @@ public class RedisConfig {
 
 		LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration.builder();
 		customizers.orderedStream().forEach(customizer -> customizer.customize(clientConfigBuilder));
-		boolean useSsl = sslEnabled || environment.acceptsProfiles(Profiles.of("prod"));
-		if (useSsl) {
+
+		if (sslEnabled) {
 			clientConfigBuilder.useSsl();
 		}
 
