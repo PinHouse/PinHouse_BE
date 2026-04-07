@@ -32,8 +32,8 @@ public class ServiceObservationAspect {
 	 */
 	@Around("""
 		execution(public * co.kr.pinhouse.domain..application.service..*.*(..))
-		   || execution(public * co.kr.pinhouse.security..application.service..*.*(..))
-		   || execution(public * co.kr.pinhouse.security.oauth2.service..*.*(..))
+		|| execution(public * co.kr.pinhouse.security..application.service..*.*(..))
+		|| execution(public * co.kr.pinhouse.security.oauth2.service..*.*(..))
 		""")
 	public Object observeServiceLayer(ProceedingJoinPoint joinPoint) throws Throwable {
 		// 실행되는 메서드의 시그니처에서 클래스명과 메서드명을 추출합니다.
