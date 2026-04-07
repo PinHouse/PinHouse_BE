@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.kr.pinhouse.common.exception.code.ComplexErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceUtil;
 import co.kr.pinhouse.domain.housing.complex.application.util.InterCityResultParser;
 import co.kr.pinhouse.domain.housing.complex.application.util.IntraCityResultParser;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

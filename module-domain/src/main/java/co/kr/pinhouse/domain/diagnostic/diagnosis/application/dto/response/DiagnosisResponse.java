@@ -33,8 +33,8 @@ public record DiagnosisResponse(
 		List<String> recommended = context.getCurrentCandidates().isEmpty()
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
-				.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
-				.toList();
+			.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
+			.toList();
 
 		return DiagnosisResponse.builder()
 			.eligible(!recommended.contains("해당 없음"))

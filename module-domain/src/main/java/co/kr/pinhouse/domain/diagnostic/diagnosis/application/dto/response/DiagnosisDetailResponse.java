@@ -63,24 +63,24 @@ public record DiagnosisDetailResponse(
 		List<String> recommended = context.getCurrentCandidates().isEmpty()
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
-				.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
-				.toList();
+			.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
+			.toList();
 
 		// 지원 가능한 공급 유형 (중복 제거)
 		List<String> availableSupplyTypes = context.getCurrentCandidates().isEmpty()
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
-				.map(c -> c.supplyType().getValue())
-				.distinct()
-				.toList();
+			.map(c -> c.supplyType().getValue())
+			.distinct()
+			.toList();
 
 		// 신청 가능한 임대주택 유형 (중복 제거)
 		List<String> availableRentalTypes = context.getCurrentCandidates().isEmpty()
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
-				.map(c -> c.noticeType().getValue())
-				.distinct()
-				.toList();
+			.map(c -> c.noticeType().getValue())
+			.distinct()
+			.toList();
 
 		return DiagnosisDetailResponse.builder()
 			// 메타 정보

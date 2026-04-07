@@ -8,8 +8,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.observation.ServerRequestObservationContext;
@@ -31,11 +31,6 @@ import reactor.core.publisher.Hooks;
 @ConditionalOnEnabledTracing
 public class TracingConfig {
 
-	@PostConstruct
-	public void enableReactorContextPropagation() {
-		Hooks.enableAutomaticContextPropagation();
-	}
-
 	private static final List<String> EXCLUDED_PATHS = List.of(
 		"/actuator/**",
 		"/actuator/health",
@@ -43,6 +38,11 @@ public class TracingConfig {
 		"/actuator/prometheus",
 		"/actuator/metrics/**"
 	);
+
+	@PostConstruct
+	public void enableReactorContextPropagation() {
+		Hooks.enableAutomaticContextPropagation();
+	}
 
 	@Bean
 	public ObservationPredicate skipActuatorEndpointsFromTracing() {

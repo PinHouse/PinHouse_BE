@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.pinhouse.security.aop.CheckLogin;
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
+import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeNoticeListResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeSearchCategoryPageResponse;
-import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeSearchOverviewResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.NoticeCountResponse;
 import co.kr.pinhouse.domain.home.application.usecase.HomeUseCase;
 import co.kr.pinhouse.domain.search.application.dto.response.PopularKeywordResponse;
+import co.kr.pinhouse.security.aop.CheckLogin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

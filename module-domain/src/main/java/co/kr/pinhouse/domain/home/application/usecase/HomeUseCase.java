@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
+import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeNoticeListResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeSearchCategoryPageResponse;
-import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeSearchOverviewResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.NoticeCountResponse;
 import co.kr.pinhouse.domain.search.application.dto.response.PopularKeywordResponse;

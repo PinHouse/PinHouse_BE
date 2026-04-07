@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponseV2;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;

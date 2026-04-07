@@ -19,8 +19,6 @@ import co.kr.pinhouse.domain.housing.complex.application.dto.response.DistanceRe
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitInfoResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.TransitRoutesResponse;
 import co.kr.pinhouse.domain.housing.complex.application.dto.response.UnitTypeResponse;
-import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
-import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import co.kr.pinhouse.domain.housing.complex.application.usecase.ComplexUseCase;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceCalculator;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceUtil;
@@ -29,6 +27,8 @@ import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.Deposit;
 import co.kr.pinhouse.domain.housing.complex.domain.entity.UnitType;
 import co.kr.pinhouse.domain.housing.complex.domain.repository.ComplexDocumentRepository;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.application.usecase.FacilityUseCase;
 import co.kr.pinhouse.domain.like.application.dto.response.UnityTypeLikeResponse;

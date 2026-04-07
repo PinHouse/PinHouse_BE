@@ -15,8 +15,8 @@ import co.kr.pinhouse.domain.housing.facility.application.usecase.FacilityUseCas
 import co.kr.pinhouse.domain.housing.notice.application.usecase.NoticeUseCase;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import co.kr.pinhouse.domain.pinpoint.application.usecase.PinPointUseCase;
-import co.kr.pinhouse.domain.search.application.dto.response.ComplexDistanceResponse;
 import co.kr.pinhouse.domain.search.application.dto.request.FastSearchRequest;
+import co.kr.pinhouse.domain.search.application.dto.response.ComplexDistanceResponse;
 import co.kr.pinhouse.domain.search.application.dto.response.FastSearchResponse;
 import co.kr.pinhouse.domain.search.application.dto.response.FastUnitTypeResponse;
 import co.kr.pinhouse.domain.search.application.dto.response.SearchHistoryResponse;

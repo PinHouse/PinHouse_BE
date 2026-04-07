@@ -43,8 +43,8 @@ public class PolicyProvider implements PolicyUseCase {
 
 				/// 나머지 특별공급 - 기준중위소득 기본
 				case SINGLE_PARENT_SPECIAL, MINOR_SPECIAL, FIRST_SPECIAL, ELDER_SUPPORT_SPECIAL,
-					NATIONAL_MERIT, DEMOLITION, LONG_SERVICE_VETERAN, NORTH_DEFECTOR,
-					DISABLED, NON_HOUSING_RESIDENT -> incomeByFamily(familyCount,
+					 NATIONAL_MERIT, DEMOLITION, LONG_SERVICE_VETERAN, NORTH_DEFECTOR,
+					 DISABLED, NON_HOUSING_RESIDENT -> incomeByFamily(familyCount,
 					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
 				/// 일반공급 - 기준중위소득 150%
@@ -69,8 +69,8 @@ public class PolicyProvider implements PolicyUseCase {
 			case NATIONAL_RENTAL -> switch (supply) {
 				/// 60㎡ 이하 기준
 				case GENERAL, MULTICHILD_SPECIAL, NATIONAL_MERIT, NEWCOUPLE_SPECIAL,
-					DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
-					ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 70.0;
+					 DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
+					 ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 70.0;
 
 				/// 60㎡ 초과는 100%로 처리 (면적 정보 없으면 보수적으로 70% 적용)
 				default -> 70.0;
@@ -80,8 +80,8 @@ public class PolicyProvider implements PolicyUseCase {
 			case LONG_TERM_JEONSE -> switch (supply) {
 				/// 60㎡ 이하 기준
 				case GENERAL, MULTICHILD_SPECIAL, NATIONAL_MERIT, NEWCOUPLE_SPECIAL,
-					DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
-					ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 100.0;
+					 DEMOLITION, NON_HOUSING_RESIDENT, DISABLED, ELDER_SPECIAL,
+					 ELDER_SUPPORT_SPECIAL, PERMANENT_LEASE_EVICTEE -> 100.0;
 
 				/// 60㎡ 초과는 120%로 처리
 				default -> 100.0;

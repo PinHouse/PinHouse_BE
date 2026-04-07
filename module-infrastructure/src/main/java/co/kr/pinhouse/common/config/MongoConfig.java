@@ -16,13 +16,11 @@ import com.mongodb.client.MongoClients;
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
+	private final ObjectProvider<MongoClientSettingsBuilderCustomizer> mongoClientSettingsBuilderCustomizers;
 	@Value("${spring.data.mongodb.uri}")
 	private String connectionString;
-
 	@Value("${spring.data.mongodb.database}")
 	private String databaseName;
-
-	private final ObjectProvider<MongoClientSettingsBuilderCustomizer> mongoClientSettingsBuilderCustomizers;
 
 	public MongoConfig(ObjectProvider<MongoClientSettingsBuilderCustomizer> mongoClientSettingsBuilderCustomizers) {
 		this.mongoClientSettingsBuilderCustomizers = mongoClientSettingsBuilderCustomizers;

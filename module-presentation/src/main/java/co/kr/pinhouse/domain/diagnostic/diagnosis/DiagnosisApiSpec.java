@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponseV2;
 import io.swagger.v3.oas.annotations.Operation;

@@ -12,16 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.pinhouse.common.exception.code.SecurityErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
-import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.Gender;
 import co.kr.pinhouse.domain.user.domain.entity.Provider;
 import co.kr.pinhouse.domain.user.domain.entity.User;
+import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import co.kr.pinhouse.security.oauth2.domain.OAuth2UserInfo;
-import co.kr.pinhouse.security.principal.PrincipalDetails;
 import co.kr.pinhouse.security.oauth2.domain.kakao.KakaoUserInfo;
 import co.kr.pinhouse.security.oauth2.domain.naver.NaverUserInfo;
 import co.kr.pinhouse.security.oauth2.handler.SignupRequiredException;
+import co.kr.pinhouse.security.principal.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 
 @Service

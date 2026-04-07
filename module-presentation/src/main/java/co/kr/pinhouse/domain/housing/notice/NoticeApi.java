@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.pinhouse.security.aop.CheckLogin;
 import co.kr.pinhouse.common.auth.CurrentUserId;
 import co.kr.pinhouse.common.response.ApiResponse;
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeDetailFilterRequest;
-import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeDetailFilteredResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeListRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeDetailFilteredResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeListResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.response.UnitTypeCompareResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.application.usecase.NoticeUseCase;
+import co.kr.pinhouse.security.aop.CheckLogin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

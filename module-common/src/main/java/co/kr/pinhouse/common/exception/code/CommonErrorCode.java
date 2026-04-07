@@ -49,8 +49,8 @@ public enum CommonErrorCode implements ErrorCode {
 	INTERNAL_MONGO_SERVER_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "몽고 DB 내부 오류입니다."),
 	INTERNAL_SERVER_ERROR(500_002, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
 	INTERNAL_DB_SERVER_ERROR(500_003, HttpStatus.INTERNAL_SERVER_ERROR, "DB 서버 내부 오류입니다."),
-		INTERNAL_DB_SYNTAX_SERVER_ERROR(500_004, HttpStatus.INTERNAL_SERVER_ERROR, "SQL 문법 오류나 리소스 방식 등에 대한 DB 서버 오류입니다."),
-		INTERNAL_DB_SCHEMA_SERVER_ERROR(500_005, HttpStatus.INTERNAL_SERVER_ERROR, "외래키 위반, Unique 제약 위반에 대한 DB 서버 오류입니다.");
+	INTERNAL_DB_SYNTAX_SERVER_ERROR(500_004, HttpStatus.INTERNAL_SERVER_ERROR, "SQL 문법 오류나 리소스 방식 등에 대한 DB 서버 오류입니다."),
+	INTERNAL_DB_SCHEMA_SERVER_ERROR(500_005, HttpStatus.INTERNAL_SERVER_ERROR, "외래키 위반, Unique 제약 위반에 대한 DB 서버 오류입니다.");
 
 	/**
 	 * 에러 코드 (고유값)

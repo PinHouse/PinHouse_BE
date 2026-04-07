@@ -31,13 +31,13 @@ import co.kr.pinhouse.domain.housing.complex.domain.entity.ComplexDocument;
 import co.kr.pinhouse.domain.housing.facility.application.dto.response.NoticeFacilityListResponse;
 import co.kr.pinhouse.domain.housing.facility.application.usecase.FacilityUseCase;
 import co.kr.pinhouse.domain.housing.facility.domain.entity.FacilityType;
-import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeDetailFilterRequest;
-import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeDetailFilteredResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.request.NoticeListRequest;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.ComplexFilterResponse;
+import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeDetailFilteredResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.response.NoticeListResponse;
 import co.kr.pinhouse.domain.housing.notice.application.dto.response.UnitTypeCompareResponse;
-import co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType;
 import co.kr.pinhouse.domain.housing.notice.application.usecase.NoticeUseCase;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
 import co.kr.pinhouse.domain.housing.notice.domain.repository.NoticeDocumentRepository;
@@ -580,7 +580,7 @@ public class NoticeService implements NoticeUseCase {
 
 		double haversineValue = Math.sin(dLat / 2) * Math.sin(dLat / 2)
 			+ Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-				* Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			* Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
 		double centralAngle = 2 * Math.atan2(Math.sqrt(haversineValue), Math.sqrt(1 - haversineValue));
 

@@ -2,8 +2,8 @@ package co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase;
 
 import java.util.UUID;
 
-import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponseV2;
 

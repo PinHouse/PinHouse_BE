@@ -36,7 +36,7 @@ public class NewlyMarriedCandidateRule implements Rule {
 		boolean isNoHouse = diagnosis.getHousingStatus().equals(
 			co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.NO_ONE_OWNS_HOUSE)
 			|| diagnosis.getHousingStatus().equals(
-				co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
+			co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.HOUSEHOLD_MEMBER_OWNS_HOUSE);
 
 		/// 결혼했는지 체크
 		boolean isMarried = diagnosis.isMaritalStatus();

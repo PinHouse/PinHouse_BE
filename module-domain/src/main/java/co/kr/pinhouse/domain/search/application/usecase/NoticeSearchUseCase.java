@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
 import co.kr.pinhouse.domain.search.application.dto.NoticeSearchFilterType;
-import co.kr.pinhouse.domain.search.application.dto.response.NoticeSearchResultResponse;
 import co.kr.pinhouse.domain.search.application.dto.NoticeSearchSortType;
+import co.kr.pinhouse.domain.search.application.dto.response.NoticeSearchResultResponse;
 
 /**
  * 공고 검색 Use Case
