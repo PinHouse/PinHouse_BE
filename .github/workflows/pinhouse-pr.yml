@@ -164,7 +164,7 @@ jobs:
         with:
           status: ${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
           webhook: ${{ github.event.pull_request.base.ref == 'main' && env.DISCORD_WEBHOOK_PROD_URL || env.DISCORD_WEBHOOK_PR_URL }}
-          title: "${{ github.event.pull_request.base.ref }} PR 결과 [${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
+          title: "PinHouse ${{ github.event.pull_request.base.ref }} PR 결과 [${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
           description: |
             **PR 제목**: ${{ github.event.pull_request.title }}
             **작성자**: ${{ steps.prep.outputs.author }}
