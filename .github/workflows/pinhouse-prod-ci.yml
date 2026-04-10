@@ -1,0 +1,154 @@
+name: PinHouse-BE 운영용 CI 파이프라인
+
+# 메인 브랜치만
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+# 동시에 하나만 진행
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # 공통 설정
+  JAVA_VERSION: "21"
+  BRANCH_NAME: ${{ github.ref_name }}
+  ENV_TYPE: "🚀 운영(PROD)"
+
+  # GCP / Artifact Registry 설정
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_ARTIFACT_REGISTRY_REGION: ${{ secrets.GCP_ARTIFACT_REGISTRY_REGION }}
+  GCP_ARTIFACT_REGISTRY_REPOSITORY: ${{ secrets.GCP_ARTIFACT_REGISTRY_REPOSITORY }}
+  GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+  GCP_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+  ARTIFACT_REGISTRY_IMAGE: pinhouse-server
+
+  # Discord 설정
+  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  DISCORD_AVATAR_URL: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+
+jobs:
+  # 린트
+  lint:
+    name: lint
+    runs-on: ubuntu-22.04
+    if: always()
+    environment: PinHouse_prod
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Java 및 Gradle 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Gradle 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: Lint (CheckStyle) 수행
+        run: ./gradlew checkstyleMain
+
+      - name: Lint (CheckStyle) 결과 리포트
+        uses: lcollins/checkstyle-github-action@v2.0.0
+        if: always()
+        with:
+          path: '**/build/reports/checkstyle/*.xml'
+          title: 'Checkstyle 결과 Report'
+
+  # 빌드 체크
+  build:
+    name: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    if: always()
+    environment: PinHouse_prod
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image_tag: ${{ steps.timestamp.outputs.image_tag }}
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: GCP 자격 증명 설정
+        id: gcp-auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT_EMAIL }}
+          token_format: access_token
+
+      - name: 타임스탬프 기반 이미지 태그 생성
+        id: timestamp
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          IMAGE_TAG="$(date +'%Y%m%d_%H%M%S')-$SHORT_SHA"
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Artifact Registry 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.gcp-auth.outputs.access_token }}
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker 이미지 빌드 및 Artifact Registry 푸시
+        env:
+          IMAGE_TAG: ${{ steps.timestamp.outputs.image_tag }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:${{ env.IMAGE_TAG }}
+            ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:latest
+          provenance: false
+
+  # 디스코드 알림
+  notify-ci:
+    name: notify-ci
+    runs-on: ubuntu-22.04
+    needs: [ lint, build ]
+    if: always()
+    environment: PinHouse_prod
+    steps:
+      - name: Discord 빌드 알림
+        uses: sarisia/actions-status-discord@v1
+        with:
+          status: ${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
+          webhook: ${{ env.DISCORD_WEBHOOK_URL }}
+          title: "PinHouse ${{ github.event.pull_request.base.ref }} CI 결과 [${{ (needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
+          description: |
+            **브랜치**: `${{ env.BRANCH_NAME }}`
+            **환경**: ${{ env.ENV_TYPE }}
+
+            **📊 상세 결과**:
+            - Lint: ${{ needs.lint.result == 'success' && '✅' || '❌' }}
+            - Build: ${{ needs.build.result == 'success' && '✅' || '❌' }}
+
+            **🐳 Docker 이미지**: `${{ needs.build.outputs.image_tag }}`
+
+            **🔗 링크**: [커밋 확인하기](${{ github.event.repository.html_url }}/commit/${{ github.sha }})
+
+          color: "${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 65280 || 16711680 }}"
+          username: GitHub BE Prod CI Bot
+          avatar_url: ${{ env.DISCORD_AVATAR_URL }}

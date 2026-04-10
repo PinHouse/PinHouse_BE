@@ -6,6 +6,29 @@ build/
 !**/src/test/**/build/
 *.yml
 .env
+.env.local
+.env.dev
+.env.stg
+.env.prod
+
+## 파이프라인
+.github/scripts
+.github/workflows/sync-issue-to-notion.yml
+
+### Local Setting ###
+!local/
+local/**
+!local/**/
+!local/*.yml
+!local/*.yaml
+!local/**/*.yml
+!local/**/*.yaml
+!local/**/*.alloy
+!local/**/*.cnf
+local/.env
+local/**/.env
+local/loki/data/
+local/tempo/data/
 
 ### STS ###
 .apt_generated
@@ -37,3 +60,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### log 폴더
+log

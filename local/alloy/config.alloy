@@ -1,0 +1,114 @@
+// Logging 설정 (UI 활성화)
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// Docker 컨테이너 자동 발견
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "5s"
+}
+
+// 라벨 재작성 규칙 정의
+discovery.relabel "containers" {
+  targets = []
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service_name"
+  }
+}
+
+// 로그 수집
+loki.source.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  targets          = discovery.docker.containers.targets
+  forward_to       = [loki.write.default.receiver]
+  relabel_rules    = discovery.relabel.containers.rules
+  refresh_interval = "5s"
+}
+
+// Loki 전송
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+// ========================================
+// Traces
+// ========================================
+
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    traces = [otelcol.exporter.otlphttp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlphttp "tempo" {
+  client {
+    endpoint = "http://tempo:4317"
+
+    tls {
+      insecure             = true
+      insecure_skip_verify = true
+    }
+  }
+
+  retry_on_failure {
+    enabled          = true
+    initial_interval = "1s"
+    max_interval     = "10s"
+    max_elapsed_time = "0s"
+  }
+
+  sending_queue {
+    enabled    = true
+    queue_size = 5000
+  }
+}
+
+// ========================================
+// Local 스프링부트
+// ========================================
+
+// 로컬에서 프로세스로 실행한 스프링부트 stdout 리다이렉트 파일 발견
+local.file_match "spring_local" {
+  path_targets = [
+    {
+      "__path__"  = "/var/log/pinhouse/*.log",
+      "job"          = "pinhouse-spring-local",
+      "source"       = "process",
+      "service"      = "pinhouse-be-local",
+      "service_name" = "pinhouse-be-local",
+    },
+  ]
+  sync_period = "5s"
+}
+
+// 로컬 stdout 리다이렉트 로그는 파싱 없이 원문 그대로 Loki로 전달
+loki.source.file "spring_local" {
+  targets       = local.file_match.spring_local.targets
+  forward_to    = [loki.write.default.receiver]
+  tail_from_end = true
+}

@@ -1,0 +1,100 @@
+package co.kr.pinhouse.domain.search.domain.entity;
+
+import java.time.Instant;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * 검색 키워드 통계 엔티티
+ * 사용자가 검색한 키워드를 추적하고 인기 검색어를 제공하기 위한 컬렉션
+ */
+@Getter
+@NoArgsConstructor
+@Document(collection = "search_keywords")
+@CompoundIndexes({
+	@CompoundIndex(name = "idx_scope_keyword_unique", def = "{'scope': 1, 'keyword': 1}", unique = true)
+})
+public class SearchKeyword {
+
+	@Id
+	private String id;
+
+	/**
+	 * 검색 키워드 (정규화됨: 소문자, 공백 제거)
+	 */
+	@Indexed
+	private String keyword;
+
+	/**
+	 * 검색 영역 (기본: GENERAL)
+	 */
+	@Indexed
+	private SearchKeywordScope scope;
+
+	/**
+	 * 검색 횟수
+	 */
+	@Indexed
+	private Long count;
+
+	/**
+	 * 마지막 검색 시각
+	 */
+	@Indexed
+	private Instant lastSearchedAt;
+
+	/**
+	 * 최초 검색 시각
+	 */
+	private Instant firstSearchedAt;
+
+	@Builder
+	public SearchKeyword(String keyword, SearchKeywordScope scope, Long count, Instant lastSearchedAt,
+		Instant firstSearchedAt) {
+		this.keyword = keyword;
+		this.scope = scope;
+		this.count = count;
+		this.lastSearchedAt = lastSearchedAt;
+		this.firstSearchedAt = firstSearchedAt;
+	}
+
+	/**
+	 * 새로운 검색 키워드 생성
+	 */
+	public static SearchKeyword create(String keyword, SearchKeywordScope scope) {
+		Instant now = Instant.now();
+		return SearchKeyword.builder()
+			.keyword(normalizeKeyword(keyword))
+			.scope(scope)
+			.count(1L)
+			.lastSearchedAt(now)
+			.firstSearchedAt(now)
+			.build();
+	}
+
+	/**
+	 * 키워드 정규화 (소문자 변환, 공백 제거)
+	 */
+	public static String normalizeKeyword(String keyword) {
+		if (keyword == null) {
+			return "";
+		}
+		return keyword.trim().toLowerCase();
+	}
+
+	/**
+	 * 검색 횟수 증가
+	 */
+	public void incrementCount() {
+		this.count++;
+		this.lastSearchedAt = Instant.now();
+	}
+}

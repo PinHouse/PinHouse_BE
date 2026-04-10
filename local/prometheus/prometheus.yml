@@ -1,0 +1,37 @@
+# 전역 설정
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  # 라벨
+  external_labels:
+    monitor: 'pinhouse-be-local'
+
+# 스크랩핑
+scrape_configs:
+
+  # Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'prometheus:9090' ]
+
+  # Spring Boot
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8080' ]
+        # 라벨
+        labels:
+          application: 'pinhouse-server'
+          environment: 'local'
+    scrape_interval: 10s
+
+  # Node Exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: [ 'node-exporter:9100' ]
+
+# 알러트 설정
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: [ 'alertmanager:9093' ]

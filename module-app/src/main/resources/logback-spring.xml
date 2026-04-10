@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console Appender - 로컬/컨테이너 모두 stdout만 사용 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger - 불필요한 로그 줄이기 -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- yml logging.level에서 주입받는 로거 레벨 -->
+    <springProperty name="LOG_LEVEL_APP" source="logging.level.co.kr.pinhouse"/>
+
+    <!-- 애플리케이션 로거 레벨 설정 -->
+    <logger name="co.kr.pinhouse" level="${LOG_LEVEL_APP}"/>
+
+    <!-- Spring 프레임워크 로그 최소화 -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+</configuration>

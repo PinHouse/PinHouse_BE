@@ -1,0 +1,183 @@
+name: PinHouse-BE PR 파이프라인
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - release/**
+      - main
+
+env:
+  JAVA_VERSION: "21"
+  BRANCH_NAME: ${{ github.head_ref }}
+  BASE_BRANCH_NAME: ${{ github.base_ref }}
+  ENV_TYPE: ${{ github.base_ref == 'main' && '🚀 운영(PROD)' || startsWith(github.base_ref, 'release/') && '🧪 스테이징(STAGING)' || '🛠️ 개발(DEV)' }}
+  DISCORD_WEBHOOK_PR_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  DISCORD_WEBHOOK_PROD_URL: ${{ secrets.DISCORD_WEBHOOK_URL_PROD }}
+  DISCORD_AVATAR_URL: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+
+# 권한
+permissions:
+  contents: read
+
+# 동시에 하나만 진행
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+# Job
+jobs:
+  # main 브랜치 보호: release/hotfix/*만 PR 허용
+  main-branch-guard:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: main PR 브랜치 검증
+        run: |
+          BASE="${{ github.event.pull_request.base.ref }}"
+          HEAD="${{ github.event.pull_request.head.ref }}"
+
+          echo "📌 대상 브랜치: $BASE"
+          echo "📌 소스 브랜치: $HEAD"
+
+          # main이 아닐 땐 통과
+          if [ "$BASE" != "main" ]; then
+            echo "✅ 브랜치 정책 통과 (main 아님)"
+            exit 0
+          fi
+
+          # main일 때 허용 브랜치: release/*, hotfix/*
+          if [[ "$HEAD" =~ ^release\/.+$ || "$HEAD" =~ ^hotfix\/.+$ ]]; then
+            echo "✅ 브랜치 정책 통과 (허용된 소스 브랜치)"
+            exit 0
+          fi
+
+          echo "❌ 정책 위반: main에는 release/* 또는 hotfix/* 브랜치만 PR 가능"
+          exit 1
+
+  lint:
+    name: lint
+    needs: [ main-branch-guard ]
+    environment: PinHouse_pr
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Java 및 Gradle 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Gradle 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: Lint (CheckStyle) 수행
+        run: ./gradlew checkstyleMain checkstyleTest
+
+      - name: Lint (CheckStyle) 결과 리포트
+        uses: lcollins/checkstyle-github-action@v2.0.0
+        if: always()
+        with:
+          path: '**/build/reports/checkstyle/*.xml'
+          title: 'Checkstyle 결과 Report'
+
+  # 빌드 진행
+  build:
+    name: build
+    needs: [ main-branch-guard ]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    # 권한
+    permissions:
+      contents: read
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Java 및 Gradle 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Gradle 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: Build 수행
+        run: ./gradlew clean build -x checkstyleMain -x checkstyleTest
+
+  notify-pr:
+    name: notify-pr
+    runs-on: ubuntu-22.04
+    needs: [ main-branch-guard, lint, build ]
+    if: always()
+    environment: PinHouse_pr
+    steps:
+      - name: 데이터 준비
+        id: prep
+        env:
+          USER_MAP: ${{ secrets.USER_MAP_JSON }}
+        run: |
+          # 1. 작성자 매핑
+          LOGIN_ID="${{ github.event.pull_request.user.login }}"
+          AUTHOR_TAG=$(echo "$USER_MAP" | jq -r --arg id "$LOGIN_ID" '.[$id] // $id')
+          echo "author=$AUTHOR_TAG" >> $GITHUB_OUTPUT
+
+          # 2. 리뷰어 매핑 
+          # jq를 사용하여 리뷰어 login 리스트를 가져온 뒤, MAP에서 찾아 디스코드 멘션으로 변환
+          REVIEWERS_JSON='${{ toJson(github.event.pull_request.requested_reviewers) }}'
+          REVIEWER_TAGS=$(echo "$REVIEWERS_JSON" | jq -r --argjson map "$USER_MAP" '
+            [.[].login | ($map[.] // .)] | join(", ")
+          ')
+          echo "reviewers=${REVIEWER_TAGS:-없음}" >> $GITHUB_OUTPUT
+
+          # 3. 작업 내용 추출 (HTML 주석 제거 로직 반영)
+          PR_RAW_BODY=$(cat << 'EOF'
+          ${{ github.event.pull_request.body }}
+          EOF
+          )
+
+          # 필요없는 문구 삭제
+          DESC=$(echo "$PR_RAW_BODY" | \
+            perl -0777 -pe 's///gs' | \
+            sed 's/이 PR에서 변경된 내용을 간략히 작성해주세요\.//g' | \
+            sed -n '/## 📌 작업한 내용/,/## 🔍 참고 사항/p' | \
+            sed '1d;$d' | \
+            xargs | \
+            head -c 300)
+
+          echo "description=${DESC:-내용 없음}" >> $GITHUB_OUTPUT
+
+      - name: Discord PR 알림
+        if: always()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          status: ${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
+          webhook: ${{ github.event.pull_request.base.ref == 'main' && env.DISCORD_WEBHOOK_PROD_URL || env.DISCORD_WEBHOOK_PR_URL }}
+          title: "PinHouse ${{ github.event.pull_request.base.ref }} PR 결과 [${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
+          description: |
+            **PR 제목**: ${{ github.event.pull_request.title }}
+            **작성자**: ${{ steps.prep.outputs.author }}
+            **리뷰어**: ${{ steps.prep.outputs.reviewers }}
+            **작업 내용**: ${{ steps.prep.outputs.description }}...
+            **경로**: `${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`
+
+            **📊 상세 결과**:
+            - Branch Guard: ${{ needs.main-branch-guard.result == 'success' && '✅' || '❌' }}
+            - Lint: ${{ needs.lint.result == 'success' && '✅' || '❌' }}
+            - Build: ${{ needs.build.result == 'success' && '✅' || '❌' }}
+
+            **🔗 링크**: [워크플로우 실행 보기](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          color: "${{ (needs.main-branch-guard.result == 'success' && needs.lint.result == 'success' && needs.build.result == 'success') && 65280 || 16711680 }}"
+          username: GitHub BE PR Bot
+          avatar_url: ${{ env.DISCORD_AVATAR_URL }}
