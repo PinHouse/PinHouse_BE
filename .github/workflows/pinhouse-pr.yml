@@ -8,43 +8,110 @@ on:
       - main
 
 env:
-  JAVA_VERSION: "17"
+  JAVA_VERSION: "21"
+  BRANCH_NAME: ${{ github.head_ref }}
+  BASE_BRANCH_NAME: ${{ github.base_ref }}
+  ENV_TYPE: ${{ github.base_ref == 'main' && '🚀 운영(PROD)' || startsWith(github.base_ref, 'release/') && '🧪 스테이징(STAGING)' || '🛠️ 개발(DEV)' }}
+  DISCORD_WEBHOOK_PR_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  DISCORD_AVATAR_URL: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
-# 빌드 여부만 파악
+# 권한
+permissions:
+  contents: read
+
+# 동시에 하나만 진행
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+# Job
 jobs:
-  build:
+  lint:
+    name: lint
+    environment: PinHouse_pr
     runs-on: ubuntu-22.04
+    if: always()
+
     permissions:
       contents: read
+      checks: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 체크아웃
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Java 및 Gradle 설치
         uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}
+          cache: gradle
 
       - name: Gradle 실행 권한 부여
         run: chmod +x gradlew
 
-      # PR 대상이 main이면 prod 프로파일, 그 외는 dev 프로파일 기준으로 빌드 가능 여부만 확인
-      - name: Build with Gradle Wrapper
-        run: |
-          if [ "${{ github.base_ref }}" == "main" ]; then
-            echo "Running Assemble for Main Branch (PROD profile)"
-            ./gradlew clean assemble -Dspring.profiles.active=prod
-          else
-            echo "Running Assemble for Non-Main Branch (DEV profile)"
-            ./gradlew clean assemble -Dspring.profiles.active=dev
-          fi
+      - name: Lint (CheckStyle) 수행
+        run: ./gradlew checkstyleMain checkstyleTest
+
+      - name: Lint (CheckStyle) 결과 리포트
+        uses: lcollins/checkstyle-github-action@v2.0.0
+        if: always()
+        with:
+          path: '**/build/reports/checkstyle/*.xml'
+          title: 'Checkstyle 결과 Report'
+
+  # 빌드 진행
+  build:
+    name: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    # 권한
+    permissions:
+      contents: read
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Java 및 Gradle 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Gradle 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: Build 수행
+        run: ./gradlew clean build -x checkstyleMain -x checkstyleTest
+
+  notify-pr:
+    name: notify-pr
+    runs-on: ubuntu-22.04
+    needs: [ lint, build ]
+    if: always()
+    environment: PinHouse_pr
+    steps:
+      - name: Discord PR 알림
+        if: ${{ env.DISCORD_WEBHOOK_PR_URL }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          status: ${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
+          webhook: ${{ env.DISCORD_WEBHOOK_PR_URL }}
+          title: "PR 검증 결과 [${{ (needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
+          description: |
+            **PR**: [#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})
+            **작성자**: `${{ github.event.pull_request.user.login }}`
+            **브랜치**: `${{ env.BRANCH_NAME }} -> ${{ env.BASE_BRANCH_NAME }}`
+            **대상 환경**: ${{ env.ENV_TYPE }}
+
+            **📊 상세 결과**:
+            - Lint: ${{ needs.lint.result == 'success' && '✅' || '❌' }}
+            - Build: ${{ needs.build.result == 'success' && '✅' || '❌' }}
+
+            **🔗 링크**: [워크플로우 실행 보기](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          color: "${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 65280 || 16711680 }}"
+          username: GitHub BE PR Bot
+          avatar_url: ${{ env.DISCORD_AVATAR_URL }}
