@@ -26,7 +26,7 @@ public class ImageService implements ImageUseCase {
 
 	private final PresignedUrlGenerator presignedUrlGenerator;
 
-	@Value("${aws.s3.presigned-url.expiration-minutes:10}")
+	@Value("${gcs.presigned-url.expiration-minutes:10}")
 	private int expirationMinutes;
 
 	/**
