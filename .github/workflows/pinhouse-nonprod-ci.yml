@@ -17,21 +17,20 @@ concurrency:
 
 env:
   # 공통 설정
-  JAVA_VERSION: "17"
-  USER_MAP_JSON: ${{ secrets.USER_MAP_JSON }}
+  JAVA_VERSION: "21"
   BRANCH_NAME: ${{ github.ref_name }}
   ENV_TYPE: ${{ startsWith(github.ref_name, 'release/') && '🧪 스테이징(STAGING)' || '🛠️ 개발(DEV)' }}
 
   # GCP / Artifact Registry 설정
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_ARTIFACT_REGISTRY_REGION: ${{ secrets.GCP_ARTIFACT_REGISTRY_REGION }}
-  GCP_ARTIFACT_REGISTRY_REPOSITORY: ${{ startsWith(github.ref_name, 'release/') && secrets.GCP_STG_ARTIFACT_REGISTRY_REPOSITORY || secrets.GCP_DEV_ARTIFACT_REGISTRY_REPOSITORY }}
+  GCP_ARTIFACT_REGISTRY_REPOSITORY: ${{ secrets.GCP_ARTIFACT_REGISTRY_REPOSITORY }}
   GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
   GCP_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
   ARTIFACT_REGISTRY_IMAGE: pinhouse-server
 
   # Discord 설정
-  DISCORD_WEBHOOK_NON_PROD_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
   DISCORD_AVATAR_URL: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
 
@@ -72,10 +71,9 @@ jobs:
   # 도커 이미지 생성 및 업로드
   build:
     name: build
-    needs: [ lint ]
     runs-on: ubuntu-22.04
     timeout-minutes: 15
-    if: success()
+    if: always()
     environment: ${{ startsWith(github.ref_name, 'release/') && 'PinHouse_stg' || 'PinHouse_dev' }}
     permissions:
       contents: read
@@ -138,7 +136,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           status: ${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
-          webhook: ${{ env.DISCORD_WEBHOOK_NON_PROD_URL }}
+          webhook: ${{ env.DISCORD_WEBHOOK_URL }}
           title: "배포(CI) 결과 [${{ (needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
           description: |
             **브랜치**: `${{ env.BRANCH_NAME }}`
