@@ -1,0 +1,24 @@
+package co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase;
+
+import java.util.UUID;
+
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.request.DiagnosisRequest;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponse;
+import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisResponseV2;
+
+public interface DiagnosisUseCase {
+
+	/// 청약 진단하기 (결과만 반환)
+	DiagnosisResponse diagnose(UUID userId, DiagnosisRequest request);
+
+	/// 청약 진단하기 v2 (그룹화 응답)
+	DiagnosisResponseV2 diagnoseV2(UUID userId, DiagnosisRequest request);
+
+	/// 최근 진단 상세 조회하기 (입력 정보 + 결과)
+	DiagnosisDetailResponse getDiagnoseDetail(UUID userId);
+
+	/// 청약 진단 결과 v2 (추천 그룹화)
+	DiagnosisResponseV2 getDiagnoseSummaryV2(UUID userId);
+
+}

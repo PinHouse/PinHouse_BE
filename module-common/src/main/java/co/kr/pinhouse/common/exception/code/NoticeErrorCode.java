@@ -1,0 +1,47 @@
+package co.kr.pinhouse.common.exception.code;
+
+import org.springframework.http.HttpStatus;
+
+import co.kr.pinhouse.common.response.ErrorCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public enum NoticeErrorCode implements ErrorCode {
+
+	// ========================
+	// 400 Bad Request
+	// ========================
+	MISSING_PINPOINT_ID(400_001, HttpStatus.BAD_REQUEST, "pinPointId는 필수 입력값입니다"),
+	MISSING_NEARBY_FACILITIES(400_002, HttpStatus.BAD_REQUEST, "주변환경매칭순 정렬을 위해서는 nearbyFacilities가 필수입니다"),
+
+	// ========================
+	// 401 Unauthorized
+	// ========================
+
+	// ========================
+	// 403 Forbidden
+	// ========================
+
+	// ========================
+	// 404 Not Found
+	// ========================
+	NOT_FOUND_NOTICE(404_001, HttpStatus.NOT_FOUND, "해당 공고를 찾을 수 없습니다");
+
+	/**
+	 * 에러 코드 (고유값)
+	 */
+	private final Integer code;
+
+	/**
+	 * HTTP 상태 코드
+	 */
+	private final HttpStatus httpStatus;
+
+	/**
+	 * 에러 메시지
+	 */
+	private final String message;
+
+}

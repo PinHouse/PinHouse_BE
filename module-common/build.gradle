@@ -1,0 +1,16 @@
+dependencies {
+    // 하위 공통 계약 및 순수 유틸
+    implementation 'org.springframework:spring-web'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'io.micrometer:micrometer-commons'
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.8.6'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
