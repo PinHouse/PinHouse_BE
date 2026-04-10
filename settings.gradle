@@ -1,1 +1,9 @@
-rootProject.name = 'server'
+rootProject.name = 'pinhouse'
+
+// 멀티모듈 정의
+include 'module-common'
+include 'module-domain'
+include 'module-infrastructure'
+include 'module-security'
+include 'module-presentation'
+include 'module-app'
