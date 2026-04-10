@@ -39,7 +39,7 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-22.04
-    if: ${{ !github.event.created }}
+    if: always()
     environment: PinHouse_prod
     permissions:
       contents: read
