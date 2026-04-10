@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - refactor/프로젝트-구조-변경
 
 permissions:
   contents: read
@@ -31,6 +30,7 @@ jobs:
     name: lint
     runs-on: ubuntu-22.04
     if: ${{ !github.event.created }}
+    environment: PinHouse_prod
     permissions:
       contents: read
       checks: write
@@ -66,6 +66,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     if: success()
+    environment: PinHouse_prod
     permissions:
       contents: read
       id-token: write
