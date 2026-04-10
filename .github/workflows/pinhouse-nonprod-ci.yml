@@ -31,7 +31,7 @@ env:
   ARTIFACT_REGISTRY_IMAGE: pinhouse-server
 
   # Discord 설정
-  DISCORD_WEBHOOK_NON_PROD_URL: ${{ secrets.DISCORD_WEBHOOK_NON_PROD_URL }}
+  DISCORD_WEBHOOK_NON_PROD_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
   DISCORD_AVATAR_URL: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
 
@@ -125,3 +125,33 @@ jobs:
             ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:${{ env.IMAGE_TAG }}
             ${{ env.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/${{ env.ARTIFACT_REGISTRY_IMAGE }}:latest
           provenance: false
+
+  # 디스코드 알림
+  notify-ci:
+    name: notify-ci
+    runs-on: ubuntu-22.04
+    needs: [ lint, build ]
+    if: always()
+    environment: ${{ startsWith(github.ref_name, 'release/') && 'PinHouse_stg' || 'PinHouse_dev' }}
+    steps:
+      - name: Discord 빌드 알림
+        uses: sarisia/actions-status-discord@v1
+        with:
+          status: ${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 'success' || 'failure' }}
+          webhook: ${{ env.DISCORD_WEBHOOK_NON_PROD_URL }}
+          title: "배포(CI) 결과 [${{ (needs.lint.result == 'success' && needs.build.result == 'success') && '✅성공' || '❌실패' }}]"
+          description: |
+            **브랜치**: `${{ env.BRANCH_NAME }}`
+            **환경**: ${{ env.ENV_TYPE }}
+
+            **📊 상세 결과**:
+            - Lint: ${{ needs.lint.result == 'success' && '✅' || '❌' }}
+            - Build: ${{ needs.build.result == 'success' && '✅' || '❌' }}
+
+            **🐳 Docker 이미지**: `${{ needs.build.outputs.image_tag }}`
+
+            **🔗 링크**: [커밋 확인하기](${{ github.event.repository.html_url }}/commit/${{ github.sha }})
+
+          color: "${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 65280 || 16711680 }}"
+          username: GitHub BE Non-Prod CI Bot
+          avatar_url: ${{ env.DISCORD_AVATAR_URL }}
