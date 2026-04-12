@@ -23,7 +23,7 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // Google Cloud Storage
-    implementation platform('com.google.cloud:libraries-bom:26.48.0')
+    implementation platform('com.google.cloud:libraries-bom:26.79.0')
     implementation 'com.google.cloud:google-cloud-storage'
 }
 
