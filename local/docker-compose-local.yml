@@ -65,6 +65,7 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
     ports:
       - "9090:9090"
     networks:
@@ -89,22 +90,6 @@ services:
     depends_on:
       - prometheus
       - tempo
-    restart: unless-stopped
-
-  # AlertManager
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: pinhouse-alertmanager
-    volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-      - alertmanager-data:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-    ports:
-      - "9093:9093"
-    networks:
-      - monitoring
     restart: unless-stopped
 
   # Alloy
@@ -190,5 +175,4 @@ volumes:
   grafana-data:
   mysql-data:
   alloy-data:
-  alertmanager-data:
   gcs-data:

@@ -45,10 +45,6 @@ pattern_ingester:
       kvstore:
         store: inmemory
 
-# 알러트
-ruler:
-  alertmanager_url: http://alertmanager:9093
-
 # 로컬 개발 환경에서는 제한을 완화
 limits_config:
   reject_old_samples: true
