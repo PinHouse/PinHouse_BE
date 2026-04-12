@@ -35,6 +35,23 @@ services:
     networks:
       - monitoring
 
+  # GCS Emulator (fake-gcs-server)
+  gcs-emulator:
+    image: fsouza/fake-gcs-server:1.49.2
+    container_name: pinhouse-gcs-emulator
+    ports:
+      - '4443:4443'
+    command:
+      - -scheme=http
+      - -host=0.0.0.0
+      - -port=4443
+      - -external-url=http://localhost:4443
+    volumes:
+      - gcs-data:/data
+    networks:
+      - monitoring
+    restart: unless-stopped
+
   # 프로메테우스
   prometheus:
     image: prom/prometheus:latest
@@ -174,3 +191,4 @@ volumes:
   mysql-data:
   alloy-data:
   alertmanager-data:
+  gcs-data:

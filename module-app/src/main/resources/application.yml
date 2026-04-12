@@ -125,16 +125,13 @@ auth:
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
 
-# AWS 설정
-aws:
-  s3:
-    bucket: ${S3_BUCKET}
-    region: ${S3_REGION}
-    access-key: ${S3_ACCESS_KEY}
-    secret-key: ${S3_SECRET_KEY}
-    presigned-url:
-      max-file-size-mb: 5
-      expiration-minutes: 10
+# Google Cloud Storage 설정
+gcs:
+  project-id: ${GCS_PROJECT_ID}
+  bucket: ${GCS_BUCKET}
+  presigned-url:
+    max-file-size-mb: 5
+    expiration-minutes: 10
 
 # Logging 설정
 logging:
@@ -171,3 +168,14 @@ management:
   otlp:
     tracing:
       endpoint: ${MANAGEMENT_OTLP_TRACING_ENDPOINT}
+
+---
+# Local Profile - GCS Emulator
+spring:
+  config:
+    activate:
+      on-profile: local
+
+gcs:
+  emulator:
+    host: http://localhost:4443
