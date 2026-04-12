@@ -1,5 +1,7 @@
 package co.kr.pinhouse.infrastructure.housing.complex.external;
 
+import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -7,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.web.util.UriUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,20 +47,14 @@ public class OdsayUtil implements DistanceUtil {
 			throw new CustomException(ComplexErrorCode.ODSAY_INVALID_API_KEY);
 		}
 
-		String encodedApiKey = UriUtils.encodeQueryParam(normalizedApiKey, StandardCharsets.UTF_8);
-		String uri = UriComponentsBuilder.fromUriString(ODSAY_PATH_URL)
-			.queryParam("SX", startX)
-			.queryParam("SY", startY)
-			.queryParam("EX", endX)
-			.queryParam("EY", endY)
-			.queryParam("apiKey", encodedApiKey)
-			.build(true)
-			.toUriString();
+		/// ODsay 안내에 따라 API Key는 1회 인코딩 후 직접 URI에 반영
+		String encodedApiKey = encodeApiKey(normalizedApiKey);
+		URI requestUri = URI.create(buildRequestUri(startY, startX, endY, endX, encodedApiKey));
 
 		/// 값 호출
 		try {
 			String response = webClient.get()
-				.uri(uri)
+				.uri(requestUri)
 				.retrieve()
 				.bodyToMono(String.class)
 				.onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
@@ -152,6 +147,7 @@ public class OdsayUtil implements DistanceUtil {
 		return lower.contains("apikey")
 			|| lower.contains("api key")
 			|| lower.contains("access key")
+			|| (lower.contains("key") && lower.contains("invalid"))
 			|| (lower.contains("key") && lower.contains("failed"));
 	}
 
@@ -173,6 +169,23 @@ public class OdsayUtil implements DistanceUtil {
 		}
 
 		return null;
+	}
+
+	/// API Key를 한 번만 인코딩하고 공백은 + 로 통일
+	private String encodeApiKey(String normalizedApiKey) {
+		return URLEncoder.encode(normalizedApiKey, StandardCharsets.UTF_8)
+			.replace(" ", "+");
+	}
+
+	/// WebClient가 재인코딩하지 않도록 완성된 URI를 직접 생성
+	private String buildRequestUri(double startY, double startX, double endY, double endX, String encodedApiKey) {
+		return UriComponentsBuilder.fromUriString(ODSAY_PATH_URL)
+			.queryParam("SX", startX)
+			.queryParam("SY", startY)
+			.queryParam("EX", endX)
+			.queryParam("EY", endY)
+			.build(true)
+			.toUriString() + "&apiKey=" + encodedApiKey;
 	}
 
 	/// API Key 앞뒤 공백과 감싼 따옴표 제거
