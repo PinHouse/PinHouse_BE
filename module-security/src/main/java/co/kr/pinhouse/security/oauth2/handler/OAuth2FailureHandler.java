@@ -3,13 +3,13 @@ package co.kr.pinhouse.security.oauth2.handler;
 import java.io.IOException;
 import java.time.Duration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.util.KeyUtil;
+import co.kr.pinhouse.common.util.RedirectUrlResolver;
 import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +25,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 	/// 레디스 의존성 도입
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final KeyUtil keyUtil;
-
-	@Value("${cors.front.redirect}")
-	public String redirectPath;
+	private final RedirectUrlResolver redirectUrlResolver;
 
 	/**
 	 * 실패 핸들러 예외 처리
@@ -48,7 +46,8 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 			/// 레디스에 값 추가( 유효시간 5분 )
 			redisTemplate.opsForValue().set(tempUserKey, userInfo, Duration.ofMinutes(5));
 
-			String extraInfoUrl = redirectPath + "/signup?state=" + tempUserKey;
+			/// 동적으로 리다이렉트 URL 결정
+			String extraInfoUrl = redirectUrlResolver.resolveRedirectUrlWithPath(request, "/signup?state=" + tempUserKey);
 
 			/// 응답을 리다이렉트
 			response.sendRedirect(extraInfoUrl);
