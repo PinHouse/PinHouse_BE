@@ -1,9 +1,13 @@
 package co.kr.pinhouse.infrastructure.housing.complex.external;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 public class OdsayUtil implements DistanceUtil {
 
 	private static final ObjectMapper OM = new ObjectMapper();
+	private static final String ODSAY_PATH_URL = "https://api.odsay.com/v1/api/searchPubTransPathT";
 	private final WebClient webClient;
+
 	@Value("${odsay.apiKey}")
 	private String apiKey;
 
@@ -34,13 +40,20 @@ public class OdsayUtil implements DistanceUtil {
 	@Override
 	public PathResult findPathResult(double startY, double startX, double endY, double endX) {
 
-		String uri = UriComponentsBuilder.fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
+		String normalizedApiKey = normalizeApiKey(apiKey);
+		if (normalizedApiKey == null || normalizedApiKey.isBlank()) {
+			log.error("ODsay API Key가 비어 있습니다");
+			throw new CustomException(ComplexErrorCode.ODSAY_INVALID_API_KEY);
+		}
+
+		String encodedApiKey = UriUtils.encodeQueryParam(normalizedApiKey, StandardCharsets.UTF_8);
+		String uri = UriComponentsBuilder.fromUriString(ODSAY_PATH_URL)
 			.queryParam("SX", startX)
 			.queryParam("SY", startY)
 			.queryParam("EX", endX)
 			.queryParam("EY", endY)
-			.queryParam("apiKey", apiKey)
-			.build()
+			.queryParam("apiKey", encodedApiKey)
+			.build(true)
 			.toUriString();
 
 		/// 값 호출
@@ -52,8 +65,15 @@ public class OdsayUtil implements DistanceUtil {
 				.onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
 				.block(); // 동기
 
+			if (response == null || response.isBlank()) {
+				log.error("ODsay 응답 본문이 비어 있습니다");
+				throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
+			}
+
 			/// 자동 판별
 			JsonNode root = OM.readTree(response);
+			handleOdsayError(root);
+			ensurePathExists(root);
 
 			int searchType = detectSearchType(root);
 
@@ -66,7 +86,10 @@ public class OdsayUtil implements DistanceUtil {
 				return InterCityResultParser.parse(root);
 			}
 
+		} catch (CustomException e) {
+			throw e;
 		} catch (Exception e) {
+			log.error("ODsay 응답 파싱에 실패했습니다", e);
 			throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
 		}
 
@@ -89,6 +112,85 @@ public class OdsayUtil implements DistanceUtil {
 		boolean hasIntercityHints =
 			result.has("trainCount") || result.has("airCount") || result.has("mixedCount");
 		return hasIntercityHints ? 1 : 0;
+	}
+
+	/// ODsay 에러 응답을 비즈니스 예외로 변환
+	private void handleOdsayError(JsonNode root) {
+		JsonNode errorNode = root.path("error");
+		if (errorNode.isMissingNode() || errorNode.isNull() || errorNode.size() == 0) {
+			return;
+		}
+
+		String errorCode = readText(errorNode, "code");
+		String errorMessage = firstNonBlank(
+			readText(errorNode, "msg"),
+			readText(errorNode, "message"),
+			errorNode.toString()
+		);
+
+		log.error("ODsay 에러 응답 수신 - code={}, message={}", errorCode, errorMessage);
+
+		if (isInvalidApiKey(errorCode, errorMessage)) {
+			throw new CustomException(ComplexErrorCode.ODSAY_INVALID_API_KEY);
+		}
+
+		throw new CustomException(ComplexErrorCode.ODSAY_ERROR_RESPONSE);
+	}
+
+	/// 응답에 실제 경로 목록이 존재하는지 검증
+	private void ensurePathExists(JsonNode root) {
+		JsonNode paths = root.path("result").path("path");
+		if (!paths.isArray() || paths.isEmpty()) {
+			log.warn("ODsay가 요청 좌표에 대한 대중교통 경로를 반환하지 않았습니다");
+			throw new CustomException(ComplexErrorCode.NOT_FOUND_TRANSIT_ROUTE);
+		}
+	}
+
+	private boolean isInvalidApiKey(String errorCode, String errorMessage) {
+		String normalized = firstNonBlank(errorCode, "") + " " + firstNonBlank(errorMessage, "");
+		String lower = normalized.toLowerCase(Locale.ROOT);
+		return lower.contains("apikey")
+			|| lower.contains("api key")
+			|| lower.contains("access key")
+			|| (lower.contains("key") && lower.contains("failed"));
+	}
+
+	private String readText(JsonNode node, String fieldName) {
+		JsonNode fieldNode = node.path(fieldName);
+		if (fieldNode.isMissingNode() || fieldNode.isNull()) {
+			return null;
+		}
+
+		String value = fieldNode.asText(null);
+		return value == null || value.isBlank() ? null : value;
+	}
+
+	private String firstNonBlank(String... values) {
+		for (String value : values) {
+			if (value != null && !value.isBlank()) {
+				return value;
+			}
+		}
+
+		return null;
+	}
+
+	/// API Key 앞뒤 공백과 감싼 따옴표 제거
+	private String normalizeApiKey(String rawApiKey) {
+		if (rawApiKey == null) {
+			return null;
+		}
+
+		String normalized = rawApiKey.trim();
+		if (normalized.length() >= 2) {
+			boolean wrappedWithDoubleQuotes = normalized.startsWith("\"") && normalized.endsWith("\"");
+			boolean wrappedWithSingleQuotes = normalized.startsWith("'") && normalized.endsWith("'");
+			if (wrappedWithDoubleQuotes || wrappedWithSingleQuotes) {
+				normalized = normalized.substring(1, normalized.length() - 1).trim();
+			}
+		}
+
+		return normalized;
 	}
 
 }

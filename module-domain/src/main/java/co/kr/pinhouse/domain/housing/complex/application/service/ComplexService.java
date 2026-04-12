@@ -486,13 +486,22 @@ public class ComplexService implements ComplexUseCase {
 			complexLocation.getLatitude(),
 			complexLocation.getLongitude()
 		);
+		validateTransitRoute(pathResult, complexId, pinPointId);
 
 		/// 결과 매핑
 		return pathMapper.apply(pathResult);
 	}
 
+	/// 계산 결과에 실제 경로 후보가 있는지 검증
+	private void validateTransitRoute(PathResult pathResult, String complexId, String pinPointId) {
+		if (pathResult == null || pathResult.routes() == null || pathResult.routes().isEmpty()) {
+			log.warn("대중교통 경로를 찾지 못했습니다 - complexId={}, pinPointId={}", complexId, pinPointId);
+			throw new CustomException(ComplexErrorCode.NOT_FOUND_TRANSIT_ROUTE);
+		}
+	}
+
 	/// TransitInfo 조회 (임대주택 상세조회용)
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
 	public TransitInfoResponse getTransitInfo(String id, String pinPointId) throws UnsupportedEncodingException {
 
 		/// Redis 캐시에서 RootResult 먼저 확인
@@ -517,7 +526,7 @@ public class ComplexService implements ComplexUseCase {
 
 	/// Segment 리스트 조회 (임대주택 상세조회용) - Deprecated, use getTransitInfo instead
 	@Deprecated
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
 	public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws
 		UnsupportedEncodingException {
 		return calculateTransitRoute(id, pinPointId, pathResult -> {
@@ -528,7 +537,7 @@ public class ComplexService implements ComplexUseCase {
 
 	/// 간편 대중교통 시뮬레이터
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
 	public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
 
 		/// Redis 캐시에서 RootResult 먼저 확인

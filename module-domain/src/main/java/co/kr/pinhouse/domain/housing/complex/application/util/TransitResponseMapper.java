@@ -90,7 +90,7 @@ public class TransitResponseMapper {
 	public RootResult selectBest(PathResult pathResult) {
 
 		/// 없으면 null
-		if (pathResult == null) {
+		if (pathResult == null || pathResult.routes() == null || pathResult.routes().isEmpty()) {
 			return null;
 		}
 
