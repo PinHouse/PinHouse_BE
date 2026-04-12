@@ -17,7 +17,6 @@ public class KeyUtil {
 	/// 예외
 	public static final String HTTP_ERROR_401 = "[HTTP_인증 실패]";
 	public static final String HTTP_ERROR_403 = "[HTTP_인가 실패]";
-	public static final String HTTP_REQ = "[HTTP_요청]";
 	/// 공통 키
 	private static final String SEPARATOR = ":";
 	private static final String DELIMITER = "-";

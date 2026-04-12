@@ -35,6 +35,23 @@ services:
     networks:
       - monitoring
 
+  # GCS Emulator (fake-gcs-server)
+  gcs-emulator:
+    image: fsouza/fake-gcs-server:1.49.2
+    container_name: pinhouse-gcs-emulator
+    ports:
+      - '4443:4443'
+    command:
+      - -scheme=http
+      - -host=0.0.0.0
+      - -port=4443
+      - -external-url=http://localhost:4443
+    volumes:
+      - gcs-data:/data
+    networks:
+      - monitoring
+    restart: unless-stopped
+
   # 프로메테우스
   prometheus:
     image: prom/prometheus:latest
@@ -48,6 +65,7 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
     ports:
       - "9090:9090"
     networks:
@@ -72,22 +90,6 @@ services:
     depends_on:
       - prometheus
       - tempo
-    restart: unless-stopped
-
-  # AlertManager
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: pinhouse-alertmanager
-    volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-      - alertmanager-data:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-    ports:
-      - "9093:9093"
-    networks:
-      - monitoring
     restart: unless-stopped
 
   # Alloy
@@ -173,4 +175,4 @@ volumes:
   grafana-data:
   mysql-data:
   alloy-data:
-  alertmanager-data:
+  gcs-data:

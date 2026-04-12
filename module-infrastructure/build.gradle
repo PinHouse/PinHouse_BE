@@ -22,10 +22,9 @@ dependencies {
     implementation 'io.opentelemetry.instrumentation:opentelemetry-mongo-3.1'
     compileOnly 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
-    // 이미지 저장소
-    implementation platform('software.amazon.awssdk:bom:2.21.0')
-    implementation 'software.amazon.awssdk:s3'
-    implementation 'software.amazon.awssdk:auth'
+    // Google Cloud Storage
+    implementation platform('com.google.cloud:libraries-bom:26.79.0')
+    implementation 'com.google.cloud:google-cloud-storage'
 }
 
 bootJar {
