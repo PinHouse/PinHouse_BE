@@ -392,21 +392,68 @@ public class NoticeService implements NoticeUseCase {
 			})
 			.collect(Collectors.toList());
 
-		/// ⭐️ 애플리케이션 레벨 정렬 수행
-		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && nearbyFacilities != null
-			&& !nearbyFacilities.isEmpty()) {
-			// 시설 매칭 기반 정렬
-			sortByFacilityMatch(comparisonItems, nearbyFacilities);
-			log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", nearbyFacilities);
-		} else if (finalSortType == UnitTypeSortType.DISTANCE_ASC) {
-			// 거리 기반 정렬
-			sortByDistance(comparisonItems);
-			log.debug("거리순 정렬 완료");
+		/// DB에서 단지별로 다시 group 되기 때문에, 최종 응답 직전 방 목록을 한 번 더 전역 정렬한다.
+		/// 이렇게 해야 단지 경계와 무관하게 "공고 내 모든 방" 기준 순서가 보장된다.
+		switch (finalSortType) {
+			case DEPOSIT_ASC -> {
+				sortByDeposit(comparisonItems);
+				log.debug("보증금순 전역 정렬 완료");
+			}
+			case AREA_DESC -> {
+				sortByArea(comparisonItems);
+				log.debug("면적순 전역 정렬 완료");
+			}
+			case FACILITY_MATCH -> {
+				sortByFacilityMatch(comparisonItems, nearbyFacilities);
+				log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", nearbyFacilities);
+			}
+			case DISTANCE_ASC -> {
+				sortByDistance(comparisonItems);
+				log.debug("거리순 정렬 완료");
+			}
 		}
-		/// 그 외에는 DB에서 이미 정렬되어 왔으므로 순서 유지
 
 		/// DTO 정적 팩토리 메서드로 응답 생성
 		return UnitTypeCompareResponse.from(comparisonItems);
+	}
+
+	/**
+	 * 보증금 기반 전역 정렬
+	 *
+	 * 정렬 우선순위:
+	 * 1. 보증금 (낮은 순)
+	 * 2. 지역 (오름차순)
+	 * 3. 단지명 (오름차순)
+	 * 4. 방 이름 (오름차순)
+	 */
+	private void sortByDeposit(List<UnitTypeCompareResponse.UnitTypeComparisonItem> items) {
+		items.sort(Comparator
+			// 응답 스펙 기준으로 공고 전체 방을 보증금 오름차순으로 다시 정렬
+			.comparingLong(this::extractDeposit)
+			.thenComparing(this::extractComplexAddress)
+			.thenComparing(this::extractComplexName)
+			.thenComparing(this::extractTypeCode)
+		);
+	}
+
+	/**
+	 * 면적 기반 전역 정렬
+	 *
+	 * 정렬 우선순위:
+	 * 1. 면적 (넓은 순)
+	 * 2. 지역 (오름차순)
+	 * 3. 단지명 (오름차순)
+	 * 4. 방 이름 (오름차순)
+	 */
+	private void sortByArea(List<UnitTypeCompareResponse.UnitTypeComparisonItem> items) {
+		items.sort(Comparator
+			// 단지별 묶음을 깨고 공고 전체 방을 면적 내림차순으로 다시 정렬
+			.comparingDouble(this::extractArea)
+			.reversed()
+			.thenComparing(this::extractComplexAddress)
+			.thenComparing(this::extractComplexName)
+			.thenComparing(this::extractTypeCode)
+		);
 	}
 
 	/**
@@ -436,25 +483,13 @@ public class NoticeService implements NoticeUseCase {
 					.count();
 			}).reversed()
 			// 2차: 보증금 (낮은 순 = 오름차순)
-			.thenComparing(item ->
-				item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
-			)
+			.thenComparingLong(this::extractDeposit)
 			// 3차: 지역 (오름차순)
-			.thenComparing(item ->
-				item.complex() != null && item.complex().address() != null
-					? item.complex().address()
-					: ""
-			)
+			.thenComparing(this::extractComplexAddress)
 			// 4차: 단지명 (오름차순)
-			.thenComparing(item ->
-				item.complex() != null && item.complex().name() != null
-					? item.complex().name()
-					: ""
-			)
+			.thenComparing(this::extractComplexName)
 			// 5차: 방 이름 (오름차순)
-			.thenComparing(item ->
-				item.typeCode() != null ? item.typeCode() : ""
-			)
+			.thenComparing(this::extractTypeCode)
 		);
 	}
 
@@ -480,26 +515,43 @@ public class NoticeService implements NoticeUseCase {
 				return parseTimeToMinutes(totalTimeStr);
 			})
 			// 2차: 보증금 (낮은 순)
-			.thenComparing(item ->
-				item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE
-			)
+			.thenComparingLong(this::extractDeposit)
 			// 3차: 지역 (오름차순)
-			.thenComparing(item ->
-				item.complex() != null && item.complex().address() != null
-					? item.complex().address()
-					: ""
-			)
+			.thenComparing(this::extractComplexAddress)
 			// 4차: 단지명 (오름차순)
-			.thenComparing(item ->
-				item.complex() != null && item.complex().name() != null
-					? item.complex().name()
-					: ""
-			)
+			.thenComparing(this::extractComplexName)
 			// 5차: 방 이름 (오름차순)
-			.thenComparing(item ->
-				item.typeCode() != null ? item.typeCode() : ""
-			)
+			.thenComparing(this::extractTypeCode)
 		);
+	}
+
+	private long extractDeposit(UnitTypeCompareResponse.UnitTypeComparisonItem item) {
+		// 보증금 정보가 없으면 항상 뒤로 밀리도록 최대값으로 처리
+		return item.cost() != null ? item.cost().totalDeposit() : Long.MAX_VALUE;
+	}
+
+	private double extractArea(UnitTypeCompareResponse.UnitTypeComparisonItem item) {
+		// 면적 정보가 없으면 내림차순 정렬에서 항상 뒤로 밀리도록 최소값으로 처리
+		return item.area() != null ? item.area().exclusiveAreaM2() : Double.NEGATIVE_INFINITY;
+	}
+
+	private String extractComplexAddress(UnitTypeCompareResponse.UnitTypeComparisonItem item) {
+		// tie-break 시 null-safe 하게 비교하기 위한 공통 추출 로직
+		return item.complex() != null && item.complex().address() != null
+			? item.complex().address()
+			: "";
+	}
+
+	private String extractComplexName(UnitTypeCompareResponse.UnitTypeComparisonItem item) {
+		// 단지명이 없으면 빈 문자열로 비교해 정렬 안정성을 유지
+		return item.complex() != null && item.complex().name() != null
+			? item.complex().name()
+			: "";
+	}
+
+	private String extractTypeCode(UnitTypeCompareResponse.UnitTypeComparisonItem item) {
+		// 최종 tie-break 용 방 타입코드
+		return item.typeCode() != null ? item.typeCode() : "";
 	}
 
 	/**
