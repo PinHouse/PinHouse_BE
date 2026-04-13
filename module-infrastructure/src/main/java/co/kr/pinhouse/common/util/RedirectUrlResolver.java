@@ -10,11 +10,14 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class RedirectUrlResolver {
+
+	public static final String REDIRECT_ORIGIN_SESSION_ATTRIBUTE = "PINHOUSE_REDIRECT_ORIGIN";
 
 	@Value("${cors.front.local}")
 	private String frontLocal;
@@ -69,8 +72,17 @@ public class RedirectUrlResolver {
 			return redirectUrl;
 		}
 
+		// OAuth2 인증 시작 시 저장해둔 프론트 Origin이 있으면 그것을 최우선으로 사용
+		String origin = consumeSavedOrigin(request);
+
+		if (isAllowedOrigin(origin)) {
+			String redirectUrl = origin + (path != null ? path : "");
+			log.info("리다이렉트 URL 결정 (세션 저장 Origin) - Origin: {}, URL: {}", origin, redirectUrl);
+			return redirectUrl;
+		}
+
 		// dev/local 프로파일: 동적 결정
-		String origin = extractOriginFromRequest(request);
+		origin = extractOriginFromRequest(request);
 
 		if (isAllowedOrigin(origin)) {
 			String redirectUrl = origin + (path != null ? path : "");
@@ -82,6 +94,24 @@ public class RedirectUrlResolver {
 		String redirectUrl = defaultRedirectUrl + (path != null ? path : "");
 		log.warn("요청 Origin이 허용되지 않음: {}. 기본 URL 사용: {}", origin, redirectUrl);
 		return redirectUrl;
+	}
+
+	/**
+	 * OAuth2 인증 시작 요청의 Origin을 세션에 저장합니다.
+	 *
+	 * @param request HTTP 요청 객체
+	 */
+	public void saveRedirectOrigin(HttpServletRequest request) {
+		String origin = extractOriginFromRequest(request);
+
+		if (!isAllowedOrigin(origin)) {
+			log.debug("저장 가능한 OAuth2 Origin이 없습니다. Origin: {}", origin);
+			return;
+		}
+
+		// OAuth 공급자 페이지를 거쳐 돌아와도 원래 프론트로 복귀할 수 있도록 세션에 보관
+		request.getSession(true).setAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE, origin);
+		log.info("OAuth2 리다이렉트 Origin 저장 - Origin: {}", origin);
 	}
 
 	/**
@@ -105,6 +135,29 @@ public class RedirectUrlResolver {
 		}
 
 		return null;
+	}
+
+	/**
+	 * 세션에 저장된 Origin을 조회 후 제거합니다.
+	 *
+	 * @param request HTTP 요청 객체
+	 * @return 저장된 Origin (없으면 null)
+	 */
+	private String consumeSavedOrigin(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			return null;
+		}
+
+		// 1회성 값으로 사용하고 바로 제거해 이전 로그인 시도의 값이 남지 않게 한다
+		Object savedOrigin = session.getAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
+		session.removeAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
+
+		if (!(savedOrigin instanceof String origin) || origin.isBlank()) {
+			return null;
+		}
+
+		return normalizeOrigin(origin);
 	}
 
 	/**
