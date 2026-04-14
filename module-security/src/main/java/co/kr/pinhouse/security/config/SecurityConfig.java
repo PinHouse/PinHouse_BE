@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -16,6 +17,7 @@ import co.kr.pinhouse.security.jwt.filter.JwtAuthenticationDeniedHandler;
 import co.kr.pinhouse.security.jwt.filter.JwtAuthenticationFailureHandler;
 import co.kr.pinhouse.security.jwt.filter.JwtAuthenticationFilter;
 import co.kr.pinhouse.security.jwt.filter.RequestMatcherHolder;
+import co.kr.pinhouse.security.oauth2.filter.OAuth2AuthorizationRequestOriginFilter;
 import co.kr.pinhouse.security.oauth2.handler.OAuth2FailureHandler;
 import co.kr.pinhouse.security.oauth2.handler.OAuth2SuccessHandler;
 import co.kr.pinhouse.security.oauth2.service.OAuth2UserService;
@@ -34,6 +36,7 @@ public class SecurityConfig {
 
 	/// OAUTH2 관련
 	private final OAuth2UserService oAuth2UserService;
+	private final OAuth2AuthorizationRequestOriginFilter oAuth2AuthorizationRequestOriginFilter;
 	private final OAuth2SuccessHandler oAuth2SuccessHandler;
 	private final OAuth2FailureHandler oAuth2FailureHandler;
 
@@ -68,6 +71,8 @@ public class SecurityConfig {
 				.successHandler(oAuth2SuccessHandler)
 				.failureHandler(oAuth2FailureHandler)
 			)
+			// OAuth2 리다이렉트 직전에 프론트 Origin을 저장하는 필터를 먼저 실행
+			.addFilterBefore(oAuth2AuthorizationRequestOriginFilter, OAuth2AuthorizationRequestRedirectFilter.class)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.exceptionHandling(exceptionConfigurer -> {
 				exceptionConfigurer.authenticationEntryPoint(jwtFailureHandler)

@@ -147,6 +147,8 @@ jobs:
 
             **🐳 Docker 이미지**: `${{ needs.build.outputs.image_tag }}`
 
+            **다음 단계**: ArgoCD에서 배포가 진행됩니다. 배포 결과는 ArgoCD 알림을 확인해주세요.
+
             **🔗 링크**: [커밋 확인하기](${{ github.event.repository.html_url }}/commit/${{ github.sha }})
 
           color: "${{ (needs.lint.result == 'success' && needs.build.result == 'success') && 65280 || 16711680 }}"
