@@ -121,7 +121,8 @@ public class TransitResponseMapper {
 			.toList();
 	}
 
-	/// 출력을 위한 매퍼
+	/// 구 스키마 DistanceResponse용 매퍼.
+	/// 공고/비교 화면이 getEasyDistance에 의존하는 동안만 유지된다.
 	public List<DistanceResponse.TransitResponse> from(RootResult route) {
 
 		/// 출력할 값 리스트
@@ -238,7 +239,8 @@ public class TransitResponseMapper {
 	}
 
 	/**
-	 * TransitInfoResponse 생성 (전체 경로 정보 + 구간별 정보)
+	 * 상세조회용 요약 응답 생성.
+	 * 상위 1개 경로만 골라 총 시간/거리와 색 막대 렌더링용 segments만 만든다.
 	 */
 	public TransitInfoResponse toTransitInfoResponse(RootResult route) {
 		if (route == null) {
@@ -263,6 +265,7 @@ public class TransitResponseMapper {
 
 	/**
 	 * Segments 생성 (색 막대용)
+	 * Complex 상세조회와 TransitRoutesResponse가 공통으로 사용하므로 색상 계산 규칙을 한 곳에 모아둔다.
 	 */
 	public List<TransitRoutesResponse.SegmentResponse> toSegmentResponses(RootResult route) {
 		if (route == null || route.steps() == null) {

@@ -5,7 +5,7 @@ public enum ChipType {
 	WALK("#BBBAC5"),
 	BUS("#BBBBBB"),
 	SUBWAY("#BBBBBB"),
-	TRAIN("BBBBBB"),
+	TRAIN("#BBBBBB"),
 	AIR("#2C7A7B"); // 항공용 컬러/아이콘은 디자인에 맞게 조정
 
 	public final String defaultBg;

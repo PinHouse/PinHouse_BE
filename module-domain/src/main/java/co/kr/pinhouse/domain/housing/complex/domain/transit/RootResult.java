@@ -1,18 +1,10 @@
 package co.kr.pinhouse.domain.housing.complex.domain.transit;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import co.kr.pinhouse.common.exception.code.ComplexErrorCode;
-import co.kr.pinhouse.common.response.CustomException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Builder
 @Schema(name = "[응답][거리] 거리 및 이동 정보 응답", description = "총 소요 시간, 총 요금, 환승 횟수 등을 포함한 거리 응답 DTO입니다.")
 public record RootResult(
@@ -29,78 +21,6 @@ public record RootResult(
 	@Schema(description = "구간별 이동 단계 리스트")
 	List<DistanceStep> steps
 ) {
-
-	/// 정적 팩토리 메서드
-	public static List<RootResult> of(String json) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(json);
-
-			List<RootResult> responses = new ArrayList<>();
-			for (JsonNode pathNode : root.path("result").path("path")) {
-				JsonNode info = pathNode.path("info");
-
-				// steps 변환
-				List<DistanceStep> steps = new ArrayList<>();
-				for (JsonNode sub : pathNode.path("subPath")) {
-					int trafficType = sub.path("trafficType").asInt();
-					TransportType type = TransportType.fromTrafficType(trafficType);
-
-					String lineInfo = null;
-					SubwayLineType subwayLine = null;
-					BusRouteType busRouteType = null;
-
-					if (type == TransportType.BUS && sub.has("lane")) {
-						lineInfo = sub.path("lane").get(0).path("busNo").asText();
-						String busTypeStr = sub.path("lane").get(0).path("type").asText(null);
-						busRouteType = BusRouteType.from(busTypeStr);
-					} else if (type == TransportType.SUBWAY && sub.has("lane")) {
-						lineInfo = sub.path("lane").get(0).path("name").asText();
-						String subwayCodeStr = sub.path("lane").get(0).path("subwayCode").asText(null);
-						subwayLine = SubwayLineType.from(subwayCodeStr);
-					}
-
-					// LineInfo 생성
-					LineInfo line = null;
-					if (subwayLine != null) {
-						line = subwayLine.toLineInfo();
-					} else if (busRouteType != null) {
-						line = busRouteType.toLineInfo();
-					}
-
-					steps.add(DistanceStep.builder()
-						.type(type)
-						.time(sub.path("sectionTime").asInt())
-						.distance(sub.path("distance").asInt())
-						.startName(sub.path("startName").asText(null))
-						.endName(sub.path("endName").asText(null))
-						.lineInfo(lineInfo)
-						.line(line)
-						.subwayLine(subwayLine)
-						.busRouteType(busRouteType)
-						.trainType(null)
-						.expressBusType(null)
-						.build());
-				}
-
-				/// ODsay info.totalDistance 사용
-				int totalDistance = info.path("totalDistance").asInt(0);
-
-				RootResult response = RootResult.builder()
-					.totalTime(info.path("totalTime").asInt())
-					.totalPayment(info.path("payment").asInt())
-					.totalDistance(totalDistance)
-					.steps(steps)
-					.build();
-
-				responses.add(response);
-			}
-			return responses;
-		} catch (Exception e) {
-			throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
-		}
-
-	}
 
 	public enum TransportType {
 		WALK, BUS, SUBWAY, TRAIN, AIR, UNKNOWN;
@@ -148,6 +68,7 @@ public record RootResult(
 		@Schema(description = "통합 노선 정보 (코드, 이름, 색상)")
 		LineInfo line,
 
+		// 아래 메타 필드는 응답 직렬화용이 아니라 색상/라벨 계산을 위한 내부 보조 데이터입니다.
 		@Schema(hidden = true)
 		@com.fasterxml.jackson.annotation.JsonIgnore
 		SubwayLineType subwayLine,
