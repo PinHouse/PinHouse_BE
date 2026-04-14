@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 /**
- * 대중교통 경로 전체 정보 (총 시간/거리 + 구간별 정보)
+ * 임대주택 상세조회에서 사용하는 요약 교통 응답.
+ * 최적 1개 경로만 선택해 총 시간/거리와 색 막대용 segments를 내려준다.
  */
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)

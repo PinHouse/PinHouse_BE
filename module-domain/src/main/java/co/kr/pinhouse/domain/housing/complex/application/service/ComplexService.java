@@ -75,7 +75,7 @@ public class ComplexService implements ComplexUseCase {
 		/// 주변 인프라 조회
 		NoticeFacilityListResponse nearFacilities = facilityService.getNearFacilities(complex.getId());
 
-		/// 거리 계산 - TransitInfo 생성
+		/// 상세조회는 상위 1개 경로만 요약한 경량 응답을 사용한다.
 		TransitInfoResponse transitInfo = getTransitInfo(id, pinPointId);
 
 		/// 리턴
@@ -113,7 +113,7 @@ public class ComplexService implements ComplexUseCase {
 			.toList();
 	}
 
-	/// 대중교통 시뮬레이터 (새 스키마 - 3개 경로 한 번에)
+	/// 대중교통 전용 API는 상위 3개 경로와 step 정보를 모두 내려준다.
 	@Override
 	@Transactional
 	public TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException {
@@ -479,7 +479,7 @@ public class ComplexService implements ComplexUseCase {
 		PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 		Location pinPointLocation = pinPoint.getLocation();
 
-		/// 대중교통 경로 계산
+		/// 실제 경로 조회는 ODsay 응답을 PathResult로 표준화한 뒤 후속 매퍼에 위임한다.
 		PathResult pathResult = distanceUtil.findPathResult(
 			pinPointLocation.getLatitude(),
 			pinPointLocation.getLongitude(),
@@ -500,42 +500,34 @@ public class ComplexService implements ComplexUseCase {
 		}
 	}
 
-	/// TransitInfo 조회 (임대주택 상세조회용)
+	/// 임대주택 상세조회용 요약 교통 정보.
+	/// 색상 정보를 잃지 않도록 TransitInfoResponse 자체를 캐시한다.
 	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
 	public TransitInfoResponse getTransitInfo(String id, String pinPointId) throws UnsupportedEncodingException {
 
-		/// Redis 캐시에서 RootResult 먼저 확인
-		co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult cachedRootResult =
-			distanceCacheService.getRootResult(id, pinPointId);
+		/// 상세조회는 색상/segment 정보가 직렬화된 TransitInfo 캐시를 우선 사용한다.
+		TransitInfoResponse cachedTransitInfo = distanceCacheService.getTransitInfo(id, pinPointId);
 
-		if (cachedRootResult != null) {
-			log.debug("Using cached RootResult for TransitInfo - complexId={}, pinPointId={}", id, pinPointId);
-			return mapper.toTransitInfoResponse(cachedRootResult);
+		if (cachedTransitInfo != null) {
+			log.debug("Using cached TransitInfo for complexId={}, pinPointId={}", id, pinPointId);
+			return cachedTransitInfo;
 		}
 
-		/// 캐시가 없으면 템플릿 메서드를 사용하여 경로 계산
+		/// 상세조회 캐시가 없으면 경로를 다시 계산해 색상 포함 응답을 생성한다.
 		return calculateTransitRoute(id, pinPointId, pathResult -> {
 			RootResult rootResult = mapper.selectBest(pathResult);
+			TransitInfoResponse transitInfo = mapper.toTransitInfoResponse(rootResult);
 
-			/// RootResult를 Redis에 캐싱
+			/// 기존 공고/비교 화면 재사용을 위해 RootResult도 함께 캐싱한다.
 			distanceCacheService.cacheRootResult(id, pinPointId, rootResult);
+			distanceCacheService.cacheTransitInfo(id, pinPointId, transitInfo);
 
-			return mapper.toTransitInfoResponse(rootResult);
+			return transitInfo;
 		});
 	}
 
-	/// Segment 리스트 조회 (임대주택 상세조회용) - Deprecated, use getTransitInfo instead
-	@Deprecated
-	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
-	public List<TransitRoutesResponse.SegmentResponse> getSegments(String id, String pinPointId) throws
-		UnsupportedEncodingException {
-		return calculateTransitRoute(id, pinPointId, pathResult -> {
-			RootResult rootResult = mapper.selectBest(pathResult);
-			return mapper.toSegmentResponses(rootResult);
-		});
-	}
-
-	/// 간편 대중교통 시뮬레이터
+	/// 공고/비교 화면에서 아직 사용하는 구 스키마.
+	/// 현재 호출부는 대부분 totalTimeMinutes만 사용하므로, 신규 화면은 getTransitInfo/getDistanceV2로 유지한다.
 	@Override
 	@Transactional(readOnly = true, noRollbackFor = CustomException.class)
 	public DistanceResponse getEasyDistance(String id, String pinPointId) throws UnsupportedEncodingException {
@@ -553,9 +545,11 @@ public class ComplexService implements ComplexUseCase {
 		/// 캐시가 없으면 템플릿 메서드를 사용하여 경로 계산
 		DistanceResponse distance = calculateTransitRoute(id, pinPointId, pathResult -> {
 			RootResult rootResult = mapper.selectBest(pathResult);
+			TransitInfoResponse transitInfo = mapper.toTransitInfoResponse(rootResult);
 
 			/// RootResult를 Redis에 캐싱
 			distanceCacheService.cacheRootResult(id, pinPointId, rootResult);
+			distanceCacheService.cacheTransitInfo(id, pinPointId, transitInfo);
 
 			List<DistanceResponse.TransitResponse> routes = mapper.from(rootResult);
 			return DistanceResponse.from(rootResult, routes);

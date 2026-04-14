@@ -15,6 +15,10 @@ import co.kr.pinhouse.domain.housing.complex.domain.transit.TrainType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+/**
+ * 공고/비교 서비스에서 아직 사용하는 구 교통 응답 DTO.
+ * 외부 API 응답용이라기보다 캐시된 RootResult에서 총 시간과 레거시 chip 정보를 재조립하는 용도에 가깝다.
+ */
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record DistanceResponse(
@@ -32,7 +36,7 @@ public record DistanceResponse(
 	List<TransitResponse> routes
 ) {
 
-	/// 정적 팩토리 메서드
+	/// NoticeService 등 기존 호출부가 쓰는 경량 응답으로 변환
 	public static DistanceResponse from(RootResult rootResult, List<TransitResponse> routes) {
 		int minutes = rootResult.totalTime();
 		return DistanceResponse.builder()

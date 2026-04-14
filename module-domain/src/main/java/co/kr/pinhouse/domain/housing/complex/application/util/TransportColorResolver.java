@@ -32,6 +32,11 @@ public final class TransportColorResolver {
 			return type.defaultBg;
 		}
 
+		// 파서가 LineInfo에 색상을 채운 경우 이를 우선 사용
+		if (step.line() != null && step.line().bgColorHex() != null && !step.line().bgColorHex().isBlank()) {
+			return step.line().bgColorHex();
+		}
+
 		// SUBWAY: subwayLine enum의 색상 사용
 		if (type == ChipType.SUBWAY) {
 			if (step.subwayLine() != null) {

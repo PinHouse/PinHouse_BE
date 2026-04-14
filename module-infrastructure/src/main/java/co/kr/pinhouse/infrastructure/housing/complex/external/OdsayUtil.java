@@ -94,7 +94,9 @@ public class OdsayUtil implements DistanceUtil {
 	//  내부 로직
 	// =================
 
-	/// 응답의 도시내/ 도시간 기반 판별.
+	/// 응답의 도시내/도시간 기반 판별.
+	/// searchType=1/2인 도시간 경로도 세부 subPath에는 지하철/시내버스가 섞여 들어올 수 있으므로,
+	/// 개별 교통수단이 아니라 최상위 result 기준으로 파서를 결정한다.
 	private int detectSearchType(JsonNode root) {
 		JsonNode result = root.path("result");
 
