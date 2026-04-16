@@ -22,7 +22,7 @@ import io.swagger.v3.oas.models.media.Schema;
 
 @Configuration
 @Profile("dev")
-@OpenAPIDefinition(servers = {@Server(url = "https://api.pinhouse.cloud", description = "PinHouse 개발 서버")})
+@OpenAPIDefinition(servers = {@Server(url = "https://api.dev.pinhouse.co.kr", description = "PinHouse 개발 서버")})
 public class SwaggerConfig {
 
 	@Bean
