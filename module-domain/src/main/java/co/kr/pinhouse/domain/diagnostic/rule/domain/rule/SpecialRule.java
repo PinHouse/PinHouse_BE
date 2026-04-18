@@ -43,6 +43,7 @@ public class SpecialRule implements Rule {
 			/// 사용자가 가진 특수계층을 SupplyType으로 매핑
 			List<SupplyType> ownedTypes = specialCategory.stream()
 				.map(SpecialCategory::toSupplyType)
+				.filter(java.util.Objects::nonNull)
 				.toList();
 
 			/// 존재하는 계층은 냅두고, 없는 것은 삭제하기
@@ -76,6 +77,6 @@ public class SpecialRule implements Rule {
 
 	@Override
 	public String code() {
-		return "";
+		return "SPECIAL_CATEGORY";
 	}
 }

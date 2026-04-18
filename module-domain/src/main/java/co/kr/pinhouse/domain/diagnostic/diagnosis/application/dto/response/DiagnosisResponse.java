@@ -34,6 +34,7 @@ public record DiagnosisResponse(
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
 			.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
+			.distinct()
 			.toList();
 
 		return DiagnosisResponse.builder()

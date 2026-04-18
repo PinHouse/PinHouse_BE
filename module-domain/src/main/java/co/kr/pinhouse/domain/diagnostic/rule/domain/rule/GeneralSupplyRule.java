@@ -38,8 +38,7 @@ public class GeneralSupplyRule implements Rule {
 
 	/// 청약통장이 필요한 임대주택 유형
 	private static final Set<NoticeType> SUBSCRIPTION_REQUIRED_TYPES = Set.of(
-		NoticeType.PUBLIC_RENTAL,        // 공공임대 (분양전환 가능)
-		NoticeType.PUBLIC_INTEGRATED     // 통합공공임대 (분양전환 가능)
+		NoticeType.PUBLIC_RENTAL         // 공공임대 (분양전환 가능)
 	);
 	private final PolicyUseCase policyUseCase;
 

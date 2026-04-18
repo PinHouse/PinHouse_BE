@@ -13,17 +13,12 @@ import lombok.Builder;
 @Builder
 public record SupplyRentalCandidate(
 	SupplyType supplyType,
-	NoticeType noticeType
+	NoticeType noticeType,
+	CandidatePolicyKey policyKey
 ) {
 
 	/// 정적 팩토리 메서드 (기본 값)
 	public static List<SupplyRentalCandidate> basic() {
-
-		/// 모든 값 가져오기
-		List<SupplyType> supplyTypes = SupplyType.getAllTypes();
-
-		/// 모든 값 가져오기
-		List<NoticeType> noticeTypes = NoticeType.getAllTypes();
 
 		List<SupplyRentalCandidate> candidates = new ArrayList<>();
 
@@ -52,6 +47,7 @@ public record SupplyRentalCandidate(
 		return SupplyRentalCandidate.builder()
 			.supplyType(supplyType)
 			.noticeType(noticeType)
+			.policyKey(CandidatePolicyKey.resolve(noticeType, supplyType))
 			.build();
 	}
 

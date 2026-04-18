@@ -2,7 +2,6 @@ package co.kr.pinhouse.domain.diagnostic.rule.domain.rule;
 
 import static co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.LONG_TERM_JEONSE;
 import static co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.NATIONAL_RENTAL;
-import static co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_INTEGRATED;
 import static co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeType.PUBLIC_RENTAL;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class AccountRule implements Rule {
 	/// 청약통장이 없으면 불가능한 목록들
 	private static final List<NoticeType> NO_ACCOUNT_ALLOWED = List.of(
 		NATIONAL_RENTAL,
-		PUBLIC_INTEGRATED,
 		LONG_TERM_JEONSE,
 		PUBLIC_RENTAL
 	);
@@ -83,6 +81,7 @@ public class AccountRule implements Rule {
 
 			/// 청약통장 없는 경우, NO_ACCOUNT_ALLOWED에 해당하는 RentalType 제거
 			candidates.removeIf(c -> NO_ACCOUNT_ALLOWED.contains(c.noticeType()));
+			ctx.setCurrentCandidates(candidates);
 
 			return RuleResult.pass(code(),
 				"청약통장 미보유로 인한 유형 제거 완료",

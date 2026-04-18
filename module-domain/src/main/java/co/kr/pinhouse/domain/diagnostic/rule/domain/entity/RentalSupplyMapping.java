@@ -9,26 +9,35 @@ public class RentalSupplyMapping {
 
 	public static final Map<NoticeType, List<SupplyType>> RENTAL_SUPPLY_MAP = Map.of(
 		NoticeType.PUBLIC_INTEGRATED, List.of(
-			SupplyType.SPECIAL,         // 미성년자
 			SupplyType.YOUTH_SPECIAL,
 			SupplyType.ELDER_SPECIAL,
 			SupplyType.NEWCOUPLE_SPECIAL,
 			SupplyType.SINGLE_PARENT_SPECIAL,
 			SupplyType.GENERAL,
 			SupplyType.MULTICHILD_SPECIAL,
+			SupplyType.ELDER_SUPPORT_SPECIAL,
+			SupplyType.DEMOLITION,
+			SupplyType.NATIONAL_MERIT,
+			SupplyType.LONG_SERVICE_VETERAN,
+			SupplyType.NORTH_DEFECTOR,
+			SupplyType.COMFORT_WOMAN_VICTIM,
+			SupplyType.DISABLED,
+			SupplyType.NON_HOUSING_RESIDENT,
+			SupplyType.PERMANENT_LEASE_EVICTEE
+		),
+		NoticeType.NATIONAL_RENTAL, List.of(
+			SupplyType.NEWCOUPLE_SPECIAL,
+			SupplyType.SINGLE_PARENT_SPECIAL,
+			SupplyType.MULTICHILD_SPECIAL,
+			SupplyType.ELDER_SUPPORT_SPECIAL,
+			SupplyType.GENERAL,
 			SupplyType.DEMOLITION,
 			SupplyType.NATIONAL_MERIT,
 			SupplyType.LONG_SERVICE_VETERAN,
 			SupplyType.NORTH_DEFECTOR,
 			SupplyType.DISABLED,
-			SupplyType.NON_HOUSING_RESIDENT
-		),
-		NoticeType.NATIONAL_RENTAL, List.of(
-			SupplyType.SPECIAL,         // 미성년자
-			SupplyType.NEWCOUPLE_SPECIAL,
-			SupplyType.SINGLE_PARENT_SPECIAL,
-			SupplyType.GENERAL,
-			SupplyType.DEMOLITION,
+			SupplyType.PERMANENT_LEASE_EVICTEE,
+			SupplyType.TEMPORARY_STRUCTURE_RESIDENT,
 			SupplyType.UNAUTHORIZED_BUILDING_TENANT
 		),
 		NoticeType.HAPPY_HOUSING, List.of(
@@ -36,11 +45,7 @@ public class RentalSupplyMapping {
 			SupplyType.YOUTH_SPECIAL,
 			SupplyType.NEWCOUPLE_SPECIAL,
 			SupplyType.SINGLE_PARENT_SPECIAL,
-			SupplyType.ELDER_SPECIAL,
-			SupplyType.DISABLED,
-			SupplyType.NATIONAL_MERIT,
-			SupplyType.PERMANENT_LEASE_EVICTEE,
-			SupplyType.TEMPORARY_STRUCTURE_RESIDENT
+			SupplyType.ELDER_SPECIAL
 		),
 		NoticeType.PUBLIC_RENTAL, List.of(
 			SupplyType.GENERAL,
@@ -50,10 +55,14 @@ public class RentalSupplyMapping {
 			SupplyType.FIRST_SPECIAL,   // 생애최초
 			SupplyType.MINOR_SPECIAL,   // 신생아
 			SupplyType.YOUTH_SPECIAL,   // 청년
-			SupplyType.NATIONAL_MERIT
+			SupplyType.NATIONAL_MERIT,
+			SupplyType.DEMOLITION,
+			SupplyType.LONG_SERVICE_VETERAN,
+			SupplyType.NORTH_DEFECTOR,
+			SupplyType.DISABLED
 		),
 		NoticeType.PERMANENT_RENTAL, List.of(
-			SupplyType.NEWCOUPLE_SPECIAL,
+			SupplyType.GENERAL,
 			SupplyType.SINGLE_PARENT_SPECIAL,
 			SupplyType.ELDER_SUPPORT_SPECIAL,
 			SupplyType.ELDER_SPECIAL,
@@ -63,9 +72,15 @@ public class RentalSupplyMapping {
 			SupplyType.DISABLED
 		),
 		NoticeType.LONG_TERM_JEONSE, List.of(
+			SupplyType.GENERAL,
 			SupplyType.NEWCOUPLE_SPECIAL,
-			SupplyType.SINGLE_PARENT_SPECIAL,
-			SupplyType.MULTICHILD_SPECIAL
+			SupplyType.MULTICHILD_SPECIAL,
+			SupplyType.DEMOLITION,
+			SupplyType.NATIONAL_MERIT,
+			SupplyType.DISABLED,
+			SupplyType.PERMANENT_LEASE_EVICTEE,
+			SupplyType.TEMPORARY_STRUCTURE_RESIDENT,
+			SupplyType.UNAUTHORIZED_BUILDING_TENANT
 		)
 	);
 
