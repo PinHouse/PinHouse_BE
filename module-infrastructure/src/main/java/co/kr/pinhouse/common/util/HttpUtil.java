@@ -19,6 +19,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class HttpUtil {
 
+	private static final String BEARER_PREFIX = "Bearer ";
+	private static final String REFRESH_TOKEN_HEADER = "X-Refresh-Token";
+
 	@Value("${auth.jwt.access.expiration}")
 	private long accessExpiration;
 
@@ -39,12 +42,14 @@ public class HttpUtil {
 
 	/// 액세스 토큰 쿠키 가져오기
 	public Optional<String> getAccessToken(HttpServletRequest request) {
-		return extractToken(request, ACCESS_TOKEN);
+		return extractBearerAuthorizationToken(request)
+			.or(() -> extractCookieToken(request, ACCESS_TOKEN));
 	}
 
 	/// 리프레쉬 토큰 쿠키 가져오기
 	public Optional<String> getRefreshToken(HttpServletRequest request) {
-		return extractToken(request, REFRESH_TOKEN);
+		return extractHeaderToken(request, REFRESH_TOKEN_HEADER)
+			.or(() -> extractCookieToken(request, REFRESH_TOKEN));
 	}
 
 	/// 액세스 토큰을 쿠키에 저장하기
@@ -98,6 +103,10 @@ public class HttpUtil {
 		return new HeaderInfo(ip, httpMethod, uri, username);
 	}
 
+	public String getClientIp(HttpServletRequest request) {
+		return extractClientIp(request);
+	}
+
 	/// 쿠키 생성하기
 	private void createCookie(HttpServletResponse response, String cookieName, String cookieValue, long maxAge) {
 
@@ -117,8 +126,26 @@ public class HttpUtil {
 	//  내부 공통 함수
 	// =================
 
+	/// Authorization Bearer 헤더에서 액세스 토큰 가져오기
+	private Optional<String> extractBearerAuthorizationToken(HttpServletRequest request) {
+		return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
+			.map(String::trim)
+			.filter(headerValue -> headerValue.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length()))
+			.map(headerValue -> headerValue.substring(BEARER_PREFIX.length()).trim())
+			.filter(token -> !token.isEmpty());
+	}
+
+	/// 사용자 정의 헤더에서 토큰 가져오기
+	private Optional<String> extractHeaderToken(HttpServletRequest request, String headerName) {
+		return Optional.ofNullable(request.getHeader(headerName))
+			.map(String::trim)
+			.filter(headerValue -> !headerValue.isEmpty())
+			.map(this::stripBearerPrefixIfPresent)
+			.filter(token -> !token.isEmpty());
+	}
+
 	/// 쿠키에서 토큰 가져오기
-	private Optional<String> extractToken(HttpServletRequest httpServletRequest, String type) {
+	private Optional<String> extractCookieToken(HttpServletRequest httpServletRequest, String type) {
 
 		/// 쿠키 가져오기
 		Cookie[] cookies = httpServletRequest.getCookies();
@@ -136,6 +163,13 @@ public class HttpUtil {
 		return Optional.empty();
 	}
 
+	private String stripBearerPrefixIfPresent(String headerValue) {
+		if (!headerValue.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
+			return headerValue;
+		}
+		return headerValue.substring(BEARER_PREFIX.length()).trim();
+	}
+
 	/// 공통 쿠키 삭제 메서드
 	private void deleteCookie(HttpServletResponse response, String cookieName) {
 		ResponseCookie cookie = ResponseCookie.from(cookieName, "")
@@ -150,7 +184,7 @@ public class HttpUtil {
 	}
 
 	/// 요청자의 실제 IP를 조회하기 위한 함수
-	private String getClientIp(HttpServletRequest request) {
+	private String extractClientIp(HttpServletRequest request) {
 		String ip = request.getHeader("X-Forwarded-For");
 
 		/// X-Forwarded-For이 있다면

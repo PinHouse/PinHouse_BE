@@ -12,6 +12,7 @@ import co.kr.pinhouse.domain.user.application.dto.request.UpdateUserRequest;
 import co.kr.pinhouse.domain.user.application.dto.request.UserRequest;
 import co.kr.pinhouse.domain.user.application.dto.request.WithdrawRequest;
 import co.kr.pinhouse.domain.user.application.dto.response.MyPageResponse;
+import co.kr.pinhouse.domain.user.application.dto.response.SignupResponse;
 import co.kr.pinhouse.domain.user.application.dto.response.TempUserResponse;
 import co.kr.pinhouse.domain.user.application.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,9 +27,9 @@ public interface UserApiSpec {
 	/// 회원가입
 	@Operation(
 		summary = "회원가입 API",
-		description = "온보딩의 데이터를 바탕으로 회원가입합니다."
+		description = "온보딩의 데이터를 바탕으로 회원가입하고 JWT 토큰을 발급합니다. 응답으로 accessToken과 refreshToken을 반환합니다."
 	)
-	ApiResponse<Void> signUp(HttpServletResponse httpServletResponse,
+	ApiResponse<SignupResponse> signUp(
 		@RequestParam String tempKey,
 		@RequestBody @Valid UserRequest request);
 

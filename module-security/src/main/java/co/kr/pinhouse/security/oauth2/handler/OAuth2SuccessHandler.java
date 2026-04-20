@@ -7,11 +7,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import co.kr.pinhouse.common.util.HttpUtil;
 import co.kr.pinhouse.common.util.RedirectUrlResolver;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
-import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 import co.kr.pinhouse.security.principal.PrincipalDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,12 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	private final AuthUseCase authUseCase;
-	private final HttpUtil httpUtil;
 	private final RedirectUrlResolver redirectUrlResolver;
 
 	/*
-		기존에 존재하는 유저의 경우, 토큰 발급을 진행합니다.
-		리다이렉트 시킵니다.
+		기존에 존재하는 유저의 경우, Exchange code를 발급하고 BFF로 리다이렉트합니다.
 	 */
 
 	@Override
@@ -42,23 +38,32 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			PrincipalDetails principal = (PrincipalDetails)authentication.getPrincipal();
 			User user = principal.getUser();
 
-			/// Access, Refresh 토큰 생성
-			JwtTokenResponse tokenResponse = authUseCase.issueTokens(user);
-
-			/// HTTP 쿠키 추가
-			httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
-			httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
+			/// Exchange code 생성
+			String exchangeCode = authUseCase.createExchangeCode(user);
 
 			/// 시큐리티 홀더에 해당 멤버 저장
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			/// 동적으로 리다이렉트 URL 결정
-			String redirectUrl = redirectUrlResolver.resolveRedirectUrl(httpServletRequest);
+			/// BFF 콜백 URL 생성
+			String redirectUrl = buildBffCallbackUrl(httpServletRequest, exchangeCode);
 
-			/// 쿠키와 함께 리다이렉트 (프론트 홈 주소)
+			log.info("OAuth2 인증 성공 - userId: {}, BFF 리다이렉트: {}", user.getId(), redirectUrl);
+
+			/// BFF로 리다이렉트 (exchange code 포함)
 			getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, redirectUrl);
 		} catch (Exception e) {
-			log.error("OAuth2 회원가입 진행중 에러 발생", e);
+			log.error("OAuth2 인증 처리 중 에러 발생", e);
+			throw e;
 		}
+	}
+
+	private String buildBffCallbackUrl(HttpServletRequest request, String exchangeCode) {
+		String baseUrl = resolveBffCallbackUrl(request);
+		return baseUrl + "?code=" + exchangeCode;
+	}
+
+	private String resolveBffCallbackUrl(HttpServletRequest request) {
+		String frontUrl = redirectUrlResolver.resolveRedirectUrl(request);
+		return frontUrl + "/api/auth/callback";
 	}
 }

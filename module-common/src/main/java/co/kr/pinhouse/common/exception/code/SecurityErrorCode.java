@@ -37,12 +37,21 @@ public enum SecurityErrorCode implements ErrorCode {
 	REFRESH_TOKEN_NOT_FOUND(401_112, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
 	REFRESH_TOKEN_LOGOUT(401_113, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰을 사용한 로그아웃에 유저가 다릅니다."),
 
+	EXCHANGE_CODE_INVALID(401_114, HttpStatus.UNAUTHORIZED, "유효하지 않은 Exchange Code입니다."),
+	EXCHANGE_CODE_EXPIRED(401_115, HttpStatus.UNAUTHORIZED, "만료된 Exchange Code입니다."),
+
+	// ========================
+	// 429 Too Many Requests
+	// ========================
+	EXCHANGE_CODE_RATE_LIMITED(429_100, HttpStatus.TOO_MANY_REQUESTS, "Exchange Code 교환 요청이 너무 많습니다. 잠시 후 다시 시도해주세요."),
+
 	// ========================
 	// 403 Forbidden
 	// ========================
 	FORBIDDEN(403_100, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
 	ACCESS_DENY(403_101, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 	UNAUTHORIZED_POST_ACCESS(403_102, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
+	INTERNAL_API_FORBIDDEN(403_103, HttpStatus.FORBIDDEN, "내부 API 접근이 거부되었습니다."),
 
 	// ========================
 	// 404 Not Found
