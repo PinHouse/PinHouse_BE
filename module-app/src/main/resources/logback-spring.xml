@@ -6,7 +6,8 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Loki/Grafana가 로그 레벨을 안정적으로 인식할 수 있도록 level 키를 앞쪽에 둔다 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} level=%-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} level=%-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} -
+                %msg%n
             </pattern>
         </encoder>
     </appender>

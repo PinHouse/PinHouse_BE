@@ -1,6 +1,6 @@
 package co.kr.pinhouse.security.jwt.domain.entity;
 
-import static co.kr.pinhouse.common.util.KeyUtil.*;
+import static co.kr.pinhouse.common.util.KeyUtil.getExchangeCodeKey;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
