@@ -37,8 +37,7 @@ public class BaseEligibilityRule implements Rule {
 		/// 나이별 후보군 필터링
 		if (age < 19) {
 			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
-					|| c.supplyType() == SupplyType.ELDER_SPECIAL
+				c.supplyType() == SupplyType.ELDER_SPECIAL
 					|| c.supplyType() == SupplyType.GENERAL
 			);
 		} else if (age <= 39) {
@@ -49,10 +48,7 @@ public class BaseEligibilityRule implements Rule {
 					|| c.supplyType() == SupplyType.ELDER_SPECIAL
 			);
 		} else if (age >= 65) {
-			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.YOUTH_SPECIAL
-					|| c.supplyType() == SupplyType.NEWCOUPLE_SPECIAL
-			);
+			candidates.removeIf(c -> c.supplyType() == SupplyType.YOUTH_SPECIAL);
 		}
 
 		/// 2차, 주택 소유 여부
@@ -67,6 +63,7 @@ public class BaseEligibilityRule implements Rule {
 
 		/// 본인이 주택을 소유한 경우 모든 임대주택 신청 불가
 		if (ownsHouse) {
+			ctx.setCurrentCandidates(List.of());
 			return RuleResult.fail(
 				code(),
 				"주택 소유자는 임대주택 지원이 불가능",

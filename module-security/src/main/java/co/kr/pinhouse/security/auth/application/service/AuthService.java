@@ -1,23 +1,34 @@
 package co.kr.pinhouse.security.auth.application.service;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.pinhouse.common.exception.code.SecurityErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
+import co.kr.pinhouse.common.util.KeyUtil;
 import co.kr.pinhouse.domain.user.domain.entity.User;
+import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
+import co.kr.pinhouse.security.auth.application.dto.response.AuthExchangeResponse;
 import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
 import co.kr.pinhouse.security.jwt.application.dto.request.JwtTokenRequest;
 import co.kr.pinhouse.security.jwt.application.dto.response.JwtTokenResponse;
 import co.kr.pinhouse.security.jwt.application.util.JwtProvider;
 import co.kr.pinhouse.security.jwt.application.util.JwtValidator;
+import co.kr.pinhouse.security.jwt.domain.entity.JwtExchangeCode;
+import co.kr.pinhouse.security.jwt.domain.entity.JwtExchangeCodeType;
 import co.kr.pinhouse.security.jwt.domain.entity.JwtRefreshToken;
+import co.kr.pinhouse.security.jwt.domain.repository.JwtExchangeCodeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -29,6 +40,17 @@ public class AuthService implements AuthUseCase {
 	/// 토큰 의존성
 	private final JwtValidator jwtValidator;
 	private final JwtProvider jwtProvider;
+
+	/// Exchange code 저장소
+	private final JwtExchangeCodeRepository exchangeCodeRepository;
+	private final RedisTemplate<String, Object> redisTemplate;
+	private final KeyUtil keyUtil;
+
+	@Value("${auth.exchange.code.ttl-seconds:60}")
+	private long exchangeCodeTtlSeconds;
+
+	@Value("${auth.oauth2.temp-user.ttl-minutes:5}")
+	private long tempUserTtlMinutes;
 
 	// =================
 	//  퍼블릭 로직
@@ -84,6 +106,29 @@ public class AuthService implements AuthUseCase {
 		return true;
 	}
 
+	@Override
+	@Transactional
+	public String createExchangeCode(User user) {
+		String exchangeCode = keyUtil.generateExchangeCode();
+		JwtExchangeCode codeEntity = JwtExchangeCode.tokenIssuable(user.getId(), exchangeCode, exchangeCodeTtlSeconds);
+		exchangeCodeRepository.save(codeEntity);
+
+		return exchangeCode;
+	}
+
+	@Override
+	@Transactional
+	public String createSignupExchangeCode(TempUserInfo tempUserInfo) {
+		String tempUserKey = keyUtil.generateOAuth2TempUserKey();
+		redisTemplate.opsForValue().set(tempUserKey, tempUserInfo, Duration.ofMinutes(tempUserTtlMinutes));
+
+		String exchangeCode = keyUtil.generateExchangeCode();
+		JwtExchangeCode codeEntity = JwtExchangeCode.signupRequired(tempUserKey, exchangeCode, exchangeCodeTtlSeconds);
+		exchangeCodeRepository.save(codeEntity);
+
+		return exchangeCode;
+	}
+
 	/// 토큰 재발급
 	@Override
 	@Transactional
@@ -105,6 +150,38 @@ public class AuthService implements AuthUseCase {
 		jwtValidator.removeRefreshToken(user.getId(), token.getRefreshToken());
 
 		return issueTokens(user);
+	}
+
+	/// Exchange code 처리
+	@Override
+	@Transactional
+	public AuthExchangeResponse exchangeCode(String exchangeCode) {
+
+		/// Exchange code 검증 및 조회
+		JwtExchangeCode codeEntity = exchangeCodeRepository.findByExchangeCode(exchangeCode)
+			.orElseThrow(() -> new CustomException(SecurityErrorCode.EXCHANGE_CODE_INVALID));
+
+		/// Exchange code 즉시 삭제 (one-time 보장)
+		exchangeCodeRepository.delete(codeEntity);
+
+		if (codeEntity.getExchangeCodeType() == JwtExchangeCodeType.SIGNUP_REQUIRED) {
+			log.info("Exchange code 사용 완료 - signup required, tempKey: {}", codeEntity.getTempUserKey());
+			return AuthExchangeResponse.signupRequired(codeEntity.getTempUserKey());
+		}
+
+		if (codeEntity.getExchangeCodeType() != JwtExchangeCodeType.TOKEN_ISSUABLE) {
+			throw new CustomException(SecurityErrorCode.EXCHANGE_CODE_INVALID);
+		}
+
+		/// 사용자 조회
+		User user = repository.findById(codeEntity.getUserId())
+			.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
+
+		log.info("Exchange code 사용 완료 - userId: {}", user.getId());
+
+		/// 토큰 발급
+		JwtTokenResponse tokenResponse = issueTokens(user);
+		return AuthExchangeResponse.tokenIssued(tokenResponse.accessToken(), tokenResponse.refreshToken());
 	}
 
 }

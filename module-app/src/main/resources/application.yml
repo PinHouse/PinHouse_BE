@@ -120,6 +120,14 @@ auth:
     PathOption: ${JWT_COOKIE_PATH}
     secureOption: ${JWT_SECURE_OPTION}
     sameSiteOption: ${JWT_SAME_SITE}
+  # Exchange code 설정
+  exchange:
+    code:
+      ttl-seconds: 60
+  # OAuth2 임시 사용자 정보 TTL
+  oauth2:
+    temp-user:
+      ttl-minutes: 5
 
 # 카카오 좌표 설정
 kakao:

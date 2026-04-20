@@ -32,7 +32,6 @@ public class NewlyMarriedCandidateRule implements Rule {
 		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
 		/// 무주택 세대주 또는 예비 세대주 여부
-		boolean isHouseholdHead = diagnosis.isHouseholdHead();
 		boolean isNoHouse = diagnosis.getHousingStatus().equals(
 			co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.HousingOwnershipStatus.NO_ONE_OWNS_HOUSE)
 			|| diagnosis.getHousingStatus().equals(
@@ -49,11 +48,11 @@ public class NewlyMarriedCandidateRule implements Rule {
 		boolean withYouthAge = diagnosis.getUnbornChildrenCount() > 0 || diagnosis.getUnder6ChildrenCount() > 0;
 
 		/// 신혼부부 특별공급 요건:
-		/// - 무주택 세대주 또는 예비 세대주
+		/// - 무주택 세대구성원 또는 무주택자
 		/// - 결혼했고 7년 이하, 또는
 		/// - 결혼 7년 초과지만 자녀가 6세 이하인 경우
 
-		if (!(isHouseholdHead && isNoHouse && isMarried && (withinYears || withYouthAge))) {
+		if (!(isNoHouse && isMarried && (withinYears || withYouthAge))) {
 
 			/// 있다면 삭제
 			candidates.removeIf(c ->
@@ -64,9 +63,7 @@ public class NewlyMarriedCandidateRule implements Rule {
 
 			/// 실패 이유를 담아줌
 			String failReason;
-			if (!isHouseholdHead) {
-				failReason = "세대주가 아님";
-			} else if (!isNoHouse) {
+			if (!isNoHouse) {
 				failReason = "무주택 요건 미충족";
 			} else if (!isMarried) {
 				failReason = "결혼하지 않음";

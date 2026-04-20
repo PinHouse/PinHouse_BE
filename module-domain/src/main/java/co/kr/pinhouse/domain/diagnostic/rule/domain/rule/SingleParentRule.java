@@ -44,8 +44,9 @@ public class SingleParentRule implements Rule {
 		/// 한부모인지
 		boolean hasSingleParent = specialCategories.stream()
 			.anyMatch(c -> c == SINGLE_PARENT || c == PROTECTED_SINGLE_PARENT);
+		boolean hasInfantOrFetus = diagnosis.getUnbornChildrenCount() > 0 || diagnosis.getUnder6ChildrenCount() > 0;
 
-		if (!hasSingleParent) {
+		if (!hasSingleParent || !hasInfantOrFetus) {
 
 			/// 한부모 계층이 아니라면 삭제
 			candidates.removeIf(c ->
@@ -56,7 +57,10 @@ public class SingleParentRule implements Rule {
 
 			return RuleResult.fail(code(),
 				"한부모 특별공급 해당 없음",
-				Map.of("candidate", candidates));
+				Map.of(
+					"candidate", candidates,
+					"failReason", hasSingleParent ? "태아 또는 6세 이하 자녀 요건 미충족" : "한부모가족 요건 미충족"
+				));
 		}
 
 		return RuleResult.pass(code(),

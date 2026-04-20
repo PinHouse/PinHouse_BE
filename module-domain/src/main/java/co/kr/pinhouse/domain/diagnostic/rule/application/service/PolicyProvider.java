@@ -154,21 +154,21 @@ public class PolicyProvider implements PolicyUseCase {
 
 	/**
 	 * 최대 총자산 제한 (단위: 원)
-	 * 통합공공임대/국민임대/행복주택: 총자산 33,700만원 이하
-	 * 영구임대: 총자산 23,700만원 이하
+	 * 통합공공임대/국민임대: 총자산 34,500만원 이하
+	 * 영구임대: 총자산 24,500만원 이하
 	 * 장기전세/공공임대: 부동산 21,550만원 이하
 	 */
 	@Override
 	public long maxTotalAsset(SupplyType supply, NoticeType rental, int familyCount) {
 		return switch (rental) {
-			/// 통합공공임대 - 총자산 337,000,000원 (우선공급 중 일부 적용 제외)
-			case PUBLIC_INTEGRATED -> 337_000_000L;
+			/// 통합공공임대 - 총자산 345,000,000원
+			case PUBLIC_INTEGRATED -> 345_000_000L;
 
-			/// 영구임대 - 총자산 237,000,000원 (수급자 등 일부 대상 제외)
-			case PERMANENT_RENTAL -> 237_000_000L;
+			/// 영구임대 - 총자산 245,000,000원
+			case PERMANENT_RENTAL -> 245_000_000L;
 
-			/// 국민임대 - 총자산 337,000,000원 (우선공급 중 일부 적용 제외)
-			case NATIONAL_RENTAL -> 337_000_000L;
+			/// 국민임대 - 총자산 345,000,000원
+			case NATIONAL_RENTAL -> 345_000_000L;
 
 			/// 장기전세 - 부동산 215,500,000원 (우선공급 중 일부 적용 제외)
 			case LONG_TERM_JEONSE -> 215_500_000L;
@@ -178,11 +178,11 @@ public class PolicyProvider implements PolicyUseCase {
 
 			/// 행복주택 - 계층별 총자산 기준 상이
 			case HAPPY_HOUSING -> switch (supply) {
-				/// 대학생 특별공급 - 총자산 104,000,000원 (1억 400만원)
-				case STUDENT_SPECIAL -> 104_000_000L;
+				/// 대학생 특별공급 - 총자산 108,000,000원
+				case STUDENT_SPECIAL -> 108_000_000L;
 
-				/// 청년 특별공급 - 총자산 254,000,000원 (2억 5천 4백만원) - 맞벌이 등 고려
-				case YOUTH_SPECIAL -> 254_000_000L;
+				/// 청년 특별공급 - 총자산 251,000,000원
+				case YOUTH_SPECIAL -> 251_000_000L;
 
 				/// 기타 - 총자산 337,000,000원 (3억 3천 7백만원)
 				default -> 337_000_000L;
@@ -194,12 +194,12 @@ public class PolicyProvider implements PolicyUseCase {
 	}
 
 	/**
-	 * 자동차 자산 제한 - 45,630,000원 (4,563만원)
+	 * 자동차 자산 제한 - 45,420,000원 (4,542만원)
 	 * 모든 임대주택 유형 공통 적용
 	 */
 	@Override
 	public long checkMaxCarValue() {
-		return 45_630_000L;
+		return 45_420_000L;
 	}
 
 	@Override

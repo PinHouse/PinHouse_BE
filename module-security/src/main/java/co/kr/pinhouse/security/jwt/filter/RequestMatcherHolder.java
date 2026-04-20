@@ -39,6 +39,7 @@ public class RequestMatcherHolder {
 		new RequestInfo(POST, "/v1/auth/dev", null),    /// 개발용 토큰
 
 		// auth
+		new RequestInfo(POST, "/v1/auth/exchange", null),    /// exchange code 교환
 		new RequestInfo(DELETE, "/v1/auth", Role.USER),     /// 로그아웃
 		new RequestInfo(PUT, "/v1/auth", null),     /// 재발급
 		new RequestInfo(GET, "/v1/auth", null),     /// 토큰 여부 체크

@@ -64,6 +64,7 @@ public record DiagnosisDetailResponse(
 			? List.of("해당 없음")
 			: context.getCurrentCandidates().stream()
 			.map((c -> c.noticeType().getValue() + " : " + c.supplyType().getValue()))
+			.distinct()
 			.toList();
 
 		// 지원 가능한 공급 유형 (중복 제거)

@@ -20,6 +20,7 @@ import co.kr.pinhouse.domain.user.application.dto.request.UpdateUserRequest;
 import co.kr.pinhouse.domain.user.application.dto.request.UserRequest;
 import co.kr.pinhouse.domain.user.application.dto.request.WithdrawRequest;
 import co.kr.pinhouse.domain.user.application.dto.response.MyPageResponse;
+import co.kr.pinhouse.domain.user.application.dto.response.SignupResponse;
 import co.kr.pinhouse.domain.user.application.dto.response.TempUserResponse;
 import co.kr.pinhouse.domain.user.application.dto.response.UserResponse;
 import co.kr.pinhouse.domain.user.application.usecase.UserUseCase;
@@ -28,7 +29,9 @@ import co.kr.pinhouse.security.auth.application.usecase.AuthUseCase;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
@@ -48,22 +51,25 @@ public class UserApi implements UserApiSpec {
 		return ApiResponse.ok(service.getUserByKey(tempKey));
 	}
 
-	/// 회원가입 (JWT 토큰 발급은 security 모듈/app 모듈에서 처리 필요)
+	/// 회원가입 (JWT 토큰 직접 발급)
 	@PostMapping()
-	public ApiResponse<Void> signUp(HttpServletResponse httpServletResponse,
+	public ApiResponse<SignupResponse> signUp(
 		@RequestParam String tempKey,
 		@RequestBody @Valid UserRequest request) {
 
 		/// 서비스 - User 엔티티 반환
 		var user = service.saveUser(tempKey, request);
 
-		/// 회원가입 직후 즉시 로그인 상태가 되도록 토큰 발급
+		/// JWT 토큰 직접 발급
 		var tokenResponse = authUseCase.issueTokens(user);
-		httpUtil.addAccessTokenCookie(httpServletResponse, tokenResponse.accessToken());
-		httpUtil.addRefreshTokenCookie(httpServletResponse, tokenResponse.refreshToken());
+
+		log.info("회원가입 완료 - userId: {}, 토큰 발급 완료", user.getId());
 
 		/// 리턴
-		return ApiResponse.created();
+		return ApiResponse.ok(SignupResponse.of(
+			tokenResponse.accessToken(),
+			tokenResponse.refreshToken()
+		));
 	}
 
 	/// 나의 정보 조회하기
