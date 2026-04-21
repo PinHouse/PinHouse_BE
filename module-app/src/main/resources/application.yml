@@ -103,7 +103,12 @@ cors:
     local: ${CORS_FRONT_LOCAL}
     dev: ${CORS_FRONT_DEV}
     prod: ${CORS_FRONT_PROD}
+    admin-local: ${CORS_ADMIN_FRONT_LOCAL:}
+    admin-dev: ${CORS_ADMIN_FRONT_DEV:}
+    admin-prod: ${CORS_ADMIN_FRONT_PROD:}
     redirect: ${CORS_FRONT_REDIRECT}
+    redirect-path: ${CORS_FRONT_REDIRECT_PATH:/api/auth/callback}
+    admin-redirect-path: ${CORS_ADMIN_FRONT_REDIRECT_PATH:/admin/auth/callback}
   back:
     dev: ${CORS_BACK_DEV}
 

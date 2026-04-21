@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.user;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,7 +65,7 @@ public class UserApi implements UserApiSpec {
 		/// JWT 토큰 직접 발급
 		var tokenResponse = authUseCase.issueTokens(user);
 
-		log.info("회원가입 완료 - userId: {}, 토큰 발급 완료", user.getId());
+		log.info("회원가입 완료 - userId: {}, 토큰 발급 완료", sanitize(user.getId()));
 
 		/// 리턴
 		return ApiResponse.ok(SignupResponse.of(

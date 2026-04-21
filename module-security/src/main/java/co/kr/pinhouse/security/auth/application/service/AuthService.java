@@ -1,5 +1,7 @@
 package co.kr.pinhouse.security.auth.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
@@ -165,7 +167,7 @@ public class AuthService implements AuthUseCase {
 		exchangeCodeRepository.delete(codeEntity);
 
 		if (codeEntity.getExchangeCodeType() == JwtExchangeCodeType.SIGNUP_REQUIRED) {
-			log.info("Exchange code 사용 완료 - signup required, tempKey: {}", codeEntity.getTempUserKey());
+			log.info("Exchange code 사용 완료 - signup required, tempKey: {}", sanitize(codeEntity.getTempUserKey()));
 			return AuthExchangeResponse.signupRequired(codeEntity.getTempUserKey());
 		}
 
@@ -177,7 +179,7 @@ public class AuthService implements AuthUseCase {
 		User user = repository.findById(codeEntity.getUserId())
 			.orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
 
-		log.info("Exchange code 사용 완료 - userId: {}", user.getId());
+		log.info("Exchange code 사용 완료 - userId: {}", sanitize(user.getId()));
 
 		/// 토큰 발급
 		JwtTokenResponse tokenResponse = issueTokens(user);

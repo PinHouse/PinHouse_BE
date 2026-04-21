@@ -1,5 +1,6 @@
 package co.kr.pinhouse.domain.housing.complex.domain.repository;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -56,7 +57,7 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
 	@Override
 	public List<ComplexDocument> findSortedComplexesWithUnitTypes(String noticeId, UnitTypeSortType sortType) {
 
-		log.debug("MongoDB Aggregation 시작 - noticeId: {}, sortType: {}", noticeId, sortType);
+		log.debug("MongoDB Aggregation 시작 - noticeId: {}, sortType: {}", sanitize(noticeId), sanitize(sortType));
 
 		// 정렬 기준 설정 (tie-break 규칙 포함)
 		Sort sort = buildSortCriteria(sortType);
@@ -112,7 +113,7 @@ public class CustomComplexDocumentRepositoryImpl implements CustomComplexDocumen
 		);
 
 		List<ComplexDocument> complexes = results.getMappedResults();
-		log.debug("MongoDB Aggregation 완료 - 조회된 단지 수: {}", complexes.size());
+		log.debug("MongoDB Aggregation 완료 - 조회된 단지 수: {}", sanitize(complexes.size()));
 
 		return complexes;
 	}

@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.housing.notice.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -113,7 +115,7 @@ public class ComplexFilterService {
 
 		// 거리 정보가 없으면 필터링에서 제외
 		if (totalTime == null) {
-			log.warn("Distance info not found for complex {}", complex.getId());
+			log.warn("Distance info not found for complex {}", sanitize(complex.getId()));
 			return false;
 		}
 
@@ -134,7 +136,7 @@ public class ComplexFilterService {
 			String complexRegion = complex.getCounty() != null ? complex.getCounty() : "";
 			if (!request.region().contains(complexRegion)) {
 				log.debug("Complex {} filtered out by region: {} not in {}",
-					complex.getId(), complexRegion, request.region());
+					sanitize(complex.getId()), sanitize(complexRegion), sanitize(request.region()));
 				return false;
 			}
 		}
@@ -146,7 +148,7 @@ public class ComplexFilterService {
 			for (FacilityType requiredFacility : request.facilities()) {
 				if (!availableFacilities.contains(requiredFacility)) {
 					log.debug("Complex {} filtered out by facility: {} not available",
-						complex.getId(), requiredFacility);
+						sanitize(complex.getId()), sanitize(requiredFacility));
 					return false;
 				}
 			}

@@ -1,5 +1,7 @@
 package co.kr.pinhouse.infrastructure.image.external;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,17 +104,20 @@ public class GcsSignedUrlGenerator implements PresignedUrlGenerator {
 				Storage.SignUrlOption.withV4Signature()
 			);
 
-			log.info("GCS Signed URL 생성 성공: objectKey={}, expiresIn={}분", objectKey, expirationMinutes);
+			log.info("GCS Signed URL 생성 성공: objectKey={}, expiresIn={}분",
+				sanitize(objectKey), sanitize(expirationMinutes));
 
 			return signedUrl.toString();
 
 		} catch (StorageException e) {
 			// GCS API 호출 실패 (권한 문제, 네트워크 오류 등)
-			log.error("GCS Signed URL 생성 실패: objectKey={}, error={}", objectKey, e.getMessage());
+			log.error("GCS Signed URL 생성 실패: objectKey={}, error={}",
+				sanitize(objectKey), sanitize(e.getMessage()));
 			throw new CustomException(ImageErrorCode.GCS_PRESIGNED_URL_GENERATION_FAILED);
 		} catch (Exception e) {
 			// 기타 예외 (잘못된 파라미터, 내부 오류 등)
-			log.error("GCS Signed URL 생성 중 예외 발생: objectKey={}, error={}", objectKey, e.getMessage());
+			log.error("GCS Signed URL 생성 중 예외 발생: objectKey={}, error={}",
+				sanitize(objectKey), sanitize(e.getMessage()));
 			throw new CustomException(ImageErrorCode.GCS_CLIENT_ERROR);
 		}
 	}

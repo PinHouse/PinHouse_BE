@@ -1,5 +1,7 @@
 package co.kr.pinhouse.security.auth.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +42,7 @@ public class ExchangeCodeRateLimitService {
 
 		if (requestCount > maxAttempts) {
 			log.warn("Exchange Code 교환 요청 제한 초과 - clientIdentifier: {}, count: {}",
-				normalizedClientIdentifier, requestCount);
+				sanitize(normalizedClientIdentifier), sanitize(requestCount));
 			throw new CustomException(SecurityErrorCode.EXCHANGE_CODE_RATE_LIMITED);
 		}
 	}

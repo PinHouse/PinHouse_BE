@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.home.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -82,7 +84,7 @@ public class HomeService implements HomeUseCase {
 		// PinPoint 소유자 검증
 		boolean isOwner = pinPointService.checkPinPoint(pinpointId, userId);
 		if (!isOwner) {
-			log.warn("PinPoint 소유자 불일치 - pinpointId={}, requestUserId={}", pinpointId, userId);
+			log.warn("PinPoint 소유자 불일치 - pinpointId={}, requestUserId={}", sanitize(pinpointId), sanitize(userId));
 			throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
 		}
 
@@ -152,7 +154,7 @@ public class HomeService implements HomeUseCase {
 		}
 
 		// 시/군/구를 찾지 못한 경우 null 반환 (광역시 등의 경우)
-		log.debug("주소에서 시/군/구를 추출할 수 없습니다. address={}", address);
+		log.debug("주소에서 시/군/구를 추출할 수 없습니다. address={}", sanitize(address));
 		return null;
 	}
 
@@ -227,7 +229,7 @@ public class HomeService implements HomeUseCase {
 		}
 
 		// 매칭되는 Region을 찾지 못한 경우
-		log.warn("주소에서 광역 단위를 추출할 수 없습니다. address={}", address);
+		log.warn("주소에서 광역 단위를 추출할 수 없습니다. address={}", sanitize(address));
 		throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
 	}
 
@@ -347,7 +349,7 @@ public class HomeService implements HomeUseCase {
 		// PinPoint 소유자 검증
 		boolean isOwner = pinPointService.checkPinPoint(pinPointId, userId);
 		if (!isOwner) {
-			log.warn("PinPoint 소유자 불일치 - pinpointId={}, requestUserId={}", pinPointId, userId);
+			log.warn("PinPoint 소유자 불일치 - pinpointId={}, requestUserId={}", sanitize(pinPointId), sanitize(userId));
 			throw new CustomException(PinPointErrorCode.BAD_REQUEST_PINPOINT);
 		}
 
@@ -379,7 +381,7 @@ public class HomeService implements HomeUseCase {
 			.count();
 
 		log.debug("핀포인트 {} 기준 {}분 내 공고 개수: {} (반경: {}km)",
-			pinPointId, maxTime, uniqueNoticeCount, distanceKm);
+			sanitize(pinPointId), sanitize(maxTime), sanitize(uniqueNoticeCount), sanitize(distanceKm));
 
 		return NoticeCountResponse.from(uniqueNoticeCount);
 	}
@@ -401,7 +403,7 @@ public class HomeService implements HomeUseCase {
 
 		// 2. 진단 기록 없음 처리
 		if (diagnosis == null) {
-			log.warn("진단 기록이 없습니다 - userId={}", userId);
+			log.warn("진단 기록이 없습니다 - userId={}", sanitize(userId));
 			throw new CustomException(DiagnosisErrorCode.NOT_FOUND_DIAGNOSIS);
 		}
 
@@ -412,7 +414,7 @@ public class HomeService implements HomeUseCase {
 		if (availableRentalTypes == null
 			|| availableRentalTypes.isEmpty()
 			|| availableRentalTypes.contains("해당 없음")) {
-			log.info("추천 가능한 임대주택이 없습니다 - userId={}", userId);
+			log.info("추천 가능한 임대주택이 없습니다 - userId={}", sanitize(userId));
 			return HomeNoticeListResponse.builder()
 				.region(null)
 				.title("진단 기반 추천")
@@ -430,7 +432,7 @@ public class HomeService implements HomeUseCase {
 
 		// 진단 결과에 매핑될 공고 유형이 없는 경우 빈 응답 반환
 		if (targetSupplyTypes.isEmpty()) {
-			log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", userId);
+			log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", sanitize(userId));
 			return HomeNoticeListResponse.builder()
 				.region(null)
 				.title("진단 기반 추천")
@@ -441,7 +443,7 @@ public class HomeService implements HomeUseCase {
 		}
 
 		log.debug("진단 기반 필터링 - rentalTypes={}, supplyTypes={}",
-			availableRentalTypes, targetSupplyTypes);
+			sanitize(availableRentalTypes), sanitize(targetSupplyTypes));
 
 		// 6. 페이징 설정 (마감임박순)
 		Sort sort = Sort.by(Sort.Order.asc("applyEnd"), Sort.Order.asc("noticeId"));

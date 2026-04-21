@@ -1,5 +1,8 @@
 package co.kr.pinhouse.common.tracing;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitizeName;
+
 import org.springframework.stereotype.Component;
 
 import co.kr.pinhouse.common.util.HttpUtil;
@@ -24,8 +27,9 @@ public class HttpLogUtil {
 		var clientInfo = httpUtil.getClientInfo(httpServletRequest);
 
 		/// 로그
-		log.info("{} : {}, [{}], {}, {} ,{}", type, clientInfo.ip(), clientInfo.httpMethod(), clientInfo.uri(),
-			clientInfo.userName(), body);
+		log.info("{} : {}, [{}], {}, {} ,{}", sanitize(type), sanitize(clientInfo.ip()),
+			sanitize(clientInfo.httpMethod()), sanitize(clientInfo.uri()), sanitizeName(clientInfo.userName()),
+			sanitize(body));
 
 	}
 

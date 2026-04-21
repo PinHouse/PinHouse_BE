@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.housing.complex.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,9 +53,10 @@ public class DistanceCacheService {
 		try {
 			String key = generateRootResultKey(complexId, pinPointId);
 			redisTemplate.opsForValue().set(key, rootResult, CACHE_TTL_HOURS, TimeUnit.HOURS);
-			log.debug("Cached RootResult for complexId={}, pinPointId={}", complexId, pinPointId);
+			log.debug("Cached RootResult for complexId={}, pinPointId={}", sanitize(complexId), sanitize(pinPointId));
 		} catch (Exception e) {
-			log.error("Failed to cache RootResult: complexId={}, pinPointId={}", complexId, pinPointId, e);
+			log.error("Failed to cache RootResult: complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId), e);
 		}
 	}
 
@@ -69,14 +72,16 @@ public class DistanceCacheService {
 			Object cached = redisTemplate.opsForValue().get(key);
 
 			if (cached instanceof RootResult) {
-				log.debug("RootResult cache hit for complexId={}, pinPointId={}", complexId, pinPointId);
+				log.debug("RootResult cache hit for complexId={}, pinPointId={}",
+					sanitize(complexId), sanitize(pinPointId));
 				return (RootResult)cached;
 			}
 
-			log.debug("RootResult cache miss for complexId={}, pinPointId={}", complexId, pinPointId);
+			log.debug("RootResult cache miss for complexId={}, pinPointId={}", sanitize(complexId), sanitize(pinPointId));
 			return null;
 		} catch (Exception e) {
-			log.error("Failed to get cached RootResult: complexId={}, pinPointId={}", complexId, pinPointId, e);
+			log.error("Failed to get cached RootResult: complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId), e);
 			return null;
 		}
 	}
@@ -91,9 +96,10 @@ public class DistanceCacheService {
 		try {
 			String key = generateTransitInfoKey(complexId, pinPointId);
 			redisTemplate.opsForValue().set(key, transitInfo, CACHE_TTL_HOURS, TimeUnit.HOURS);
-			log.debug("Cached TransitInfo for complexId={}, pinPointId={}", complexId, pinPointId);
+			log.debug("Cached TransitInfo for complexId={}, pinPointId={}", sanitize(complexId), sanitize(pinPointId));
 		} catch (Exception e) {
-			log.error("Failed to cache TransitInfo: complexId={}, pinPointId={}", complexId, pinPointId, e);
+			log.error("Failed to cache TransitInfo: complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId), e);
 		}
 	}
 
@@ -109,14 +115,17 @@ public class DistanceCacheService {
 			Object cached = redisTemplate.opsForValue().get(key);
 
 			if (cached instanceof TransitInfoResponse) {
-				log.debug("TransitInfo cache hit for complexId={}, pinPointId={}", complexId, pinPointId);
+				log.debug("TransitInfo cache hit for complexId={}, pinPointId={}",
+					sanitize(complexId), sanitize(pinPointId));
 				return (TransitInfoResponse)cached;
 			}
 
-			log.debug("TransitInfo cache miss for complexId={}, pinPointId={}", complexId, pinPointId);
+			log.debug("TransitInfo cache miss for complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId));
 			return null;
 		} catch (Exception e) {
-			log.error("Failed to get cached TransitInfo: complexId={}, pinPointId={}", complexId, pinPointId, e);
+			log.error("Failed to get cached TransitInfo: complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId), e);
 			return null;
 		}
 	}
@@ -131,9 +140,10 @@ public class DistanceCacheService {
 			String key = generateRootResultKey(complexId, pinPointId);
 			redisTemplate.delete(key);
 			redisTemplate.delete(generateTransitInfoKey(complexId, pinPointId));
-			log.debug("Evicted RootResult cache for complexId={}, pinPointId={}", complexId, pinPointId);
+			log.debug("Evicted RootResult cache for complexId={}, pinPointId={}", sanitize(complexId), sanitize(pinPointId));
 		} catch (Exception e) {
-			log.error("Failed to evict RootResult cache: complexId={}, pinPointId={}", complexId, pinPointId, e);
+			log.error("Failed to evict RootResult cache: complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId), e);
 		}
 	}
 }

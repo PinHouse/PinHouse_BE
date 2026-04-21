@@ -19,6 +19,15 @@ public class CorsConfig {
 	@Value("${cors.front.prod}")
 	private String frontProd;
 
+	@Value("${cors.front.admin-local:}")
+	private String adminFrontLocal;
+
+	@Value("${cors.front.admin-dev:}")
+	private String adminFrontDev;
+
+	@Value("${cors.front.admin-prod:}")
+	private String adminFrontProd;
+
 	@Value("${cors.back.dev}")
 	private String backDev;
 
@@ -33,6 +42,9 @@ public class CorsConfig {
 		configuration.addAllowedOriginPattern(frontLocal);
 		configuration.addAllowedOriginPattern(frontDev);
 		configuration.addAllowedOriginPattern(frontProd);
+		addAllowedOriginIfPresent(configuration, adminFrontLocal);
+		addAllowedOriginIfPresent(configuration, adminFrontDev);
+		addAllowedOriginIfPresent(configuration, adminFrontProd);
 		configuration.addAllowedOriginPattern(backDev);
 
 		configuration.addAllowedHeader("*");
@@ -44,6 +56,12 @@ public class CorsConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	private void addAllowedOriginIfPresent(CorsConfiguration configuration, String origin) {
+		if (origin != null && !origin.isBlank()) {
+			configuration.addAllowedOriginPattern(origin);
+		}
 	}
 
 }

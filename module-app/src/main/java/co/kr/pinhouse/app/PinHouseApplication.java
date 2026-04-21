@@ -14,7 +14,11 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 	"co.kr.pinhouse.domain.user.domain.repository",
 	"co.kr.pinhouse.domain.diagnostic.diagnosis.domain.repository",
 	"co.kr.pinhouse.domain.diagnostic.school.domain.repository",
-	"co.kr.pinhouse.domain.like.domain"
+	"co.kr.pinhouse.domain.like.domain",
+	"co.kr.pinhouse.domain.admin.audit.domain.repository",
+	"co.kr.pinhouse.domain.admin.notice.domain.repository",
+	"co.kr.pinhouse.domain.cs.domain.repository",
+	"co.kr.pinhouse.domain.ad.domain.repository"
 })
 @EnableMongoRepositories(basePackages = {
 	"co.kr.pinhouse.domain.housing.complex.domain.repository",

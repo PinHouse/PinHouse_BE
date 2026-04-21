@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.housing.notice.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -130,7 +132,7 @@ public class NoticeService implements NoticeUseCase {
 		Map<String, Integer> totalTimeMap = new HashMap<>();
 		if (request.pinPointId() != null && !request.pinPointId().isBlank()) {
 			log.info("공고 상세조회: 모든 단지에 대한 거리 계산 시작 - noticeId={}, pinPointId={}, 단지 개수={}",
-				noticeId, request.pinPointId(), complexes.size());
+				sanitize(noticeId), sanitize(request.pinPointId()), sanitize(complexes.size()));
 
 			int successCount = 0;
 			int failCount = 0;
@@ -142,16 +144,17 @@ public class NoticeService implements NoticeUseCase {
 					totalTimeMap.put(complex.getId(), distance.totalTimeMinutes());
 					successCount++;
 					log.debug("거리 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}분",
-						complex.getId(), distance.totalTimeMinutes());
+						sanitize(complex.getId()), sanitize(distance.totalTimeMinutes()));
 				} catch (Exception e) {
 					failCount++;
 					totalTimeMap.put(complex.getId(), 0);
 					log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
-						complex.getId(), request.pinPointId(), e.getMessage(), e);
+						sanitize(complex.getId()), sanitize(request.pinPointId()), sanitize(e.getMessage()), e);
 				}
 			}
 
-			log.info("거리 계산 완료 - 성공: {}, 실패: {}, 총: {}", successCount, failCount, complexes.size());
+			log.info("거리 계산 완료 - 성공: {}, 실패: {}, 총: {}",
+				sanitize(successCount), sanitize(failCount), sanitize(complexes.size()));
 		}
 
 		/// 서비스 레이어에서 필터링 수행 (totalTimeMap 전달)
@@ -267,7 +270,7 @@ public class NoticeService implements NoticeUseCase {
 				} catch (Exception e) {
 					totalTimeMap.put(complex.getId(), 0);
 					log.error("거리 계산 실패 (0분으로 설정) - complexId={}, pinPointId={}, error={}",
-						complex.getId(), request.pinPointId(), e.getMessage());
+						sanitize(complex.getId()), sanitize(request.pinPointId()), sanitize(e.getMessage()));
 				}
 			}
 		}
@@ -302,7 +305,7 @@ public class NoticeService implements NoticeUseCase {
 		/// FACILITY_MATCH 정렬은 nearbyFacilities 필수
 		if (finalSortType == UnitTypeSortType.FACILITY_MATCH && (nearbyFacilities == null
 			|| nearbyFacilities.isEmpty())) {
-			log.error("주변환경매칭순 정렬 요청이지만 nearbyFacilities가 없음 - noticeId={}", noticeId);
+			log.error("주변환경매칭순 정렬 요청이지만 nearbyFacilities가 없음 - noticeId={}", sanitize(noticeId));
 			throw new CustomException(NoticeErrorCode.MISSING_NEARBY_FACILITIES);
 		}
 
@@ -311,10 +314,10 @@ public class NoticeService implements NoticeUseCase {
 		List<ComplexDocument> complexes;
 		if (finalSortType == UnitTypeSortType.FACILITY_MATCH || finalSortType == UnitTypeSortType.DISTANCE_ASC) {
 			complexes = complexService.loadComplexes(noticeId);
-			log.debug("{} 정렬 - 정렬 없이 {} 개 단지 조회", finalSortType, complexes.size());
+			log.debug("{} 정렬 - 정렬 없이 {} 개 단지 조회", sanitize(finalSortType), sanitize(complexes.size()));
 		} else {
 			complexes = complexService.loadSortedComplexes(noticeId, finalSortType);
-			log.debug("DB 정렬 완료 - 총 {} 개 단지 조회", complexes.size());
+			log.debug("DB 정렬 완료 - 총 {} 개 단지 조회", sanitize(complexes.size()));
 		}
 
 		/// PinPoint 위치 조회 (optional)
@@ -324,7 +327,7 @@ public class NoticeService implements NoticeUseCase {
 				PinPoint pinPoint = pinPointService.loadPinPoint(pinPointId);
 				userLocation = pinPoint.getLocation();
 			} catch (Exception e) {
-				log.warn("Failed to load PinPoint: {}", pinPointId, e);
+				log.warn("Failed to load PinPoint: {}", sanitize(pinPointId), e);
 			}
 		}
 
@@ -347,7 +350,7 @@ public class NoticeService implements NoticeUseCase {
 		Map<String, String> totalTimeMap = new HashMap<>();
 		if (pinPointId != null && !pinPointId.isBlank()) {
 			log.info("방 비교: 모든 단지에 대한 대중교통 소요 시간 계산 시작 - pinPointId={}, 단지 개수={}",
-				pinPointId, complexes.size());
+				sanitize(pinPointId), sanitize(complexes.size()));
 
 			int successCount = 0;
 			int failCount = 0;
@@ -360,16 +363,17 @@ public class NoticeService implements NoticeUseCase {
 					totalTimeMap.put(complex.getId(), formattedTime);
 					successCount++;
 					log.debug("대중교통 시간 계산 성공 및 Redis 캐싱 완료 - complexId={}, totalTime={}",
-						complex.getId(), formattedTime);
+						sanitize(complex.getId()), sanitize(formattedTime));
 				} catch (Exception e) {
 					failCount++;
 					totalTimeMap.put(complex.getId(), null);
 					log.error("대중교통 시간 계산 실패 (null로 설정) - complexId={}, pinPointId={}, error={}",
-						complex.getId(), pinPointId, e.getMessage(), e);
+						sanitize(complex.getId()), sanitize(pinPointId), sanitize(e.getMessage()), e);
 				}
 			}
 
-			log.info("대중교통 시간 계산 완료 - 성공: {}, 실패: {}, 총: {}", successCount, failCount, complexes.size());
+			log.info("대중교통 시간 계산 완료 - 성공: {}, 실패: {}, 총: {}",
+				sanitize(successCount), sanitize(failCount), sanitize(complexes.size()));
 		}
 
 		/// 최종 시간 맵 (람다에서 사용하기 위해 effectively final)
@@ -405,7 +409,7 @@ public class NoticeService implements NoticeUseCase {
 			}
 			case FACILITY_MATCH -> {
 				sortByFacilityMatch(comparisonItems, nearbyFacilities);
-				log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", nearbyFacilities);
+				log.debug("시설 매칭 정렬 완료 - 매칭 대상 시설: {}", sanitize(nearbyFacilities));
 			}
 			case DISTANCE_ASC -> {
 				sortByDistance(comparisonItems);
@@ -571,7 +575,7 @@ public class NoticeService implements NoticeUseCase {
 			}
 			return Double.MAX_VALUE;
 		} catch (NumberFormatException e) {
-			log.warn("거리 문자열 파싱 실패: {}", distanceStr);
+			log.warn("거리 문자열 파싱 실패: {}", sanitize(distanceStr));
 			return Double.MAX_VALUE;
 		}
 	}
@@ -606,7 +610,7 @@ public class NoticeService implements NoticeUseCase {
 
 			return totalMinutes;
 		} catch (NumberFormatException e) {
-			log.warn("시간 문자열 파싱 실패: {}", timeStr);
+			log.warn("시간 문자열 파싱 실패: {}", sanitize(timeStr));
 			return Integer.MAX_VALUE;
 		}
 	}

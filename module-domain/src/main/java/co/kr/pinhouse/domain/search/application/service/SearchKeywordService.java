@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.search.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -67,9 +69,9 @@ public class SearchKeywordService implements SearchKeywordUseCase {
 
 			mongoTemplate.upsert(query, update, SearchKeyword.class);
 
-			log.debug("Recorded search keyword: {}", normalizedKeyword);
+			log.debug("Recorded search keyword: {}", sanitize(normalizedKeyword));
 		} catch (Exception e) {
-			log.error("Failed to record search keyword: {}", normalizedKeyword, e);
+			log.error("Failed to record search keyword: {}", sanitize(normalizedKeyword), e);
 			// 키워드 기록 실패는 검색 자체를 방해하지 않음
 		}
 	}

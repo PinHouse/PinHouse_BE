@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.auth;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.Optional;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,7 +54,7 @@ public class AuthApi implements AuthApiSpec {
 		exchangeCodeRateLimitService.validateRequestAllowed(clientIp);
 
 		log.info("공개 토큰 교환 요청 - clientIp: {}, code: {}...",
-			clientIp, request.code().substring(0, Math.min(8, request.code().length())));
+			sanitize(clientIp), sanitize(request.code().substring(0, Math.min(8, request.code().length()))));
 
 		AuthExchangeResponse response = service.exchangeCode(request.code());
 		return ApiResponse.ok(response);
