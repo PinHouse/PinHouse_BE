@@ -31,6 +31,8 @@ public interface DiagnosisJpaRepository extends JpaRepository<Diagnosis, Long> {
 	 */
 	List<Diagnosis> findAllByUserOrderByCreatedAtDesc(User user);
 
+	long countByUser_Id(UUID userId);
+
 	/**
 	 * 유저 ID 기반으로 진단 삭제
 	 * @param userId 유저 ID

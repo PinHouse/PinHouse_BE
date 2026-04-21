@@ -12,6 +12,8 @@ public interface PinPointMongoRepository extends MongoRepository<PinPoint, Strin
 	/// 유저에 따른 목록 조회
 	List<PinPoint> findByUserId(String userId);
 
+	long countByUserId(String userId);
+
 	/// 아이디와 유저ID에 따른 존재 조회
 	Optional<PinPoint> findByIdAndUserId(String id, String userId);
 

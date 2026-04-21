@@ -3,6 +3,8 @@ package co.kr.pinhouse.domain.user.domain.repository;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,4 +21,11 @@ public interface UserJpaRepository extends JpaRepository<User, UUID> {
 	@EntityGraph(attributePaths = "facilityTypes")
 		// LAZY 컬렉션을 같이 로딩
 	Optional<User> findWithFacilityTypesById(UUID id);
+
+	Page<User> findByNameContainingIgnoreCaseOrNicknameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+		String nameKeyword,
+		String nicknameKeyword,
+		String emailKeyword,
+		Pageable pageable
+	);
 }
