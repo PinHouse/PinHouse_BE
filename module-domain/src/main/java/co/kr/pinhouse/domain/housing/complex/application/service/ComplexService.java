@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.housing.complex.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.List;
@@ -177,7 +179,7 @@ public class ComplexService implements ComplexUseCase {
 		String noticeId,
 		co.kr.pinhouse.domain.housing.notice.application.dto.UnitTypeSortType sortType
 	) {
-		log.debug("정렬된 단지 목록 조회 - noticeId: {}, sortType: {}", noticeId, sortType);
+		log.debug("정렬된 단지 목록 조회 - noticeId: {}, sortType: {}", sanitize(noticeId), sanitize(sortType));
 		return repository.findSortedComplexesWithUnitTypes(noticeId, sortType);
 	}
 
@@ -495,7 +497,8 @@ public class ComplexService implements ComplexUseCase {
 	/// 계산 결과에 실제 경로 후보가 있는지 검증
 	private void validateTransitRoute(PathResult pathResult, String complexId, String pinPointId) {
 		if (pathResult == null || pathResult.routes() == null || pathResult.routes().isEmpty()) {
-			log.warn("대중교통 경로를 찾지 못했습니다 - complexId={}, pinPointId={}", complexId, pinPointId);
+			log.warn("대중교통 경로를 찾지 못했습니다 - complexId={}, pinPointId={}",
+				sanitize(complexId), sanitize(pinPointId));
 			throw new CustomException(ComplexErrorCode.NOT_FOUND_TRANSIT_ROUTE);
 		}
 	}
@@ -509,7 +512,7 @@ public class ComplexService implements ComplexUseCase {
 		TransitInfoResponse cachedTransitInfo = distanceCacheService.getTransitInfo(id, pinPointId);
 
 		if (cachedTransitInfo != null) {
-			log.debug("Using cached TransitInfo for complexId={}, pinPointId={}", id, pinPointId);
+			log.debug("Using cached TransitInfo for complexId={}, pinPointId={}", sanitize(id), sanitize(pinPointId));
 			return cachedTransitInfo;
 		}
 
@@ -537,7 +540,7 @@ public class ComplexService implements ComplexUseCase {
 			distanceCacheService.getRootResult(id, pinPointId);
 
 		if (cachedRootResult != null) {
-			log.debug("Using cached RootResult for complexId={}, pinPointId={}", id, pinPointId);
+			log.debug("Using cached RootResult for complexId={}, pinPointId={}", sanitize(id), sanitize(pinPointId));
 			List<DistanceResponse.TransitResponse> routes = mapper.from(cachedRootResult);
 			return DistanceResponse.from(cachedRootResult, routes);
 		}

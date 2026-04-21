@@ -1,5 +1,7 @@
 package co.kr.pinhouse.common.exception;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler {
 		ErrorCode errorCode = exception.getErrorCode();
 
 		/// 로그찍기
-		log.error(errorCode.getMessage());
+		log.error(toLogMessage(errorCode.getMessage()));
 
 		/// 응답
 		return ResponseEntity
@@ -58,7 +60,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 파라미터용 예외 코드
 		ErrorCode errorCode = CommonErrorCode.BAD_PARAMETER;
@@ -81,7 +83,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleRedisConnectionFailureException(RedisConnectionFailureException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_REDIS_SERVER_ERROR;
@@ -97,7 +99,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleMongoException(UncategorizedMongoDbException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_MONGO_SERVER_ERROR;
@@ -113,7 +115,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleNoSuchException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.NOT_FOUND;
@@ -129,7 +131,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleNullPointerException(NullPointerException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.NULL_VALUE;
@@ -145,7 +147,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleIllegalException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage(), exception);
+		log.error(toLogMessage(exception.getMessage()), exception);
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST;
@@ -161,7 +163,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleJsonException(HttpMessageNotReadableException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_JSON;
@@ -177,7 +179,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleJUnexpectedTypeException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_INVALID_INPUT;
@@ -194,7 +196,7 @@ public class GlobalExceptionHandler {
 		InvalidDataAccessResourceUsageException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
@@ -210,7 +212,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleDataIntegrityViolationException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SCHEMA_SERVER_ERROR;
@@ -226,7 +228,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleTransientDataAccessException(TransientDataAccessException exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage());
+		log.error(toLogMessage(exception.getMessage()));
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
@@ -242,7 +244,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse<?> handleException(Exception exception) {
 
 		/// 에러 이유 로그 찍기
-		log.error(exception.getMessage(), exception);
+		log.error(toLogMessage(exception.getMessage()), exception);
 
 		/// 기본 에러 코드로 응답 생성
 		ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
@@ -250,6 +252,10 @@ public class GlobalExceptionHandler {
 
 		/// 응답
 		return ApiResponse.fail(customException);
+	}
+
+	private String toLogMessage(String message) {
+		return String.valueOf(sanitize(message));
 	}
 
 }

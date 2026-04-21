@@ -1,5 +1,7 @@
 package co.kr.pinhouse.domain.image.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +56,8 @@ public class ImageService implements ImageUseCase {
 		// 6. Response 반환
 		int expiresInSeconds = expirationMinutes * 60;
 
-		log.info("Presigned URL 생성 완료: userId={}, fileName={}, objectKey={}", userId, request.fileName(), objectKey);
+		log.info("Presigned URL 생성 완료: userId={}, fileName={}, objectKey={}",
+			sanitize(userId), sanitize(request.fileName()), sanitize(objectKey));
 
 		return PresignedUrlResponse.of(presignedUrl, publicUrl, expiresInSeconds);
 	}
@@ -70,7 +73,7 @@ public class ImageService implements ImageUseCase {
 		List<String> allowedContentTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/gif");
 
 		if (!allowedContentTypes.contains(contentType.toLowerCase())) {
-			log.warn("지원하지 않는 Content-Type: {}", contentType);
+			log.warn("지원하지 않는 Content-Type: {}", sanitize(contentType));
 			throw new CustomException(ImageErrorCode.INVALID_FILE_TYPE);
 		}
 	}
@@ -85,7 +88,7 @@ public class ImageService implements ImageUseCase {
 
 		int lastDotIndex = fileName.lastIndexOf('.');
 		if (lastDotIndex <= 0 || lastDotIndex == fileName.length() - 1) {
-			log.warn("파일 확장자 추출 실패: fileName={}", fileName);
+			log.warn("파일 확장자 추출 실패: fileName={}", sanitize(fileName));
 			throw new CustomException(ImageErrorCode.INVALID_FILE_EXTENSION);
 		}
 
@@ -99,7 +102,7 @@ public class ImageService implements ImageUseCase {
 		List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "gif");
 
 		if (!allowedExtensions.contains(extension)) {
-			log.warn("지원하지 않는 확장자: {}", extension);
+			log.warn("지원하지 않는 확장자: {}", sanitize(extension));
 			throw new CustomException(ImageErrorCode.INVALID_FILE_EXTENSION);
 		}
 	}

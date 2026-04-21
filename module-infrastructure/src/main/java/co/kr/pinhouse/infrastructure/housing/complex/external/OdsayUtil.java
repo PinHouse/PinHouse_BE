@@ -1,5 +1,7 @@
 package co.kr.pinhouse.infrastructure.housing.complex.external;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -125,7 +127,7 @@ public class OdsayUtil implements DistanceUtil {
 			errorNode.toString()
 		);
 
-		log.error("ODsay 에러 응답 수신 - code={}, message={}", errorCode, errorMessage);
+		log.error("ODsay 에러 응답 수신 - code={}, message={}", sanitize(errorCode), sanitize(errorMessage));
 
 		if (isInvalidApiKey(errorCode, errorMessage)) {
 			throw new CustomException(ComplexErrorCode.ODSAY_INVALID_API_KEY);

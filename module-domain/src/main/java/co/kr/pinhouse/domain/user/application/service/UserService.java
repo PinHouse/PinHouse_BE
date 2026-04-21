@@ -1,5 +1,8 @@
 package co.kr.pinhouse.domain.user.application.service;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitizeName;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -81,12 +84,12 @@ public class UserService implements UserUseCase {
 				.birthday((String)infoMap.get("birthday"))
 				.build();
 		} else {
-			log.error("Redis raw object type is unexpected: {}", raw.getClass().getName());
+			log.error("Redis raw object type is unexpected: {}", sanitize(raw.getClass().getName()));
 			throw new CustomException(UserErrorCode.BAD_REQUEST_ONBOARDING);
 		}
 
 		log.info("Processing user signup - social: {}, email: {}, name: {}",
-			userInfo.getSocial(), userInfo.getEmail(), userInfo.getUsername());
+			sanitize(userInfo.getSocial()), sanitize(userInfo.getEmail()), sanitizeName(userInfo.getUsername()));
 
 		Provider provider = Provider.valueOf(userInfo.getSocial());
 
@@ -186,13 +189,13 @@ public class UserService implements UserUseCase {
 		/// 탈퇴 사유 로깅 (0개 이상 복수 선택 가능)
 		if (request.reasons() != null && !request.reasons().isEmpty()) {
 			log.info("회원 탈퇴 - userId={}, 탈퇴 사유 개수={}, 사유={}",
-				userId,
-				request.reasons().size(),
-				request.reasons().stream()
+				sanitize(userId),
+				sanitize(request.reasons().size()),
+				sanitize(request.reasons().stream()
 					.map(reason -> reason.getValue())
-					.toList());
+					.toList()));
 		} else {
-			log.info("회원 탈퇴 - userId={}, 탈퇴 사유 선택 안함", userId);
+			log.info("회원 탈퇴 - userId={}, 탈퇴 사유 선택 안함", sanitize(userId));
 		}
 
 		/// 핀포인트 DB에서 삭제

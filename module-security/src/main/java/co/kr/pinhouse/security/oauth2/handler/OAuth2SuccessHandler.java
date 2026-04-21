@@ -1,5 +1,7 @@
 package co.kr.pinhouse.security.oauth2.handler;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.io.IOException;
 
 import org.springframework.security.core.Authentication;
@@ -47,7 +49,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			/// BFF 콜백 URL 생성
 			String redirectUrl = buildBffCallbackUrl(httpServletRequest, exchangeCode);
 
-			log.info("OAuth2 인증 성공 - userId: {}, BFF 리다이렉트: {}", user.getId(), redirectUrl);
+			log.info("OAuth2 인증 성공 - userId: {}, BFF 리다이렉트: {}",
+				sanitize(user.getId()), sanitize(redirectUrl));
 
 			/// BFF로 리다이렉트 (exchange code 포함)
 			getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, redirectUrl);
@@ -63,7 +66,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	}
 
 	private String resolveBffCallbackUrl(HttpServletRequest request) {
-		String frontUrl = redirectUrlResolver.resolveRedirectUrl(request);
-		return frontUrl + "/api/auth/callback";
+		return redirectUrlResolver.resolveRedirectUrl(request);
 	}
 }
