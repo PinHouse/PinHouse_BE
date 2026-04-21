@@ -1,5 +1,7 @@
 package co.kr.pinhouse.common.util;
 
+import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RedirectUrlResolver {
 
 	public static final String REDIRECT_ORIGIN_SESSION_ATTRIBUTE = "PINHOUSE_REDIRECT_ORIGIN";
+	public static final String REDIRECT_PATH_SESSION_ATTRIBUTE = "PINHOUSE_REDIRECT_PATH";
 
 	@Value("${cors.front.local}")
 	private String frontLocal;
@@ -28,23 +31,43 @@ public class RedirectUrlResolver {
 	@Value("${cors.front.prod}")
 	private String frontProd;
 
+	@Value("${cors.front.admin-local:}")
+	private String adminFrontLocal;
+
+	@Value("${cors.front.admin-dev:}")
+	private String adminFrontDev;
+
+	@Value("${cors.front.admin-prod:}")
+	private String adminFrontProd;
+
 	@Value("${cors.front.redirect}")
 	private String defaultRedirectUrl;
+
+	@Value("${cors.front.redirect-path:/api/auth/callback}")
+	private String defaultRedirectPath;
+
+	@Value("${cors.front.admin-redirect-path:/admin/auth/callback}")
+	private String defaultAdminRedirectPath;
 
 	@Value("${spring.profiles.active:local}")
 	private String activeProfile;
 
 	private Set<String> allowedOrigins;
+	private Set<String> adminOrigins;
 
 	@PostConstruct
 	private void initAllowedOrigins() {
 		allowedOrigins = new HashSet<>();
+		adminOrigins = new HashSet<>();
 		addIfNotEmpty(allowedOrigins, frontLocal);
 		addIfNotEmpty(allowedOrigins, frontDev);
 		addIfNotEmpty(allowedOrigins, frontProd);
+		addAdminOriginIfNotEmpty(adminFrontLocal);
+		addAdminOriginIfNotEmpty(adminFrontDev);
+		addAdminOriginIfNotEmpty(adminFrontProd);
 
 		log.info("RedirectUrlResolver 초기화 완료 - 활성 프로파일: {}, 허용된 Origin 개수: {}",
-			activeProfile, allowedOrigins.size());
+			sanitize(activeProfile), sanitize(allowedOrigins.size()));
 	}
 
 	/**
@@ -54,7 +77,7 @@ public class RedirectUrlResolver {
 	 * @return 결정된 리다이렉트 URL
 	 */
 	public String resolveRedirectUrl(HttpServletRequest request) {
-		return resolveRedirectUrlWithPath(request, "");
+		return resolveRedirectUrlWithPath(request, null);
 	}
 
 	/**
@@ -65,34 +88,28 @@ public class RedirectUrlResolver {
 	 * @return 결정된 리다이렉트 URL + 경로
 	 */
 	public String resolveRedirectUrlWithPath(HttpServletRequest request, String path) {
-		// prod 프로파일: 항상 고정 URL
-		if ("prod".equals(activeProfile)) {
-			String redirectUrl = frontProd + (path != null ? path : "");
-			log.info("리다이렉트 URL 결정 (prod 고정) - URL: {}", redirectUrl);
-			return redirectUrl;
+		RedirectTarget target = consumeSavedRedirectTarget(request);
+		String origin = target.origin();
+		String redirectPath = normalizeRedirectPath(path);
+
+		if (redirectPath == null) {
+			redirectPath = target.redirectPath();
+		}
+		if (redirectPath == null) {
+			redirectPath = getDefaultRedirectPath(origin);
 		}
 
-		// OAuth2 인증 시작 시 저장해둔 프론트 Origin이 있으면 그것을 최우선으로 사용
-		String origin = consumeSavedOrigin(request);
-
 		if (isAllowedOrigin(origin)) {
-			String redirectUrl = origin + (path != null ? path : "");
-			log.info("리다이렉트 URL 결정 (세션 저장 Origin) - Origin: {}, URL: {}", origin, redirectUrl);
-			return redirectUrl;
-		}
-
-		// dev/local 프로파일: 동적 결정
-		origin = extractOriginFromRequest(request);
-
-		if (isAllowedOrigin(origin)) {
-			String redirectUrl = origin + (path != null ? path : "");
-			log.info("리다이렉트 URL 결정 (동적) - Origin: {}, URL: {}", origin, redirectUrl);
+			String redirectUrl = buildRedirectUrl(origin, redirectPath);
+			log.info("리다이렉트 URL 결정 - Origin: {}, path: {}, URL: {}",
+				sanitize(origin), sanitize(redirectPath), sanitize(redirectUrl));
 			return redirectUrl;
 		}
 
 		// 검증 실패 시 기본 URL 사용
-		String redirectUrl = defaultRedirectUrl + (path != null ? path : "");
-		log.warn("요청 Origin이 허용되지 않음: {}. 기본 URL 사용: {}", origin, redirectUrl);
+		String defaultPath = getDefaultRedirectPath(origin);
+		String redirectUrl = buildRedirectUrl(defaultRedirectUrl, redirectPath != null ? redirectPath : defaultPath);
+		log.warn("요청 Origin이 허용되지 않음: {}. 기본 URL 사용: {}", sanitize(origin), sanitize(redirectUrl));
 		return redirectUrl;
 	}
 
@@ -101,17 +118,20 @@ public class RedirectUrlResolver {
 	 *
 	 * @param request HTTP 요청 객체
 	 */
-	public void saveRedirectOrigin(HttpServletRequest request) {
+	public void saveRedirectContext(HttpServletRequest request) {
 		String origin = extractOriginFromRequest(request);
 
 		if (!isAllowedOrigin(origin)) {
-			log.debug("저장 가능한 OAuth2 Origin이 없습니다. Origin: {}", origin);
+			log.debug("저장 가능한 OAuth2 Origin이 없습니다. Origin: {}", sanitize(origin));
 			return;
 		}
 
+		String redirectPath = extractRedirectPath(request, origin);
+
 		// OAuth 공급자 페이지를 거쳐 돌아와도 원래 프론트로 복귀할 수 있도록 세션에 보관
 		request.getSession(true).setAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE, origin);
-		log.info("OAuth2 리다이렉트 Origin 저장 - Origin: {}", origin);
+		request.getSession(true).setAttribute(REDIRECT_PATH_SESSION_ATTRIBUTE, redirectPath);
+		log.info("OAuth2 리다이렉트 정보 저장 - Origin: {}, path: {}", sanitize(origin), sanitize(redirectPath));
 	}
 
 	/**
@@ -143,21 +163,21 @@ public class RedirectUrlResolver {
 	 * @param request HTTP 요청 객체
 	 * @return 저장된 Origin (없으면 null)
 	 */
-	private String consumeSavedOrigin(HttpServletRequest request) {
+	private RedirectTarget consumeSavedRedirectTarget(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
-		if (session == null) {
-			return null;
+		if (session != null) {
+			Object savedOrigin = session.getAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
+			Object savedPath = session.getAttribute(REDIRECT_PATH_SESSION_ATTRIBUTE);
+			session.removeAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
+			session.removeAttribute(REDIRECT_PATH_SESSION_ATTRIBUTE);
+
+			if (savedOrigin instanceof String origin && !origin.isBlank()) {
+				return new RedirectTarget(normalizeOrigin(origin), normalizeRedirectPath((String)savedPath));
+			}
 		}
 
-		// 1회성 값으로 사용하고 바로 제거해 이전 로그인 시도의 값이 남지 않게 한다
-		Object savedOrigin = session.getAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
-		session.removeAttribute(REDIRECT_ORIGIN_SESSION_ATTRIBUTE);
-
-		if (!(savedOrigin instanceof String origin) || origin.isBlank()) {
-			return null;
-		}
-
-		return normalizeOrigin(origin);
+		String origin = extractOriginFromRequest(request);
+		return new RedirectTarget(origin, null);
 	}
 
 	/**
@@ -179,7 +199,7 @@ public class RedirectUrlResolver {
 
 			// 프로토콜 검증
 			if (!"http".equals(scheme) && !"https".equals(scheme)) {
-				log.warn("허용되지 않은 프로토콜: {}", scheme);
+				log.warn("허용되지 않은 프로토콜: {}", sanitize(scheme));
 				return null;
 			}
 
@@ -190,7 +210,7 @@ public class RedirectUrlResolver {
 
 			return normalizeOrigin(origin);
 		} catch (URISyntaxException e) {
-			log.warn("Referer 파싱 실패: {}", referer, e);
+			log.warn("Referer 파싱 실패: {}", sanitize(referer), e);
 			return null;
 		}
 	}
@@ -208,6 +228,13 @@ public class RedirectUrlResolver {
 		return allowedOrigins.contains(origin);
 	}
 
+	private boolean isAdminOrigin(String origin) {
+		if (origin == null || origin.isEmpty()) {
+			return false;
+		}
+		return adminOrigins.contains(origin);
+	}
+
 	/**
 	 * Origin을 정규화합니다 (trailing slash 제거, 소문자 변환).
 	 *
@@ -216,6 +243,55 @@ public class RedirectUrlResolver {
 	 */
 	private String normalizeOrigin(String origin) {
 		return origin.replaceAll("/$", "").toLowerCase();
+	}
+
+	private String extractRedirectPath(HttpServletRequest request, String origin) {
+		String requestedPath = request.getParameter("redirectPath");
+		String redirectPath = normalizeRedirectPath(requestedPath);
+
+		if (redirectPath != null) {
+			return redirectPath;
+		}
+
+		if (requestedPath != null && !requestedPath.isBlank()) {
+			log.warn("허용되지 않은 redirectPath: {}", sanitize(requestedPath));
+		}
+
+		return getDefaultRedirectPath(origin);
+	}
+
+	private String normalizeRedirectPath(String path) {
+		if (path == null || path.isBlank()) {
+			return null;
+		}
+
+		String normalizedPath = path.trim();
+		if (!normalizedPath.startsWith("/") || normalizedPath.startsWith("//")) {
+			return null;
+		}
+		if (normalizedPath.indexOf('\r') >= 0 || normalizedPath.indexOf('\n') >= 0) {
+			return null;
+		}
+
+		try {
+			URI uri = new URI(normalizedPath);
+			if (uri.isAbsolute() || uri.getHost() != null || uri.getAuthority() != null) {
+				return null;
+			}
+			return normalizedPath;
+		} catch (URISyntaxException exception) {
+			return null;
+		}
+	}
+
+	private String getDefaultRedirectPath(String origin) {
+		String redirectPath = isAdminOrigin(origin) ? defaultAdminRedirectPath : defaultRedirectPath;
+		String normalizedPath = normalizeRedirectPath(redirectPath);
+		return normalizedPath != null ? normalizedPath : "/api/auth/callback";
+	}
+
+	private String buildRedirectUrl(String origin, String path) {
+		return normalizeOrigin(origin) + path;
 	}
 
 	/**
@@ -228,5 +304,16 @@ public class RedirectUrlResolver {
 		if (value != null && !value.isEmpty()) {
 			set.add(normalizeOrigin(value));
 		}
+	}
+
+	private void addAdminOriginIfNotEmpty(String origin) {
+		if (origin != null && !origin.isBlank()) {
+			String normalizedOrigin = normalizeOrigin(origin);
+			allowedOrigins.add(normalizedOrigin);
+			adminOrigins.add(normalizedOrigin);
+		}
+	}
+
+	private record RedirectTarget(String origin, String redirectPath) {
 	}
 }

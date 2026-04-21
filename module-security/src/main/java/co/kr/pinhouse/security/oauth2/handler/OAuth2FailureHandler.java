@@ -55,7 +55,6 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 	}
 
 	private String resolveCallbackUrl(HttpServletRequest request) {
-		String frontUrl = redirectUrlResolver.resolveRedirectUrl(request);
-		return frontUrl + "/api/auth/callback";
+		return redirectUrlResolver.resolveRedirectUrl(request);
 	}
 }

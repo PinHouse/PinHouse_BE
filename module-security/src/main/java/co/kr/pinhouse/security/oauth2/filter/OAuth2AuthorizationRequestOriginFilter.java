@@ -32,8 +32,8 @@ public class OAuth2AuthorizationRequestOriginFilter extends OncePerRequestFilter
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
-		// 인증 공급자로 리다이렉트되기 전에 현재 프론트 Origin을 세션에 저장
-		redirectUrlResolver.saveRedirectOrigin(request);
+		// 인증 공급자로 리다이렉트되기 전에 현재 프론트 Origin과 callback path를 세션에 저장
+		redirectUrlResolver.saveRedirectContext(request);
 		filterChain.doFilter(request, response);
 	}
 }

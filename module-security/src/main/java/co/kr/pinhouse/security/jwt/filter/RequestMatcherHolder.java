@@ -55,6 +55,12 @@ public class RequestMatcherHolder {
 		// oauth2
 		new RequestInfo(POST, "/api/v1/oauth2/**", null),
 
+		// admin
+		new RequestInfo(GET, "/v1/admin/**", Role.ADMIN),
+		new RequestInfo(POST, "/v1/admin/**", Role.ADMIN),
+		new RequestInfo(PATCH, "/v1/admin/**", Role.ADMIN),
+		new RequestInfo(DELETE, "/v1/admin/**", Role.ADMIN),
+
 		// notice
 		new RequestInfo(GET, "/v1/notices/likes", Role.USER),
 		new RequestInfo(GET, "/v1/notices/**", null),
@@ -72,6 +78,14 @@ public class RequestMatcherHolder {
 
 		// search
 		new RequestInfo(GET, "/v1/search/fast", Role.USER),
+
+		// cs
+		new RequestInfo(GET, "/v1/cs/**", Role.USER),
+		new RequestInfo(POST, "/v1/cs/**", Role.USER),
+
+		// ads
+		new RequestInfo(GET, "/v1/ads/**", null),
+		new RequestInfo(POST, "/v1/ads/events", null),
 
 		// batch
 		new RequestInfo(POST, "/v1/facility/batch", null),
