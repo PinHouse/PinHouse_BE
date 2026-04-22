@@ -159,4 +159,11 @@ public class User extends BaseTimeEntity {
 			this.facilityTypes = new ArrayList<>(facilityTypes);
 		}
 	}
+
+	/// 권한 업데이트
+	public void changeRole(Role role) {
+		if (role != null) {
+			this.role = role;
+		}
+	}
 }

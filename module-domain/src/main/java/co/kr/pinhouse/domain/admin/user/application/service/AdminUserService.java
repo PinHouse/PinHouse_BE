@@ -11,14 +11,20 @@ import co.kr.pinhouse.common.exception.code.UserErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
+import co.kr.pinhouse.domain.admin.application.usecase.AdminSessionUseCase;
+import co.kr.pinhouse.domain.admin.audit.application.usecase.AdminAuditLogUseCase;
+import co.kr.pinhouse.domain.admin.audit.domain.entity.AdminAuditActionType;
+import co.kr.pinhouse.domain.admin.audit.domain.entity.AdminAuditTargetType;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserDetailResponse;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserSummaryResponse;
 import co.kr.pinhouse.domain.admin.user.application.usecase.AdminUserUseCase;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.repository.DiagnosisJpaRepository;
 import co.kr.pinhouse.domain.like.domain.LikeJpaRepository;
 import co.kr.pinhouse.domain.pinpoint.domain.repository.PinPointMongoRepository;
+import co.kr.pinhouse.domain.user.domain.entity.Role;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +35,8 @@ public class AdminUserService implements AdminUserUseCase {
 	private final LikeJpaRepository likeRepository;
 	private final PinPointMongoRepository pinPointRepository;
 	private final DiagnosisJpaRepository diagnosisRepository;
+	private final AdminSessionUseCase adminSessionService;
+	private final AdminAuditLogUseCase adminAuditLogService;
 
 	// =================
 	//  퍼블릭 로직
@@ -57,23 +65,72 @@ public class AdminUserService implements AdminUserUseCase {
 	@Transactional(readOnly = true)
 	@Override
 	public AdminUserDetailResponse getUser(UUID userId) {
-		User user = userRepository.findWithFacilityTypesById(userId)
-			.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
+		User user = loadUserWithFacilityTypes(userId);
 
-		return AdminUserDetailResponse.of(
-			user,
-			maskName(user.getName()),
-			maskEmail(user.getEmail()),
-			maskPhone(user.getPhoneNumber()),
-			likeRepository.countByUser_Id(userId),
-			pinPointRepository.countByUserId(userId.toString()),
-			diagnosisRepository.countByUser_Id(userId)
+		return toAdminUserDetailResponse(user);
+	}
+
+	/// 관리자 유저 권한 변경
+	@Transactional
+	@Override
+	public AdminUserDetailResponse updateUserRole(
+		UUID userId,
+		Role role,
+		UUID adminId,
+		HttpServletRequest httpServletRequest
+	) {
+		adminSessionService.loadAdmin(adminId);
+
+		if (adminId.equals(userId)) {
+			throw new CustomException(UserErrorCode.FORBIDDEN_SELF_ROLE_CHANGE);
+		}
+
+		User user = loadUserWithFacilityTypes(userId);
+		AdminUserDetailResponse before = toAdminUserDetailResponse(user);
+
+		if (user.getRole() == role) {
+			return before;
+		}
+
+		user.changeRole(role);
+		AdminUserDetailResponse after = toAdminUserDetailResponse(user);
+
+		adminAuditLogService.log(
+			adminId,
+			AdminAuditActionType.UPDATE,
+			AdminAuditTargetType.USER,
+			userId.toString(),
+			"유저 권한 변경",
+			before,
+			after,
+			httpServletRequest
 		);
+
+		return after;
 	}
 
 	// =================
 	//  내부 로직
 	// =================
+
+	/// 관리자 유저 상세 응답 변환
+	private AdminUserDetailResponse toAdminUserDetailResponse(User user) {
+		return AdminUserDetailResponse.of(
+			user,
+			maskName(user.getName()),
+			maskEmail(user.getEmail()),
+			maskPhone(user.getPhoneNumber()),
+			likeRepository.countByUser_Id(user.getId()),
+			pinPointRepository.countByUserId(user.getId().toString()),
+			diagnosisRepository.countByUser_Id(user.getId())
+		);
+	}
+
+	/// 유저 상세 조회
+	private User loadUserWithFacilityTypes(UUID userId) {
+		return userRepository.findWithFacilityTypesById(userId)
+			.orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
+	}
 
 	/// 이름 마스킹
 	private String maskName(String name) {
