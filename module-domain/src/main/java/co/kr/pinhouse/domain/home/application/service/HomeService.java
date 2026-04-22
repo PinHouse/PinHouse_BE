@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.pinhouse.common.exception.code.DiagnosisErrorCode;
 import co.kr.pinhouse.common.exception.code.PinPointErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
@@ -24,6 +23,7 @@ import co.kr.pinhouse.domain.Location;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.dto.response.DiagnosisDetailResponse;
 import co.kr.pinhouse.domain.diagnostic.diagnosis.application.usecase.DiagnosisUseCase;
 import co.kr.pinhouse.domain.home.application.dto.HomeSearchCategoryType;
+import co.kr.pinhouse.domain.home.application.dto.response.HomeNoticeEmptyReason;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeNoticeListResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeNoticeResponse;
 import co.kr.pinhouse.domain.home.application.dto.response.HomeSearchCategoryPageResponse;
@@ -63,6 +63,7 @@ public class HomeService implements HomeUseCase {
 	 */
 	private static final int HOME_SEARCH_PREVIEW_LIMIT = 5;
 	private static final int HOME_SEARCH_CATEGORY_PAGE_SIZE = 5;
+	private static final String RECOMMENDED_NOTICES_TITLE = "진단 기반 추천";
 	private final NoticeDocumentRepository noticeRepository;
 	private final ComplexDocumentRepository complexRepository;
 	private final LikeQueryUseCase likeService;
@@ -403,8 +404,12 @@ public class HomeService implements HomeUseCase {
 
 		// 2. 진단 기록 없음 처리
 		if (diagnosis == null) {
-			log.warn("진단 기록이 없습니다 - userId={}", sanitize(userId));
-			throw new CustomException(DiagnosisErrorCode.NOT_FOUND_DIAGNOSIS);
+			log.info("진단 기록이 없어 추천 공고를 비워서 반환합니다 - userId={}", sanitize(userId));
+			return emptyRecommendedNoticeResponse(
+				false,
+				HomeNoticeEmptyReason.NO_DIAGNOSIS,
+				"진단 기록이 없어 추천 공고를 제공할 수 없습니다."
+			);
 		}
 
 		// 3. 추천 임대주택 유형 추출
@@ -415,13 +420,11 @@ public class HomeService implements HomeUseCase {
 			|| availableRentalTypes.isEmpty()
 			|| availableRentalTypes.contains("해당 없음")) {
 			log.info("추천 가능한 임대주택이 없습니다 - userId={}", sanitize(userId));
-			return HomeNoticeListResponse.builder()
-				.region(null)
-				.title("진단 기반 추천")
-				.content(List.of())
-				.hasNext(false)
-				.totalElements(0L)
-				.build();
+			return emptyRecommendedNoticeResponse(
+				true,
+				HomeNoticeEmptyReason.NO_ELIGIBLE_RENTAL_TYPES,
+				"진단 결과상 추천 가능한 임대주택 유형이 없습니다."
+			);
 		}
 
 		// 5. 진단 결과 → 공고 supplyType 매핑
@@ -433,13 +436,11 @@ public class HomeService implements HomeUseCase {
 		// 진단 결과에 매핑될 공고 유형이 없는 경우 빈 응답 반환
 		if (targetSupplyTypes.isEmpty()) {
 			log.info("진단 결과에 매핑 가능한 주택 유형이 없습니다 - userId={}", sanitize(userId));
-			return HomeNoticeListResponse.builder()
-				.region(null)
-				.title("진단 기반 추천")
-				.content(List.of())
-				.hasNext(false)
-				.totalElements(0L)
-				.build();
+			return emptyRecommendedNoticeResponse(
+				true,
+				HomeNoticeEmptyReason.NO_MAPPED_SUPPLY_TYPES,
+				"진단 결과를 공고 필터 조건으로 변환할 수 없습니다."
+			);
 		}
 
 		log.debug("진단 기반 필터링 - rentalTypes={}, supplyTypes={}",
@@ -455,6 +456,16 @@ public class HomeService implements HomeUseCase {
 			pageable
 		);
 
+		if (page.isEmpty()) {
+			log.info("진단 결과에 맞는 공고가 없습니다 - userId={}, supplyTypes={}",
+				sanitize(userId), sanitize(targetSupplyTypes));
+			return emptyRecommendedNoticeResponse(
+				true,
+				HomeNoticeEmptyReason.NO_MATCHING_NOTICES,
+				"진단 결과에 맞는 공고가 없습니다."
+			);
+		}
+
 		// 8. 좋아요 상태 조회
 		List<String> likedNoticeIds = likeService.getLikeNoticeIds(userId);
 
@@ -469,10 +480,28 @@ public class HomeService implements HomeUseCase {
 		// 10. 최종 응답
 		return HomeNoticeListResponse.builder()
 			.region(null)
-			.title("진단 기반 추천")
+			.title(RECOMMENDED_NOTICES_TITLE)
 			.content(content)
 			.hasNext(page.hasNext())
 			.totalElements(page.getTotalElements())
+			.hasDiagnosis(true)
+			.build();
+	}
+
+	private HomeNoticeListResponse emptyRecommendedNoticeResponse(
+		boolean hasDiagnosis,
+		HomeNoticeEmptyReason emptyReason,
+		String emptyMessage
+	) {
+		return HomeNoticeListResponse.builder()
+			.region(null)
+			.title(RECOMMENDED_NOTICES_TITLE)
+			.content(List.of())
+			.hasNext(false)
+			.totalElements(0L)
+			.hasDiagnosis(hasDiagnosis)
+			.emptyReason(emptyReason)
+			.emptyMessage(emptyMessage)
 			.build();
 	}
 

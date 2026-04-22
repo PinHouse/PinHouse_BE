@@ -2,6 +2,8 @@ package co.kr.pinhouse.domain.home.application.dto.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -9,6 +11,7 @@ import lombok.Builder;
 @Builder
 public record HomeNoticeListResponse(
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Schema(description = "공통 지역", example = "성남시")
 	String region,
 
@@ -22,7 +25,19 @@ public record HomeNoticeListResponse(
 	boolean hasNext,
 
 	@Schema(description = "전체 공고 개수", example = "100")
-	long totalElements
+	long totalElements,
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Schema(description = "진단 기반 추천 응답에서 진단 기록 존재 여부를 제공합니다.", example = "true", nullable = true)
+	Boolean hasDiagnosis,
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Schema(description = "목록이 비어 있는 이유. 진단 기반 추천 응답에서만 사용됩니다.", example = "NO_DIAGNOSIS", nullable = true)
+	HomeNoticeEmptyReason emptyReason,
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Schema(description = "목록이 비어 있는 사유를 설명하는 메시지. 진단 기반 추천 응답에서만 사용됩니다.", example = "진단 기록이 없어 추천 공고를 제공할 수 없습니다.", nullable = true)
+	String emptyMessage
 
 ) {
 }
