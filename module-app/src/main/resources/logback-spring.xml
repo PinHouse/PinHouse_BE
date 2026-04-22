@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- @formatter:off -->
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <conversionRule conversionWord="sanitizedMsg"
-                    converterClass="co.kr.pinhouse.app.logging.SanitizedMessageConverter"/>
+                    converterClass="co.kr.pinhouse.common.logging.SanitizedMessageConverter"/>
 
     <!-- Console Appender - 로컬/컨테이너 모두 stdout만 사용 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Loki/Grafana가 로그 레벨을 안정적으로 인식할 수 있도록 level 키를 앞쪽에 둔다 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} level=%-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} -
-                %sanitizedMsg%n
-            </pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} level=%-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} - %sanitizedMsg%n</pattern>
         </encoder>
     </appender>
 
@@ -29,3 +28,4 @@
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.hibernate" level="WARN"/>
 </configuration>
+<!-- @formatter:on -->

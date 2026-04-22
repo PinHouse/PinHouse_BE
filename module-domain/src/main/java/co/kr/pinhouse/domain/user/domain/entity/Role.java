@@ -19,8 +19,13 @@ public enum Role {
 	/// JSON에서 생성
 	@JsonCreator
 	public static Role fromLabel(String label) {
+		if (label == null || label.isBlank()) {
+			throw new CustomException(UserErrorCode.BAD_REQUEST_ROLE);
+		}
+
+		String normalizedLabel = label.trim();
 		for (Role userRole : values()) {
-			if (userRole.label.equals(label)) {
+			if (userRole.label.equals(normalizedLabel) || userRole.name().equalsIgnoreCase(normalizedLabel)) {
 				return userRole;
 			}
 		}

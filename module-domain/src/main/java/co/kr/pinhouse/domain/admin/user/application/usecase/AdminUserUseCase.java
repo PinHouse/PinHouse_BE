@@ -6,6 +6,8 @@ import co.kr.pinhouse.common.response.pageable.SliceRequest;
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserDetailResponse;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserSummaryResponse;
+import co.kr.pinhouse.domain.user.domain.entity.Role;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface AdminUserUseCase {
 
@@ -18,4 +20,7 @@ public interface AdminUserUseCase {
 
 	/// 관리자 유저 상세 조회
 	AdminUserDetailResponse getUser(UUID userId);
+
+	/// 관리자 유저 권한 변경
+	AdminUserDetailResponse updateUserRole(UUID userId, Role role, UUID adminId, HttpServletRequest httpServletRequest);
 }

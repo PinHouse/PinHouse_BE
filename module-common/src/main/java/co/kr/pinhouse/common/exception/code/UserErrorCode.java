@@ -28,6 +28,7 @@ public enum UserErrorCode implements ErrorCode {
 	// ========================
 	// 403 Forbidden
 	// ========================
+	FORBIDDEN_SELF_ROLE_CHANGE(403_200, HttpStatus.FORBIDDEN, "자신의 권한은 변경할 수 없습니다."),
 
 	// ========================
 	// 404 Not Found
