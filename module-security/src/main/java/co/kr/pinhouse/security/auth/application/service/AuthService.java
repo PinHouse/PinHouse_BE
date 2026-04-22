@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.kr.pinhouse.common.exception.code.SecurityErrorCode;
 import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.common.util.KeyUtil;
+import co.kr.pinhouse.domain.pinpoint.application.usecase.PinPointUseCase;
 import co.kr.pinhouse.domain.user.domain.entity.User;
 import co.kr.pinhouse.domain.user.domain.onboarding.TempUserInfo;
 import co.kr.pinhouse.domain.user.domain.repository.UserJpaRepository;
@@ -38,6 +39,7 @@ public class AuthService implements AuthUseCase {
 
 	/// 유저 저장소
 	private final UserJpaRepository repository;
+	private final PinPointUseCase pinPointUseCase;
 
 	/// 토큰 의존성
 	private final JwtValidator jwtValidator;
@@ -183,7 +185,20 @@ public class AuthService implements AuthUseCase {
 
 		/// 토큰 발급
 		JwtTokenResponse tokenResponse = issueTokens(user);
-		return AuthExchangeResponse.tokenIssued(tokenResponse.accessToken(), tokenResponse.refreshToken());
+		String pinpointId = resolvePrimaryPinPointId(user.getId());
+		return AuthExchangeResponse.tokenIssued(
+			tokenResponse.accessToken(),
+			tokenResponse.refreshToken(),
+			pinpointId
+		);
+	}
+
+	private String resolvePrimaryPinPointId(UUID userId) {
+		return pinPointUseCase.loadPinPoints(userId).pinPoints().stream()
+			.filter(pinPoint -> pinPoint.isFirst())
+			.findFirst()
+			.map(pinPoint -> pinPoint.id())
+			.orElse(null);
 	}
 
 }
