@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <conversionRule conversionWord="sanitizedMsg"
-        converterClass="co.kr.pinhouse.app.logging.SanitizedMessageConverter"/>
+                    converterClass="co.kr.pinhouse.app.logging.SanitizedMessageConverter"/>
 
     <!-- Console Appender - 로컬/컨테이너 모두 stdout만 사용 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
