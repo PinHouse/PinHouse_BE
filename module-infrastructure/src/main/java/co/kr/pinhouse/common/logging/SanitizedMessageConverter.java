@@ -1,4 +1,4 @@
-package co.kr.pinhouse.app.logging;
+package co.kr.pinhouse.common.logging;
 
 import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
