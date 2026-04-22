@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import co.kr.pinhouse.common.response.pageable.SliceRequest;
 import co.kr.pinhouse.common.response.pageable.SliceResponse;
-import co.kr.pinhouse.domain.user.domain.entity.Role;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserDetailResponse;
 import co.kr.pinhouse.domain.admin.user.application.dto.response.AdminUserSummaryResponse;
+import co.kr.pinhouse.domain.user.domain.entity.Role;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface AdminUserUseCase {
