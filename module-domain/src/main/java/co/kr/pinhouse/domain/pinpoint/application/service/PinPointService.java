@@ -43,9 +43,11 @@ public class PinPointService implements PinPointUseCase {
 
 		/// 유저 검증
 		User user = userService.loadUser(userId);
+		boolean isFirstPinPoint = repository.countByUserId(user.getId().toString()) == 0;
+		boolean shouldSetFirst = isFirstPinPoint || request.first();
 
-		/// 새로운 핀포인트가 first=true인 경우, 기존 first=true인 핀포인트를 false로 변경
-		if (request.first()) {
+		/// 최초 저장이거나 새로운 핀포인트가 first=true인 경우, 새 핀포인트를 대표로 설정
+		if (shouldSetFirst && !isFirstPinPoint) {
 			Optional<PinPoint> existingFirstPinPoint = repository.findByUserIdAndIsFirst(user.getId().toString(), true);
 			existingFirstPinPoint.ifPresent(pinPoint -> {
 				pinPoint.setFirst(false);
@@ -58,7 +60,7 @@ public class PinPointService implements PinPointUseCase {
 
 		/// 도메인 생성
 		var entity = PinPoint.of(user.getId().toString(), request.address(), request.name(), location.getLatitude(),
-			location.getLongitude(), request.first());
+			location.getLongitude(), shouldSetFirst);
 
 		/// 저장하기
 		repository.save(entity);
