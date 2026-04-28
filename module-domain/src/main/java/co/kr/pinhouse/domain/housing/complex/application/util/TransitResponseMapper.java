@@ -418,6 +418,9 @@ public class TransitResponseMapper {
 		// stopName: 명시적 라벨 우선, 없으면 step 자체의 출발 지점명
 		String stopName = (isFirstWalk && hasText(stopNameLabel)) ? stopNameLabel : step.startName();
 
+		// 첫 번째 WALK에만 거리(m) 노출, 0이면 null 처리
+		Integer distanceMeters = (isFirstWalk && step.distance() > 0) ? step.distance() : null;
+
 		return TransitRoutesResponse.StepResponse.builder()
 			.stepIndex(0)
 			.action(TransitRoutesResponse.StepAction.WALK)
@@ -426,6 +429,7 @@ public class TransitResponseMapper {
 			.primaryText(primaryText)
 			.secondaryText(null)
 			.minutes(step.time())
+			.distanceMeters(distanceMeters)
 			.colorHex(colorHex)
 			.line(null)
 			.build();
@@ -519,6 +523,7 @@ public class TransitResponseMapper {
 				.primaryText(original.primaryText())
 				.secondaryText(original.secondaryText())
 				.minutes(original.minutes())
+				.distanceMeters(original.distanceMeters())
 				.colorHex(original.colorHex())
 				.line(original.line())
 				.build());

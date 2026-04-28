@@ -102,6 +102,7 @@ public class IntraCityResultParser {
 						steps.add(RootResult.DistanceStep.builder()
 							.type(type)
 							.time(sub.path("sectionTime").asInt(0))
+							.distance(sub.path("distance").asInt(0))
 							.startName(safeText(sub, "startName"))
 							.endName(safeText(sub, "endName"))
 							.startX(sub.path("startX").asDouble(0))
