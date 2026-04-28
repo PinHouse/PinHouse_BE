@@ -1,6 +1,7 @@
 package co.kr.pinhouse.domain.housing.notice.domain.repository;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -320,6 +321,27 @@ public class NoticeDocumentRepositoryImpl implements NoticeDocumentRepositoryCus
 		Pageable pageable) {
 		Criteria criteria = Criteria.where("houseType").regex(keyword, "i");
 		return findNoticeSlice(criteria, pageable);
+	}
+
+	@Override
+	public List<String> findNoticeIdsByAnnounceDate(LocalDate announceDate) {
+		Query query = new Query(Criteria.where("announceDate").is(announceDate));
+		query.fields().include("noticeId");
+
+		return mongoTemplate.find(query, NoticeDocument.class)
+			.stream()
+			.map(NoticeDocument::getId)
+			.toList();
+	}
+
+	@Override
+	public List<NoticeDocument> findNoticeLinkCandidatesByAnnounceDateLessThanEqual(LocalDate announceDate) {
+		Query query = new Query(Criteria.where("announceDate").lte(announceDate));
+		query.fields()
+			.include("noticeId")
+			.include("urls");
+
+		return mongoTemplate.find(query, NoticeDocument.class);
 	}
 
 	private org.springframework.data.domain.Slice<NoticeDocument> findNoticeSlice(Criteria criteria,

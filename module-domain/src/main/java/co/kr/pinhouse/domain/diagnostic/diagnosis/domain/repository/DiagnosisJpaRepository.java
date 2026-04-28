@@ -1,10 +1,13 @@
 package co.kr.pinhouse.domain.diagnostic.diagnosis.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import co.kr.pinhouse.domain.diagnostic.diagnosis.domain.entity.Diagnosis;
 import co.kr.pinhouse.domain.user.domain.entity.User;
@@ -38,5 +41,30 @@ public interface DiagnosisJpaRepository extends JpaRepository<Diagnosis, Long> {
 	 * @param userId 유저 ID
 	 */
 	void deleteByUser_Id(UUID userId);
+
+	long countByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
+
+	@Query("""
+		select count(distinct d.user.id)
+		from Diagnosis d
+		where d.createdAt between :from and :to
+		""")
+	long countDistinctUsersByCreatedAtBetween(
+		@Param("from") LocalDateTime from,
+		@Param("to") LocalDateTime to
+	);
+
+	@Query("""
+		select count(distinct d.user.id)
+		from Diagnosis d
+		where d.createdAt between :diagnosisFrom and :diagnosisTo
+		  and d.user.createdAt between :userFrom and :userTo
+		""")
+	long countDistinctUsersByCreatedAtBetweenAndUserCreatedAtBetween(
+		@Param("diagnosisFrom") LocalDateTime diagnosisFrom,
+		@Param("diagnosisTo") LocalDateTime diagnosisTo,
+		@Param("userFrom") LocalDateTime userFrom,
+		@Param("userTo") LocalDateTime userTo
+	);
 
 }

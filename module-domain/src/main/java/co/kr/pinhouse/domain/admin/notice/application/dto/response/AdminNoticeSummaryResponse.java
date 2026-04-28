@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import co.kr.pinhouse.domain.admin.notice.domain.entity.NoticeAdminOverride;
 import co.kr.pinhouse.domain.housing.notice.domain.entity.NoticeDocument;
+import co.kr.pinhouse.domain.housing.notice.domain.entity.Urls;
 import lombok.Builder;
 
 @Builder
@@ -15,6 +16,7 @@ public record AdminNoticeSummaryResponse(
 	LocalDate announceDate,
 	LocalDate applyStart,
 	LocalDate applyEnd,
+	String actualLink,
 	boolean hidden,
 	boolean hasOverride
 ) {
@@ -28,6 +30,7 @@ public record AdminNoticeSummaryResponse(
 			.announceDate(notice.getAnnounceDate())
 			.applyStart(notice.getApplyStart())
 			.applyEnd(notice.getApplyEnd())
+			.actualLink(resolveActualLink(notice))
 			.hidden(override != null && override.isHidden())
 			.hasOverride(override != null)
 			.build();
@@ -35,5 +38,26 @@ public record AdminNoticeSummaryResponse(
 
 	private static String resolve(String overrideValue, String originalValue) {
 		return overrideValue != null ? overrideValue : originalValue;
+	}
+
+	private static String resolveActualLink(NoticeDocument notice) {
+		Urls urls = notice.getUrls();
+		if (urls == null) {
+			return null;
+		}
+
+		if (hasText(urls.getApply())) {
+			return urls.getApply();
+		}
+
+		if (hasText(urls.getMyhomePc())) {
+			return urls.getMyhomePc();
+		}
+
+		return hasText(urls.getMyhomeMo()) ? urls.getMyhomeMo() : null;
+	}
+
+	private static boolean hasText(String value) {
+		return value != null && !value.isBlank();
 	}
 }
