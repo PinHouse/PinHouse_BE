@@ -33,10 +33,8 @@ public class ElderCandidateRule implements Rule {
 		/// 나이가 고령자 제한이 안된다면 삭제 (만 65세 이상)
 		if (diagnosis.getAge() < policyUseCase.elderAge()) {
 
-			/// 고령자 관련 특별공급 모두 제거
-			candidates.removeIf(c ->
-				c.supplyType() == SupplyType.ELDER_SPECIAL
-					|| c.supplyType() == SupplyType.ELDER_SUPPORT_SPECIAL);
+			/// 고령자 본인 특별공급만 제거 (노부모 부양은 신청자 나이와 무관하므로 ElderSupportCandidateRule에서 처리)
+			candidates.removeIf(c -> c.supplyType() == SupplyType.ELDER_SPECIAL);
 
 			/// 결과 저장하기
 			ctx.setCurrentCandidates(candidates);
