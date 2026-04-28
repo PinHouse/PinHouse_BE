@@ -57,8 +57,8 @@ public interface DiagnosisJpaRepository extends JpaRepository<Diagnosis, Long> {
 	@Query("""
 		select count(distinct d.user.id)
 		from Diagnosis d
-		where d.createdAt between :diagnosisFrom and :diagnosisTo
-		  and d.user.createdAt between :userFrom and :userTo
+			where d.createdAt between :diagnosisFrom and :diagnosisTo
+			and d.user.createdAt between :userFrom and :userTo
 		""")
 	long countDistinctUsersByCreatedAtBetweenAndUserCreatedAtBetween(
 		@Param("diagnosisFrom") LocalDateTime diagnosisFrom,
