@@ -174,6 +174,20 @@ public class TransitResponseMapper {
 	 * 새 스키마: 3개 경로를 한 번에 변환
 	 */
 	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult) {
+		return toTransitRoutesResponse(pathResult, null, null);
+	}
+
+	/**
+	 * 새 스키마: 3개 경로를 한 번에 변환
+	 */
+	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult, String departureLabel) {
+		return toTransitRoutesResponse(pathResult, departureLabel, null);
+	}
+
+	/**
+	 * 새 스키마: 3개 경로를 한 번에 변환
+	 */
+	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult, String departureLabel, String arrivalLabel) {
 		if (pathResult == null || pathResult.routes() == null) {
 			return TransitRoutesResponse.builder()
 				.totalCount(0)
@@ -186,7 +200,7 @@ public class TransitResponseMapper {
 
 		for (int i = 0; i < top3.size(); i++) {
 			RootResult route = top3.get(i);
-			routeResponses.add(toRouteResponse(route, i));
+			routeResponses.add(toRouteResponse(route, i, departureLabel, arrivalLabel));
 		}
 
 		return TransitRoutesResponse.builder()
@@ -198,12 +212,17 @@ public class TransitResponseMapper {
 	/**
 	 * 개별 경로 변환
 	 */
-	private TransitRoutesResponse.RouteResponse toRouteResponse(RootResult route, int index) {
+	private TransitRoutesResponse.RouteResponse toRouteResponse(
+		RootResult route,
+		int index,
+		String departureLabel,
+		String arrivalLabel
+	) {
 		return TransitRoutesResponse.RouteResponse.builder()
 			.routeIndex(index)
 			.summary(toSummaryResponse(route))
 			.distance(toSegmentResponses(route))
-			.steps(toStepResponses(route))
+			.steps(toStepResponses(route, departureLabel, arrivalLabel))
 			.build();
 	}
 
@@ -310,7 +329,11 @@ public class TransitResponseMapper {
 	/**
 	 * Steps 생성 (색깔 + 승차/하차 통합)
 	 */
-	private List<TransitRoutesResponse.StepResponse> toStepResponses(RootResult route) {
+	private List<TransitRoutesResponse.StepResponse> toStepResponses(
+		RootResult route,
+		String departureLabel,
+		String arrivalLabel
+	) {
 		if (route == null || route.steps() == null || route.steps().isEmpty()) {
 			return List.of();
 		}
@@ -325,15 +348,17 @@ public class TransitResponseMapper {
 
 		if (transportSteps.isEmpty()) {
 			// WALK만 있는 경로 (드문 케이스)
+			boolean isFirstWalk = true;
 			for (RootResult.DistanceStep step : distanceSteps) {
-				steps.add(createWalkStep(step, null, null, false));
+				steps.add(createWalkStep(step, null, departureLabel, departureLabel, isFirstWalk));
+				isFirstWalk = false;
 			}
 			return assignStepIndexes(steps);
 		}
 
-		// 출발지 정보 (첫 번째 WALK에 사용)
+		// primaryText용 표시 이름: 명시적 라벨 > 첫 번째 교통수단의 출발역명
 		RootResult.DistanceStep firstTransport = transportSteps.get(0);
-		String departureLocation = firstTransport.startName();
+		String departureDisplay = hasText(departureLabel) ? departureLabel : firstTransport.startName();
 
 		// 전체 구간 순회하며 steps 생성
 		int transportIndex = 0;
@@ -343,8 +368,8 @@ public class TransitResponseMapper {
 			RootResult.DistanceStep step = distanceSteps.get(i);
 
 			if (step.type() == RootResult.TransportType.WALK) {
-				// 첫 번째 WALK는 출발지 정보 포함
-				steps.add(createWalkStep(step, ChipType.WALK, departureLocation, isFirstWalk));
+				// stopName에는 명시적 라벨 사용 (없으면 step.startName()으로 폴백은 createWalkStep 내부 처리)
+				steps.add(createWalkStep(step, ChipType.WALK, departureDisplay, departureLabel, isFirstWalk));
 				isFirstWalk = false;
 			} else {
 				// 교통수단: BOARD + ALIGHT 추가 (색상 포함)
@@ -363,8 +388,7 @@ public class TransitResponseMapper {
 		}
 
 		// 도착지 추가
-		RootResult.DistanceStep lastTransport = transportSteps.get(transportSteps.size() - 1);
-		steps.add(createArriveStep(lastTransport.endName()));
+		steps.add(createArriveStep(resolveArrivalLabel(distanceSteps, arrivalLabel)));
 
 		// minutes가 0인 step 필터링 (ARRIVE/ALIGHT는 null이므로 유지)
 		List<TransitRoutesResponse.StepResponse> filteredSteps = steps.stream()
@@ -385,31 +409,42 @@ public class TransitResponseMapper {
 	 * WALK step 생성
 	 * UI에서는 중간 POI를 숨기고 행동 중심 정보만 표시
 	 * 첫 번째 WALK인 경우 출발지 정보 포함
+	 *
+	 * @param primaryLabel  primaryText에 사용할 이름 (ex: 교통수단 출발역명 또는 명시적 라벨)
+	 * @param stopNameLabel stopName에 사용할 명시적 라벨 (null이면 step.startName() 사용)
 	 */
 	private TransitRoutesResponse.StepResponse createWalkStep(
 		RootResult.DistanceStep step,
 		ChipType chipType,
-		String departureLocation,
+		String primaryLabel,
+		String stopNameLabel,
 		boolean isFirstWalk) {
 
 		String colorHex = (chipType != null) ? chipType.defaultBg : ChipType.WALK.defaultBg;
 
 		// 첫 번째 WALK는 출발지 포함, 나머지는 "도보 약 n분"만
 		String primaryText;
-		if (isFirstWalk && departureLocation != null) {
-			primaryText = departureLocation + "에서 도보 약 " + step.time() + "분";
+		if (isFirstWalk && hasText(primaryLabel)) {
+			primaryText = primaryLabel + "에서 도보 약 " + step.time() + "분";
 		} else {
 			primaryText = "도보 약 " + step.time() + "분";
 		}
+
+		// stopName: 명시적 라벨 우선, 없으면 step 자체의 출발 지점명
+		String stopName = (isFirstWalk && hasText(stopNameLabel)) ? stopNameLabel : step.startName();
+
+		// 첫 번째 WALK에만 거리(m) 노출, 0이면 null 처리
+		Integer distanceMeters = (isFirstWalk && step.distance() > 0) ? step.distance() : null;
 
 		return TransitRoutesResponse.StepResponse.builder()
 			.stepIndex(0)
 			.action(TransitRoutesResponse.StepAction.WALK)
 			.type("WALK")
-			.stopName(step.startName())  // 내부 로직용 유지
+			.stopName(stopName)
 			.primaryText(primaryText)
 			.secondaryText(null)
 			.minutes(step.time())
+			.distanceMeters(distanceMeters)
 			.colorHex(colorHex)
 			.line(null)
 			.build();
@@ -488,6 +523,21 @@ public class TransitResponseMapper {
 			.build();
 	}
 
+	private String resolveArrivalLabel(List<RootResult.DistanceStep> distanceSteps, String arrivalLabel) {
+		if (hasText(arrivalLabel)) {
+			return arrivalLabel;
+		}
+
+		for (int i = distanceSteps.size() - 1; i >= 0; i--) {
+			String endName = distanceSteps.get(i).endName();
+			if (hasText(endName)) {
+				return endName;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Step 인덱스 부여
 	 */
@@ -503,6 +553,7 @@ public class TransitResponseMapper {
 				.primaryText(original.primaryText())
 				.secondaryText(original.secondaryText())
 				.minutes(original.minutes())
+				.distanceMeters(original.distanceMeters())
 				.colorHex(original.colorHex())
 				.line(original.line())
 				.build());
@@ -536,5 +587,9 @@ public class TransitResponseMapper {
 		String first3 = String.join(", ", numbers[0], numbers[1], numbers[2]);
 		int remaining = numbers.length - 3;
 		return first3 + "번 외 " + remaining + "개";
+	}
+
+	private boolean hasText(String value) {
+		return value != null && !value.isBlank();
 	}
 }

@@ -1,6 +1,7 @@
 package co.kr.pinhouse.domain.housing.notice.domain.repository;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -107,5 +108,16 @@ public interface NoticeDocumentRepositoryCustom {
 	 * 주택유형 공고 검색 (Slice)
 	 */
 	org.springframework.data.domain.Slice<NoticeDocument> searchNoticesByHouseType(String keyword, Pageable pageable);
+
+	/**
+	 * 특정 공고일의 공고 ID 목록 조회
+	 */
+	java.util.List<String> findNoticeIdsByAnnounceDate(LocalDate announceDate);
+
+	/**
+	 * 실제 링크 점검 대상 공고 조회
+	 * noticeId, urls 필드만 projection 한다.
+	 */
+	java.util.List<NoticeDocument> findNoticeLinkCandidatesByAnnounceDateLessThanEqual(LocalDate announceDate);
 
 }

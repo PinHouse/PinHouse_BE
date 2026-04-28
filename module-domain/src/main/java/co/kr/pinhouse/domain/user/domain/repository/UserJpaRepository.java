@@ -1,5 +1,6 @@
 package co.kr.pinhouse.domain.user.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,4 +29,6 @@ public interface UserJpaRepository extends JpaRepository<User, UUID> {
 		String emailKeyword,
 		Pageable pageable
 	);
+
+	long countByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
 }

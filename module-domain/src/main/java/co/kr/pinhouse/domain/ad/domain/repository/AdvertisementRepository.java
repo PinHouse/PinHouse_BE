@@ -1,5 +1,6 @@
 package co.kr.pinhouse.domain.ad.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -18,4 +19,12 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 		AdvertisementPlacement placement,
 		AdvertisementStatus status
 	);
+
+	List<Advertisement> findByStatus(AdvertisementStatus status);
+
+	long countByStatus(AdvertisementStatus status);
+
+	long countByStatusAndCreatedAtBetween(AdvertisementStatus status, LocalDateTime from, LocalDateTime to);
+
+	List<Advertisement> findByStatusAndEndAtBetween(AdvertisementStatus status, LocalDateTime from, LocalDateTime to);
 }

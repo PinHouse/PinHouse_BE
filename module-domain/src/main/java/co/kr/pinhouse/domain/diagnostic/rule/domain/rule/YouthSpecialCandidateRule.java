@@ -33,9 +33,8 @@ public class YouthSpecialCandidateRule implements Rule {
 		/// 가능한 리스트 추출하기
 		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-		/// 미성년자인지 체크
-		int ageMin = policyUseCase.marriedYouthAgeMin();
-		boolean ageOk = diagnosis.getAge() < ageMin;
+		/// 미성년자인지 체크 (민법상 미성년자: 만 18세 이하, 즉 19세 미만)
+		boolean ageOk = diagnosis.getAge() < policyUseCase.marriedYouthAgeMin();
 
 		/// 결혼했는지 여부 확인
 		boolean isMarried = diagnosis.isMaritalStatus();
@@ -76,6 +75,6 @@ public class YouthSpecialCandidateRule implements Rule {
 
 	@Override
 	public String code() {
-		return "CANDIDATE_YOUTH_SPECIAL";
+		return "CANDIDATE_MINOR_MARRIED_SPECIAL";
 	}
 }

@@ -131,6 +131,9 @@ public record TransitRoutesResponse(
 		@Schema(description = "해당 구간 소요 시간(분), 없으면 null", example = "65")
 		Integer minutes,
 
+		@Schema(description = "핀포인트에서 첫 번째 대중교통 정류장/역까지의 도보 거리(m), 해당 구간이 없으면 null", example = "520")
+		Integer distanceMeters,
+
 		@Schema(description = "색 막대용 색상(Hex), 출발/도착은 null", example = "#3356B4")
 		String colorHex,
 

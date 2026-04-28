@@ -5,6 +5,9 @@ import static co.kr.pinhouse.common.util.LogSanitizer.sanitize;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +23,9 @@ import co.kr.pinhouse.common.response.CustomException;
 import co.kr.pinhouse.domain.housing.complex.application.util.DistanceUtil;
 import co.kr.pinhouse.domain.housing.complex.application.util.InterCityResultParser;
 import co.kr.pinhouse.domain.housing.complex.application.util.IntraCityResultParser;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.InterCityResult;
 import co.kr.pinhouse.domain.housing.complex.domain.transit.PathResult;
+import co.kr.pinhouse.domain.housing.complex.domain.transit.RootResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,44 +47,134 @@ public class OdsayUtil implements DistanceUtil {
 
 	@Override
 	public PathResult findPathResult(double startY, double startX, double endY, double endX) {
+		PathResult single = callSingleLeg(startY, startX, endY, endX);
 
+		if (!(single instanceof InterCityResult interCity)) {
+			return single;
+		}
+
+		// 시외 경로 → 앞뒤 시내 leg 조합
+		RootResult bestInterCity = selectBest(interCity.routes());
+		if (bestInterCity == null || bestInterCity.steps().isEmpty()) {
+			return interCity;
+		}
+
+		RootResult.DistanceStep firstStep = bestInterCity.steps().get(0);
+		RootResult.DistanceStep lastStep = bestInterCity.steps().get(bestInterCity.steps().size() - 1);
+
+		PathResult departureLeg = null;
+		PathResult arrivalLeg = null;
+
+		if (hasCoords(firstStep.startX(), firstStep.startY())) {
+			departureLeg = callSingleLegSilently(startY, startX, firstStep.startY(), firstStep.startX());
+		}
+		if (hasCoords(lastStep.endX(), lastStep.endY())) {
+			arrivalLeg = callSingleLegSilently(lastStep.endY(), lastStep.endX(), endY, endX);
+		}
+
+		return composeRoutes(departureLeg, interCity, arrivalLeg);
+	}
+
+	// =================
+	//  3-leg 조합 로직
+	// =================
+
+	private PathResult composeRoutes(PathResult departureLeg, InterCityResult interCity, PathResult arrivalLeg) {
+		RootResult bestDep = (departureLeg != null) ? selectBest(departureLeg.routes()) : null;
+		RootResult bestArr = (arrivalLeg != null) ? selectBest(arrivalLeg.routes()) : null;
+
+		List<RootResult> composed = new ArrayList<>();
+		List<RootResult> top3 = interCity.routes().stream()
+			.sorted(Comparator.comparingInt(RootResult::totalTime).thenComparingInt(RootResult::totalPayment))
+			.limit(3)
+			.toList();
+
+		for (RootResult inter : top3) {
+			List<RootResult.DistanceStep> steps = new ArrayList<>();
+			int totalTime = inter.totalTime();
+			int totalPayment = inter.totalPayment();
+			double totalDistance = inter.totalDistance();
+
+			if (bestDep != null) {
+				steps.addAll(bestDep.steps());
+				totalTime += bestDep.totalTime();
+				totalPayment += bestDep.totalPayment();
+				totalDistance += bestDep.totalDistance();
+			}
+			steps.addAll(inter.steps());
+			if (bestArr != null) {
+				steps.addAll(bestArr.steps());
+				totalTime += bestArr.totalTime();
+				totalPayment += bestArr.totalPayment();
+				totalDistance += bestArr.totalDistance();
+			}
+
+			composed.add(RootResult.builder()
+				.totalTime(totalTime)
+				.totalPayment(totalPayment)
+				.totalDistance(totalDistance)
+				.steps(List.copyOf(steps))
+				.build());
+		}
+
+		return () -> List.copyOf(composed);
+	}
+
+	private RootResult selectBest(List<RootResult> routes) {
+		if (routes == null || routes.isEmpty()) {
+			return null;
+		}
+		return routes.stream()
+			.min(Comparator.comparingInt(RootResult::totalTime).thenComparingInt(RootResult::totalPayment))
+			.orElse(null);
+	}
+
+	private boolean hasCoords(double cx, double cy) {
+		return cx != 0 || cy != 0;
+	}
+
+	private PathResult callSingleLegSilently(double startY, double startX, double endY, double endX) {
+		try {
+			return callSingleLeg(startY, startX, endY, endX);
+		} catch (Exception e) {
+			log.warn("시내 leg 경로 조회 실패 (startY={}, startX={}, endY={}, endX={}) - 해당 leg 생략",
+				startY, startX, endY, endX);
+			return null;
+		}
+	}
+
+	private PathResult callSingleLeg(double startY, double startX, double endY, double endX) {
 		String normalizedApiKey = normalizeApiKey(apiKey);
 		if (normalizedApiKey == null || normalizedApiKey.isBlank()) {
 			log.error("ODsay API Key가 비어 있습니다");
 			throw new CustomException(ComplexErrorCode.ODSAY_INVALID_API_KEY);
 		}
 
-		/// ODsay 안내에 따라 API Key는 1회 인코딩 후 직접 URI에 반영
 		String encodedApiKey = encodeApiKey(normalizedApiKey);
 		URI requestUri = URI.create(buildRequestUri(startY, startX, endY, endX, encodedApiKey));
 
-		/// 값 호출
 		try {
 			String response = webClient.get()
 				.uri(requestUri)
 				.retrieve()
 				.bodyToMono(String.class)
 				.onErrorMap(e -> new CustomException(ComplexErrorCode.ODSAY_SERVER_ERROR))
-				.block(); // 동기
+				.block();
 
 			if (response == null || response.isBlank()) {
 				log.error("ODsay 응답 본문이 비어 있습니다");
 				throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
 			}
 
-			/// 자동 판별
 			JsonNode root = OM.readTree(response);
 			handleOdsayError(root);
 			ensurePathExists(root);
 
 			int searchType = detectSearchType(root);
 
-			/// 분기 처리
 			if (searchType == 0) {
-				/// 도시내
 				return IntraCityResultParser.parse(root);
 			} else {
-				/// 도시간(직통/환승 등 포함)
 				return InterCityResultParser.parse(root);
 			}
 
@@ -89,7 +184,6 @@ public class OdsayUtil implements DistanceUtil {
 			log.error("ODsay 응답 파싱에 실패했습니다", e);
 			throw new CustomException(ComplexErrorCode.ODSAY_PARSING_ERROR);
 		}
-
 	}
 
 	// =================

@@ -30,10 +30,11 @@ public class MinorRule implements Rule {
 		/// 현재 후보 리스트 복사
 		var candidates = new ArrayList<>(ctx.getCurrentCandidates());
 
-		/// 결혼 여부 & 신생아 여부
+		/// 신생아 여부: unbornChildrenCount는 "태아 또는 출산(입양) 후 2년 이내 자녀" 수를 의미
+		/// (실제 신생아 특별공급 기준: 임신 중이거나 출산/입양 후 2년 이내)
 		boolean minorOk = diagnosis.getUnbornChildrenCount() >= 1;
 
-		/// 신생아가 1명이상 없다면, 제거한다.
+		/// 신생아(태아 포함)가 1명 이상 없다면 제거
 		if (!minorOk) {
 
 			/// 삭제
@@ -47,7 +48,7 @@ public class MinorRule implements Rule {
 				"신생아 특별공급 해당 없음",
 				Map.of(
 					"candidate", candidates,
-					"failReason", "신생아의 자녀가 없음"
+					"failReason", "태아 또는 출산(입양) 2년 이내 자녀 없음"
 				));
 		}
 

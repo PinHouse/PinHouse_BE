@@ -83,7 +83,24 @@ public record RootResult(
 
 		@Schema(hidden = true)
 		@com.fasterxml.jackson.annotation.JsonIgnore
-		ExpressBusType expressBusType
+		ExpressBusType expressBusType,
+
+		// 3-leg 조합을 위한 좌표 (출발/도착 시내 leg 호출 시 사용, 직렬화 제외)
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		double startX,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		double startY,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		double endX,
+
+		@Schema(hidden = true)
+		@com.fasterxml.jackson.annotation.JsonIgnore
+		double endY
 
 	) {
 	}

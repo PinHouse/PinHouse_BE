@@ -47,22 +47,26 @@ public class PolicyProvider implements PolicyUseCase {
 					DISABLED, NON_HOUSING_RESIDENT -> incomeByFamily(familyCount,
 					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
-				/// 일반공급 - 기준중위소득 150%
-				case GENERAL -> 150.0;
+				/// 일반공급 - 가구원 수별 차등 (1인 170%, 2인 160%, 3인 이상 150%)
+				case GENERAL -> incomeByFamily(familyCount,
+					Map.of(1, 170.0, 2, 160.0, 3, 150.0), 150.0);
 
 				default -> 150.0;
 			};
 
-			/// 영구임대 (전년도 도시근로자 월평균 소득 50~100%)
+			/// 영구임대 (전년도 도시근로자 월평균 소득 기준, 가구원수별 차등)
 			case PERMANENT_RENTAL -> switch (supply) {
-				/// 일반 - 50% 이하
-				case GENERAL -> 50.0;
+				/// 일반 - 1인 70%, 2인 60%, 3인 이상 50%
+				case GENERAL -> incomeByFamily(familyCount,
+					Map.of(1, 70.0, 2, 60.0, 3, 50.0), 50.0);
 
-				/// 국가유공자, 북한이탈주민, 아동복지시설퇴소자, 장애인(1순위) - 70% 이하
-				case NATIONAL_MERIT, NORTH_DEFECTOR, DISABLED -> 70.0;
+				/// 국가유공자, 북한이탈주민, 아동복지시설퇴소자, 장애인(1순위) - 1인 90%, 2인 80%, 3인 이상 70%
+				case NATIONAL_MERIT, NORTH_DEFECTOR, DISABLED -> incomeByFamily(familyCount,
+					Map.of(1, 90.0, 2, 80.0, 3, 70.0), 70.0);
 
-				/// 장애인(2순위) - 100% 이하
-				default -> 100.0;
+				/// 장애인(2순위) - 1인 120%, 2인 110%, 3인 이상 100%
+				default -> incomeByFamily(familyCount,
+					Map.of(1, 120.0, 2, 110.0, 3, 100.0), 100.0);
 			};
 
 			/// 국민임대 (60㎡ 이하: 70%, 60㎡ 초과: 100%)
@@ -214,7 +218,7 @@ public class PolicyProvider implements PolicyUseCase {
 
 	@Override
 	public int marriedYouthAgeMin() {
-		return 20;
+		return 19; // 민법상 미성년자: 만 19세 미만(18세 이하)
 	}
 
 	@Override
