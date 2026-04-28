@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,7 +120,8 @@ public class ComplexService implements ComplexUseCase {
 	@Override
 	@Transactional
 	public TransitRoutesResponse getDistanceV2(String id, String pinPointId) throws UnsupportedEncodingException {
-		return calculateTransitRoute(id, pinPointId, mapper::toTransitRoutesResponse);
+		return calculateTransitRoute(id, pinPointId,
+			(pathResult, pinPoint) -> mapper.toTransitRoutesResponse(pathResult, resolveDepartureLabel(pinPoint)));
 	}
 
 	// =================
@@ -462,7 +464,7 @@ public class ComplexService implements ComplexUseCase {
 	 *
 	 * @param complexId 임대주택 ID
 	 * @param pinPointId 핀포인트 ID
-	 * @param pathMapper PathResult를 원하는 타입으로 변환하는 함수
+	 * @param pathMapper PathResult와 PinPoint를 원하는 타입으로 변환하는 함수
 	 * @param <T> 반환 타입
 	 * @return 변환된 결과
 	 * @throws UnsupportedEncodingException 인코딩 예외
@@ -470,7 +472,7 @@ public class ComplexService implements ComplexUseCase {
 	private <T> T calculateTransitRoute(
 		String complexId,
 		String pinPointId,
-		java.util.function.Function<PathResult, T> pathMapper
+		BiFunction<PathResult, PinPoint, T> pathMapper
 	) throws UnsupportedEncodingException {
 
 		/// 임대주택 조회
@@ -491,7 +493,24 @@ public class ComplexService implements ComplexUseCase {
 		validateTransitRoute(pathResult, complexId, pinPointId);
 
 		/// 결과 매핑
-		return pathMapper.apply(pathResult);
+		return pathMapper.apply(pathResult, pinPoint);
+	}
+
+	private String resolveDepartureLabel(PinPoint pinPoint) {
+		if (pinPoint == null) {
+			return "출발지";
+		}
+		if (hasText(pinPoint.getName())) {
+			return pinPoint.getName();
+		}
+		if (hasText(pinPoint.getAddress())) {
+			return pinPoint.getAddress();
+		}
+		return "출발지";
+	}
+
+	private boolean hasText(String value) {
+		return value != null && !value.isBlank();
 	}
 
 	/// 계산 결과에 실제 경로 후보가 있는지 검증
@@ -517,7 +536,7 @@ public class ComplexService implements ComplexUseCase {
 		}
 
 		/// 상세조회 캐시가 없으면 경로를 다시 계산해 색상 포함 응답을 생성한다.
-		return calculateTransitRoute(id, pinPointId, pathResult -> {
+		return calculateTransitRoute(id, pinPointId, (pathResult, pinPoint) -> {
 			RootResult rootResult = mapper.selectBest(pathResult);
 			TransitInfoResponse transitInfo = mapper.toTransitInfoResponse(rootResult);
 
@@ -546,7 +565,7 @@ public class ComplexService implements ComplexUseCase {
 		}
 
 		/// 캐시가 없으면 템플릿 메서드를 사용하여 경로 계산
-		DistanceResponse distance = calculateTransitRoute(id, pinPointId, pathResult -> {
+		DistanceResponse distance = calculateTransitRoute(id, pinPointId, (pathResult, pinPoint) -> {
 			RootResult rootResult = mapper.selectBest(pathResult);
 			TransitInfoResponse transitInfo = mapper.toTransitInfoResponse(rootResult);
 
