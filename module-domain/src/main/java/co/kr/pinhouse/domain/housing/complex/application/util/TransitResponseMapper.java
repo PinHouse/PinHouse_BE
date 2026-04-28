@@ -174,13 +174,20 @@ public class TransitResponseMapper {
 	 * 새 스키마: 3개 경로를 한 번에 변환
 	 */
 	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult) {
-		return toTransitRoutesResponse(pathResult, null);
+		return toTransitRoutesResponse(pathResult, null, null);
 	}
 
 	/**
 	 * 새 스키마: 3개 경로를 한 번에 변환
 	 */
 	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult, String departureLabel) {
+		return toTransitRoutesResponse(pathResult, departureLabel, null);
+	}
+
+	/**
+	 * 새 스키마: 3개 경로를 한 번에 변환
+	 */
+	public TransitRoutesResponse toTransitRoutesResponse(PathResult pathResult, String departureLabel, String arrivalLabel) {
 		if (pathResult == null || pathResult.routes() == null) {
 			return TransitRoutesResponse.builder()
 				.totalCount(0)
@@ -193,7 +200,7 @@ public class TransitResponseMapper {
 
 		for (int i = 0; i < top3.size(); i++) {
 			RootResult route = top3.get(i);
-			routeResponses.add(toRouteResponse(route, i, departureLabel));
+			routeResponses.add(toRouteResponse(route, i, departureLabel, arrivalLabel));
 		}
 
 		return TransitRoutesResponse.builder()
@@ -205,12 +212,17 @@ public class TransitResponseMapper {
 	/**
 	 * 개별 경로 변환
 	 */
-	private TransitRoutesResponse.RouteResponse toRouteResponse(RootResult route, int index, String departureLabel) {
+	private TransitRoutesResponse.RouteResponse toRouteResponse(
+		RootResult route,
+		int index,
+		String departureLabel,
+		String arrivalLabel
+	) {
 		return TransitRoutesResponse.RouteResponse.builder()
 			.routeIndex(index)
 			.summary(toSummaryResponse(route))
 			.distance(toSegmentResponses(route))
-			.steps(toStepResponses(route, departureLabel))
+			.steps(toStepResponses(route, departureLabel, arrivalLabel))
 			.build();
 	}
 
@@ -317,7 +329,11 @@ public class TransitResponseMapper {
 	/**
 	 * Steps 생성 (색깔 + 승차/하차 통합)
 	 */
-	private List<TransitRoutesResponse.StepResponse> toStepResponses(RootResult route, String departureLabel) {
+	private List<TransitRoutesResponse.StepResponse> toStepResponses(
+		RootResult route,
+		String departureLabel,
+		String arrivalLabel
+	) {
 		if (route == null || route.steps() == null || route.steps().isEmpty()) {
 			return List.of();
 		}
@@ -372,8 +388,7 @@ public class TransitResponseMapper {
 		}
 
 		// 도착지 추가
-		RootResult.DistanceStep lastTransport = transportSteps.get(transportSteps.size() - 1);
-		steps.add(createArriveStep(lastTransport.endName()));
+		steps.add(createArriveStep(resolveArrivalLabel(distanceSteps, arrivalLabel)));
 
 		// minutes가 0인 step 필터링 (ARRIVE/ALIGHT는 null이므로 유지)
 		List<TransitRoutesResponse.StepResponse> filteredSteps = steps.stream()
@@ -506,6 +521,21 @@ public class TransitResponseMapper {
 			.colorHex(null)
 			.line(null)
 			.build();
+	}
+
+	private String resolveArrivalLabel(List<RootResult.DistanceStep> distanceSteps, String arrivalLabel) {
+		if (hasText(arrivalLabel)) {
+			return arrivalLabel;
+		}
+
+		for (int i = distanceSteps.size() - 1; i >= 0; i--) {
+			String endName = distanceSteps.get(i).endName();
+			if (hasText(endName)) {
+				return endName;
+			}
+		}
+
+		return null;
 	}
 
 	/**
